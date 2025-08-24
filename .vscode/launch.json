@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Streamlit App",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "run",
+                "streamlit_app.py"
+            ],
+            "justMyCode": true,
+            "python": "D:/Anaconda/python.exe"
+        }
+    ]
+}
