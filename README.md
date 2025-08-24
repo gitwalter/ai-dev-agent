@@ -27,31 +27,181 @@ A comprehensive Multi-Agent System (MAS) for automated software development usin
 
 ## 🏗️ Architecture
 
+### System Overview
+
+The AI Development Agent system is a sophisticated multi-agent architecture designed to automate the entire software development lifecycle. The system uses specialized AI agents that work together in a coordinated workflow to transform high-level project requirements into complete, production-ready applications.
+
+```mermaid
+graph TB
+    %% User Interface Layer
+    subgraph "User Interface"
+        UI[Streamlit Web App]
+        CLI[Command Line Interface]
+    end
+    
+    %% Core System Layer
+    subgraph "Core System"
+        PM[Project Manager Agent]
+        WF[Workflow Manager]
+        EH[Error Handler]
+        HA[Human Approval]
+    end
+    
+    %% Agent Layer
+    subgraph "AI Agents"
+        RA[Requirements Analyst]
+        AD[Architecture Designer]
+        CG[Code Generator]
+        TG[Test Generator]
+        DG[Documentation Generator]
+        CR[Code Reviewer]
+        SA[Security Analyst]
+    end
+    
+    %% Data Layer
+    subgraph "Data & State"
+        PS[Project State]
+        CF[Configuration]
+        LG[Logging]
+        CT[Context Engine]
+    end
+    
+    %% External Services
+    subgraph "External Services"
+        AI[Gemini AI API]
+        FS[File System]
+        DB[(Database)]
+    end
+    
+    %% Connections
+    UI --> PM
+    CLI --> PM
+    PM --> WF
+    WF --> EH
+    WF --> HA
+    
+    %% Agent Workflow
+    PM --> RA
+    PM --> AD
+    PM --> CG
+    PM --> TG
+    PM --> DG
+    PM --> CR
+    PM --> SA
+    
+    %% Feedback Loops
+    RA -.->|Feedback| AD
+    AD -.->|Feedback| CG
+    CG -.->|Feedback| CR
+    CR -.->|Feedback| CG
+    SA -.->|Feedback| CG
+    TG -.->|Feedback| CR
+    
+    %% Data Flow
+    RA --> PS
+    AD --> PS
+    CG --> PS
+    TG --> PS
+    DG --> PS
+    CR --> PS
+    SA --> PS
+    
+    %% External Integrations
+    RA --> AI
+    AD --> AI
+    CG --> AI
+    TG --> AI
+    DG --> AI
+    CR --> AI
+    SA --> AI
+    
+    %% File Operations
+    CG --> FS
+    TG --> FS
+    DG --> FS
+    
+    %% Configuration & Logging
+    PM --> CF
+    PM --> LG
+    PM --> CT
+    
+    %% Styling
+    classDef userInterface fill:#e1f5fe
+    classDef coreSystem fill:#f3e5f5
+    classDef agents fill:#e8f5e8
+    classDef dataLayer fill:#fff3e0
+    classDef external fill:#ffebee
+    
+    class UI,CLI userInterface
+    class PM,WF,EH,HA coreSystem
+    class RA,AD,CG,TG,DG,CR,SA agents
+    class PS,CF,LG,CT dataLayer
+    class AI,FS,DB external
+```
+
 ### System Components
+
+#### User Interface Layer
+- **Streamlit Web App**: Primary web interface for project creation and management
+- **Command Line Interface**: Alternative interface for automation and scripting
+
+#### Core System Layer
+- **Project Manager Agent**: Orchestrates the entire development workflow
+- **Workflow Manager**: Manages the execution flow and agent coordination
+- **Error Handler**: Handles errors and exceptions gracefully
+- **Human Approval**: Manages points where human intervention is required
+
+#### AI Agents Layer
+- **Requirements Analyst**: Analyzes project requirements and creates specifications
+- **Architecture Designer**: Designs system architecture and technical decisions
+- **Code Generator**: Generates source code based on requirements and architecture
+- **Test Generator**: Creates comprehensive test suites
+- **Documentation Generator**: Generates project documentation
+- **Code Reviewer**: Reviews code quality and provides feedback
+- **Security Analyst**: Analyzes security aspects and vulnerabilities
+
+#### Data & State Layer
+- **Project State**: Maintains the current state of the project
+- **Configuration**: Manages system configuration and settings
+- **Logging**: Provides comprehensive logging and monitoring
+- **Context Engine**: Manages context and knowledge sharing between agents
+
+#### External Services
+- **Gemini AI API**: Provides AI capabilities for all agents
+- **File System**: Stores generated project files
+- **Database**: Stores project metadata and configurations
+
+### Agent Workflow
+
+The system follows a sequential workflow where each agent builds upon the output of previous agents:
+
+```mermaid
+graph TD
+    A[Project Input] --> B[Requirements Analyst]
+    B --> C[Architecture Designer]
+    C --> D[Code Generator]
+    D --> E[Test Generator]
+    E --> F[Code Reviewer]
+    F --> G[Security Analyst]
+    G --> H[Documentation Generator]
+    H --> I[Final Output]
+    
+    C --> J{Approval Needed?}
+    J -->|Yes| K[Human Approval]
+    J -->|No| D
+    K --> L{Approved?}
+    L -->|Yes| D
+    L -->|No| M[Handle Rejection]
+    
+    G --> N{Approval Needed?}
+    N -->|Yes| O[Human Approval]
+    N -->|No| H
+    O --> P{Approved?}
+    P -->|Yes| H
+    P -->|No| Q[Handle Rejection]
 ```
-AI Development Agent
-├── Orchestrating Agent (Workflow Manager)
-├── Context Engine (MCP Server)
-├── Specialized Agents
-│   ├── Requirements Analyst
-│   ├── Architecture Designer
-│   ├── Code Generator
-│   ├── Test Generator
-│   ├── Code Reviewer
-│   ├── Security Analyst
-│   └── Documentation Generator
-├── LangGraph Workflow Engine
-├── Human-in-the-Loop Interface
-├── Error Handling & Recovery
-├── Prompt Management System
-│   ├── Database Storage (SQLite)
-│   ├── Prompt Editor
-│   └── Enhanced Prompt Templates
-└── RAG Document System
-    ├── URL Scraper
-    ├── File Processor
-    └── Document Chunking
-```
+
+### Workflow Process
 
 ### Workflow Process
 1. **Requirements Analysis** → Extract detailed requirements from project description
@@ -61,6 +211,186 @@ AI Development Agent
 5. **Code Review** → Analyze code quality and suggest improvements
 6. **Security Analysis** → Identify and fix security vulnerabilities
 7. **Documentation** → Generate comprehensive documentation
+
+### Detailed Workflow Sequence
+
+The following sequence diagram illustrates the detailed interaction flow between all system components:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Streamlit UI
+    participant PM as Project Manager
+    participant RA as Requirements Analyst
+    participant AD as Architecture Designer
+    participant CG as Code Generator
+    participant CR as Code Reviewer
+    participant TG as Test Generator
+    participant DG as Documentation Generator
+    participant SA as Security Analyst
+    participant FS as File System
+    
+    %% Initial Setup
+    User->>UI: Enter project description
+    UI->>PM: Initialize project workflow
+    PM->>PM: Create project state
+    
+    %% First Iteration - Requirements Analysis
+    PM->>RA: Execute requirements analysis
+    RA->>RA: Analyze project context
+    RA-->>PM: Return requirements specification
+    PM->>PM: Update project state with requirements
+    
+    %% Architecture Design
+    PM->>AD: Execute architecture design
+    AD->>AD: Design system architecture
+    AD-->>PM: Return architecture specification
+    PM->>PM: Update project state with architecture
+    
+    %% Code Generation
+    PM->>CG: Execute code generation
+    CG->>CG: Generate source code
+    CG-->>PM: Return generated code
+    PM->>PM: Update project state with code
+    
+    %% Feedback Loop - Code Review
+    PM->>CR: Execute code review
+    CR->>CR: Review generated code
+    CR-->>PM: Return review feedback
+    PM->>PM: Check if feedback requires iteration
+    
+    alt Feedback requires code changes
+        PM->>CG: Re-execute with feedback
+        CG->>CG: Update code based on feedback
+        CG-->>PM: Return updated code
+        PM->>PM: Update project state
+        PM->>CR: Re-review updated code
+        CR->>CR: Review updated code
+        CR-->>PM: Return final review
+    end
+    
+    %% Test Generation
+    PM->>TG: Execute test generation
+    TG->>TG: Generate test suites
+    TG-->>PM: Return generated tests
+    PM->>PM: Update project state with tests
+    
+    %% Documentation Generation
+    PM->>DG: Execute documentation generation
+    DG->>DG: Generate project documentation
+    DG-->>PM: Return generated documentation
+    PM->>PM: Update project state with documentation
+    
+    %% Security Analysis
+    PM->>SA: Execute security analysis
+    SA->>SA: Analyze code and architecture
+    SA-->>PM: Return security assessment
+    PM->>PM: Update project state with security analysis
+    
+    %% Final Quality Check
+    PM->>PM: Assess overall project quality
+    
+    alt Quality issues detected
+        PM->>PM: Create decision point
+        PM->>PM: Make quality improvement decisions
+        PM->>CG: Re-execute with improvements
+        CG->>CG: Apply quality improvements
+        CG-->>PM: Return improved code
+        PM->>PM: Update project state
+    end
+    
+    %% File Generation
+    PM->>FS: Save all generated files
+    FS-->>PM: Confirm file creation
+    
+    %% Final Result
+    PM-->>UI: Return complete project
+    UI-->>User: Display project results
+```
+
+### Workflow State Management
+
+The system uses a sophisticated state machine to manage the workflow progression and handle various scenarios:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Initialized
+    
+    %% Main Workflow States
+    Initialized --> RequirementsAnalysis : Start Project
+    RequirementsAnalysis --> ArchitectureDesign : Requirements Complete
+    ArchitectureDesign --> CodeGeneration : Architecture Complete
+    CodeGeneration --> CodeReview : Code Generated
+    CodeReview --> TestGeneration : Review Passed
+    TestGeneration --> DocumentationGeneration : Tests Generated
+    DocumentationGeneration --> SecurityAnalysis : Documentation Complete
+    SecurityAnalysis --> QualityAssessment : Security Analysis Complete
+    
+    %% Feedback Loop States
+    CodeReview --> CodeIteration : Issues Found
+    CodeIteration --> CodeReview : Code Updated
+    SecurityAnalysis --> CodeIteration : Security Issues Found
+    
+    %% Quality Assessment States
+    QualityAssessment --> ProjectComplete : Quality Acceptable
+    QualityAssessment --> QualityIteration : Quality Issues Found
+    QualityIteration --> QualityAssessment : Improvements Applied
+    
+    %% Decision Point States
+    QualityAssessment --> DecisionPoint : Critical Issues Found
+    DecisionPoint --> HumanApproval : Human Input Required
+    HumanApproval --> DecisionPoint : Decision Made
+    DecisionPoint --> QualityIteration : Decision Applied
+    
+    %% Error States
+    RequirementsAnalysis --> ErrorState : Analysis Failed
+    ArchitectureDesign --> ErrorState : Design Failed
+    CodeGeneration --> ErrorState : Generation Failed
+    CodeReview --> ErrorState : Review Failed
+    TestGeneration --> ErrorState : Test Generation Failed
+    DocumentationGeneration --> ErrorState : Documentation Failed
+    SecurityAnalysis --> ErrorState : Security Analysis Failed
+    
+    %% Recovery from Error States
+    ErrorState --> RequirementsAnalysis : Retry from Start
+    ErrorState --> ArchitectureDesign : Retry from Architecture
+    ErrorState --> CodeGeneration : Retry from Code Generation
+    ErrorState --> CodeReview : Retry from Review
+    ErrorState --> TestGeneration : Retry from Tests
+    ErrorState --> DocumentationGeneration : Retry from Documentation
+    ErrorState --> SecurityAnalysis : Retry from Security
+    
+    %% Final States
+    ProjectComplete --> [*] : Project Delivered
+    ErrorState --> [*] : Project Failed
+```
+
+### Key Features
+
+#### Feedback Loops
+The system implements sophisticated feedback loops where agents can provide feedback to each other:
+- Requirements Analyst → Architecture Designer
+- Architecture Designer → Code Generator
+- Code Generator → Code Reviewer
+- Code Reviewer → Code Generator (iterative improvement)
+- Security Analyst → Code Generator
+- Test Generator → Code Reviewer
+
+#### Decision Management
+The Project Manager Agent can intervene when:
+- Agents disagree on technical decisions
+- Quality thresholds are not met
+- Human approval is required for critical decisions
+- Iteration limits are reached
+
+#### State Management
+All agents work with a shared Project State that maintains:
+- Current requirements and specifications
+- Architecture decisions and diagrams
+- Generated code and files
+- Test results and coverage
+- Documentation artifacts
+- Review feedback and decisions
 
 ## 📋 Prerequisites
 
@@ -238,6 +568,141 @@ if __name__ == "__main__":
 ```
 
 ## 📁 Project Structure
+
+### Object-Oriented Architecture
+
+The system follows a clean object-oriented design with clear separation of concerns:
+
+```mermaid
+classDiagram
+    %% Base Classes
+    class BaseAgent {
+        <<abstract>>
+        +config: Dict[str, Any]
+        +name: str
+        +logger: Logger
+        +logs: List[Dict]
+        +decisions: List[Dict]
+        +artifacts: List[Dict]
+        +execute(state: ProjectState): AgentResult*
+        +_log(message: str, level: str)
+        +_add_decision(decision: Dict)
+        +_add_artifact(artifact: Dict)
+    }
+    
+    %% Agent Classes
+    class RequirementsAnalyst {
+        +execute(state: ProjectState): AgentResult
+        +_analyze_requirements(context: str): Dict
+        +_validate_requirements(requirements: Dict): bool
+    }
+    
+    class ArchitectureDesigner {
+        +execute(state: ProjectState): AgentResult
+        +_design_architecture(requirements: Dict): Dict
+        +_validate_architecture(architecture: Dict): bool
+    }
+    
+    class CodeGenerator {
+        +execute(state: ProjectState): AgentResult
+        +_generate_code(requirements: Dict, architecture: Dict): Dict
+        +_validate_code(code: Dict): bool
+    }
+    
+    class TestGenerator {
+        +execute(state: ProjectState): AgentResult
+        +_generate_tests(code: Dict, requirements: Dict): Dict
+        +_validate_tests(tests: Dict): bool
+    }
+    
+    class DocumentationGenerator {
+        +execute(state: ProjectState): AgentResult
+        +_generate_documentation(project_data: Dict): Dict
+        +_validate_documentation(docs: Dict): bool
+    }
+    
+    class CodeReviewer {
+        +execute(state: ProjectState): AgentResult
+        +_review_code(code: Dict): Dict
+        +_validate_review(review: Dict): bool
+    }
+    
+    class SecurityAnalyst {
+        +execute(state: ProjectState): AgentResult
+        +_analyze_security(code: Dict, architecture: Dict): Dict
+        +_validate_security_analysis(analysis: Dict): bool
+    }
+    
+    class ProjectManagerAgent {
+        +feedback_requests: List[FeedbackRequest]
+        +decision_points: List[DecisionPoint]
+        +agent_feedback_history: Dict[str, List[Dict]]
+        +iteration_count: int
+        +max_iterations: int
+        +execute(state: ProjectState): AgentResult
+        +_execute_development_workflow(state: ProjectState): ProjectState
+        +_execute_iteration(state: ProjectState): ProjectState
+        +_assess_feedback_needs(state: ProjectState): bool
+        +_process_feedback_loop(state: ProjectState): ProjectState
+        +_resolve_decision_points(state: ProjectState): ProjectState
+        +_make_decision(decision_point: DecisionPoint): Dict
+    }
+    
+    %% Data Classes
+    class ProjectState {
+        +project_name: str
+        +project_context: str
+        +requirements: Dict[str, Any]
+        +architecture: Dict[str, Any]
+        +code_files: Dict[str, str]
+        +test_files: Dict[str, str]
+        +documentation_files: Dict[str, str]
+        +configuration_files: Dict[str, str]
+        +to_dict(): Dict[str, Any]
+        +from_dict(data: Dict[str, Any]): ProjectState
+    }
+    
+    class AgentResult {
+        +status: AgentStatus
+        +output: Dict[str, Any]
+        +documentation: Dict[str, Any]
+        +execution_time: float
+        +logs: List[Dict[str, Any]]
+        +decisions: List[Dict[str, Any]]
+        +artifacts: List[Dict[str, Any]]
+    }
+    
+    %% Inheritance
+    BaseAgent <|-- RequirementsAnalyst
+    BaseAgent <|-- ArchitectureDesigner
+    BaseAgent <|-- CodeGenerator
+    BaseAgent <|-- TestGenerator
+    BaseAgent <|-- DocumentationGenerator
+    BaseAgent <|-- CodeReviewer
+    BaseAgent <|-- SecurityAnalyst
+    BaseAgent <|-- ProjectManagerAgent
+    
+    %% Relationships
+    ProjectManagerAgent --> ProjectState
+    RequirementsAnalyst --> ProjectState
+    ArchitectureDesigner --> ProjectState
+    CodeGenerator --> ProjectState
+    TestGenerator --> ProjectState
+    DocumentationGenerator --> ProjectState
+    CodeReviewer --> ProjectState
+    SecurityAnalyst --> ProjectState
+    
+    ProjectManagerAgent --> AgentResult
+    RequirementsAnalyst --> AgentResult
+    ArchitectureDesigner --> AgentResult
+    CodeGenerator --> AgentResult
+    TestGenerator --> AgentResult
+    DocumentationGenerator --> AgentResult
+    CodeReviewer --> AgentResult
+    SecurityAnalyst --> AgentResult
+```
+
+### Directory Structure
 
 ```
 ai-dev-agent/
