@@ -1,0 +1,84 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88, --extend-ignore=E203,W503]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: [--profile=black]
+
+  - repo: local
+    hooks:
+      - id: test-organization
+        name: Test Organization
+        entry: python tests/organize_tests.py --validate
+        language: system
+        files: ^tests/
+        pass_filenames: false
+        description: "Validate test organization rules"
+
+      - id: test-naming
+        name: Test Naming Convention
+        entry: python -c "
+import sys
+import re
+from pathlib import Path
+
+def check_test_naming():
+    test_patterns = [r'^test_.*\.py$', r'.*_test\.py$']
+    issues = []
+    
+    for file_path in Path('tests').rglob('*.py'):
+        if file_path.name == '__init__.py':
+            continue
+            
+        if not any(re.match(pattern, file_path.name) for pattern in test_patterns):
+            issues.append(f'Test file {file_path} does not follow naming convention')
+    
+    if issues:
+        print('Test naming issues found:')
+        for issue in issues:
+            print(f'  - {issue}')
+        sys.exit(1)
+    else:
+        print('All test files follow naming convention')
+
+check_test_naming()
+"
+        language: system
+        files: ^tests/.*\.py$
+        pass_filenames: false
+        description: "Check test file naming conventions"
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+        args: [--ignore-missing-imports]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+        args: [--py39-plus]

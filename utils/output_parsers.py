@@ -589,7 +589,10 @@ class ArchitectureDesignParser(BaseOutputParser):
         """Parse architecture design response."""
         if LANGCHAIN_AVAILABLE and self.parser:
             try:
-                return self.parser.parse(response)
+                parsed_data = self.parser.parse(response)
+                # Fix risk_mitigation format if needed
+                parsed_data = self._fix_risk_mitigation_format(parsed_data)
+                return parsed_data
             except OutputParserException as e:
                 self.logger.warning(f"LangChain parsing failed: {e}")
                 return self._fallback_parse(response)
@@ -615,10 +618,30 @@ class ArchitectureDesignParser(BaseOutputParser):
             "scalability_considerations": [],
             "performance_considerations": [],
             "deployment_strategy": "Containerized deployment",
-            "risk_mitigation": [],
+            "risk_mitigation": [
+                {
+                    "risk": "Single point of failure",
+                    "mitigation": "Implement redundancy and failover mechanisms"
+                }
+            ],
             "database_schema": {"tables": []},
             "api_design": {"endpoints": []}
         }
+    
+    def _fix_risk_mitigation_format(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Fix risk_mitigation format if it's a list of strings instead of list of dicts."""
+        if "risk_mitigation" in data and isinstance(data["risk_mitigation"], list):
+            risk_mitigation = data["risk_mitigation"]
+            if risk_mitigation and isinstance(risk_mitigation[0], str):
+                # Convert list of strings to list of dicts
+                fixed_risk_mitigation = []
+                for i, risk in enumerate(risk_mitigation):
+                    fixed_risk_mitigation.append({
+                        "risk": f"Risk {i+1}",
+                        "mitigation": risk
+                    })
+                data["risk_mitigation"] = fixed_risk_mitigation
+        return data
 
 
 class CodeGenerationParser(BaseOutputParser):
@@ -912,12 +935,29 @@ class DocumentationGenerationParser(BaseOutputParser):
                 "api_specification": "OpenAPI/Swagger specification",
                 "testing_strategy": "Testing approach and coverage documentation"
             },
+            "diagrams": {
+                "class_diagram": {
+                    "filename": "docs/diagrams/class_diagram.puml",
+                    "content": "@startuml\nclass User {\n  +String name\n  +String email\n  +login()\n}\n@enduml",
+                    "description": "Class diagram showing system entities and relationships"
+                },
+                "sequence_diagram": {
+                    "filename": "docs/diagrams/sequence_diagram.puml",
+                    "content": "@startuml\nactor User\nparticipant System\nUser -> System: Login\nSystem --> User: Success\n@enduml",
+                    "description": "Sequence diagram showing user authentication flow"
+                }
+            },
             "documentation_structure": ["docs/", "docs/api/", "docs/architecture/"],
             "documentation_standards": {
                 "format": "Markdown with code examples",
                 "style_guide": "Documentation style and formatting guidelines",
                 "review_process": "Documentation review and approval process"
-            }
+            },
+            "maintenance_plan": [
+                "Update documentation with each code change",
+                "Monthly documentation review and cleanup",
+                "User feedback collection and incorporation"
+            ]
         }
 
 

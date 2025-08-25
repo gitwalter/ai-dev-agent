@@ -73,6 +73,7 @@ class WorkflowResult(BaseModel):
     test_files: Dict[str, str] = Field(default_factory=dict)
     documentation_files: Dict[str, str] = Field(default_factory=dict)
     configuration_files: Dict[str, str] = Field(default_factory=dict)
+    diagram_files: Dict[str, str] = Field(default_factory=dict)
     
     # Workflow metadata
     total_execution_time: float = 0.0
@@ -100,7 +101,7 @@ class RequirementsAnalysisResponse(BaseModel):
     risks: List[Dict[str, Any]]
     
     class Config:
-        schema_extra = {
+        json_json_schema_extra = {
             "example": {
                 "functional_requirements": [
                     {
@@ -165,7 +166,7 @@ class ArchitectureDesignResponse(BaseModel):
     scalability_plan: Dict[str, Any]
     
     class Config:
-        schema_extra = {
+        json_json_schema_extra = {
             "example": {
                 "system_architecture": {
                     "type": "layered",
@@ -243,7 +244,7 @@ class CodeGenerationResponse(BaseModel):
     code_quality_metrics: Dict[str, Any]
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "project_structure": {
                     "src/": {
@@ -296,7 +297,7 @@ class TestGenerationResponse(BaseModel):
     test_utilities: Dict[str, str]
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "unit_tests": {
                     "test_user_service.py": "import pytest\nfrom services.user_service import UserService\n\nclass TestUserService:\n    def test_create_user(self):\n        # Test implementation...",
@@ -349,7 +350,7 @@ class CodeReviewResponse(BaseModel):
     documentation_gaps: List[str]
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "code_quality_score": 8.5,
                 "issues_found": [
@@ -411,7 +412,7 @@ class SecurityAnalysisResponse(BaseModel):
     security_configuration: Dict[str, Any]
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "security_score": 7.2,
                 "vulnerabilities": [
@@ -462,7 +463,7 @@ class DocumentationResponse(BaseModel):
     diagrams: Dict[str, str]
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "api_documentation": {
                     "openapi_spec": "openapi.yaml",

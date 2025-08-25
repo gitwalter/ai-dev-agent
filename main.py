@@ -177,12 +177,37 @@ Your goal is to create a complete, professional-grade application that can be de
                 },
                 "documentation_generator": {
                     "name": "documentation_generator",
-                    "description": "Generates comprehensive documentation",
+                    "description": "Generates comprehensive documentation with UML and BPMN diagrams",
                     "enabled": True,
                     "max_retries": 3,
                     "timeout": 300,
-                    "prompt_template": "Generate documentation for: {project_context}",
-                    "system_prompt": "You are a documentation expert.",
+                    "prompt_template": "Generate comprehensive documentation with diagrams for: {project_context}",
+                    "system_prompt": """You are an expert Technical Writer and Software Architect specializing in creating comprehensive documentation with visual diagrams.
+
+CRITICAL REQUIREMENTS:
+1. Generate COMPREHENSIVE documentation covering all aspects of the project
+2. Create UML diagrams (Class, Sequence, Activity, Use Case) using PlantUML syntax
+3. Create BPMN diagrams for business processes using BPMN XML format
+4. Use Mermaid syntax for flowcharts and simple diagrams
+5. Ensure all diagrams are GitHub-compatible and can be rendered properly
+6. Include detailed explanations for each diagram
+7. Follow the exact JSON structure specified in the response format
+8. Ensure all strings are properly escaped in JSON
+
+DIAGRAM REQUIREMENTS:
+- Class Diagrams: Show system entities, relationships, and methods
+- Sequence Diagrams: Show interaction flows between components
+- Activity Diagrams: Show process flows and decision points
+- Use Case Diagrams: Show system functionality from user perspective
+- BPMN Diagrams: Show business processes with proper BPMN elements
+- Component Diagrams: Show system architecture and component relationships
+
+DIAGRAM FORMATS:
+- PlantUML: Use for UML diagrams (class, sequence, activity, use case)
+- Mermaid: Use for flowcharts, state diagrams, and simple diagrams
+- BPMN XML: Use for business process modeling
+
+Your goal is to create professional, comprehensive documentation that includes clear visual representations of the system architecture and processes.""",
                     "parameters": {"temperature": 0.1}
                 }
             }
@@ -322,12 +347,44 @@ Your goal is to create a complete, professional-grade application that can be de
             doc_files = state.get("documentation", {})
             config_files = state.get("configuration_files", {})
             
-            all_files = {
-                **code_files,
-                **test_files,
-                **doc_files,
-                **config_files
-            }
+            # Process files to extract content
+            all_files = {}
+            
+            # Process code files
+            for file_path, file_data in code_files.items():
+                if isinstance(file_data, dict) and "content" in file_data:
+                    all_files[file_path] = file_data["content"]
+                elif isinstance(file_data, str):
+                    all_files[file_path] = file_data
+                else:
+                    all_files[file_path] = str(file_data)
+            
+            # Process test files
+            for file_path, file_data in test_files.items():
+                if isinstance(file_data, dict) and "content" in file_data:
+                    all_files[file_path] = file_data["content"]
+                elif isinstance(file_data, str):
+                    all_files[file_path] = file_data
+                else:
+                    all_files[file_path] = str(file_data)
+            
+            # Process documentation files
+            for file_path, file_data in doc_files.items():
+                if isinstance(file_data, dict) and "content" in file_data:
+                    all_files[file_path] = file_data["content"]
+                elif isinstance(file_data, str):
+                    all_files[file_path] = file_data
+                else:
+                    all_files[file_path] = str(file_data)
+            
+            # Process configuration files
+            for file_path, file_data in config_files.items():
+                if isinstance(file_data, dict) and "content" in file_data:
+                    all_files[file_path] = file_data["content"]
+                elif isinstance(file_data, str):
+                    all_files[file_path] = file_data
+                else:
+                    all_files[file_path] = str(file_data)
             
             for file_path, content in all_files.items():
                 full_path = output_path / file_path
@@ -425,6 +482,86 @@ Your goal is to create a complete, professional-grade application that can be de
                     artifacts=[]
                 )
         
+        # Combine all file types for generated_files
+        code_files = state.get("code_files", {})
+        test_files = state.get("tests", {})
+        documentation_files = state.get("documentation", {})
+        configuration_files = state.get("configuration_files", {})
+        diagrams = state.get("diagrams", {})
+        
+        # Process documentation files to extract content from DocumentationFile objects
+        processed_documentation_files = {}
+        for file_path, file_data in documentation_files.items():
+            if isinstance(file_data, dict) and "content" in file_data:
+                # Extract content from DocumentationFile object
+                processed_documentation_files[file_path] = file_data["content"]
+            elif isinstance(file_data, str):
+                # Already a string
+                processed_documentation_files[file_path] = file_data
+            else:
+                # Convert to string if possible
+                processed_documentation_files[file_path] = str(file_data)
+        
+        # Process code files to extract content from SourceFile objects
+        processed_code_files = {}
+        for file_path, file_data in code_files.items():
+            if isinstance(file_data, dict) and "content" in file_data:
+                # Extract content from SourceFile object
+                processed_code_files[file_path] = file_data["content"]
+            elif isinstance(file_data, str):
+                # Already a string
+                processed_code_files[file_path] = file_data
+            else:
+                # Convert to string if possible
+                processed_code_files[file_path] = str(file_data)
+        
+        # Process test files to extract content from TestFile objects
+        processed_test_files = {}
+        for file_path, file_data in test_files.items():
+            if isinstance(file_data, dict) and "content" in file_data:
+                # Extract content from TestFile object
+                processed_test_files[file_path] = file_data["content"]
+            elif isinstance(file_data, str):
+                # Already a string
+                processed_test_files[file_path] = file_data
+            else:
+                # Convert to string if possible
+                processed_test_files[file_path] = str(file_data)
+        
+        # Process configuration files to extract content from ConfigurationFile objects
+        processed_configuration_files = {}
+        for file_path, file_data in configuration_files.items():
+            if isinstance(file_data, dict) and "content" in file_data:
+                # Extract content from ConfigurationFile object
+                processed_configuration_files[file_path] = file_data["content"]
+            elif isinstance(file_data, str):
+                # Already a string
+                processed_configuration_files[file_path] = file_data
+            else:
+                # Convert to string if possible
+                processed_configuration_files[file_path] = str(file_data)
+        
+        # Process diagram files
+        processed_diagram_files = {}
+        for diagram_type, diagram_data in diagrams.items():
+            if isinstance(diagram_data, dict) and "filename" in diagram_data and "content" in diagram_data:
+                # Extract content from diagram object
+                processed_diagram_files[diagram_data["filename"]] = diagram_data["content"]
+            elif isinstance(diagram_data, str):
+                # Already a string content
+                processed_diagram_files[f"{diagram_type}.puml"] = diagram_data
+            else:
+                # Convert to string if possible
+                processed_diagram_files[f"{diagram_type}.puml"] = str(diagram_data)
+        
+        # Merge all file types into generated_files
+        generated_files = {}
+        generated_files.update(processed_code_files)
+        generated_files.update(processed_test_files)
+        generated_files.update(processed_documentation_files)
+        generated_files.update(processed_configuration_files)
+        generated_files.update(processed_diagram_files)
+        
         return WorkflowResult(
             workflow_id=str(uuid.uuid4()),
             session_id=session_id,
@@ -432,11 +569,12 @@ Your goal is to create a complete, professional-grade application that can be de
             project_name=state.get("project_name", ""),
             project_context=state.get("project_context", ""),
             agent_results=agent_results,
-            generated_files=state.get("code_files", {}),
-            code_files=state.get("code_files", {}),
-            test_files=state.get("tests", {}),
-            documentation_files=state.get("documentation", {}),
-            configuration_files=state.get("configuration_files", {}),
+            generated_files=generated_files,
+            code_files=processed_code_files,
+            test_files=processed_test_files,
+            documentation_files=processed_documentation_files,
+            configuration_files=processed_configuration_files,
+            diagram_files=processed_diagram_files,
             total_execution_time=execution_time,
             start_time=state.get("created_at"),
             end_time=state.get("updated_at"),

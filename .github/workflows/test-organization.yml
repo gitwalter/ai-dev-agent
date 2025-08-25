@@ -1,0 +1,74 @@
+name: Test Organization Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'tests/**'
+      - '**/*.py'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'tests/**'
+      - '**/*.py'
+
+jobs:
+  validate-test-organization:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        
+    - name: Validate test organization
+      run: |
+        python tests/organize_tests.py --validate
+        
+    - name: Check test naming conventions
+      run: |
+        python -c "
+        import sys
+        import re
+        from pathlib import Path
+        
+        def check_test_naming():
+            test_patterns = [r'^test_.*\.py$', r'.*_test\.py$']
+            issues = []
+            
+            for file_path in Path('tests').rglob('*.py'):
+                if file_path.name == '__init__.py':
+                    continue
+                    
+                if not any(re.match(pattern, file_path.name) for pattern in test_patterns):
+                    issues.append(f'Test file {file_path} does not follow naming convention')
+            
+            if issues:
+                print('Test naming issues found:')
+                for issue in issues:
+                    print(f'  - {issue}')
+                sys.exit(1)
+            else:
+                print('All test files follow naming convention')
+        
+        check_test_naming()
+        "
+        
+    - name: Run tests
+      run: |
+        pytest tests/ --cov=. --cov-report=xml
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false

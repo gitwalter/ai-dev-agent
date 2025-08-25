@@ -298,32 +298,76 @@ class BaseAgent(ABC):
     
     def parse_json_response(self, response: str) -> Dict[str, Any]:
         """
-        Parse JSON response from the agent using LangChain output parsers with fallback.
+        Parse JSON response from the agent using enhanced LangChain structured outputs.
         
         Args:
             response: Raw response string
             
         Returns:
-            Parsed JSON data
+            Parsed and validated JSON data
         """
         try:
-            # Import the output parser factory
-            from utils.output_parsers import OutputParserFactory
+            # Import the enhanced output parser factory
+            from utils.enhanced_output_parsers import EnhancedOutputParserFactory
             
-            # Get the appropriate parser for this agent type
+            # Get the appropriate enhanced parser for this agent type
             agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
-            parser = OutputParserFactory.get_parser(agent_type)
+            parser = EnhancedOutputParserFactory.get_parser(agent_type)
             
-            # Parse with LangChain parser and fallback
-            return parser.parse_with_fallback(response)
+            # Parse with enhanced parser (includes LangChain + fallbacks)
+            parsed_data = parser.parse(response)
+            
+            # Log successful parsing
+            self.add_log_entry("info", "Enhanced output parsing successful", {
+                "agent_type": agent_type,
+                "response_length": len(response),
+                "parsed_keys": list(parsed_data.keys()) if isinstance(parsed_data, dict) else []
+            })
+            
+            return parsed_data
             
         except Exception as e:
-            self.logger.error(f"Output parser error: {e}")
-            # Fallback to manual parsing
+            self.logger.error(f"Enhanced output parser error: {e}")
+            self.add_log_entry("error", "Enhanced output parsing failed", {
+                "error_message": str(e),
+                "error_type": type(e).__name__,
+                "fallback_used": True
+            })
+            
+            # Use enhanced fallback parsing
+            return self._enhanced_fallback_parse(response)
+    
+    def _enhanced_fallback_parse(self, response: str) -> Dict[str, Any]:
+        """Enhanced fallback parsing with better error handling and validation."""
+        try:
+            # Import the enhanced parser utilities
+            from utils.enhanced_output_parsers import parse_with_enhanced_parser
+            
+            # Get agent type
+            agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
+            
+            # Use the enhanced parser with full fallback handling
+            parsed_data = parse_with_enhanced_parser(response, agent_type)
+            
+            self.add_log_entry("info", "Enhanced fallback parsing successful", {
+                "agent_type": agent_type,
+                "fallback_method": "enhanced_parser"
+            })
+            
+            return parsed_data
+            
+        except Exception as e:
+            self.logger.error(f"Enhanced fallback parsing failed: {e}")
+            self.add_log_entry("error", "Enhanced fallback parsing failed", {
+                "error_message": str(e),
+                "using_legacy_fallback": True
+            })
+            
+            # Ultimate fallback to legacy parsing
             return self._manual_json_parse(response)
     
     def _manual_json_parse(self, response: str) -> Dict[str, Any]:
-        """Manual JSON parsing as ultimate fallback."""
+        """Legacy manual JSON parsing as ultimate fallback."""
         try:
             # Clean the response first
             cleaned_response = response.strip()
@@ -1039,16 +1083,25 @@ class BaseAgent(ABC):
 
     def prepare_prompt(self, state: AgentState, **kwargs) -> str:
         """
-        Prepare the prompt for this agent based on current state.
+        Prepare the prompt for this agent with enhanced structured output instructions.
         
         Args:
             state: Current workflow state
             **kwargs: Additional parameters for prompt preparation
             
         Returns:
-            Formatted prompt string
+            Formatted prompt string with structured output instructions
         """
         template = self.get_prompt_template()
+        
+        # Get enhanced format instructions for structured output
+        try:
+            from utils.enhanced_output_parsers import get_enhanced_format_instructions
+            agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
+            format_instructions = get_enhanced_format_instructions(agent_type)
+        except Exception as e:
+            self.logger.warning(f"Failed to get format instructions: {e}")
+            format_instructions = "Please respond with valid JSON format."
         
         # Common variables available to all agents
         prompt_vars = {
@@ -1062,6 +1115,7 @@ class BaseAgent(ABC):
             "tests": state.get("tests", {}),
             "documentation": state.get("documentation", {}),
             "coding_standards": "PEP 8, type hints, docstrings, error handling",
+            "format_instructions": format_instructions,
             **kwargs
         }
         
@@ -1076,7 +1130,20 @@ class BaseAgent(ABC):
             self.logger.warning(f"Failed to store prompt in database: {str(e)}")
             self.prompt_id = None
         
-        return template.format(**prompt_vars)
+        # Format the prompt
+        formatted_prompt = template.format(**prompt_vars)
+        
+        # Add structured output instructions if not already present
+        if "format_instructions" not in formatted_prompt:
+            formatted_prompt += f"\n\n{format_instructions}"
+        
+        self.add_log_entry("debug", "Enhanced prompt prepared with structured output instructions", {
+            "prompt_length": len(formatted_prompt),
+            "format_instructions_included": "format_instructions" in formatted_prompt,
+            "agent_type": agent_type
+        })
+        
+        return formatted_prompt
     
     def add_log_entry(self, level: str, message: str, data: Dict[str, Any] = None):
         """

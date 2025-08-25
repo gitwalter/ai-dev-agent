@@ -72,6 +72,10 @@ class DocumentationGenerator(BaseAgent):
             # Update state with generated documentation
             state["documentation"] = doc_data.get("documentation_files", {})
             
+            # Update state with generated diagrams
+            if "diagrams" in doc_data:
+                state["diagrams"] = doc_data["diagrams"]
+            
             # Create detailed output
             output = {
                 "documentation_generation": doc_data,
@@ -186,6 +190,16 @@ class DocumentationGenerator(BaseAgent):
                 content=doc_structure,
                 description="Documentation organization and structure"
             )
+        
+        # Create diagrams artifact
+        diagrams = doc_data.get("diagrams", {})
+        if diagrams:
+            self.add_artifact(
+                name="diagrams",
+                type="diagrams",
+                content=diagrams,
+                description=f"Generated {len(diagrams)} UML and BPMN diagrams"
+            )
     
     def _create_documentation_summary(self, doc_data: Dict[str, Any]):
         """
@@ -199,13 +213,23 @@ class DocumentationGenerator(BaseAgent):
         coverage_score = self._extract_score(doc_summary.get("coverage_score", "0/10"))
         completeness = doc_summary.get("completeness", "0%")
         
+        # Get diagram information
+        diagrams = doc_data.get("diagrams", {})
+        diagram_count = len(diagrams)
+        diagram_types = list(diagrams.keys()) if diagrams else []
+        
         self.create_documentation(
-            summary=f"Generated {len(doc_files)} documentation files with {coverage_score:.1f}/10 coverage and {completeness} completeness",
+            summary=f"Generated {len(doc_files)} documentation files and {diagram_count} diagrams with {coverage_score:.1f}/10 coverage and {completeness} completeness",
             details={
                 "documentation_files": {
                     "total_files": len(doc_files),
                     "file_names": list(doc_files.keys()),
                     "file_types": self._categorize_documentation_files(doc_files)
+                },
+                "diagrams": {
+                    "total_diagrams": diagram_count,
+                    "diagram_types": diagram_types,
+                    "diagram_details": diagrams
                 },
                 "documentation_quality": {
                     "coverage_score": coverage_score,

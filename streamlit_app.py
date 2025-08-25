@@ -168,6 +168,51 @@ GEMINI_API_KEY = "{api_key_input}"
     return False
 
 
+def configure_model_selection():
+    """Configure Gemini model selection."""
+    st.sidebar.subheader("🤖 Model Configuration")
+    
+    # Initialize model selection in session state
+    if 'selected_model' not in st.session_state:
+        st.session_state.selected_model = "gemini-2.5-flash-lite"
+    
+    # Available Gemini models
+    available_models = {
+        "gemini-2.5-flash": "Gemini 2.5 Flash (Fast, balanced)",
+        "gemini-2.5-flash-lite": "Gemini 2.5 Flash Lite (Fastest, efficient)"
+    }
+    
+    # Model selection dropdown
+    selected_model = st.sidebar.selectbox(
+        "Select Gemini Model",
+        options=list(available_models.keys()),
+        index=list(available_models.keys()).index(st.session_state.selected_model),
+        format_func=lambda x: f"{x} - {available_models[x]}",
+        help="Choose the Gemini model for AI generation"
+    )
+    
+    # Update session state if model changed
+    if selected_model != st.session_state.selected_model:
+        st.session_state.selected_model = selected_model
+        # Reset agent to force reinitialization with new model
+        st.session_state.agent = None
+        st.sidebar.success(f"✅ Model changed to {selected_model}")
+    
+    # Display model information
+    with st.sidebar.expander("Model Information", expanded=False):
+        st.info(f"""
+        **Current Model:** {selected_model}
+        
+        **Model Details:**
+        - **Gemini 2.5 Flash**: Best balance of speed and capability
+        - **Gemini 2.5 Flash Lite**: Fastest model, optimized for efficiency
+        
+        **Note:** Changing the model will reinitialize the agent.
+        """)
+    
+    return selected_model
+
+
 def create_agent():
     """Create and initialize the AI Development Agent."""
     if st.session_state.agent is None:
@@ -175,6 +220,11 @@ def create_agent():
         try:
             # Load configuration from environment
             config = load_config_from_env()
+            
+            # Update model name if selected model is different from config
+            if 'selected_model' in st.session_state:
+                config.gemini.model_name = st.session_state.selected_model
+            
             st.session_state.agent = AIDevelopmentAgent(config)
         except Exception as e:
             st.error(f"Failed to initialize AI Development Agent: {str(e)}")
@@ -199,6 +249,15 @@ def display_sidebar():
         "Choose a page:",
         ["🚀 Main App", "🔧 Prompt Manager", "📚 RAG Documents", "⚙️ System Prompts"]
     )
+    
+    # Configure API key
+    api_key_configured = configure_api_key()
+    
+    # Configure model selection (only if API key is configured)
+    if api_key_configured:
+        selected_model = configure_model_selection()
+    else:
+        selected_model = "gemini-2.5-flash-lite"  # Default model
     
     st.sidebar.subheader("Project Settings")
     output_dir = st.sidebar.text_input(
@@ -230,7 +289,8 @@ def display_sidebar():
     return {
         'output_dir': output_dir,
         'enable_logging': enable_logging,
-        'page': page
+        'page': page,
+        'selected_model': selected_model
     }
 
 
@@ -419,7 +479,7 @@ def display_results():
     st.header("📊 Results")
     
     # Summary metrics
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
         st.metric("Status", result.status.value)
@@ -431,6 +491,10 @@ def display_results():
         st.metric("Generated Files", len(result.generated_files))
     
     with col4:
+        diagram_count = len(result.diagram_files) if hasattr(result, 'diagram_files') else 0
+        st.metric("Diagrams", diagram_count)
+    
+    with col5:
         st.metric("Project Name", result.project_name)
     
     # Agent documentation summary
@@ -486,6 +550,30 @@ def display_results():
             for file_path, content in result.configuration_files.items():
                 st.markdown(f"**{file_path}**")
                 st.code(content, language='text')
+    
+    # Diagram files
+    if hasattr(result, 'diagram_files') and result.diagram_files:
+        with st.expander("📊 Diagrams", expanded=False):
+            for file_path, content in result.diagram_files.items():
+                st.markdown(f"**{file_path}**")
+                
+                # Determine the language based on file extension
+                if file_path.endswith('.puml'):
+                    st.code(content, language='plantuml')
+                elif file_path.endswith('.bpmn'):
+                    st.code(content, language='xml')
+                elif file_path.endswith('.md'):
+                    st.markdown(content)
+                else:
+                    st.code(content, language='text')
+                
+                # Add download button for diagram files
+                st.download_button(
+                    label=f"📥 Download {file_path}",
+                    data=content,
+                    file_name=file_path,
+                    mime="text/plain"
+                )
     
     # Agent results with enhanced documentation
     if result.agent_results:
@@ -593,6 +681,10 @@ def display_results():
                 **result.documentation_files,
                 **result.configuration_files
             }
+            
+            # Add diagram files if they exist
+            if hasattr(result, 'diagram_files') and result.diagram_files:
+                all_files.update(result.diagram_files)
             
             for file_path, content in all_files.items():
                 zip_file.writestr(file_path, content)

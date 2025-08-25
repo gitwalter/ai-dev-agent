@@ -55,6 +55,19 @@ class WorkflowManager:
             
             execution_time = (datetime.now() - start_time).total_seconds()
             
+            # Combine all file types for generated_files
+            code_files = result_state.get("code_files", {})
+            test_files = result_state.get("tests", {})
+            documentation_files = result_state.get("documentation", {})
+            configuration_files = result_state.get("configuration_files", {})
+            
+            # Merge all file types into generated_files
+            generated_files = {}
+            generated_files.update(code_files)
+            generated_files.update(test_files)
+            generated_files.update(documentation_files)
+            generated_files.update(configuration_files)
+            
             # Create workflow result
             workflow_result = WorkflowResult(
                 workflow_id=session_id,
@@ -63,11 +76,11 @@ class WorkflowManager:
                 project_name=result_state.get("project_name", ""),
                 project_context=result_state.get("project_context", ""),
                 agent_results=result_state.get("agent_outputs", {}),
-                generated_files=result_state.get("code_files", {}),
-                code_files=result_state.get("code_files", {}),
-                test_files=result_state.get("tests", {}),
-                documentation_files=result_state.get("documentation", {}),
-                configuration_files=result_state.get("configuration_files", {}),
+                generated_files=generated_files,
+                code_files=code_files,
+                test_files=test_files,
+                documentation_files=documentation_files,
+                configuration_files=configuration_files,
                 total_execution_time=execution_time,
                 start_time=start_time,
                 end_time=datetime.now(),
