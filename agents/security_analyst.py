@@ -1,10 +1,11 @@
 """
 Security Analyst Agent for AI Development Agent.
 Performs security analysis on generated code and architecture.
+Implements quality gate functionality to ensure security standards are met.
 """
 
 import json
-from typing import Dict, Any
+from typing import Dict, Any, List
 from models.state import AgentState
 from models.responses import SecurityAnalysisResponse
 from .base_agent import BaseAgent
@@ -14,6 +15,7 @@ from prompts import get_agent_prompt_loader
 class SecurityAnalyst(BaseAgent):
     """
     Agent responsible for security analysis of the codebase and architecture.
+    Implements quality gate functionality to ensure security standards are met.
     """
     
     def __init__(self, config, gemini_client):
@@ -31,11 +33,11 @@ class SecurityAnalyst(BaseAgent):
         return self.prompt_loader.get_system_prompt()
     
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute security analysis task."""
+        """Execute security analysis task with quality gate functionality."""
         import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting security analysis")
+        self.add_log_entry("info", "Starting security analysis with quality gate")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
         try:
@@ -60,6 +62,13 @@ class SecurityAnalyst(BaseAgent):
             self._validate_security_data(security_data)
             self.add_log_entry("info", "Security data validation passed")
             
+            # Perform security quality gate check
+            security_gate_check = self._perform_security_quality_gate(security_data)
+            
+            if not security_gate_check["security_gate_passed"]:
+                self.add_log_entry("warning", f"Security quality gate failed: {security_gate_check['critical_issues']}")
+                return self._send_back_to_code_generator(state, security_gate_check)
+            
             # Record key decisions
             self._record_security_decisions(security_data)
             
@@ -72,11 +81,14 @@ class SecurityAnalyst(BaseAgent):
             # Create detailed output
             output = {
                 "security_analysis": security_data,
+                "security_gate_check": security_gate_check,
+                "quality_gate_passed": True,
                 "summary": {
                     "overall_score": self._extract_score(security_data.get("overall_security_score", "0/10")),
                     "critical_vulnerabilities": len(security_data.get("vulnerability_analysis", {}).get("critical_vulnerabilities", [])),
                     "high_vulnerabilities": len(security_data.get("vulnerability_analysis", {}).get("high_vulnerabilities", [])),
-                    "security_recommendations": len(security_data.get("security_recommendations", []))
+                    "security_recommendations": len(security_data.get("security_recommendations", [])),
+                    "security_gate_passed": security_gate_check["security_gate_passed"]
                 }
             }
             
@@ -97,6 +109,149 @@ class SecurityAnalyst(BaseAgent):
             execution_time = time.time() - start_time
             self.add_log_entry("error", f"Security analysis failed: {str(e)}")
             return self.handle_error(state, e, "security_analysis")
+    
+    def _perform_security_quality_gate(self, security_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Perform security quality gate check to determine if code meets security standards.
+        
+        Args:
+            security_data: Security analysis results
+            
+        Returns:
+            Dictionary with security gate check results
+        """
+        self.add_log_entry("info", "Performing security quality gate check")
+        
+        # Extract vulnerability information
+        vulnerability_analysis = security_data.get("vulnerability_analysis", {})
+        critical_vulnerabilities = vulnerability_analysis.get("critical_vulnerabilities", [])
+        high_vulnerabilities = vulnerability_analysis.get("high_vulnerabilities", [])
+        
+        # Security gate criteria
+        security_gate_passed = True
+        critical_issues = []
+        
+        # Check for critical vulnerabilities (automatic fail)
+        if critical_vulnerabilities:
+            security_gate_passed = False
+            critical_issues.extend([
+                {
+                    "type": "critical_vulnerability",
+                    "description": vuln.get("description", "Critical security vulnerability"),
+                    "severity": "critical",
+                    "location": vuln.get("location", "Unknown"),
+                    "recommendation": vuln.get("recommendation", "Fix critical security vulnerability")
+                }
+                for vuln in critical_vulnerabilities
+            ])
+        
+        # Check for too many high vulnerabilities (configurable threshold)
+        high_vuln_threshold = 3  # Allow up to 3 high vulnerabilities
+        if len(high_vulnerabilities) > high_vuln_threshold:
+            security_gate_passed = False
+            critical_issues.append({
+                "type": "too_many_high_vulnerabilities",
+                "description": f"Too many high severity vulnerabilities: {len(high_vulnerabilities)} (threshold: {high_vuln_threshold})",
+                "severity": "high",
+                "location": "Multiple locations",
+                "recommendation": "Reduce high severity vulnerabilities below threshold"
+            })
+        
+        # Check overall security score (must be above minimum threshold)
+        overall_score = self._extract_score(security_data.get("overall_security_score", "0/10"))
+        min_security_score = 7.0  # Minimum acceptable security score
+        
+        if overall_score < min_security_score:
+            security_gate_passed = False
+            critical_issues.append({
+                "type": "low_security_score",
+                "description": f"Overall security score too low: {overall_score}/10 (minimum: {min_security_score})",
+                "severity": "high",
+                "location": "Overall codebase",
+                "recommendation": "Improve overall security score above minimum threshold"
+            })
+        
+        # Check for specific security anti-patterns
+        security_anti_patterns = security_data.get("security_anti_patterns", [])
+        if security_anti_patterns:
+            security_gate_passed = False
+            critical_issues.extend([
+                {
+                    "type": "security_anti_pattern",
+                    "description": pattern.get("description", "Security anti-pattern detected"),
+                    "severity": pattern.get("severity", "high"),
+                    "location": pattern.get("location", "Unknown"),
+                    "recommendation": pattern.get("recommendation", "Fix security anti-pattern")
+                }
+                for pattern in security_anti_patterns
+            ])
+        
+        self.add_log_entry("info", f"Security quality gate result: {'PASSED' if security_gate_passed else 'FAILED'}")
+        
+        return {
+            "security_gate_passed": security_gate_passed,
+            "critical_issues": critical_issues,
+            "vulnerability_summary": {
+                "critical_count": len(critical_vulnerabilities),
+                "high_count": len(high_vulnerabilities),
+                "overall_score": overall_score,
+                "anti_patterns_count": len(security_anti_patterns)
+            },
+            "thresholds": {
+                "min_security_score": min_security_score,
+                "max_high_vulnerabilities": high_vuln_threshold
+            }
+        }
+    
+    def _send_back_to_code_generator(self, state: AgentState, security_gate_check: Dict[str, Any]) -> AgentState:
+        """
+        Send the workflow back to the code generator with security issues information.
+        
+        Args:
+            state: Current agent state
+            security_gate_check: Results of security quality gate check
+            
+        Returns:
+            Updated state with reroute information
+        """
+        self.add_log_entry("info", "Sending workflow back to code generator due to security issues")
+        
+        # Add reroute information to state
+        state["reroute_to"] = "code_generator"
+        state["reroute_reason"] = "Security quality gate failed"
+        state["security_issues"] = security_gate_check.get("critical_issues", [])
+        state["quality_gate_failed"] = True
+        
+        # Add decision about rerouting
+        self.add_decision(
+            decision="Reroute to code generator due to security issues",
+            rationale=f"Security quality gate found {len(security_gate_check.get('critical_issues', []))} critical security issues",
+            alternatives=["Continue with current code", "Request human intervention"],
+            impact="Will trigger code regeneration with security fixes"
+        )
+        
+        # Create artifact for security issues
+        self.add_artifact(
+            name="security_issues",
+            type="security_gap",
+            content=security_gate_check.get("critical_issues", []),
+            description="Security issues that need to be fixed"
+        )
+        
+        # Update state with quality gate failure
+        state = self.update_state_with_result(
+            state=state,
+            task_name="security_analysis_quality_gate",
+            output={
+                "quality_gate_passed": False,
+                "security_gate_check": security_gate_check,
+                "reroute_to": "code_generator",
+                "security_issues": security_gate_check.get("critical_issues", [])
+            },
+            execution_time=0.0
+        )
+        
+        return state
     
     def _validate_security_data(self, data: Dict[str, Any]) -> None:
         """Validate security analysis data."""
@@ -262,14 +417,20 @@ class SecurityAnalyst(BaseAgent):
         if not super().validate_input(state):
             return False
         
-        # Check for code_files (should be set by code generator)
-        if "code_files" not in state or not state["code_files"]:
-            self.logger.error("No code_files found in state - code generator must run first")
+        # Check for code files (should be set by code generator)
+        # Support both old format (code_files) and new format (source_files + configuration_files)
+        code_files = state.get("code_files", {})
+        source_files = state.get("source_files", {})
+        configuration_files = state.get("configuration_files", {})
+        
+        # Check if we have any code files in any format
+        if not code_files and not source_files and not configuration_files:
+            self.logger.error("No code files found in state - code generator must run first")
             return False
         
-        # Check for architecture (should be set by architecture designer)
-        if "architecture" not in state or not state["architecture"]:
-            self.logger.error("No architecture found in state - architecture designer must run first")
-            return False
+        # Check for requirements (should be set by requirements analyst)
+        if "requirements" not in state or not state["requirements"]:
+            self.logger.warning("No requirements found in state, will analyze security from code only")
+            # Don't fail, just warn - we can still analyze security
         
         return True

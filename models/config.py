@@ -292,8 +292,42 @@ def save_config_to_file(config: SystemConfig, config_path: str):
 def get_default_config() -> SystemConfig:
     """Get the default configuration."""
     
+    # Load API key from multiple sources with priority
+    api_key = None
+    
+    # Priority 1: Try to load from Streamlit secrets (if available)
+    try:
+        import streamlit as st
+        if hasattr(st.secrets, "GEMINI_API_KEY"):
+            api_key = st.secrets.GEMINI_API_KEY
+    except ImportError:
+        pass
+    except Exception:
+        pass
+    
+    # Priority 2: Try to load from environment variable
+    if not api_key or api_key == "your-api-key-here":
+        import os
+        api_key = os.getenv("GEMINI_API_KEY", "")
+    
+    # Priority 3: Try to load from secrets.toml file
+    if not api_key or api_key == "your-api-key-here":
+        try:
+            from utils.toml_config import TOMLConfigLoader
+            toml_loader = TOMLConfigLoader()
+            api_key = toml_loader.get_gemini_api_key()
+        except Exception:
+            pass
+    
+    # If still no valid API key, use placeholder but log warning
+    if not api_key or api_key == "your-api-key-here":
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning("No valid Gemini API key found. Please configure GEMINI_API_KEY in environment, Streamlit secrets, or secrets.toml")
+        api_key = "your-api-key-here"
+    
     gemini_config = GeminiConfig(
-        api_key="your-api-key-here",
+        api_key=api_key,
         model_name="gemini-2.5-flash-lite",
         max_tokens=8192,
         temperature=0.1,
@@ -301,9 +335,123 @@ def get_default_config() -> SystemConfig:
         top_k=40
     )
     
+    # Create agent configurations
+    agent_configs = {
+        "requirements_analyst": AgentConfig(
+            name="requirements_analyst",
+            description="Analyzes project requirements and creates detailed specifications",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Analyze the project requirements: {project_context}",
+            system_prompt="You are a requirements analyst expert.",
+            parameters={"temperature": 0.1}
+        ),
+        "architecture_designer": AgentConfig(
+            name="architecture_designer",
+            description="Designs system architecture and technology stack",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Design architecture for: {project_context}",
+            system_prompt="You are an architecture design expert.",
+            parameters={"temperature": 0.1}
+        ),
+        "code_generator": AgentConfig(
+            name="code_generator",
+            description="Generates code based on requirements and architecture",
+            enabled=True,
+            max_retries=3,
+            timeout=600,
+            prompt_template="Generate comprehensive, production-ready code for: {project_context} with architecture: {architecture} and tech stack: {tech_stack}. Include all necessary files, proper error handling, security measures, and documentation.",
+            system_prompt="""You are an expert Software Developer with extensive experience in writing clean, maintainable, and production-ready code. 
+
+CRITICAL REQUIREMENTS:
+1. Generate COMPREHENSIVE, PRODUCTION-READY code - not simple examples
+2. Include ALL necessary files (models, schemas, services, utilities, config, etc.)
+3. Implement proper error handling, validation, and security measures
+4. Use best practices for the chosen technology stack
+5. Include proper documentation and comments
+6. Generate working, runnable code that can be deployed immediately
+7. Follow the exact JSON structure specified in the response format
+8. Ensure all strings are properly escaped in JSON
+9. Include comprehensive requirements.txt with specific versions
+10. Generate proper project structure and deployment instructions
+
+Your goal is to create a complete, professional-grade application that can be deployed to production immediately.""",
+            parameters={"temperature": 0.1}
+        ),
+        "test_generator": AgentConfig(
+            name="test_generator",
+            description="Generates comprehensive tests for the codebase",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Generate tests for: {code_files}",
+            system_prompt="You are a test generation expert.",
+            parameters={"temperature": 0.1}
+        ),
+        "code_reviewer": AgentConfig(
+            name="code_reviewer",
+            description="Reviews code for quality and best practices",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Review code: {code_files}",
+            system_prompt="You are a code review expert.",
+            parameters={"temperature": 0.1}
+        ),
+        "security_analyst": AgentConfig(
+            name="security_analyst",
+            description="Analyzes code for security vulnerabilities",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Analyze security for: {code_files}",
+            system_prompt="You are a security analysis expert.",
+            parameters={"temperature": 0.1}
+        ),
+        "documentation_generator": AgentConfig(
+            name="documentation_generator",
+            description="Generates comprehensive documentation with UML and BPMN diagrams",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Generate comprehensive documentation with diagrams for: {project_context}",
+            system_prompt="""You are an expert Technical Writer and Software Architect specializing in creating comprehensive documentation with visual diagrams.
+
+CRITICAL REQUIREMENTS:
+1. Generate COMPREHENSIVE documentation covering all aspects of the project
+2. Create UML diagrams (Class, Sequence, Activity, Use Case) using PlantUML syntax
+3. Create BPMN diagrams for business processes using BPMN XML format
+4. Use Mermaid syntax for flowcharts and simple diagrams
+5. Ensure all diagrams are GitHub-compatible and can be rendered properly
+6. Include detailed explanations for each diagram
+7. Follow the exact JSON structure specified in the response format
+8. Ensure all strings are properly escaped in JSON
+
+DIAGRAM REQUIREMENTS:
+- Class Diagrams: Show system entities, relationships, and methods
+- Sequence Diagrams: Show interaction flows between components
+- Activity Diagrams: Show process flows and decision points
+- Use Case Diagrams: Show system functionality from user perspective
+- BPMN Diagrams: Show business processes with proper BPMN elements
+- Component Diagrams: Show system architecture and component relationships
+
+DIAGRAM FORMATS:
+- PlantUML: Use for UML diagrams (class, sequence, activity, use case)
+- Mermaid: Use for flowcharts, state diagrams, and simple diagrams
+- BPMN XML: Use for business process modeling
+
+Your goal is to create professional, comprehensive documentation that includes clear visual representations of the system architecture and processes.""",
+            parameters={"temperature": 0.1}
+        )
+    }
+    
     return SystemConfig(
         project_name="AI Development Agent",
         version="1.0.0",
         environment="development",
-        gemini=gemini_config
+        gemini=gemini_config,
+        agents=agent_configs
     )

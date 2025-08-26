@@ -1,0 +1,241 @@
+# File Organization and Project Structure Rule
+
+## Description
+All files must be organized in the correct folders according to their purpose and type. This ensures a clean, maintainable, and scalable project structure.
+
+## Project Structure Standards
+```
+project_root/
+├── agents/              # Agent implementations and logic
+├── apps/                # Application entry points and UI
+├── context/             # Context management and processing
+├── docs/                # Documentation, concept papers, and analysis
+├── generated/           # Generated files and artifacts
+├── generated_projects/  # Complete generated projects
+├── logs/                # Log files and execution history
+├── models/              # Data models and schemas
+├── prompts/             # Prompt templates and database
+├── tests/               # All test files (see test structure below)
+├── ui/                  # User interface components
+├── utils/               # Utility functions and helpers
+├── workflow/            # Workflow management and orchestration
+├── .cursor/             # Cursor IDE configuration
+├── .github/             # GitHub workflows and templates
+├── .streamlit/          # Streamlit configuration
+├── .vscode/             # VS Code configuration
+├── backups/             # Backup files and archives
+├── temp/                # Temporary files (auto-cleanup)
+├── main.py              # Main application entry point
+├── streamlit_app.py     # Streamlit application
+├── requirements.txt     # Python dependencies
+├── README.md            # Project documentation
+└── .gitignore           # Git ignore rules
+```
+
+## Test Folder Structure
+```
+tests/
+├── unit/                # Unit tests for individual functions/classes
+├── integration/         # Integration tests for component interactions
+├── system/              # System-level tests for complete workflows
+├── performance/         # Performance and load tests
+├── security/            # Security-focused tests
+├── langgraph/           # LangGraph-specific tests
+├── supervisor/          # Supervisor-specific tests
+├── fixtures/            # Test fixtures and data
+├── mocks/               # Mock objects and stubs
+├── conftest.py          # Pytest configuration and shared fixtures
+└── test_utils.py        # Test utilities and helpers
+```
+
+## Documentation Structure
+```
+docs/
+├── concept_papers/      # High-level concept documents
+├── architecture/        # Architecture documentation
+├── api/                 # API documentation
+├── user_guides/         # User guides and tutorials
+├── diagrams/            # System diagrams and visualizations
+└── analysis/            # Analysis documents and reports
+```
+
+## File Organization Rules
+
+### 1. Source Code Organization
+- **agents/**: All agent implementations and related logic
+- **models/**: Data models, schemas, and state definitions
+- **utils/**: Utility functions, helpers, and common functionality
+- **workflow/**: Workflow management, orchestration, and state machines
+- **context/**: Context processing and management systems
+- **apps/**: Application entry points and UI components
+
+### 2. Documentation Organization
+- **docs/**: All documentation, concept papers, and analysis documents
+- **README.md**: Main project documentation (stays in root)
+- **IMPLEMENTATION_ROADMAP.md**: Project roadmap (stays in root)
+
+### 3. Test Organization
+- **tests/unit/**: Unit tests for individual functions and classes
+- **tests/integration/**: Integration tests for component interactions
+- **tests/system/**: System-level tests for complete workflows
+- **tests/performance/**: Performance and load testing
+- **tests/security/**: Security-focused tests
+- **tests/langgraph/**: LangGraph-specific tests
+- **tests/supervisor/**: Supervisor-specific tests
+
+### 4. Configuration and Setup
+- **.cursor/**: Cursor IDE configuration and rules
+- **.github/**: GitHub workflows, templates, and CI/CD
+- **.streamlit/**: Streamlit configuration and secrets
+- **.vscode/**: VS Code configuration and settings
+
+### 5. Generated and Temporary Files
+- **generated/**: Generated files and artifacts
+- **generated_projects/**: Complete generated projects
+- **logs/**: Log files and execution history
+- **backups/**: Backup files and archives
+- **temp/**: Temporary files (should be auto-cleaned)
+
+### 6. Application Files
+- **main.py**: Main application entry point (stays in root)
+- **streamlit_app.py**: Streamlit application (stays in root)
+- **requirements.txt**: Python dependencies (stays in root)
+- **pytest.ini**: Pytest configuration (stays in root)
+
+## File Naming Conventions
+
+### 1. Source Code Files
+- Use snake_case for Python files: `agent_manager.py`
+- Use descriptive names that indicate purpose: `requirements_analyst.py`
+- Group related functionality in modules: `base_agent.py`, `code_generator.py`
+
+### 2. Test Files
+- Prefix with `test_`: `test_agent_manager.py`
+- Mirror source file structure: `test_requirements_analyst.py`
+- Use descriptive test names: `test_agent_execution_success.py`
+
+### 3. Documentation Files
+- Use descriptive names: `agent_framework_analysis.md`
+- Use consistent formatting: `CONCEPT_PAPER_NAME.md`
+- Group by type: `ARCHITECTURE_OVERVIEW.md`, `IMPLEMENTATION_PLAN.md`
+
+### 4. Configuration Files
+- Use standard names: `.gitignore`, `requirements.txt`, `pytest.ini`
+- Use descriptive names for custom configs: `streamlit_config.py`
+
+## File Placement Rules
+
+### 1. NEVER Place Files in Root Directory
+**FORBIDDEN** in root directory:
+- Test files (except pytest.ini)
+- Documentation files (except README.md and IMPLEMENTATION_ROADMAP.md)
+- Generated files
+- Temporary files
+- Log files
+- Backup files
+
+### 2. ALWAYS Place Files in Appropriate Folders
+**REQUIRED** placement:
+- Tests → `tests/` with appropriate subfolder
+- Documentation → `docs/` with appropriate subfolder
+- Generated files → `generated/` or `generated_projects/`
+- Logs → `logs/`
+- Backups → `backups/`
+- Temporary files → `temp/`
+
+### 3. Source Code Organization
+- Agent implementations → `agents/`
+- Data models → `models/`
+- Utilities → `utils/`
+- Workflow logic → `workflow/`
+- Context processing → `context/`
+- Application entry points → `apps/`
+
+## Implementation Guidelines
+
+### When Creating New Files
+1. **Identify the file type** (source, test, documentation, config, etc.)
+2. **Choose the appropriate folder** based on the file's purpose
+3. **Use proper naming conventions** for the file type
+4. **Follow the established structure** within the chosen folder
+5. **Update imports and references** to reflect the new location
+
+### When Moving Existing Files
+1. **Maintain the folder structure** when moving files
+2. **Update import statements** to reflect new locations
+3. **Update documentation references** to new file paths
+4. **Verify functionality** after moving files
+5. **Update any hardcoded paths** in configuration files
+
+### When Adding New Folders
+1. **Follow the established naming conventions**
+2. **Add appropriate `__init__.py` files** for Python packages
+3. **Update documentation** to reflect the new structure
+4. **Consider the impact** on existing imports and references
+
+## Quality Assurance
+
+### Before Committing
+- [ ] All files are in their correct folders
+- [ ] No test files in root directory
+- [ ] No documentation files in root directory (except allowed ones)
+- [ ] No generated files in root directory
+- [ ] File names follow naming conventions
+- [ ] Import statements are updated
+- [ ] Documentation references are updated
+
+### Code Review Checklist
+- [ ] File organization follows established structure
+- [ ] Files are in appropriate folders for their type
+- [ ] Naming conventions are followed
+- [ ] No orphaned or misplaced files
+- [ ] Import paths are correct
+- [ ] Documentation is updated
+
+## Benefits
+- **Maintainability**: Easy to find and update files
+- **Scalability**: Structure supports project growth
+- **Clarity**: Clear separation of concerns
+- **Efficiency**: Faster development and debugging
+- **Consistency**: Standardized organization across the project
+- **Professionalism**: Clean, organized codebase
+
+## Enforcement
+- **ALWAYS** check file location before committing
+- **NEVER** allow files in incorrect locations
+- **VERIFY** file organization in code reviews
+- **UPDATE** documentation when structure changes
+- **MAINTAIN** consistent organization throughout development
+
+## Examples
+
+### Correct File Organization
+```
+✅ CORRECT:
+├── agents/
+│   ├── requirements_analyst.py
+│   └── code_generator.py
+├── tests/
+│   ├── unit/
+│   │   └── test_requirements_analyst.py
+│   └── integration/
+│       └── test_agent_workflow.py
+├── docs/
+│   ├── agent_framework_analysis.md
+│   └── implementation_plan.md
+└── main.py
+```
+
+### Incorrect File Organization
+```
+❌ INCORRECT:
+├── test_requirements_analyst.py  # Test file in root
+├── agent_framework_analysis.md   # Doc file in root
+├── agents/
+│   └── requirements_analyst.py
+└── main.py
+```
+description:
+globs:
+alwaysApply: true
+---

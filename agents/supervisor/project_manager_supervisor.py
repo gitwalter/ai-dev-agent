@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime
 
 from .base_supervisor import BaseSupervisor, SupervisorConfig
-from models.state import SupervisorSwarmState
+from models.supervisor_state import SupervisorSwarmState
 from utils.structured_outputs import Task, TaskResult, Escalation
 
 

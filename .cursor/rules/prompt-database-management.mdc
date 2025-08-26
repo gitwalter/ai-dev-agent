@@ -1,0 +1,309 @@
+---
+description: Prompt Database Management Rule
+alwaysApply: true
+---
+# Prompt Database Management Rule
+
+**CRITICAL**: All prompts must be stored in and managed through the prompt database. Hardcoded prompts are only permitted as emergency fallbacks.
+
+## Core Requirements
+
+### 1. Prompt Storage Location
+- **PRIMARY**: All prompts MUST be stored in the prompt database (`prompts/prompt_templates.db`)
+- **SECONDARY**: Hardcoded prompts are ONLY allowed as fallbacks when database is unavailable
+- **FORBIDDEN**: Direct hardcoding of prompts in business logic without database storage
+
+### 2. Prompt Management Workflow
+- **Create New Prompts**: Always add to prompt database first
+- **Update Existing Prompts**: Always update in database, never in code
+- **Version Control**: Use database versioning, not code comments
+- **Testing**: Test prompt changes through database updates
+
+### 3. Database-First Approach
+
+#### Required Implementation Pattern
+```python
+# CORRECT: Database-first with fallback
+def get_prompt(prompt_key: str, fallback: str = None) -> str:
+    try:
+        # Load from database first
+        prompt = prompt_loader.get_prompt(prompt_key)
+        if prompt:
+            return prompt
+    except Exception as e:
+        logger.warning(f"Failed to load prompt from database: {e}")
+    
+    # Only use fallback if database fails
+    if fallback:
+        logger.warning(f"Using fallback prompt for {prompt_key}")
+        return fallback
+    
+    raise ValueError(f"No prompt found for {prompt_key} and no fallback provided")
+
+# INCORRECT: Hardcoded prompts
+def get_prompt_bad():
+    return "You are a helpful assistant..."  # NEVER DO THIS
+```
+
+#### Database Management
+- Use `prompt_manager.py` utilities for database operations
+- Use `agent_prompt_loader.py` for agent-specific prompt loading
+- Maintain prompt database schema and integrity
+- Implement proper error handling for database operations
+
+### 4. Agent Prompt Integration
+
+#### Agent Prompt Loading
+```python
+# CORRECT: Load prompts from database
+class BaseAgent:
+    def __init__(self):
+        self.prompt_loader = AgentPromptLoader()
+        
+    def get_system_prompt(self) -> str:
+        return self.prompt_loader.get_prompt(
+            f"{self.agent_name}_system_prompt",
+            fallback=self._get_fallback_system_prompt()
+        )
+    
+    def _get_fallback_system_prompt(self) -> str:
+        # Emergency fallback only
+        return "Basic system prompt for emergency use"
+```
+
+#### Prompt Categories
+- **System Prompts**: Core agent behavior and personality
+- **Task Prompts**: Specific task instructions and guidelines
+- **Format Prompts**: Output format specifications
+- **Context Prompts**: Context-aware instructions
+- **Error Prompts**: Error handling and recovery instructions
+
+### 5. Prompt Database Schema
+
+#### Required Fields
+- `id`: Unique identifier
+- `key`: Prompt lookup key
+- `category`: Prompt category (system, task, format, etc.)
+- `agent_name`: Associated agent (if applicable)
+- `content`: Prompt text content
+- `version`: Version number for tracking changes
+- `created_at`: Creation timestamp
+- `updated_at`: Last update timestamp
+- `is_active`: Active status flag
+
+#### Database Operations
+```python
+# CORRECT: Database operations
+def update_prompt(key: str, content: str, agent_name: str = None):
+    prompt_manager.update_prompt(
+        key=key,
+        content=content,
+        agent_name=agent_name,
+        category=determine_category(key)
+    )
+
+def create_prompt(key: str, content: str, category: str, agent_name: str = None):
+    prompt_manager.create_prompt(
+        key=key,
+        content=content,
+        category=category,
+        agent_name=agent_name
+    )
+```
+
+### 6. Development Workflow
+
+#### When Creating New Agents
+1. **Define Prompt Requirements**: Identify all needed prompts
+2. **Add to Database**: Create prompts in database first
+3. **Implement Loading**: Use prompt loader in agent code
+4. **Test Database Integration**: Verify prompt loading works
+5. **Add Fallbacks**: Implement minimal fallbacks for emergencies
+
+#### When Updating Prompts
+1. **Update Database**: Modify prompts in database
+2. **Test Changes**: Verify prompt updates work correctly
+3. **Version Control**: Track prompt versions in database
+4. **Document Changes**: Update prompt documentation
+5. **Deploy Changes**: Ensure database updates are deployed
+
+#### When Debugging Prompt Issues
+1. **Check Database**: Verify prompt exists and is active
+2. **Test Loading**: Confirm prompt loader functionality
+3. **Validate Content**: Check prompt content and formatting
+4. **Review Logs**: Check for database connection issues
+5. **Use Fallbacks**: Verify fallback mechanisms work
+
+### 7. Code Review Requirements
+
+#### Mandatory Checks
+- [ ] No hardcoded prompts in business logic
+- [ ] All prompts loaded from database with proper error handling
+- [ ] Fallback prompts are minimal and emergency-only
+- [ ] Prompt keys follow naming conventions
+- [ ] Database operations use proper utilities
+- [ ] Error handling for database failures is implemented
+
+#### Forbidden Patterns
+```python
+# FORBIDDEN: Direct hardcoding
+system_prompt = "You are a helpful assistant that..."
+
+# FORBIDDEN: Inline prompt strings
+response = llm.generate("Analyze this code and provide feedback...")
+
+# FORBIDDEN: Prompt concatenation in code
+prompt = f"You are a {role} assistant. {task_description}..."
+```
+
+#### Required Patterns
+```python
+# REQUIRED: Database-first loading
+system_prompt = self.prompt_loader.get_prompt("agent_system_prompt")
+
+# REQUIRED: Task-specific prompts from database
+task_prompt = self.prompt_loader.get_prompt(f"{task_type}_analysis_prompt")
+
+# REQUIRED: Proper error handling
+try:
+    prompt = self.prompt_loader.get_prompt(prompt_key)
+except PromptNotFoundError:
+    logger.error(f"Prompt not found: {prompt_key}")
+    prompt = self._get_emergency_fallback()
+```
+
+### 8. Testing Requirements
+
+#### Database Testing
+- Test prompt loading from database
+- Test fallback mechanisms
+- Test database connection failures
+- Test prompt versioning and updates
+- Test prompt caching and performance
+
+#### Integration Testing
+- Test agent prompt loading
+- Test prompt formatting and validation
+- Test prompt updates during runtime
+- Test multi-agent prompt coordination
+- Test prompt database migrations
+
+### 9. Performance Considerations
+
+#### Caching Strategy
+- Implement prompt caching for frequently used prompts
+- Cache prompts at agent initialization
+- Invalidate cache on prompt updates
+- Use memory-efficient caching strategies
+
+#### Database Optimization
+- Index prompt keys for fast lookup
+- Optimize database queries for prompt loading
+- Implement connection pooling
+- Monitor database performance metrics
+
+### 10. Error Handling and Recovery
+
+#### Database Failure Scenarios
+- Database connection unavailable
+- Prompt not found in database
+- Database corruption or integrity issues
+- Database schema migration failures
+- Concurrent access conflicts
+
+#### Recovery Mechanisms
+- Graceful degradation to fallback prompts
+- Automatic retry logic for transient failures
+- Database health monitoring and alerting
+- Manual override capabilities for emergencies
+- Backup and restore procedures
+
+### 11. Documentation Requirements
+
+#### Prompt Documentation
+- Document all prompt keys and purposes
+- Maintain prompt change history
+- Document prompt testing procedures
+- Provide prompt usage examples
+- Document fallback strategies
+
+#### Database Documentation
+- Document database schema and relationships
+- Provide database setup and migration guides
+- Document backup and recovery procedures
+- Maintain API documentation for prompt operations
+- Document performance tuning guidelines
+
+### 12. Monitoring and Observability
+
+#### Metrics to Track
+- Prompt loading success/failure rates
+- Database query performance
+- Cache hit/miss ratios
+- Fallback usage frequency
+- Prompt update frequencies
+
+#### Alerting
+- Database connection failures
+- High fallback usage rates
+- Prompt loading performance degradation
+- Database storage capacity issues
+- Schema migration failures
+
+## Implementation Checklist
+
+### Initial Setup
+- [ ] Prompt database is created and initialized
+- [ ] Prompt management utilities are implemented
+- [ ] Agent prompt loader is configured
+- [ ] Database connection and error handling is tested
+- [ ] Fallback mechanisms are implemented and tested
+
+### Development Process
+- [ ] All new prompts are added to database first
+- [ ] Prompt loading follows database-first pattern
+- [ ] Fallbacks are minimal and emergency-only
+- [ ] Code reviews check for hardcoded prompts
+- [ ] Database operations use proper utilities
+
+### Testing and Quality
+- [ ] Prompt loading is thoroughly tested
+- [ ] Database failure scenarios are tested
+- [ ] Fallback mechanisms are validated
+- [ ] Performance testing includes prompt operations
+- [ ] Integration tests cover prompt workflows
+
+### Deployment and Maintenance
+- [ ] Database migration procedures are documented
+- [ ] Monitoring and alerting is configured
+- [ ] Backup and recovery procedures are tested
+- [ ] Performance tuning guidelines are followed
+- [ ] Documentation is complete and up-to-date
+
+## Benefits
+
+- **Centralized Management**: All prompts managed in one location
+- **Version Control**: Database-based prompt versioning
+- **Dynamic Updates**: Prompts can be updated without code changes
+- **Testing**: Easier to test and validate prompt changes
+- **Consistency**: Standardized prompt management across agents
+- **Monitoring**: Better visibility into prompt usage and performance
+- **Scalability**: Database-based approach scales with system growth
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- New agent development
+- Existing agent modifications
+- Prompt updates and changes
+- Code reviews and approvals
+- Testing and validation procedures
+- Deployment and maintenance activities
+
+**Violations of this rule require immediate remediation.**
+
+---
+description: Enforces prompt database management with database-first approach and minimal fallbacks
+globs:
+alwaysApply: true
+---

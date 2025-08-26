@@ -572,6 +572,184 @@ if __name__ == "__main__":
 
 ## 📁 Project Structure
 
+### Organized File Structure
+
+The project follows a clean, organized structure with clear separation of concerns:
+
+```
+ai-dev-agent/
+├── agents/                 # Agent implementations and logic
+│   ├── base_agent.py      # Base agent class
+│   ├── requirements_analyst.py
+│   ├── architecture_designer.py
+│   ├── code_generator.py
+│   ├── test_generator.py
+│   ├── code_reviewer.py
+│   ├── security_analyst.py
+│   ├── documentation_generator.py
+│   └── supervisor/        # Supervisor agent implementations
+│       ├── base_supervisor.py
+│       └── project_manager_supervisor.py
+├── apps/                  # Application entry points and UI
+│   └── prompt_manager_app.py
+├── context/               # Context management and processing
+│   └── context_engine.py
+├── docs/                  # Documentation, concept papers, and analysis
+│   ├── analysis/          # Analysis documents and reports
+│   │   ├── agent_framework_analysis.md
+│   │   ├── AGENT_SUPERVISOR_ANALYSIS.md
+│   │   ├── AGENT_ANALYSIS_SUMMARY.md
+│   │   └── AGENT_PROMPT_RESPONSE_ANALYSIS.md
+│   ├── architecture/      # Architecture documentation
+│   │   └── SUPERVISOR_SWARM_HYBRID_ARCHITECTURE.md
+│   ├── concept_papers/    # High-level concept documents
+│   │   ├── AGENT_FRAMEWORK_MIGRATION_PLAN.md
+│   │   ├── MCP_INTEGRATION_SUMMARY.md
+│   │   └── MCP_SERVER_INTEGRATION_CONCEPT.md
+│   ├── diagrams/          # System diagrams and visualizations
+│   │   ├── agent-graph.md
+│   │   ├── class-diagram.md
+│   │   ├── sequence-diagram.md
+│   │   ├── state-machine-diagram.md
+│   │   └── system-diagram.md
+│   ├── enhanced_structured_outputs.md
+│   └── quality-gate-system.md
+├── generated/             # Generated files and artifacts
+├── generated_projects/    # Complete generated projects
+├── logs/                  # Log files and execution history
+│   └── agents/           # Agent-specific logs
+├── models/                # Data models and schemas
+│   ├── config.py         # Configuration management
+│   ├── state.py          # Workflow state management
+│   ├── supervisor_state.py # Supervisor state management
+│   └── responses.py      # Response models
+├── prompts/               # Prompt templates and database
+│   ├── agent_prompt_loader.py # Agent prompt loading system
+│   ├── prompt_templates.db    # SQLite database for prompt storage
+│   └── __init__.py
+├── tests/                 # Comprehensive test suite
+│   ├── unit/             # Unit tests for individual functions/classes
+│   │   ├── test_base_agent.py
+│   │   ├── test_diagram_generation.py
+│   │   ├── test_quality_gate_system.py
+│   │   └── test_src_error_fix.py
+│   ├── integration/      # Integration tests for component interactions
+│   │   ├── test_agent_execution.py
+│   │   ├── test_gemini_integration.py
+│   │   ├── test_real_llm_integration.py
+│   │   ├── test_api_key_validation.py
+│   │   ├── test_agents_simple.py
+│   │   ├── test_agent_interface.py
+│   │   └── test_agent_streamlit.py
+│   ├── system/           # System-level tests for complete workflows
+│   │   └── test_complete_workflow.py
+│   ├── langgraph/        # LangGraph-specific tests
+│   │   ├── test_basic_workflow.py
+│   │   ├── test_langgraph_workflow_integration.py
+│   │   ├── test_workflow_manager.py
+│   │   └── TEST_DEVELOPMENT_PLAN.md
+│   ├── supervisor/       # Supervisor-specific tests
+│   │   ├── test_base_supervisor.py
+│   │   ├── test_project_manager_supervisor.py
+│   │   └── test_supervisor_state.py
+│   ├── performance/      # Performance and load tests
+│   ├── security/         # Security-focused tests
+│   ├── fixtures/         # Test fixtures and data
+│   ├── mocks/            # Mock objects and stubs
+│   ├── conftest.py       # Pytest configuration and shared fixtures
+│   └── test_utils.py     # Test utilities and helpers
+├── ui/                   # User interface components
+├── utils/                # Utility functions and helpers
+│   ├── enhanced_output_parsers.py # Enhanced output parsing
+│   ├── file_manager.py   # File management utilities
+│   ├── helpers.py        # General helper functions
+│   ├── langchain_data_exchange.py # LangChain integration
+│   ├── logging_config.py # Logging configuration
+│   ├── output_parsers.py # Output parsing utilities
+│   ├── prompt_editor.py  # Prompt editing interface
+│   ├── prompt_manager.py # Prompt management and database operations
+│   ├── rag_processor.py  # RAG document processing
+│   ├── structured_outputs.py # Structured output handling
+│   ├── toml_config.py    # TOML configuration loader
+│   └── update_prompt_database.py # Prompt database utilities
+├── workflow/             # Workflow management and orchestration
+│   ├── error_handler.py  # Error handling utilities
+│   ├── human_approval.py # Human approval mechanisms
+│   ├── workflow_graph.py # LangGraph workflow definition
+│   ├── workflow_manager.py # Workflow management
+│   ├── langgraph_workflow_manager.py # LangGraph integration
+│   └── langgraph_workflow.py # LangGraph workflow implementation
+├── .cursor/              # Cursor IDE configuration and rules
+│   └── rules/            # Project rules and guidelines
+│       ├── file_organization.mdc # File organization standards
+│       └── [other rules]
+├── .github/              # GitHub workflows and templates
+├── .streamlit/           # Streamlit configuration
+├── .vscode/              # VS Code configuration
+├── backups/              # Backup files and archives
+├── temp/                 # Temporary files (auto-cleanup)
+├── main.py               # Main application entry point
+├── streamlit_app.py      # Streamlit web interface
+├── requirements.txt      # Python dependencies
+├── pytest.ini           # Pytest configuration
+├── README.md             # Project documentation
+├── IMPLEMENTATION_ROADMAP.md # Project roadmap and task tracking
+└── .gitignore           # Git ignore rules
+```
+
+### Documentation Organization
+
+The project includes comprehensive documentation organized by type:
+
+#### **Analysis Documents** (`docs/analysis/`)
+- **Agent Framework Analysis**: Detailed analysis of agent framework capabilities
+- **Agent Supervisor Analysis**: Analysis of supervisor agent implementations
+- **Agent Analysis Summary**: Summary of agent performance and capabilities
+- **Agent Prompt Response Analysis**: Analysis of prompt-response patterns
+
+#### **Architecture Documents** (`docs/architecture/`)
+- **Supervisor-Swarm Hybrid Architecture**: Complete architecture documentation
+- **System Diagrams**: Visual representations of system components
+- **Class Diagrams**: Object-oriented design documentation
+- **Sequence Diagrams**: Interaction flow documentation
+
+#### **Concept Papers** (`docs/concept_papers/`)
+- **Agent Framework Migration Plan**: Migration strategy documentation
+- **MCP Integration Summary**: Model Context Protocol integration
+- **MCP Server Integration Concept**: Server integration concepts
+
+#### **System Documentation** (`docs/`)
+- **Quality Gate System**: Quality control mechanisms
+- **Enhanced Structured Outputs**: Output parsing documentation
+- **Agent Graph**: Agent relationship documentation
+- **State Machine Diagrams**: Workflow state management
+
+### Test Organization
+
+The test suite is comprehensively organized by type and purpose:
+
+#### **Unit Tests** (`tests/unit/`)
+- Individual function and class testing
+- Isolated component validation
+- Mock-based testing for dependencies
+
+#### **Integration Tests** (`tests/integration/`)
+- Component interaction testing
+- Real LLM integration testing
+- API key validation testing
+- Agent workflow integration
+
+#### **System Tests** (`tests/system/`)
+- End-to-end workflow testing
+- Complete system validation
+- Real-world scenario testing
+
+#### **Specialized Tests**
+- **LangGraph Tests** (`tests/langgraph/`): LangGraph-specific functionality
+- **Supervisor Tests** (`tests/supervisor/`): Supervisor agent testing
+- **Performance Tests** (`tests/performance/`): Load and performance testing
+- **Security Tests** (`tests/security/`): Security vulnerability testing
+
 ### Object-Oriented Architecture
 
 The system follows a clean object-oriented design with clear separation of concerns:
@@ -705,44 +883,7 @@ classDiagram
     SecurityAnalyst --> AgentResult
 ```
 
-### Directory Structure
 
-```
-ai-dev-agent/
-├── agents/                 # Specialized agent implementations
-│   ├── base_agent.py      # Base agent class
-│   ├── requirements_analyst.py
-│   ├── architecture_designer.py
-│   ├── code_generator.py
-│   ├── test_generator.py
-│   ├── code_reviewer.py
-│   ├── security_analyst.py
-│   └── documentation_generator.py
-├── models/                # Data models and configurations
-│   ├── config.py         # Configuration management
-│   ├── state.py          # Workflow state management
-│   └── responses.py      # Response models
-├── workflow/              # Workflow orchestration
-│   └── workflow_graph.py # LangGraph workflow definition
-├── context/              # Context engine
-│   └── context_engine.py # Codebase indexing and retrieval
-├── utils/                # Utility functions
-│   ├── logging_config.py # Logging configuration
-│   ├── file_manager.py   # File management utilities
-│   ├── toml_config.py    # TOML configuration loader
-│   ├── prompt_manager.py # Prompt management and database operations
-│   ├── prompt_editor.py  # Prompt editing and management interface
-│   └── rag_processor.py  # RAG document processing utilities
-├── prompts/              # Prompt management
-│   ├── agent_prompt_loader.py # Agent prompt loading system
-│   └── __init__.py       # Prompt module initialization
-├── streamlit_app.py      # Streamlit web interface
-├── main.py              # Main application entry point
-├── requirements.txt     # Python dependencies
-├── secrets.toml        # API keys and secrets (create this)
-├── prompt_templates.db # SQLite database for prompt storage
-└── README.md           # This file
-```
 
 ## 🔧 Development
 
@@ -770,7 +911,7 @@ The `prompt_templates.db` contains:
 
 ### Running Tests
 
-The project includes a comprehensive test suite organized by type:
+The project includes a comprehensive test suite organized by type and purpose:
 
 ```bash
 # Run all tests
@@ -780,10 +921,13 @@ python -m pytest tests/
 python -m pytest tests/unit/          # Unit tests
 python -m pytest tests/integration/   # Integration tests  
 python -m pytest tests/system/        # System tests (end-to-end)
+python -m pytest tests/langgraph/     # LangGraph-specific tests
+python -m pytest tests/supervisor/    # Supervisor tests
 
 # Run individual test files
 python tests/system/test_complete_workflow.py    # Complete workflow test
 python tests/unit/test_diagram_generation.py     # Diagram generation test
+python tests/integration/test_real_llm_integration.py  # Real LLM integration test
 ```
 
 #### Test Organization
@@ -791,6 +935,8 @@ python tests/unit/test_diagram_generation.py     # Diagram generation test
 - **Unit Tests** (`tests/unit/`): Individual component testing
 - **Integration Tests** (`tests/integration/`): Component interaction testing
 - **System Tests** (`tests/system/`): End-to-end workflow testing
+- **LangGraph Tests** (`tests/langgraph/`): LangGraph-specific functionality
+- **Supervisor Tests** (`tests/supervisor/`): Supervisor agent testing
 - **Performance Tests** (`tests/performance/`): Performance and load testing
 - **Security Tests** (`tests/security/`): Security vulnerability testing
 

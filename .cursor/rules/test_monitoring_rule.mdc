@@ -1,5 +1,8 @@
-# Automated Test Monitoring and Immediate Bug Fixing Rule
-
+---
+description: Automated Test Monitoring and Immediate Bug Fixing Rule
+alwaysApply: false
+---
+# 
 **CRITICAL**: Implement automated test monitoring with immediate error detection and bug fixing workflow.
 
 ## Terminal Monitoring Requirements

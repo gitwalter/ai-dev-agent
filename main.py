@@ -352,6 +352,7 @@ Your goal is to create professional, comprehensive documentation that includes c
             
             # Process code files
             for file_path, file_data in code_files.items():
+                self.logger.debug(f"Processing code file: {file_path[:100]}...")
                 if isinstance(file_data, dict) and "content" in file_data:
                     all_files[file_path] = file_data["content"]
                 elif isinstance(file_data, str):
@@ -361,6 +362,7 @@ Your goal is to create professional, comprehensive documentation that includes c
             
             # Process test files
             for file_path, file_data in test_files.items():
+                self.logger.debug(f"Processing test file: {file_path[:100]}...")
                 if isinstance(file_data, dict) and "content" in file_data:
                     all_files[file_path] = file_data["content"]
                 elif isinstance(file_data, str):
@@ -387,7 +389,13 @@ Your goal is to create professional, comprehensive documentation that includes c
                     all_files[file_path] = str(file_data)
             
             for file_path, content in all_files.items():
-                full_path = output_path / file_path
+                # Sanitize the file path to ensure it's a valid filename
+                sanitized_path = self._sanitize_file_path(file_path)
+                if not sanitized_path:
+                    self.logger.warning(f"Skipping invalid file path: {file_path[:100]}...")
+                    continue
+                
+                full_path = output_path / sanitized_path
                 full_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 with open(full_path, 'w', encoding='utf-8') as f:
@@ -403,6 +411,64 @@ Your goal is to create professional, comprehensive documentation that includes c
             
         except Exception as e:
             self.logger.error(f"Failed to save results: {str(e)}")
+    
+    def _sanitize_file_path(self, file_path: str) -> str:
+        """
+        Sanitize a file path to ensure it's a valid filename.
+        
+        Args:
+            file_path: Original file path
+            
+        Returns:
+            Sanitized file path or empty string if invalid
+        """
+        import re
+        import os
+        
+        # If the file_path looks like code content rather than a filename, generate a proper filename
+        if len(file_path) > 200 or '\n' in file_path or file_path.count('/') > 5:
+            # This looks like code content, not a filename
+            # Extract a meaningful name from the first line or use a default
+            lines = file_path.split('\n')
+            first_line = lines[0].strip()
+            
+            # Try to extract a meaningful name
+            if 'def ' in first_line:
+                # Extract function name
+                match = re.search(r'def\s+(\w+)', first_line)
+                if match:
+                    return f"{match.group(1)}.py"
+            elif 'class ' in first_line:
+                # Extract class name
+                match = re.search(r'class\s+(\w+)', first_line)
+                if match:
+                    return f"{match.group(1)}.py"
+            elif 'import ' in first_line or 'from ' in first_line:
+                # This might be a module file
+                return "module.py"
+            else:
+                # Use a generic name based on content
+                return "generated_file.py"
+        
+        # Remove or replace invalid characters
+        # Windows invalid characters: < > : " | ? * \ /
+        invalid_chars = r'[<>:"|?*\\/\n\r\t]'
+        sanitized = re.sub(invalid_chars, '_', file_path)
+        
+        # Remove leading/trailing spaces and dots
+        sanitized = sanitized.strip(' .')
+        
+        # Ensure it's not empty
+        if not sanitized:
+            return "unnamed_file.txt"
+        
+        # Limit length
+        if len(sanitized) > 255:
+            # Keep extension if present
+            name, ext = os.path.splitext(sanitized)
+            sanitized = name[:255-len(ext)] + ext
+        
+        return sanitized
     
     def _create_workflow_result(
         self,
@@ -431,56 +497,27 @@ Your goal is to create professional, comprehensive documentation that includes c
         else:
             status = WorkflowStatus.COMPLETED
         
-        # Extract agent results - ensure they are AgentResponse objects with enhanced documentation
+        # Extract agent results - ensure they are dictionaries for WorkflowResult
         agent_results = {}
         for agent_name, result in state.get("agent_outputs", {}).items():
             if isinstance(result, dict):
-                # Convert dict to AgentResponse if it has the required fields
-                if "agent_name" in result and "task_name" in result:
-                    from models.responses import AgentResponse, TaskStatus
-                    agent_results[agent_name] = AgentResponse(
-                        agent_name=result.get("agent_name", agent_name),
-                        task_name=result.get("task_name", "unknown_task"),
-                        status=TaskStatus(result.get("status", "completed")),
-                        output=result.get("output", {}),
-                        metadata=result.get("metadata", {}),
-                        execution_time=result.get("execution_time", 0.0),
-                        error_message=result.get("error_message"),
-                        warnings=result.get("warnings", []),
-                        documentation=result.get("documentation", {}),
-                        logs=result.get("logs", []),
-                        decisions=result.get("decisions", []),
-                        artifacts=result.get("artifacts", [])
-                    )
-                else:
-                    # Create a proper AgentResponse from the dict
-                    from models.responses import AgentResponse, TaskStatus
-                    agent_results[agent_name] = AgentResponse(
-                        agent_name=agent_name,
-                        task_name=f"{agent_name}_task",
-                        status=TaskStatus.COMPLETED,
-                        output=result,
-                        documentation={},
-                        logs=[],
-                        decisions=[],
-                        artifacts=[]
-                    )
-            elif hasattr(result, 'agent_name') and hasattr(result, 'task_name'):
-                # Already an AgentResponse object
+                # Already a dictionary, use as is
                 agent_results[agent_name] = result
+            elif hasattr(result, 'dict'):
+                # Convert AgentResponse object to dictionary
+                agent_results[agent_name] = result.dict()
             else:
-                # Convert to AgentResponse
-                from models.responses import AgentResponse, TaskStatus
-                agent_results[agent_name] = AgentResponse(
-                    agent_name=agent_name,
-                    task_name=f"{agent_name}_task",
-                    status=TaskStatus.COMPLETED,
-                    output=result.dict() if hasattr(result, 'dict') else result,
-                    documentation={},
-                    logs=[],
-                    decisions=[],
-                    artifacts=[]
-                )
+                # Convert to dictionary format
+                agent_results[agent_name] = {
+                    "agent_name": agent_name,
+                    "task_name": f"{agent_name}_task",
+                    "status": "completed",
+                    "output": result.dict() if hasattr(result, 'dict') else result,
+                    "documentation": {},
+                    "logs": [],
+                    "decisions": [],
+                    "artifacts": []
+                }
         
         # Combine all file types for generated_files
         code_files = state.get("code_files", {})

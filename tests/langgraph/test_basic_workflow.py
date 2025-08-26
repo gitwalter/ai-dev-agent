@@ -110,41 +110,46 @@ class TestBasicLangGraphWorkflow:
         assert hasattr(app, 'invoke')
     
     def test_requirements_parser_creation(self):
-        """Test creating a PydanticOutputParser for requirements analysis."""
+        """Test creating a StrOutputParser for requirements analysis."""
         if not LANGGRAPH_AVAILABLE:
             pytest.skip("LangGraph not available")
+
+        from langchain_core.output_parsers.string import StrOutputParser
+
+        # Create StrOutputParser
+        parser = StrOutputParser()
         
-        # Create parser
-        parser = PydanticOutputParser(pydantic_object=RequirementsAnalysisOutput)
+        # Test parser creation
+        assert parser is not None
+        assert hasattr(parser, 'parse')
         
-        # Test format instructions
-        format_instructions = parser.get_format_instructions()
-        assert format_instructions is not None
-        assert len(format_instructions) > 0
-        assert "functional_requirements" in format_instructions
+        # Test string parsing
+        test_response = '{"test": "value"}'
+        result = parser.parse(test_response)
+        assert isinstance(result, str)
+        assert result == test_response
     
     def test_prompt_template_creation(self):
-        """Test creating a prompt template with format instructions."""
+        """Test creating a prompt template with StrOutputParser."""
         if not LANGGRAPH_AVAILABLE:
             pytest.skip("LangGraph not available")
         
-        from langchain.output_parsers import PydanticOutputParser
+        from langchain_core.output_parsers.string import StrOutputParser
         from langchain.prompts import PromptTemplate
         
-        # Create parser
-        parser = PydanticOutputParser(pydantic_object=RequirementsAnalysisOutput)
+        # Create StrOutputParser
+        parser = StrOutputParser()
         
         # Create prompt template
         prompt = PromptTemplate(
-            template="Analyze requirements: {project_context}\n\n{format_instructions}",
-            input_variables=["project_context"],
-            partial_variables={"format_instructions": parser.get_format_instructions()}
+            template="Analyze requirements: {project_context}\n\nRespond with valid JSON only.",
+            input_variables=["project_context"]
         )
         
         # Test prompt formatting
         formatted = prompt.format(project_context="Create a calculator")
         assert "Create a calculator" in formatted
-        assert "functional_requirements" in formatted
+        assert "Respond with valid JSON only" in formatted
     
     @pytest.mark.asyncio
     async def test_simple_workflow_execution(self):
@@ -360,11 +365,11 @@ class TestRequirementsAnalysisNode:
             pytest.skip("LangGraph not available")
         
         from langgraph.graph import StateGraph, END, START
-        from langchain.output_parsers import PydanticOutputParser
+        from langchain.output_parsers import StrOutputParser
         from langchain.prompts import PromptTemplate
-        
-        # Mock LLM response
-        mock_response = {
+
+        # Mock LLM response - JSON string format
+        mock_response = """{
             "functional_requirements": [
                 {
                     "id": "FR-001",
@@ -388,20 +393,19 @@ class TestRequirementsAnalysisNode:
                 "estimated_timeline": "1 week",
                 "key_success_factors": []
             }
-        }
-        
+        }"""
+
         mock_llm.invoke.return_value = mock_response
-        
-        # Create parser
-        parser = PydanticOutputParser(pydantic_object=RequirementsAnalysisOutput)
-        
+
+        # Create StrOutputParser
+        parser = StrOutputParser()
+
         # Create prompt
         prompt = PromptTemplate(
-            template="Analyze requirements: {project_context}\n\n{format_instructions}",
-            input_variables=["project_context"],
-            partial_variables={"format_instructions": parser.get_format_instructions()}
+            template="Analyze requirements: {project_context}\n\nRespond with valid JSON only.",
+            input_variables=["project_context"]
         )
-        
+
         # Create chain
         chain = prompt | mock_llm | parser
         
@@ -410,12 +414,15 @@ class TestRequirementsAnalysisNode:
         
         def requirements_node(state):
             result = chain.invoke({"project_context": state["project_context"]})
+            # Parse the JSON string result
+            import json
+            parsed_result = json.loads(result)
             return {
                 **state,
-                "requirements": result.functional_requirements,
+                "requirements": parsed_result.get("functional_requirements", []),
                 "agent_outputs": {
                     **state["agent_outputs"],
-                    "requirements_analyst": result.dict()
+                    "requirements_analyst": parsed_result
                 },
                 "current_step": "requirements_analysis"
             }

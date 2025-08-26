@@ -317,6 +317,10 @@ class BaseAgent(ABC):
             # Parse with enhanced parser (includes LangChain + fallbacks)
             parsed_data = parser.parse(response)
             
+            # Debug: Check what type of data is returned
+            print(f"DEBUG: parse_json_response - parsed_data type: {type(parsed_data)}")
+            print(f"DEBUG: parse_json_response - parsed_data content: {parsed_data}")
+            
             # Log successful parsing
             self.add_log_entry("info", "Enhanced output parsing successful", {
                 "agent_type": agent_type,
@@ -434,9 +438,17 @@ class BaseAgent(ABC):
         json_str = json_str.replace('"', '"').replace('"', '"')
         json_str = json_str.replace(''', "'").replace(''', "'")
         
+        # Fix unterminated strings - look for quotes that don't have a closing quote
+        import re
+        
+        # Fix unterminated strings at the end of the JSON
+        json_str = re.sub(r'(["\'])([^"\']*)$', r'\1\2"', json_str)
+        
+        # Fix unterminated braces/brackets at the end
+        json_str = re.sub(r'([{[])([^{}\]]*)$', r'\1\2}', json_str)
+        
         # Fix newline issues in strings - but be more careful
         # Only replace newlines that are not already escaped
-        import re
         json_str = re.sub(r'(?<!\\)\n', '\\n', json_str)
         json_str = re.sub(r'(?<!\\)\r', '\\r', json_str)
         json_str = re.sub(r'(?<!\\)\t', '\\t', json_str)
@@ -753,6 +765,14 @@ class BaseAgent(ABC):
         Returns:
             AgentResponse object
         """
+        # Try to create simplified response first
+        try:
+            simplified_output = self.create_simplified_output(output)
+            if simplified_output is not None:
+                output = simplified_output
+        except Exception as e:
+            self.logger.warning(f"Failed to create simplified output: {e}")
+        
         return AgentResponse(
             agent_name=self.config.name,
             task_name=task_name,
@@ -770,6 +790,20 @@ class BaseAgent(ABC):
             error_message=error_message,
             warnings=warnings or []
         )
+
+    def create_simplified_output(self, output: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Create a simplified output from the agent response.
+        Override this method in subclasses to provide simplified outputs.
+        
+        Args:
+            output: Original output data
+            
+        Returns:
+            Simplified output data or None if not implemented
+        """
+        # Default implementation - return None to use original output
+        return None
     
     def update_state_with_result(
         self,
@@ -793,7 +827,21 @@ class BaseAgent(ABC):
         # Create enhanced agent response with documentation and logs
         agent_response = self.get_enhanced_response(output, execution_time)
         
-        # Update state
+        # Preserve direct state updates that may have been made by the agent
+        # (like requirements, architecture, code_files, etc.)
+        preserved_state = {
+            "requirements": state.get("requirements", []),
+            "user_stories": state.get("user_stories", []),
+            "architecture": state.get("architecture", {}),
+            "tech_stack": state.get("tech_stack", {}),
+            "database_schema": state.get("database_schema", {}),
+            "code_files": state.get("code_files", {}),
+            "tests": state.get("tests", {}),
+            "documentation": state.get("documentation", {}),
+            "configuration_files": state.get("configuration_files", {}),
+        }
+        
+        # Update state with agent outputs and workflow history
         state["agent_outputs"][self.config.name] = agent_response.dict()
         state["current_agent"] = self.config.name
         
@@ -807,6 +855,11 @@ class BaseAgent(ABC):
             output_data=output,
             status="completed"
         )
+        
+        # Restore preserved state updates
+        for key, value in preserved_state.items():
+            if value:  # Only restore if there's actual data
+                state[key] = value
         
         return state
     
@@ -1098,7 +1151,44 @@ class BaseAgent(ABC):
         try:
             from utils.enhanced_output_parsers import get_enhanced_format_instructions
             agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
-            format_instructions = get_enhanced_format_instructions(agent_type)
+            
+            # Use simpler format instructions for architecture designer to avoid large prompts
+            if agent_type == "architecture_designer":
+                format_instructions = """CRITICAL: You MUST respond with a valid JSON object containing ALL of these required fields:
+
+{
+  "system_overview": {
+    "description": "High-level description of the system architecture",
+    "architecture_type": "web_application|mobile_app|api_service|desktop_app",
+    "deployment_model": "cloud_based|on_premise|hybrid"
+  },
+  "architecture_pattern": "layered|microservices|monolithic|event_driven|service_oriented",
+  "components": [
+    {
+      "name": "Component Name",
+      "responsibility": "What this component does",
+      "technology": "Technology used for this component"
+    }
+  ],
+  "technology_stack": {
+    "frontend": ["technology1", "technology2"],
+    "backend": ["technology1", "technology2"],
+    "database": ["technology1"],
+    "deployment": ["technology1"]
+  },
+  "security_considerations": ["security measure 1", "security measure 2"],
+  "scalability_considerations": ["scalability strategy 1", "scalability strategy 2"],
+  "deployment_strategy": "Brief deployment approach"
+}
+
+IMPORTANT: 
+- ALL fields above are REQUIRED
+- system_overview must be an object with description, architecture_type, and deployment_model
+- components must be an array of objects
+- technology_stack must be an object with frontend, backend, database, and deployment arrays
+- Respond with ONLY the JSON object, no additional text"""
+            else:
+                format_instructions = get_enhanced_format_instructions(agent_type)
         except Exception as e:
             self.logger.warning(f"Failed to get format instructions: {e}")
             format_instructions = "Please respond with valid JSON format."
@@ -1295,3 +1385,54 @@ class BaseAgent(ABC):
             "fallback_data": True,
             "timestamp": datetime.now().isoformat()
         }
+    
+    def validate_filename(self, filename: str) -> bool:
+        """
+        Validate if a filename is safe and reasonable.
+        
+        Args:
+            filename: Filename to validate
+            
+        Returns:
+            True if filename is valid
+        """
+        if not filename or not isinstance(filename, str):
+            return False
+        
+        # Check length
+        if len(filename) > 100:
+            return False
+        
+        # Check for invalid characters
+        invalid_chars = ['<', '>', ':', '"', '|', '?', '*', '\\', '/', '\n', '\r', '\t']
+        if any(char in filename for char in invalid_chars):
+            return False
+        
+        # Check for common file extensions
+        valid_extensions = ['.py', '.js', '.ts', '.java', '.txt', '.json', '.yml', '.yaml', '.md', '.html', '.css', '.xml', '.go', '.rs', '.cpp', '.c']
+        if not any(filename.endswith(ext) for ext in valid_extensions):
+            return False
+        
+        # Check that filename doesn't look like content
+        if len(filename) > 50 and (' ' in filename or '\n' in filename):
+            return False
+        
+        return True
+    
+    def sanitize_filename(self, filename: str) -> str:
+        """
+        Sanitize a filename to make it safe.
+        
+        Args:
+            filename: Original filename
+            
+        Returns:
+            Sanitized filename
+        """
+        if not self.validate_filename(filename):
+            # Generate a safe filename
+            import hashlib
+            safe_hash = hashlib.md5(filename.encode()).hexdigest()[:8]
+            return f"file_{safe_hash}.txt"
+        
+        return filename

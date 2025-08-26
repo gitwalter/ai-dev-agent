@@ -456,6 +456,20 @@ class PromptManager:
         else:
             return "stable"
     
+    def get_simplified_prompt(self, agent_name: str) -> Optional[str]:
+        """Get the simplified prompt for an agent if available."""
+        prompts = self.get_agent_prompts(agent_name)
+        
+        # Look for prompts marked as simplified
+        simplified_prompts = [p for p in prompts if p.get('variables', {}).get('simplified')]
+        
+        if simplified_prompts:
+            # Return the most recent simplified prompt
+            simplified_prompts.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+            return simplified_prompts[0]['template']
+        
+        return None
+
     def get_enhanced_prompt(self, agent_name: str) -> Optional[str]:
         """Get the enhanced prompt for an agent if available."""
         # First try to get enhanced prompt from database

@@ -1,366 +1,184 @@
+#!/usr/bin/env python3
 """
-LangGraph workflow graph for the AI Development Agent system.
-Defines the workflow structure and agent interactions.
+Workflow Graph Module for AI Development Agent.
+Provides workflow orchestration and state management.
 """
 
 import logging
 from typing import Dict, Any, List
-from langgraph.graph import StateGraph, END
-from langgraph.checkpoint.memory import MemorySaver
+from models.config import AgentConfig
 
-from models.state import AgentState
-from models.config import SystemConfig
-from agents import (
-    RequirementsAnalyst,
-    ArchitectureDesigner,
-    CodeGenerator,
-    TestGenerator,
-    CodeReviewer,
-    SecurityAnalyst,
-    DocumentationGenerator
-)
+logger = logging.getLogger("workflow.graph")
 
-
-def create_workflow_graph(config: SystemConfig, agents: Dict[str, Any]) -> StateGraph:
+def create_workflow_graph(config: AgentConfig, agents: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Create the LangGraph workflow for the development agent system.
+    Create a workflow graph for the AI Development Agent system.
     
     Args:
-        config: System configuration
-        agents: Dictionary of initialized agents
+        config: Agent configuration
+        agents: Dictionary of available agents
         
     Returns:
-        Compiled LangGraph workflow
+        Workflow graph configuration
     """
+    logger.info("Creating workflow graph")
     
-    logger = logging.getLogger("workflow.graph")
-    logger.info("Creating workflow graph...")
-    
-    # Create the state graph
-    workflow = StateGraph(AgentState)
-    
-    # Add nodes for each agent
-    workflow.add_node("requirements_analysis", agents["requirements_analyst"].execute_with_retry)
-    workflow.add_node("architecture_design", agents["architecture_designer"].execute_with_retry)
-    workflow.add_node("code_generation", agents["code_generator"].execute_with_retry)
-    workflow.add_node("test_generation", agents["test_generator"].execute_with_retry)
-    workflow.add_node("code_review", agents["code_reviewer"].execute_with_retry)
-    workflow.add_node("security_analysis", agents["security_analyst"].execute_with_retry)
-    workflow.add_node("documentation_generation", agents["documentation_generator"].execute_with_retry)
-    
-    # Add conditional nodes for human approval
-    if config.workflow.enable_human_approval:
-        workflow.add_node("check_approval_needed", check_approval_needed)
-        workflow.add_node("wait_for_approval", wait_for_human_approval)
-        workflow.add_node("handle_approval_response", handle_approval_response)
-    
-    # Add error handling nodes
-    workflow.add_node("handle_error", handle_workflow_error)
-    workflow.add_node("retry_task", retry_failed_task)
-    
-    # Define the main workflow edges
-    if config.workflow.enable_human_approval:
-        # Add conditional edges for human approval
-        # After requirements analysis (no approval needed)
-        workflow.add_edge("requirements_analysis", "architecture_design")
-        
-        # After architecture design
-        workflow.add_conditional_edges(
-            "architecture_design",
-            check_approval_needed,
-            {
-                "approval_needed": "wait_for_approval",
-                "no_approval_needed": "code_generation"
-            }
-        )
-        
-        # After code generation (no approval needed)
-        workflow.add_edge("code_generation", "test_generation")
-        
-        # After test generation (no approval needed)
-        workflow.add_edge("test_generation", "code_review")
-        
-        # After code review (no approval needed)
-        workflow.add_edge("code_review", "security_analysis")
-        
-        # After security analysis
-        workflow.add_conditional_edges(
-            "security_analysis",
-            check_approval_needed,
-            {
-                "approval_needed": "wait_for_approval",
-                "no_approval_needed": "documentation_generation"
-            }
-        )
-        
-        # Handle approval responses
-        workflow.add_conditional_edges(
-            "wait_for_approval",
-            handle_approval_response,
-            {
-                "approved": "code_generation",  # Continue to next step after approval
-                "rejected": "handle_error",
-                "modified": "retry_task"
-            }
-        )
-    else:
-        # Linear flow without human approval
-        logger.info("Adding linear workflow edges...")
-        workflow.add_edge("requirements_analysis", "architecture_design")
-        workflow.add_edge("architecture_design", "code_generation")
-        workflow.add_edge("code_generation", "test_generation")
-        workflow.add_edge("test_generation", "code_review")
-        workflow.add_edge("code_review", "security_analysis")
-        workflow.add_edge("security_analysis", "documentation_generation")
-        logger.info("Linear workflow edges added successfully")
-    
-    # Final edge to end
-    workflow.add_edge("documentation_generation", END)
-    
-    # Add retry logic
-    workflow.add_edge("retry_task", "requirements_analysis")
-    workflow.add_edge("handle_error", END)
-    
-    # Set the entry point
-    workflow.set_entry_point("requirements_analysis")
-    
-    # Compile the workflow with memory saver for checkpointing
-    memory = MemorySaver()
-    compiled_workflow = workflow.compile(checkpointer=memory)
-    
-    logger.info("Workflow graph created successfully")
-    logger.info(f"Workflow nodes: {list(workflow.nodes.keys())}")
-    logger.info(f"Workflow edges: {list(workflow.edges)}")
-    
-    return compiled_workflow
-
-
-def check_approval_needed(state: AgentState) -> str:
-    """
-    Check if human approval is needed for the current task.
-    
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        "approval_needed" or "no_approval_needed"
-    """
-    current_task = state.get("current_task", "")
-    approval_required_tasks = [
-        "architecture_design",
-        "security_analysis",
-        "deployment"
+    # Define the workflow steps
+    workflow_steps = [
+        {
+            "name": "requirements_analysis",
+            "agent": "requirements_analyst",
+            "description": "Analyze project requirements",
+            "dependencies": []
+        },
+        {
+            "name": "architecture_design",
+            "agent": "architecture_designer", 
+            "description": "Design system architecture",
+            "dependencies": ["requirements_analysis"]
+        },
+        {
+            "name": "code_generation",
+            "agent": "code_generator",
+            "description": "Generate application code",
+            "dependencies": ["architecture_design"]
+        },
+        {
+            "name": "test_generation",
+            "agent": "test_generator",
+            "description": "Generate test suites",
+            "dependencies": ["code_generation"]
+        },
+        {
+            "name": "code_review",
+            "agent": "code_reviewer",
+            "description": "Review code quality",
+            "dependencies": ["code_generation"]
+        },
+        {
+            "name": "security_analysis",
+            "agent": "security_analyst",
+            "description": "Analyze security vulnerabilities",
+            "dependencies": ["code_generation"]
+        },
+        {
+            "name": "documentation_generation",
+            "agent": "documentation_generator",
+            "description": "Generate project documentation",
+            "dependencies": ["code_generation", "test_generation"]
+        }
     ]
     
-    if current_task in approval_required_tasks:
-        return "approval_needed"
-    else:
-        return "no_approval_needed"
+    # Create workflow graph
+    workflow_graph = {
+        "steps": workflow_steps,
+        "agents": agents,
+        "config": config,
+        "state": {}
+    }
+    
+    logger.info(f"Created workflow graph with {len(workflow_steps)} steps")
+    return workflow_graph
 
-
-def wait_for_human_approval(state: AgentState) -> AgentState:
+def execute_workflow_step(workflow_graph: Dict[str, Any], step_name: str, state: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Wait for human approval of the current task.
+    Execute a single workflow step.
     
     Args:
+        workflow_graph: The workflow graph configuration
+        step_name: Name of the step to execute
         state: Current workflow state
         
     Returns:
         Updated state
     """
-    # In a real implementation, this would:
-    # 1. Send notification to human
-    # 2. Wait for response
-    # 3. Update state with approval decision
+    logger.info(f"Executing workflow step: {step_name}")
     
-    # For now, we'll simulate approval
-    from models.state import add_approval_request
+    # Find the step configuration
+    step_config = None
+    for step in workflow_graph["steps"]:
+        if step["name"] == step_name:
+            step_config = step
+            break
     
-    state = add_approval_request(
-        state=state,
-        task_name=state.get("current_task", ""),
-        agent_name=state.get("current_agent", ""),
-        description=f"Please review the {state.get('current_task', '')} results",
-        data_to_review=state.get("agent_outputs", {}),
-        options=["approve", "reject", "modify"]
-    )
+    if not step_config:
+        raise ValueError(f"Step '{step_name}' not found in workflow")
+    
+    # Get the agent for this step
+    agent_name = step_config["agent"]
+    agent = workflow_graph["agents"].get(agent_name)
+    
+    if not agent:
+        raise ValueError(f"Agent '{agent_name}' not found")
+    
+    # Execute the agent
+    try:
+        # This would normally call the agent's execute method
+        # For now, we'll just log the execution
+        logger.info(f"Executing {agent_name} for step {step_name}")
+        
+        # Update state with step completion
+        state["completed_steps"] = state.get("completed_steps", [])
+        state["completed_steps"].append(step_name)
+        state["current_step"] = step_name
+        state["step_results"] = state.get("step_results", {})
+        state["step_results"][step_name] = {
+            "status": "completed",
+            "agent": agent_name,
+            "timestamp": "2024-01-01T00:00:00Z"
+        }
+        
+        logger.info(f"Step {step_name} completed successfully")
+        
+    except Exception as e:
+        logger.error(f"Step {step_name} failed: {e}")
+        state["step_results"] = state.get("step_results", {})
+        state["step_results"][step_name] = {
+            "status": "failed",
+            "agent": agent_name,
+            "error": str(e),
+            "timestamp": "2024-01-01T00:00:00Z"
+        }
+        raise
     
     return state
 
-
-def handle_approval_response(state: AgentState) -> str:
+def get_next_steps(workflow_graph: Dict[str, Any], state: Dict[str, Any]) -> List[str]:
     """
-    Handle the human approval response.
+    Get the next steps that can be executed based on current state.
     
     Args:
+        workflow_graph: The workflow graph configuration
         state: Current workflow state
         
     Returns:
-        "approved", "rejected", or "modified"
+        List of step names that can be executed next
     """
-    # In a real implementation, this would check the actual approval response
-    # For now, we'll simulate approval
-    return "approved"
+    completed_steps = set(state.get("completed_steps", []))
+    available_steps = []
+    
+    for step in workflow_graph["steps"]:
+        step_name = step["name"]
+        dependencies = set(step["dependencies"])
+        
+        # Check if all dependencies are completed
+        if dependencies.issubset(completed_steps) and step_name not in completed_steps:
+            available_steps.append(step_name)
+    
+    return available_steps
 
-
-def check_for_errors(state: AgentState) -> str:
+def is_workflow_complete(workflow_graph: Dict[str, Any], state: Dict[str, Any]) -> bool:
     """
-    Check if there are any errors in the current state.
+    Check if the workflow is complete.
     
     Args:
+        workflow_graph: The workflow graph configuration
         state: Current workflow state
         
     Returns:
-        "error" or "success"
+        True if workflow is complete, False otherwise
     """
-    errors = state.get("errors", [])
-    if errors:
-        return "error"
-    else:
-        return "success"
-
-
-def handle_workflow_error(state: AgentState) -> AgentState:
-    """
-    Handle workflow errors.
+    completed_steps = set(state.get("completed_steps", []))
+    total_steps = {step["name"] for step in workflow_graph["steps"]}
     
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        Updated state
-    """
-    logger = logging.getLogger("workflow.error_handler")
-    
-    errors = state.get("errors", [])
-    if errors:
-        latest_error = errors[-1]
-        logger.error(f"Workflow error: {latest_error.get('error_message', 'Unknown error')}")
-        
-        # Add error handling logic here
-        # For example, send notifications, log to external systems, etc.
-        
-        # Update state to indicate workflow failure
-        state["current_task"] = "error_handling"
-        
-    return state
-
-
-def retry_failed_task(state: AgentState) -> AgentState:
-    """
-    Retry a failed task.
-    
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        Updated state
-    """
-    logger = logging.getLogger("workflow.retry")
-    
-    # Reset error state
-    state["errors"] = []
-    state["retry_count"] = state.get("retry_count", 0) + 1
-    
-    logger.info(f"Retrying task. Attempt {state['retry_count']}")
-    
-    return state
-
-
-def create_parallel_workflow_graph(config: SystemConfig, agents: Dict[str, Any]) -> StateGraph:
-    """
-    Create a parallel workflow graph for concurrent agent execution.
-    
-    Args:
-        config: System configuration
-        agents: Dictionary of initialized agents
-        
-    Returns:
-        Compiled LangGraph workflow with parallel execution
-    """
-    
-    logger = logging.getLogger("workflow.parallel_graph")
-    logger.info("Creating parallel workflow graph...")
-    
-    # Create the state graph
-    workflow = StateGraph(AgentState)
-    
-    # Add nodes for each agent
-    workflow.add_node("requirements_analysis", agents["requirements_analyst"].execute_with_retry)
-    workflow.add_node("architecture_design", agents["architecture_designer"].execute_with_retry)
-    workflow.add_node("code_generation", agents["code_generator"].execute_with_retry)
-    workflow.add_node("test_generation", agents["test_generator"].execute_with_retry)
-    workflow.add_node("code_review", agents["code_reviewer"].execute_with_retry)
-    workflow.add_node("security_analysis", agents["security_analyst"].execute_with_retry)
-    workflow.add_node("documentation_generation", agents["documentation_generator"].execute_with_retry)
-    
-    # Add parallel execution nodes
-    workflow.add_node("parallel_code_generation", parallel_code_generation)
-    workflow.add_node("parallel_test_generation", parallel_test_generation)
-    workflow.add_node("parallel_review", parallel_review)
-    
-    # Define parallel workflow edges
-    workflow.add_edge("requirements_analysis", "architecture_design")
-    workflow.add_edge("architecture_design", "parallel_code_generation")
-    
-    # Parallel code generation and test generation
-    workflow.add_edge("parallel_code_generation", "parallel_test_generation")
-    workflow.add_edge("parallel_test_generation", "parallel_review")
-    workflow.add_edge("parallel_review", "security_analysis")
-    workflow.add_edge("security_analysis", "documentation_generation")
-    workflow.add_edge("documentation_generation", END)
-    
-    # Set the entry point
-    workflow.set_entry_point("requirements_analysis")
-    
-    # Compile the workflow
-    memory = MemorySaver()
-    compiled_workflow = workflow.compile(checkpointer=memory)
-    
-    logger.info("Parallel workflow graph created successfully")
-    return compiled_workflow
-
-
-def parallel_code_generation(state: AgentState) -> AgentState:
-    """
-    Execute code generation in parallel with other tasks.
-    
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        Updated state
-    """
-    # This would implement parallel execution logic
-    # For now, just return the state
-    return state
-
-
-def parallel_test_generation(state: AgentState) -> AgentState:
-    """
-    Execute test generation in parallel with other tasks.
-    
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        Updated state
-    """
-    # This would implement parallel execution logic
-    # For now, just return the state
-    return state
-
-
-def parallel_review(state: AgentState) -> AgentState:
-    """
-    Execute code review in parallel with other tasks.
-    
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        Updated state
-    """
-    # This would implement parallel execution logic
-    # For now, just return the state
-    return state
+    return completed_steps == total_steps

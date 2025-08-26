@@ -4,9 +4,10 @@ Generates comprehensive tests for the generated code.
 """
 
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from models.state import AgentState
 from models.responses import TestGenerationResponse
+from models.simplified_responses import SimplifiedTestFile, SimplifiedTestResponse, create_simplified_test_response
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
 
@@ -52,9 +53,32 @@ class TestGenerator(BaseAgent):
             self.add_log_entry("info", "Generating test response")
             response_text = await self.generate_response(prompt)
             
-            # Parse response
-            self.add_log_entry("info", "Parsing JSON response")
-            test_data = self.parse_json_response(response_text)
+            # Parse response with direct JSON parsing for simplified response
+            self.add_log_entry("info", "Parsing JSON response with simplified models")
+            try:
+                # Clean the response by removing markdown formatting
+                cleaned_response = response_text.strip()
+                if cleaned_response.startswith("```json"):
+                    cleaned_response = cleaned_response[7:]  # Remove "```json"
+                if cleaned_response.startswith("```"):
+                    cleaned_response = cleaned_response[3:]  # Remove "```"
+                if cleaned_response.endswith("```"):
+                    cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
+                cleaned_response = cleaned_response.strip()
+                
+                # Direct JSON parsing for simplified response
+                import json
+                parsed_data = json.loads(cleaned_response)
+                self.add_log_entry("info", "Successfully parsed JSON directly")
+                
+                # Create simplified response using the parsed data
+                test_data = self.create_simplified_test_response(parsed_data)
+                self.add_log_entry("info", "Successfully created simplified response")
+                
+            except Exception as parse_error:
+                self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
+                # Use fallback parsing as last resort
+                test_data = self.parse_json_response(response_text)
             
             # Validate response structure
             self._validate_test_data(test_data)
@@ -66,8 +90,21 @@ class TestGenerator(BaseAgent):
             # Create artifacts
             self._create_test_artifacts(test_data)
             
-            # Update state with generated tests
-            state["tests"] = test_data.get("test_files", {})
+            # Update state with generated tests - convert TestFile objects to simple content
+            test_files = test_data.get("test_files", {})
+            if test_files:
+                # Convert TestFile objects to simple filename: content mapping for state
+                simple_test_files = {}
+                for filename, test_file in test_files.items():
+                    if hasattr(test_file, 'content'):
+                        # It's a TestFile object
+                        simple_test_files[filename] = test_file.content
+                    else:
+                        # It's already a simple string
+                        simple_test_files[filename] = test_file
+                state["tests"] = simple_test_files
+            else:
+                state["tests"] = {}
             
             # Create documentation
             self._create_test_documentation(test_data)
@@ -147,10 +184,20 @@ class TestGenerator(BaseAgent):
         # Create test files artifact
         test_files = test_data.get("test_files", {})
         if test_files:
+            # Convert TestFile objects to simple content for artifact storage
+            simple_test_files = {}
+            for filename, test_file in test_files.items():
+                if hasattr(test_file, 'content'):
+                    # It's a TestFile object
+                    simple_test_files[filename] = test_file.content
+                else:
+                    # It's already a simple string
+                    simple_test_files[filename] = test_file
+            
             self.add_artifact(
                 name="test_files",
                 type="test_code",
-                content=test_files,
+                content=simple_test_files,
                 description=f"Generated {len(test_files)} test files"
             )
         
@@ -209,27 +256,126 @@ class TestGenerator(BaseAgent):
                 "coverage_targets": coverage_targets,
                 "test_strategy": test_data.get("test_strategy", ""),
                 "testing_approach": {
-                    "framework": test_data.get("test_framework", "pytest"),
-                    "coverage_tool": test_data.get("coverage_tool", "pytest-cov"),
-                    "test_organization": test_data.get("test_organization", "standard")
+                    "framework": test_data.get("testing_strategy", {}).get("framework", "pytest"),
+                    "coverage_tool": test_data.get("testing_strategy", {}).get("coverage_tool", "pytest-cov"),
+                    "test_organization": "standard"
                 }
             }
         )
     
-    def _validate_test_data(self, data: Dict[str, Any]) -> None:
+    def _validate_test_data(self, data) -> None:
         """Validate test generation data."""
-        # Provide default values for missing fields
-        if "test_files" not in data:
-            data["test_files"] = {}
-        if "test_strategy" not in data:
-            data["test_strategy"] = "pytest-based testing strategy"
-        if "test_types" not in data:
-            data["test_types"] = ["unit", "integration"]
+        # Handle both SimplifiedTestResponse objects and dictionaries
+        if hasattr(data, 'test_files'):  # SimplifiedTestResponse object
+            # Convert to dictionary format for compatibility
+            data_dict = {
+                "test_files": {test.filename: {"content": test.content, "test_type": test.test_type} for test in data.test_files},
+                "test_strategy": f"{data.test_framework}-based testing strategy",
+                "test_types": list(set(test.test_type for test in data.test_files)),
+                "test_categories": {
+                    "unit_tests": ["Function-level tests", "Class-level tests"],
+                    "integration_tests": ["API endpoint tests", "Database integration tests"]
+                },
+                "test_data": {
+                    "fixtures": "Sample test data and fixtures for comprehensive testing",
+                    "mocks": "Mock objects and stubs for isolated testing"
+                },
+                "coverage_targets": {
+                    "unit_test_coverage": data.coverage_target,
+                    "integration_test_coverage": "60%"
+                },
+                "testing_strategy": {
+                    "framework": data.test_framework,
+                    "assertion_library": "pytest assertions",
+                    "mocking_framework": "unittest.mock",
+                    "coverage_tool": "pytest-cov"
+                },
+                "test_execution_plan": [
+                    "1. Run unit tests: pytest tests/unit/",
+                    "2. Run integration tests: pytest tests/integration/",
+                    "3. Generate coverage report: pytest --cov=src tests/"
+                ],
+                "quality_gate_passed": data.quality_gate_passed
+            }
+            # Replace the object with the dictionary
+            data.clear()
+            data.update(data_dict)
+        else:  # Dictionary format (old)
+            # Provide default values for missing fields
+            if "test_files" not in data:
+                data["test_files"] = {}
+            if "test_strategy" not in data:
+                data["test_strategy"] = "pytest-based testing strategy"
+            if "test_types" not in data:
+                data["test_types"] = ["unit", "integration"]
+            if "test_categories" not in data:
+                data["test_categories"] = {
+                    "unit_tests": ["Function-level tests", "Class-level tests"],
+                    "integration_tests": ["API endpoint tests", "Database integration tests"]
+                }
+            if "test_data" not in data:
+                data["test_data"] = {
+                    "fixtures": "Sample test data and fixtures for comprehensive testing",
+                    "mocks": "Mock objects and stubs for isolated testing"
+                }
+            if "coverage_targets" not in data:
+                data["coverage_targets"] = {
+                    "unit_test_coverage": "80%",
+                    "integration_test_coverage": "60%"
+                }
+            if "testing_strategy" not in data:
+                data["testing_strategy"] = {
+                    "framework": "pytest",
+                    "assertion_library": "pytest assertions",
+                    "mocking_framework": "unittest.mock",
+                    "coverage_tool": "pytest-cov"
+                }
+            if "test_execution_plan" not in data:
+                data["test_execution_plan"] = [
+                    "1. Run unit tests: pytest tests/unit/",
+                    "2. Run integration tests: pytest tests/integration/",
+                    "3. Generate coverage report: pytest --cov=src tests/"
+                ]
         
-        if not data.get("test_files"):
+        # Convert test_files to proper TestFile objects if they're simple strings
+        if data.get("test_files"):
+            converted_test_files = {}
+            for filename, content in data["test_files"].items():
+                if isinstance(content, str):
+                    # Convert string content to TestFile object
+                    from utils.structured_outputs import TestFile
+                    converted_test_files[filename] = TestFile(
+                        filename=filename,
+                        content=content,
+                        test_type="unit",  # Default to unit tests
+                        coverage_target="80%",
+                        dependencies=["pytest"]
+                    )
+                elif isinstance(content, dict):
+                    # If it's already a dict, try to create TestFile from it
+                    from utils.structured_outputs import TestFile
+                    converted_test_files[filename] = TestFile(
+                        filename=filename,
+                        content=content.get("content", ""),
+                        test_type=content.get("test_type", "unit"),
+                        coverage_target=content.get("coverage_target", "80%"),
+                        dependencies=content.get("dependencies", ["pytest"])
+                    )
+                else:
+                    # Keep as is if it's already a TestFile object
+                    converted_test_files[filename] = content
+            data["test_files"] = converted_test_files
+        else:
             # Create a basic test file if none provided
+            from utils.structured_outputs import TestFile
             data["test_files"] = {
-                "test_main.py": "# Basic test file\\nimport pytest\\n\\ndef test_basic():\\n    assert True"
+                "test_main.py": TestFile(
+                    filename="test_main.py",
+                    content="# Basic test file\nimport pytest\n\ndef test_basic():\n    assert True",
+                    test_type="unit",
+                    coverage_target="80%",
+                    dependencies=["pytest"]
+                )
             }
     
     def validate_input(self, state: AgentState) -> bool:
@@ -238,9 +384,15 @@ class TestGenerator(BaseAgent):
         if not super().validate_input(state):
             return False
         
-        # Check for code_files (should be set by code generator)
-        if "code_files" not in state or not state["code_files"]:
-            self.logger.error("No code_files found in state - code generator must run first")
+        # Check for code files (should be set by code generator)
+        # Support both old format (code_files) and new format (source_files + configuration_files)
+        code_files = state.get("code_files", {})
+        source_files = state.get("source_files", {})
+        configuration_files = state.get("configuration_files", {})
+        
+        # Check if we have any code files in any format
+        if not code_files and not source_files and not configuration_files:
+            self.logger.error("No code files found in state - code generator must run first")
             return False
         
         # Check for requirements (should be set by requirements analyst)
@@ -249,3 +401,71 @@ class TestGenerator(BaseAgent):
             # Don't fail, just warn - we can still generate tests from code
         
         return True
+
+    def create_simplified_test_response(self, data: Dict[str, Any]) -> SimplifiedTestResponse:
+        """
+        Create a SimplifiedTestResponse from the test generation data.
+        
+        Args:
+            data: Test generation data
+            
+        Returns:
+            SimplifiedTestResponse object
+        """
+        # Convert tests to simplified format
+        tests = []
+        
+        # Convert test files to simplified tests
+        for filename, test_file in data.get("test_files", {}).items():
+            if isinstance(test_file, dict):
+                content = test_file.get("content", "")
+                test_type = test_file.get("test_type", "unit")
+            else:
+                content = str(test_file)
+                test_type = "unit"
+            
+            tests.append(SimplifiedTestFile(
+                filename=filename,
+                content=content,
+                test_type=test_type
+            ))
+        
+        # Get test framework from strategy
+        test_framework = "pytest"
+        if "testing_strategy" in data and isinstance(data["testing_strategy"], dict):
+            test_framework = data["testing_strategy"].get("framework", "pytest")
+        
+        # Get coverage target
+        coverage_target = 80
+        if "coverage_targets" in data and isinstance(data["coverage_targets"], dict):
+            unit_coverage = data["coverage_targets"].get("unit_test_coverage", "80%")
+            if isinstance(unit_coverage, str) and "%" in unit_coverage:
+                try:
+                    coverage_target = int(unit_coverage.replace("%", ""))
+                except ValueError:
+                    coverage_target = 80
+        
+        return create_simplified_test_response(
+            test_files=tests,
+            test_framework=test_framework,
+            run_command=f"pytest tests/",
+            coverage_target=f"{coverage_target}%",
+            quality_gate_passed=data.get("quality_gate_passed", True)
+        )
+
+    def create_simplified_output(self, output: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Create a simplified output from the test generation.
+        
+        Args:
+            output: Original output data
+            
+        Returns:
+            Simplified output data
+        """
+        try:
+            simplified_response = self.create_simplified_test_response(output)
+            return simplified_response.dict()
+        except Exception as e:
+            self.logger.error(f"Failed to create simplified test output: {e}")
+            return None

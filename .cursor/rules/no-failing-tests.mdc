@@ -1,0 +1,183 @@
+# No Failing Tests Rule
+
+**CRITICAL**: Never accept or commit failing tests. All tests must pass before considering any work complete.
+
+## Core Requirements
+
+### 1. Test Quality Standards
+- **ALL TESTS MUST PASS**: No exceptions - if a test fails, fix it immediately or remove it
+- **NO BROKEN TESTS**: Never leave tests in a failing state
+- **REAL LLM TESTING**: Include tests with real LLM usage to catch production issues
+- **COMPREHENSIVE COVERAGE**: Test both success and failure scenarios properly
+
+### 2. Test Development Workflow
+- **WRITE TESTS FIRST**: Follow TDD principles - write tests before implementation
+- **FIX IMMEDIATELY**: When a test fails, fix it before continuing with other work
+- **REMOVE IF UNFIXABLE**: If a test cannot be fixed within reasonable time, remove it
+- **DOCUMENT REMOVALS**: When removing tests, document why and plan for replacement
+
+### 3. Test Categories
+
+#### Unit Tests
+- Test individual functions and methods
+- Use proper mocking for external dependencies
+- Ensure fast execution (< 1 second per test)
+- Test edge cases and error conditions
+
+#### Integration Tests
+- Test component interactions
+- Use real LLMs for critical paths
+- Test complete workflows
+- Validate end-to-end functionality
+
+#### Real LLM Tests
+- **MANDATORY**: Include tests with actual LLM calls
+- Test with real API keys and responses
+- Validate structured output parsing
+- Test error handling with real API responses
+- Catch production issues before deployment
+
+### 4. Test Fixing Process
+
+#### When Tests Fail
+1. **STOP IMMEDIATELY**: Do not continue with other work
+2. **ANALYZE FAILURE**: Understand the root cause
+3. **FIX OR REMOVE**: Either fix the test or remove it
+4. **VERIFY FIX**: Ensure all tests pass after changes
+5. **DOCUMENT CHANGES**: Update documentation if needed
+
+#### Fixing Strategies
+- **Mock Issues**: Fix mock configurations and return values
+- **Import Errors**: Resolve missing imports and dependencies
+- **Logic Errors**: Fix test logic and assertions
+- **API Changes**: Update tests for API changes
+- **Environment Issues**: Fix test environment setup
+
+### 5. Test Removal Guidelines
+
+#### When to Remove Tests
+- **UNFIXABLE**: Test cannot be fixed within reasonable time
+- **OBSOLETE**: Test is no longer relevant to current code
+- **REDUNDANT**: Test duplicates functionality of other tests
+- **UNRELIABLE**: Test is flaky or non-deterministic
+- **TOO COMPLEX**: Test is overly complex and hard to maintain
+
+#### Removal Process
+1. **DOCUMENT REASON**: Explain why test is being removed
+2. **PLAN REPLACEMENT**: Plan for better test if needed
+3. **UPDATE COVERAGE**: Ensure coverage is maintained
+4. **COMMUNICATE**: Inform team of test removal
+5. **MONITOR**: Watch for regressions after removal
+
+### 6. Real LLM Testing Requirements
+
+#### Critical Path Testing
+- **AGENT NODES**: Test all agent nodes with real LLMs
+- **WORKFLOW EXECUTION**: Test complete workflows end-to-end
+- **OUTPUT PARSING**: Test structured output parsing with real responses
+- **ERROR HANDLING**: Test error scenarios with real API responses
+
+#### Test Configuration
+- **API KEYS**: Use real API keys in test environment
+- **RATE LIMITING**: Handle API rate limits in tests
+- **TIMEOUTS**: Set appropriate timeouts for LLM calls
+- **RETRY LOGIC**: Implement retry logic for transient failures
+
+#### Test Data Management
+- **REAL PROMPTS**: Use real prompts from prompt database
+- **REAL CONTEXT**: Test with realistic project contexts
+- **REAL REQUIREMENTS**: Use realistic project requirements
+- **REAL OUTPUTS**: Validate against real LLM outputs
+
+### 7. Test Execution Standards
+
+#### Pre-Commit Requirements
+- **ALL TESTS PASS**: No commits with failing tests
+- **COVERAGE MAINTAINED**: Maintain or improve test coverage
+- **PERFORMANCE**: Tests complete within reasonable time
+- **RELIABILITY**: Tests are deterministic and repeatable
+
+#### CI/CD Integration
+- **AUTOMATED TESTING**: All tests run in CI/CD pipeline
+- **FAILURE BLOCKING**: Pipeline fails on test failures
+- **REAL LLM TESTS**: Include real LLM tests in pipeline
+- **ENVIRONMENT SETUP**: Proper test environment configuration
+
+### 8. Test Quality Metrics
+
+#### Success Criteria
+- **100% PASS RATE**: All tests must pass
+- **FAST EXECUTION**: Tests complete quickly
+- **REAL COVERAGE**: Meaningful coverage of critical paths
+- **RELIABLE**: Tests are deterministic and stable
+
+#### Monitoring
+- **REGULAR EXECUTION**: Run tests regularly
+- **FAILURE TRACKING**: Track and analyze test failures
+- **PERFORMANCE MONITORING**: Monitor test execution time
+- **COVERAGE TRACKING**: Track test coverage metrics
+
+### 9. Implementation Checklist
+
+#### For Every Test
+- [ ] Test passes consistently
+- [ ] Test is meaningful and valuable
+- [ ] Test covers real scenarios
+- [ ] Test is maintainable and clear
+- [ ] Test handles errors properly
+
+#### For Test Suites
+- [ ] All tests pass
+- [ ] Real LLM tests included
+- [ ] Coverage is adequate
+- [ ] Performance is acceptable
+- [ ] Documentation is complete
+
+#### For Test Failures
+- [ ] Failure is analyzed
+- [ ] Fix is implemented
+- [ ] All tests pass after fix
+- [ ] No regressions introduced
+- [ ] Changes are documented
+
+### 10. Enforcement
+
+#### Code Review Requirements
+- **NO FAILING TESTS**: Reject PRs with failing tests
+- **REAL LLM VALIDATION**: Ensure real LLM tests are included
+- **COVERAGE REVIEW**: Review test coverage adequacy
+- **QUALITY ASSESSMENT**: Assess test quality and value
+
+#### Development Workflow
+- **TEST FIRST**: Write tests before implementation
+- **FIX IMMEDIATELY**: Fix test failures immediately
+- **REMOVE IF NEEDED**: Remove unfixable tests
+- **DOCUMENT CHANGES**: Document test changes and removals
+
+#### Team Standards
+- **SHARED RESPONSIBILITY**: All team members responsible for test quality
+- **REGULAR REVIEW**: Regular review of test suite health
+- **CONTINUOUS IMPROVEMENT**: Continuously improve test quality
+- **KNOWLEDGE SHARING**: Share test best practices and lessons learned
+
+## Benefits
+
+- **RELIABILITY**: Ensures system reliability and stability
+- **CONFIDENCE**: Builds confidence in code changes
+- **PRODUCTION SAFETY**: Catches issues before production deployment
+- **MAINTAINABILITY**: Maintains high code quality standards
+- **TEAM EFFICIENCY**: Prevents time wasted on debugging test issues
+
+## Consequences of Violation
+
+- **IMMEDIATE FIX REQUIRED**: All failing tests must be fixed immediately
+- **NO EXCEPTIONS**: No work continues with failing tests
+- **QUALITY IMPACT**: Failing tests indicate quality issues
+- **TEAM BLOCKING**: Failing tests block team progress
+- **PRODUCTION RISK**: Failing tests increase production risk
+
+**This rule is ALWAYS APPLIED and must be followed for all development work.**
+description:
+globs:
+alwaysApply: true
+---

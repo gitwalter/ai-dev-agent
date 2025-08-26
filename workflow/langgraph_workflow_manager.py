@@ -8,19 +8,30 @@ import asyncio
 import logging
 from typing import Dict, Any, List, TypedDict, Optional, Callable
 from datetime import datetime
+import re
 
 try:
     from langgraph.graph import StateGraph, END, START
     from langgraph.checkpoint.memory import MemorySaver
     from langchain.output_parsers import PydanticOutputParser
+    from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
     from langchain.prompts import PromptTemplate
     from langchain.schema.runnable import RunnablePassthrough
     from langchain_google_genai import ChatGoogleGenerativeAI
     from pydantic import BaseModel, Field
     LANGGRAPH_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     LANGGRAPH_AVAILABLE = False
-    logging.warning("LangGraph not available, using fallback")
+    logging.warning(f"LangGraph not available: {e}, using fallback")
+    # Provide fallback imports to prevent NameError
+    ChatGoogleGenerativeAI = None
+    StateGraph = None
+    END = None
+    START = None
+    MemorySaver = None
+    PydanticOutputParser = None
+    PromptTemplate = None
+    RunnablePassthrough = None
 
 from utils.structured_outputs import (
     RequirementsAnalysisOutput, ArchitectureDesignOutput, CodeGenerationOutput,
@@ -61,8 +72,8 @@ class AgentNodeFactory:
         """Create a requirements analysis node."""
         async def requirements_node(state: AgentState) -> AgentState:
             try:
-                # Create parser for structured output
-                parser = PydanticOutputParser(pydantic_object=RequirementsAnalysisOutput)
+                # Use JSON Output Parser instead of PydanticOutputParser
+                json_parser = JsonOutputParser()
                 
                 # Create prompt template
                 prompt = PromptTemplate(
@@ -74,13 +85,45 @@ PROJECT CONTEXT:
 TASK:
 Analyze the project context above and generate a comprehensive requirements analysis.
 
-{format_instructions}""",
-                    input_variables=["project_context"],
-                    partial_variables={"format_instructions": parser.get_format_instructions()}
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "functional_requirements": [
+        {{
+            "id": "REQ-001",
+            "title": "Requirement Title",
+            "description": "Detailed description",
+            "priority": "high|medium|low",
+            "type": "functional|non-functional"
+        }}
+    ],
+    "non_functional_requirements": [
+        {{
+            "id": "NFR-001",
+            "title": "Non-functional requirement",
+            "description": "Description",
+            "category": "performance|security|usability|reliability"
+        }}
+    ],
+    "user_stories": [
+        {{
+            "id": "US-001",
+            "title": "User Story Title",
+            "description": "As a [user], I want [feature] so that [benefit]",
+            "acceptance_criteria": ["Criterion 1", "Criterion 2"]
+        }}
+    ],
+    "technical_constraints": ["Constraint 1", "Constraint 2"],
+    "assumptions": ["Assumption 1", "Assumption 2"],
+    "risks": ["Risk 1", "Risk 2"],
+    "summary": "Overall requirements summary"
+}}
+
+Do not include any text before or after the JSON object.""",
+                    input_variables=["project_context"]
                 )
                 
                 # Create the chain
-                chain = prompt | self.llm | parser
+                chain = prompt | self.llm | json_parser
                 
                 # Execute the chain
                 result = await chain.ainvoke({"project_context": state["project_context"]})
@@ -88,10 +131,10 @@ Analyze the project context above and generate a comprehensive requirements anal
                 # Update state
                 return {
                     **state,
-                    "requirements": result.functional_requirements,
+                    "requirements": result.get("functional_requirements", []),
                     "agent_outputs": {
                         **state["agent_outputs"],
-                        "requirements_analyst": result.dict()
+                        "requirements_analyst": result
                     },
                     "current_step": "requirements_analysis",
                     "execution_history": [
@@ -100,7 +143,7 @@ Analyze the project context above and generate a comprehensive requirements anal
                             "step": "requirements_analysis",
                             "timestamp": datetime.now().isoformat(),
                             "status": "completed",
-                            "output": result.dict()
+                             "output": result
                         }
                     ]
                 }
@@ -128,7 +171,8 @@ Analyze the project context above and generate a comprehensive requirements anal
         """Create an architecture design node."""
         async def architecture_node(state: AgentState) -> AgentState:
             try:
-                parser = PydanticOutputParser(pydantic_object=ArchitectureDesignOutput)
+                # Use JSON Output Parser instead of PydanticOutputParser
+                json_parser = JsonOutputParser()
                 
                 prompt = PromptTemplate(
                     template="""You are an expert Software Architect. Design the system architecture based on the requirements.
@@ -142,12 +186,45 @@ REQUIREMENTS:
 TASK:
 Design a comprehensive system architecture that meets the requirements.
 
-{format_instructions}""",
-                    input_variables=["project_context", "requirements"],
-                    partial_variables={"format_instructions": parser.get_format_instructions()}
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "system_overview": "High-level system description",
+    "architecture_pattern": "MVC|Microservices|Event-Driven|etc",
+    "technology_stack": {{
+        "frontend": ["React", "Vue", "Angular"],
+        "backend": ["Node.js", "Python", "Java"],
+        "database": ["PostgreSQL", "MongoDB", "Redis"],
+        "infrastructure": ["AWS", "Azure", "GCP"]
+    }},
+    "components": [
+        {{
+            "name": "Component Name",
+            "description": "Component description",
+            "responsibilities": ["Responsibility 1", "Responsibility 2"]
+        }}
+    ],
+    "data_flow": "Description of data flow between components",
+    "security_considerations": ["Security measure 1", "Security measure 2"],
+    "scalability_considerations": ["Scalability approach 1", "Scalability approach 2"],
+    "performance_considerations": ["Performance optimization 1", "Performance optimization 2"],
+    "deployment_strategy": "Deployment approach description",
+    "risk_mitigation": ["Risk 1 and mitigation", "Risk 2 and mitigation"],
+    "database_schema": {{
+        "tables": ["Table 1", "Table 2"],
+        "relationships": "Description of relationships"
+    }},
+    "api_design": {{
+        "endpoints": ["/api/v1/resource1", "/api/v1/resource2"],
+        "authentication": "Authentication method",
+        "rate_limiting": "Rate limiting strategy"
+    }}
+}}
+
+Do not include any text before or after the JSON object.""",
+                    input_variables=["project_context", "requirements"]
                 )
                 
-                chain = prompt | self.llm | parser
+                chain = prompt | self.llm | json_parser
                 
                 result = await chain.ainvoke({
                     "project_context": state["project_context"],
@@ -156,10 +233,10 @@ Design a comprehensive system architecture that meets the requirements.
                 
                 return {
                     **state,
-                    "architecture": result.dict(),
+                    "architecture": result,
                     "agent_outputs": {
                         **state["agent_outputs"],
-                        "architecture_designer": result.dict()
+                        "architecture_designer": result
                     },
                     "current_step": "architecture_design",
                     "execution_history": [
@@ -168,7 +245,7 @@ Design a comprehensive system architecture that meets the requirements.
                             "step": "architecture_design",
                             "timestamp": datetime.now().isoformat(),
                             "status": "completed",
-                            "output": result.dict()
+                             "output": result
                         }
                     ]
                 }
@@ -196,29 +273,40 @@ Design a comprehensive system architecture that meets the requirements.
         """Create a code generation node."""
         async def code_generator_node(state: AgentState) -> AgentState:
             try:
-                parser = PydanticOutputParser(pydantic_object=CodeGenerationOutput)
+                # Use StrOutputParser for markdown with code blocks
+                output_parser = StrOutputParser()
                 
                 prompt = PromptTemplate(
                     template="""You are an expert Software Developer. Generate production-ready code based on the requirements and architecture.
 
-PROJECT CONTEXT:
-{project_context}
+PROJECT CONTEXT: {project_context}
+REQUIREMENTS: {requirements}
+ARCHITECTURE: {architecture}
 
-REQUIREMENTS:
-{requirements}
+Generate the complete source code in markdown format with code blocks. For each file, use this format:
 
-ARCHITECTURE:
-{architecture}
+## File: filename.py
+```python
+# code content here
+```
 
-TASK:
-Generate comprehensive, production-ready code that implements the requirements according to the architecture.
+## File: requirements.txt
+```txt
+# dependencies here
+```
 
-{format_instructions}""",
-                    input_variables=["project_context", "requirements", "architecture"],
-                    partial_variables={"format_instructions": parser.get_format_instructions()}
+## File: README.md
+```markdown
+# documentation here
+```
+
+Include all necessary files for a complete, working application. Make sure the code is production-ready with proper error handling, documentation, and follows best practices.
+
+Return ONLY the markdown with code blocks, no additional text.""",
+                    input_variables=["project_context", "requirements", "architecture"]
                 )
                 
-                chain = prompt | self.llm | parser
+                chain = prompt | self.llm | output_parser
                 
                 result = await chain.ainvoke({
                     "project_context": state["project_context"],
@@ -226,12 +314,18 @@ Generate comprehensive, production-ready code that implements the requirements a
                     "architecture": str(state["architecture"])
                 })
                 
+                # Parse the markdown result to extract code files
+                source_files = parse_markdown_code_blocks(result)
+                
                 return {
                     **state,
-                    "code_files": result.source_files,
+                    "code_generation": {
+                        "source_files": source_files,
+                        "raw_markdown": result
+                    },
                     "agent_outputs": {
                         **state["agent_outputs"],
-                        "code_generator": result.dict()
+                        "code_generator": {"source_files": source_files}
                     },
                     "current_step": "code_generation",
                     "execution_history": [
@@ -240,7 +334,8 @@ Generate comprehensive, production-ready code that implements the requirements a
                             "step": "code_generation",
                             "timestamp": datetime.now().isoformat(),
                             "status": "completed",
-                            "output": result.dict()
+                            "files_generated": len(source_files),
+                            "file_names": list(source_files.keys())
                         }
                     ]
                 }
@@ -264,33 +359,106 @@ Generate comprehensive, production-ready code that implements the requirements a
         
         return code_generator_node
     
+    def parse_markdown_code_blocks(self, markdown_text: str) -> Dict[str, str]:
+            """
+            Parse markdown text and extract code blocks as source files.
+            
+            Args:
+                markdown_text: The markdown text containing code blocks
+                
+            Returns:
+                Dictionary mapping filename to file content
+            """
+            source_files = {}
+            
+            # Pattern to match markdown code blocks with file headers
+            # Matches: ## File: filename.py\n```python\ncontent\n```
+            pattern = r'##\s*File:\s*([^\n]+)\s*\n```(?:[a-zA-Z]+)?\s*\n(.*?)\n```'
+            
+            matches = re.findall(pattern, markdown_text, re.DOTALL)
+            
+            for filename, content in matches:
+                # Clean up the filename and content
+                filename = filename.strip()
+                content = content.strip()
+                
+                if filename and content:
+                    source_files[filename] = content
+            
+            # If no structured format found, try to extract any code blocks
+            if not source_files:
+                # Fallback: extract any code blocks and assign default names
+                code_block_pattern = r'```(?:[a-zA-Z]+)?\s*\n(.*?)\n```'
+                code_blocks = re.findall(code_block_pattern, markdown_text, re.DOTALL)
+                
+                for i, content in enumerate(code_blocks):
+                    content = content.strip()
+                    if content:
+                        # Try to determine file type from content or use default
+                        if 'def ' in content or 'import ' in content:
+                            filename = f"file_{i+1}.py"
+                        elif 'requirements' in content.lower() or '==' in content:
+                            filename = f"requirements_{i+1}.txt"
+                        else:
+                            filename = f"file_{i+1}.txt"
+                        
+                        source_files[filename] = content
+            
+            return source_files
+    
     def create_test_generator_node(self) -> Callable[[AgentState], AgentState]:
         """Create a test generation node."""
         async def test_generator_node(state: AgentState) -> AgentState:
             try:
-                parser = PydanticOutputParser(pydantic_object=TestGenerationOutput)
+                # Use JSON Output Parser instead of PydanticOutputParser
+                json_parser = JsonOutputParser()
                 
                 prompt = PromptTemplate(
                     template="""You are an expert Test Engineer. Generate comprehensive tests based on the code and requirements.
 
-PROJECT CONTEXT:
-{project_context}
+PROJECT CONTEXT: {project_context}
+REQUIREMENTS: {requirements}
+CODE FILES: {code_files}
 
-REQUIREMENTS:
-{requirements}
+IMPORTANT: Respond ONLY with a valid JSON object. Do not include any other text or explanations.
 
-CODE FILES:
-{code_files}
+Generate tests and return them in this exact JSON format:
+{{
+    "test_files": {{
+        "test_filename.py": {{
+            "filename": "test_filename.py",
+            "content": "Actual test code content",
+            "test_type": "unit|integration|e2e",
+            "coverage_target": "Target coverage percentage",
+            "dependencies": ["pytest", "other dependencies"]
+        }}
+    }},
+    "test_strategy": {{
+        "unit_testing": "Unit testing approach and framework",
+        "integration_testing": "Integration testing approach",
+        "test_data": "Test data management strategy",
+        "coverage_goals": "Test coverage goals and metrics"
+    }},
+    "test_scenarios": [
+        {{
+            "id": "SCENARIO-001",
+            "description": "Test scenario description",
+            "test_cases": ["Test case 1", "Test case 2"],
+            "expected_outcomes": ["Expected outcome 1", "Expected outcome 2"]
+        }}
+    ],
+    "test_environment": {{
+        "setup_instructions": ["Step 1", "Step 2"],
+        "dependencies": ["List of test dependencies"],
+        "configuration": "Test environment configuration"
+    }}
+}}
 
-TASK:
-Generate comprehensive test files that cover the functionality of the code according to the requirements.
-
-{format_instructions}""",
-                    input_variables=["project_context", "requirements", "code_files"],
-                    partial_variables={"format_instructions": parser.get_format_instructions()}
+Return ONLY the JSON object.""",
+                    input_variables=["project_context", "requirements", "code_files"]
                 )
                 
-                chain = prompt | self.llm | parser
+                chain = prompt | self.llm | json_parser
                 
                 result = await chain.ainvoke({
                     "project_context": state["project_context"],
@@ -300,10 +468,10 @@ Generate comprehensive test files that cover the functionality of the code accor
                 
                 return {
                     **state,
-                    "tests": result.test_files,
+                    "tests": result.get("test_files", {}),
                     "agent_outputs": {
                         **state["agent_outputs"],
-                        "test_generator": result.dict()
+                        "test_generator": result
                     },
                     "current_step": "test_generation",
                     "execution_history": [
@@ -312,7 +480,7 @@ Generate comprehensive test files that cover the functionality of the code accor
                             "step": "test_generation",
                             "timestamp": datetime.now().isoformat(),
                             "status": "completed",
-                            "output": result.dict()
+                            "output": result
                         }
                     ]
                 }

@@ -1,0 +1,293 @@
+# Model Selection Rule
+
+**CRITICAL**: Always use the standardized model selection approach for all LLM operations in this project.
+
+## Core Model Selection Standards
+
+### 1. Default Model Configuration
+- **DEFAULT MODEL**: `gemini-2.5-flash-lite` for simple tasks
+- **ADVANCED MODEL**: `gemini-2.5-flash` for complex/sophisticated tasks
+- **API KEY SOURCE**: Always use `st.secrets["GEMINI_API_KEY"]` from Streamlit secrets
+- **TEMPERATURE**: 0.1 for consistent, deterministic outputs
+
+### 2. Model Selection Criteria
+
+#### Use `gemini-2.5-flash-lite` for:
+- **Simple text generation**: Basic responses, summaries, simple explanations
+- **Code generation**: Basic code snippets, simple functions, straightforward implementations
+- **Data processing**: Simple data transformations, basic analysis
+- **Documentation**: Basic documentation, simple README files
+- **Testing**: Unit test generation, simple test cases
+- **Quick responses**: When speed is more important than complexity
+- **Cost optimization**: When budget constraints are a concern
+
+#### Use `gemini-2.5-flash` for:
+- **Complex reasoning**: Multi-step problem solving, architectural decisions
+- **Sophisticated code generation**: Complex algorithms, advanced patterns, system design
+- **Detailed analysis**: Comprehensive requirements analysis, architecture design
+- **Creative tasks**: Complex prompt engineering, innovative solutions
+- **Quality-critical tasks**: When output quality is paramount
+- **Integration work**: Complex system integration, multi-component solutions
+- **Debugging**: Complex error analysis and resolution
+
+### 3. Implementation Pattern
+
+#### Standard Model Factory Function
+```python
+def get_llm_model(task_complexity="simple"):
+    """
+    Get appropriate LLM model based on task complexity.
+    
+    Args:
+        task_complexity (str): "simple" or "complex"
+        
+    Returns:
+        ChatGoogleGenerativeAI: Configured LLM instance
+    """
+    import streamlit as st
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    
+    # Get API key from Streamlit secrets
+    api_key = st.secrets["GEMINI_API_KEY"]
+    
+    # Select model based on complexity
+    if task_complexity == "complex":
+        model_name = "gemini-2.5-flash"
+    else:
+        model_name = "gemini-2.5-flash-lite"
+    
+    return ChatGoogleGenerativeAI(
+        model=model_name,
+        google_api_key=api_key,
+        temperature=0.1,
+        max_tokens=8192
+    )
+```
+
+#### Usage Examples
+```python
+# Simple task - use flash-lite
+simple_llm = get_llm_model("simple")
+response = simple_llm.invoke("Generate a simple hello world function")
+
+# Complex task - use flash
+complex_llm = get_llm_model("complex")
+response = complex_llm.invoke("Design a microservices architecture for an e-commerce platform")
+```
+
+### 4. Task Complexity Classification
+
+#### Simple Tasks (use `gemini-2.5-flash-lite`):
+- Basic text generation and summarization
+- Simple code snippets and functions
+- Basic data validation and formatting
+- Simple documentation generation
+- Basic test case generation
+- Simple error messages and logging
+- Basic configuration file generation
+
+#### Complex Tasks (use `gemini-2.5-flash`):
+- Requirements analysis and specification
+- System architecture design
+- Complex algorithm implementation
+- Multi-component system design
+- Security analysis and threat modeling
+- Performance optimization strategies
+- Complex integration patterns
+- Advanced debugging and troubleshooting
+- Creative problem solving
+- Strategic decision making
+
+### 5. Agent-Specific Model Selection
+
+#### Requirements Analyst
+- **Model**: `gemini-2.5-flash` (complex reasoning required)
+- **Reasoning**: Requirements analysis involves complex understanding and synthesis
+
+#### Architecture Designer
+- **Model**: `gemini-2.5-flash` (complex system design)
+- **Reasoning**: Architecture design requires sophisticated reasoning and pattern recognition
+
+#### Code Generator
+- **Model**: `gemini-2.5-flash-lite` (for simple code) or `gemini-2.5-flash` (for complex code)
+- **Reasoning**: Depends on code complexity - simple functions vs complex systems
+
+#### Test Generator
+- **Model**: `gemini-2.5-flash-lite` (basic tests) or `gemini-2.5-flash` (complex test scenarios)
+- **Reasoning**: Simple unit tests vs complex integration and system tests
+
+#### Code Reviewer
+- **Model**: `gemini-2.5-flash` (complex analysis required)
+- **Reasoning**: Code review involves sophisticated analysis and pattern recognition
+
+#### Security Analyst
+- **Model**: `gemini-2.5-flash` (complex security analysis)
+- **Reasoning**: Security analysis requires advanced threat modeling and risk assessment
+
+#### Documentation Generator
+- **Model**: `gemini-2.5-flash-lite` (basic docs) or `gemini-2.5-flash` (complex documentation)
+- **Reasoning**: Simple README vs comprehensive technical documentation
+
+### 6. Configuration Management
+
+#### Environment-Based Configuration
+```python
+def get_model_config():
+    """Get model configuration based on environment."""
+    import streamlit as st
+    
+    # Default to simple model
+    default_model = "gemini-2.5-flash-lite"
+    
+    # Check for environment override
+    model_override = st.secrets.get("DEFAULT_MODEL", default_model)
+    
+    return {
+        "simple_model": "gemini-2.5-flash-lite",
+        "complex_model": "gemini-2.5-flash",
+        "default_model": model_override,
+        "temperature": 0.1,
+        "max_tokens": 8192
+    }
+```
+
+#### Model Selection Helper
+```python
+def select_model_for_task(task_type, complexity_hint=None):
+    """
+    Select appropriate model for given task.
+    
+    Args:
+        task_type (str): Type of task (requirements, architecture, code, etc.)
+        complexity_hint (str): Optional complexity hint
+        
+    Returns:
+        str: Model name to use
+    """
+    # Task complexity mapping
+    complex_tasks = {
+        "requirements_analysis": True,
+        "architecture_design": True,
+        "code_review": True,
+        "security_analysis": True,
+        "system_design": True,
+        "integration": True
+    }
+    
+    simple_tasks = {
+        "code_generation": False,  # Can be simple or complex
+        "test_generation": False,  # Can be simple or complex
+        "documentation": False,    # Can be simple or complex
+        "basic_processing": False
+    }
+    
+    # Determine if task is inherently complex
+    is_complex_task = complex_tasks.get(task_type, False)
+    
+    # Override with complexity hint if provided
+    if complexity_hint:
+        is_complex_task = complexity_hint == "complex"
+    
+    return "gemini-2.5-flash" if is_complex_task else "gemini-2.5-flash-lite"
+```
+
+### 7. Performance and Cost Considerations
+
+#### Model Performance Characteristics
+- **`gemini-2.5-flash-lite`**: Faster, lower cost, suitable for simple tasks
+- **`gemini-2.5-flash`**: Higher quality, more capable, higher cost
+
+#### Cost Optimization Strategy
+- Start with `gemini-2.5-flash-lite` for all tasks
+- Upgrade to `gemini-2.5-flash` only when quality/complexity requires it
+- Monitor usage and costs to optimize model selection
+- Use caching for repeated similar tasks
+
+### 8. Error Handling and Fallbacks
+
+#### Model Availability Handling
+```python
+def create_llm_with_fallback(primary_model, fallback_model="gemini-2.5-flash-lite"):
+    """
+    Create LLM with fallback to simpler model if primary fails.
+    
+    Args:
+        primary_model (str): Primary model to try
+        fallback_model (str): Fallback model if primary fails
+        
+    Returns:
+        ChatGoogleGenerativeAI: Configured LLM instance
+    """
+    import streamlit as st
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    
+    api_key = st.secrets["GEMINI_API_KEY"]
+    
+    try:
+        # Try primary model first
+        return ChatGoogleGenerativeAI(
+            model=primary_model,
+            google_api_key=api_key,
+            temperature=0.1,
+            max_tokens=8192
+        )
+    except Exception as e:
+        # Fallback to simpler model
+        return ChatGoogleGenerativeAI(
+            model=fallback_model,
+            google_api_key=api_key,
+            temperature=0.1,
+            max_tokens=8192
+        )
+```
+
+### 9. Testing and Validation
+
+#### Model Selection Testing
+- Test both models with same prompts to compare quality
+- Validate model selection logic for different task types
+- Monitor performance and cost metrics
+- Test fallback mechanisms
+
+#### Quality Assurance
+- Ensure model selection aligns with task complexity
+- Validate that complex tasks use appropriate models
+- Monitor for overuse of expensive models
+- Track model performance and reliability
+
+### 10. Documentation Requirements
+
+#### Code Documentation
+- Document model selection rationale in code comments
+- Include complexity assessment in function documentation
+- Document any model-specific configurations or limitations
+
+#### Configuration Documentation
+- Document model selection criteria and rules
+- Maintain list of task types and their complexity classifications
+- Document cost implications and optimization strategies
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- LLM model instantiation
+- Agent node configuration
+- Task complexity assessment
+- Model selection decisions
+- Performance optimization
+- Cost management
+
+**Violations of this rule require immediate remediation.**
+
+## Benefits
+
+- **Consistency**: Standardized model selection across the project
+- **Cost Optimization**: Appropriate model selection based on task complexity
+- **Performance**: Better performance through appropriate model choice
+- **Quality**: Higher quality outputs for complex tasks
+- **Maintainability**: Clear guidelines for model selection decisions
+- **Scalability**: Easy to adjust model selection as needs evolve
+description:
+globs:
+alwaysApply: true
+---

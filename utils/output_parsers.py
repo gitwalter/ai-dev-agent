@@ -17,6 +17,15 @@ try:
 except ImportError:
     LANGCHAIN_AVAILABLE = False
     logging.warning("LangChain not available, falling back to manual parsing")
+    # Fallback imports for when pydantic is not available
+    from typing import Protocol
+    class BaseModel(Protocol):
+        pass
+    class Field:
+        def __init__(self, **kwargs):
+            pass
+    class ValidationError(Exception):
+        pass
 
 from models.responses import BaseModel as BaseResponseModel
 
@@ -161,17 +170,21 @@ class BaseOutputParser(ABC):
                     if current_file and current_content:
                         source_files[current_file] = '\n'.join(current_content)
                     
-                    # Start new file
-                    current_file = line.strip().strip('*').strip()
-                    current_content = []
+                    # Start new file - validate it looks like a filename
+                    potential_filename = line.strip().strip('*').strip()
+                    if self._is_valid_filename(potential_filename):
+                        current_file = potential_filename
+                        current_content = []
                 elif line.strip().startswith('# ') and ':' in line:
                     # Save previous file if exists
                     if current_file and current_content:
                         source_files[current_file] = '\n'.join(current_content)
                     
-                    # Start new file
-                    current_file = line.strip()[2:].split(':')[0].strip()
-                    current_content = []
+                    # Start new file - validate it looks like a filename
+                    potential_filename = line.strip()[2:].split(':')[0].strip()
+                    if self._is_valid_filename(potential_filename):
+                        current_file = potential_filename
+                        current_content = []
                 elif current_file and line.strip():
                     # Add content to current file
                     current_content.append(line)
@@ -205,6 +218,55 @@ class BaseOutputParser(ABC):
         except Exception as e:
             self.logger.error(f"Content extraction failed: {e}")
             return self._get_comprehensive_default_output()
+    
+    def _is_valid_filename(self, filename: str) -> bool:
+        """
+        Check if a string looks like a valid filename.
+        
+        Args:
+            filename: Potential filename to validate
+            
+        Returns:
+            True if it looks like a valid filename, False otherwise
+        """
+        import re
+        
+        # If it's too long, it's probably not a filename
+        if len(filename) > 100:
+            return False
+        
+        # If it contains newlines, it's not a filename
+        if '\n' in filename:
+            return False
+        
+        # If it contains too many spaces or special characters, it's probably not a filename
+        if filename.count(' ') > 3:
+            return False
+        
+        # Check for common file extensions
+        valid_extensions = ['.py', '.js', '.ts', '.html', '.css', '.json', '.yaml', '.yml', '.txt', '.md', '.sql', '.sh', '.bat', '.ps1']
+        has_valid_extension = any(filename.endswith(ext) for ext in valid_extensions)
+        
+        # If it has a valid extension, it's more likely to be a filename
+        if has_valid_extension:
+            return True
+        
+        # If it doesn't have an extension but looks like a simple name, it might be a filename
+        if re.match(r'^[a-zA-Z0-9_-]+$', filename):
+            return True
+        
+        # If it contains common filename patterns
+        if re.match(r'^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$', filename):
+            return True
+        
+        # If it looks like a path with directories
+        if '/' in filename or '\\' in filename:
+            # Check if the last part looks like a filename
+            last_part = filename.split('/')[-1].split('\\')[-1]
+            if re.match(r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)?$', last_part):
+                return True
+        
+        return False
     
     def _get_comprehensive_default_output(self) -> Dict[str, Any]:
         """Get a more comprehensive default output instead of Hello World."""

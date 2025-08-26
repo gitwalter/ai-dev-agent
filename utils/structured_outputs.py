@@ -142,37 +142,27 @@ class Recommendation(BaseModel):
 
 
 class SourceFile(BaseModel):
-    """Structured source file representation."""
+    """Model for source code files."""
+    filename: str = Field(...)  # Removed max_length constraint to allow custom validation
+    content: str
+    language: Optional[str] = None
     
-    filename: constr(min_length=1, max_length=255) = Field(
-        description="Name of the source file",
-        example="main.py"
-    )
-    content: constr(min_length=1) = Field(
-        description="Content of the source file",
-        example="from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/')\ndef read_root():\n    return {'message': 'Hello World'}"
-    )
-    language: Optional[str] = Field(
-        description="Programming language of the file",
-        example="python"
-    )
-    purpose: Optional[str] = Field(
-        description="Purpose or role of this file in the project",
-        example="Main application entry point"
-    )
+    @validator('filename')
+    def validate_filename(cls, v):
+        """Validate filename length and format."""
+        if len(v) > 500:
+            # Truncate filename if too long
+            return v[:497] + "..."
+        return v
     
-    @model_validator(mode='after')
-    def validate_content(self):
-        """Validate that content is not just whitespace."""
-        if not self.content.strip():
-            raise ValueError("File content cannot be empty or only whitespace")
-        return self
+    class Config:
+        extra = "allow"  # Allow extra fields for flexibility
 
 
 class ConfigurationFile(BaseModel):
     """Structured configuration file representation."""
     
-    filename: constr(min_length=1, max_length=255) = Field(
+    filename: str = Field(
         description="Name of the configuration file",
         example="requirements.txt"
     )
@@ -188,12 +178,20 @@ class ConfigurationFile(BaseModel):
         description="Description of what this configuration file does",
         example="Python package dependencies"
     )
+    
+    @validator('filename')
+    def validate_filename(cls, v):
+        """Validate filename length and format."""
+        if len(v) > 500:
+            # Truncate filename if too long
+            return v[:497] + "..."
+        return v
 
 
 class TestFile(BaseModel):
     """Structured test file representation."""
     
-    filename: constr(min_length=1, max_length=255) = Field(
+    filename: str = Field(
         description="Name of the test file",
         example="test_main.py"
     )
@@ -206,19 +204,29 @@ class TestFile(BaseModel):
         example="unit"
     )
     coverage_target: Optional[str] = Field(
+        default=None,
         description="Target coverage for this test file",
         example="80%"
     )
     dependencies: Optional[List[str]] = Field(
+        default=None,
         description="Test dependencies required",
         example=["pytest", "httpx"]
     )
+    
+    @validator('filename')
+    def validate_filename(cls, v):
+        """Validate filename length and format."""
+        if len(v) > 500:
+            # Truncate filename if too long
+            return v[:497] + "..."
+        return v
 
 
 class DocumentationFile(BaseModel):
     """Structured documentation file representation."""
     
-    filename: constr(min_length=1, max_length=255) = Field(
+    filename: str = Field(
         description="Name of the documentation file",
         example="README.md"
     )
@@ -245,6 +253,14 @@ class DocumentationFile(BaseModel):
             "sequence_diagram": "```mermaid\nsequenceDiagram\n    participant U as User\n    participant S as System\n    U->>S: Login\n    S-->>U: Success\n```"
         }
     )
+    
+    @validator('filename')
+    def validate_filename(cls, v):
+        """Validate filename length and format."""
+        if len(v) > 500:
+            # Truncate filename if too long
+            return v[:497] + "..."
+        return v
 
 
 class CodeGenerationOutput(BaseModel):
@@ -264,6 +280,7 @@ class CodeGenerationOutput(BaseModel):
     
     configuration_files: Dict[str, ConfigurationFile] = Field(
         description="Dictionary of configuration files with their content and metadata",
+        default_factory=dict,
         example={
             "requirements.txt": {
                 "filename": "requirements.txt",
@@ -286,16 +303,19 @@ class CodeGenerationOutput(BaseModel):
     
     project_structure: List[str] = Field(
         description="List of project structure directories and files",
+        default_factory=list,
         example=["src/", "tests/", "docs/", "config/"]
     )
     
     implementation_notes: List[str] = Field(
         description="List of implementation notes and architectural decisions",
+        default_factory=list,
         example=["RESTful API design with FastAPI", "Proper error handling and validation"]
     )
     
     testing_strategy: Dict[str, str] = Field(
         description="Testing strategy and approach",
+        default_factory=dict,
         example={
             "unit_tests": "pytest for unit testing",
             "integration_tests": "API endpoint testing",
@@ -305,6 +325,7 @@ class CodeGenerationOutput(BaseModel):
     
     deployment_instructions: List[str] = Field(
         description="List of deployment and setup instructions",
+        default_factory=list,
         example=[
             "1. Install dependencies: pip install -r requirements.txt",
             "2. Set environment variables",
@@ -497,7 +518,7 @@ class ArchitectureDesignOutput(BaseModel):
         ]
     )
     
-    data_flow: constr(min_length=10, max_length=500) = Field(
+    data_flow: constr(min_length=10, max_length=2000) = Field(
         description="Description of data flow between components",
         example="User requests flow through API Gateway to appropriate microservice, which processes data and returns responses."
     )
@@ -527,7 +548,7 @@ class ArchitectureDesignOutput(BaseModel):
         example=["Caching strategies", "Database indexing", "CDN usage"]
     )
     
-    deployment_strategy: constr(min_length=10, max_length=300) = Field(
+    deployment_strategy: constr(min_length=10, max_length=2000) = Field(
         description="Deployment strategy and approach",
         example="Containerized deployment using Docker with Kubernetes orchestration for scalability and reliability."
     )

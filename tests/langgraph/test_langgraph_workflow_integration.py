@@ -8,7 +8,10 @@ import asyncio
 import sys
 import os
 from pathlib import Path
-import tomllib
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 import pytest
 
 # Add project root to path

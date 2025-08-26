@@ -19,6 +19,7 @@ class SupervisorSwarmState(TypedDict):
     current_phase: str  # 'planning', 'execution', 'review', 'completion'
     current_supervisor_task: Optional[str]
     active_agent: Optional[str]
+    current_task: str  # Current task being executed
     
     # Agent outputs
     requirements: List[Dict[str, Any]]
@@ -26,284 +27,222 @@ class SupervisorSwarmState(TypedDict):
     code_files: Dict[str, Any]
     tests: Dict[str, Any]
     documentation: Dict[str, Any]
+    diagrams: Dict[str, Any]
+    
+    # Agent management
     agent_outputs: Dict[str, Any]
+    agent_status: Dict[str, str]  # 'available', 'busy', 'completed', 'failed'
+    agent_assignments: Dict[str, str]  # task -> agent mapping
     
-    # Supervisor oversight
-    supervisor_decisions: List[Dict[str, Any]]
-    quality_validations: List[Dict[str, Any]]
-    task_delegations: List[Dict[str, Any]]
-    escalations: List[Dict[str, Any]]
+    # Handoff system
+    handoff_queue: List[Dict[str, Any]]  # Pending handoffs
+    handoff_history: List[Dict[str, Any]]  # Completed handoffs
+    handoff_rules: Dict[str, Any]  # Handoff validation rules
     
-    # Swarm coordination
-    handoff_history: List[Dict[str, Any]]
-    agent_collaborations: List[Dict[str, Any]]
-    current_collaboration: Optional[Dict[str, Any]]
+    # Quality control
+    quality_gates: Dict[str, bool]  # Quality gate status
+    quality_metrics: Dict[str, float]  # Quality scores
+    validation_results: List[Dict[str, Any]]  # Validation outcomes
     
     # Error handling
-    errors: List[str]
-    warnings: List[str]
-    retry_count: int
+    errors: List[Dict[str, Any]]
+    warnings: List[Dict[str, Any]]
+    approval_requests: List[Dict[str, Any]]
     
-    # Performance tracking
+    # Execution tracking
+    current_step: str
     execution_history: List[Dict[str, Any]]
-    performance_metrics: Dict[str, Dict[str, Any]]
-
-
-class Task(BaseModel):
-    """Structured task definition for delegation."""
-    id: str = Field(..., min_length=1, description="Unique task identifier")
-    type: str = Field(..., min_length=1, description="Task type (requirements_analysis, architecture_design, etc.)")
-    description: str = Field(..., min_length=1, description="Task description")
-    requirements: Dict[str, Any] = Field(default_factory=dict, description="Task requirements")
-    priority: str = Field(default="medium", description="Task priority (low/medium/high/critical)")
-    estimated_complexity: str = Field(default="moderate", description="Estimated complexity (simple/moderate/complex)")
-    dependencies: List[str] = Field(default_factory=list, description="List of task dependencies")
-    quality_criteria: Dict[str, Any] = Field(default_factory=dict, description="Quality criteria for the task")
-    created_at: datetime = Field(default_factory=datetime.now, description="Task creation timestamp")
-    assigned_to: Optional[str] = Field(default=None, description="Agent assigned to the task")
-    status: str = Field(default="pending", description="Task status (pending/in_progress/completed/failed)")
+    workflow_history: List[Dict[str, Any]]
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
+    # Performance monitoring
+    performance_metrics: Dict[str, float]
+    execution_times: Dict[str, float]
+    resource_usage: Dict[str, Any]
+
+
+class HandoffRequest(BaseModel):
+    """Handoff request between agents."""
+    from_agent: str
+    to_agent: str
+    task_id: str
+    task_type: str
+    priority: str = "normal"  # low, normal, high, critical
+    data: Dict[str, Any]
+    timestamp: datetime = Field(default_factory=datetime.now)
+    status: str = "pending"  # pending, approved, rejected, completed
+    validation_rules: List[str] = []
+    quality_requirements: Dict[str, Any] = {}
+
+
+class QualityGate(BaseModel):
+    """Quality gate for handoff validation."""
+    gate_id: str
+    gate_name: str
+    gate_type: str  # 'validation', 'review', 'approval'
+    required_score: float
+    current_score: float = 0.0
+    passed: bool = False
+    validation_rules: List[str] = []
+    approver: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class AgentStatus(BaseModel):
+    """Agent status and capabilities."""
+    agent_id: str
+    agent_name: str
+    status: str  # 'available', 'busy', 'completed', 'failed'
+    current_task: Optional[str] = None
+    capabilities: List[str] = []
+    performance_metrics: Dict[str, float] = {}
+    last_activity: datetime = Field(default_factory=datetime.now)
+    workload: float = 0.0  # 0.0 to 1.0
+
+
+class HandoffRule(BaseModel):
+    """Rule for handoff validation."""
+    rule_id: str
+    rule_name: str
+    rule_type: str  # 'validation', 'quality', 'approval'
+    conditions: Dict[str, Any]
+    actions: List[str]
+    priority: int = 1
+    enabled: bool = True
+
+
+class SupervisorSwarmStateManager:
+    """Manager for supervisor-swarm state operations."""
+    
+    def __init__(self):
+        self.state: SupervisorSwarmState = {}
+    
+    def initialize_state(self, project_context: str, project_name: str, session_id: str) -> SupervisorSwarmState:
+        """Initialize a new supervisor-swarm state."""
+        self.state = {
+            "project_context": project_context,
+            "project_name": project_name,
+            "session_id": session_id,
+            "current_phase": "planning",
+            "current_supervisor_task": None,
+            "active_agent": None,
+            "current_task": "initialization",
+            "requirements": [],
+            "architecture": {},
+            "code_files": {},
+            "tests": {},
+            "documentation": {},
+            "diagrams": {},
+            "agent_outputs": {},
+            "agent_status": {},
+            "agent_assignments": {},
+            "handoff_queue": [],
+            "handoff_history": [],
+            "handoff_rules": {},
+            "quality_gates": {},
+            "quality_metrics": {},
+            "validation_results": [],
+            "errors": [],
+            "warnings": [],
+            "approval_requests": [],
+            "current_step": "started",
+            "execution_history": [],
+            "workflow_history": [],
+            "performance_metrics": {},
+            "execution_times": {},
+            "resource_usage": {}
         }
-
-
-class TaskResult(BaseModel):
-    """Result of a task execution."""
-    task_id: str = Field(..., description="ID of the executed task")
-    worker: str = Field(..., description="Worker agent that executed the task")
-    result: Dict[str, Any] = Field(..., description="Task execution result")
-    validation: Optional[Dict[str, Any]] = Field(default=None, description="Validation result")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Execution timestamp")
-    execution_time: Optional[float] = Field(default=None, description="Execution time in seconds")
-    status: str = Field(default="completed", description="Execution status")
+        return self.state
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
-class Escalation(BaseModel):
-    """Escalation from worker agent to supervisor."""
-    id: str = Field(..., description="Unique escalation identifier")
-    from_agent: str = Field(..., description="Agent that created the escalation")
-    issue: str = Field(..., description="Description of the issue")
-    severity: str = Field(default="medium", description="Issue severity (low/medium/high/critical)")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Escalation context")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Escalation timestamp")
-    status: str = Field(default="pending", description="Escalation status (pending/in_progress/resolved)")
+    def add_handoff_request(self, handoff: HandoffRequest) -> None:
+        """Add a handoff request to the queue."""
+        self.state["handoff_queue"].append(handoff.dict())
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
-class ValidationResult(BaseModel):
-    """Result of quality validation."""
-    task_type: str = Field(..., description="Type of task being validated")
-    overall_score: float = Field(..., description="Overall validation score (0.0-1.0)")
-    is_approved: bool = Field(..., description="Whether the output is approved")
-    criteria_scores: Dict[str, float] = Field(..., description="Scores for individual criteria")
-    feedback: str = Field(..., description="Validation feedback")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Validation timestamp")
-    validator: str = Field(default="quality_control_supervisor", description="Validator that performed the validation")
+    def process_handoff(self, handoff_id: str, action: str, approver: str = None) -> bool:
+        """Process a handoff request."""
+        for handoff in self.state["handoff_queue"]:
+            if handoff.get("task_id") == handoff_id:
+                handoff["status"] = action
+                if approver:
+                    handoff["approver"] = approver
+                handoff["processed_at"] = datetime.now().isoformat()
+                
+                # Move to history
+                self.state["handoff_history"].append(handoff)
+                self.state["handoff_queue"].remove(handoff)
+                return True
+        return False
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
-class SupervisorDecision(BaseModel):
-    """A decision made by a supervisor."""
-    decision_type: str = Field(..., description="Type of decision")
-    action: str = Field(..., description="Action taken")
-    reasoning: str = Field(..., description="Reasoning for the decision")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Decision context")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Decision timestamp")
-    supervisor_id: str = Field(..., description="ID of the supervisor that made the decision")
+    def add_quality_gate(self, gate: QualityGate) -> None:
+        """Add a quality gate."""
+        self.state["quality_gates"][gate.gate_id] = gate.dict()
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
-class HandoffRecord(BaseModel):
-    """Record of a handoff between agents."""
-    from_agent: str = Field(..., description="Agent that initiated the handoff")
-    to_agent: str = Field(..., description="Agent that received the handoff")
-    reason: str = Field(..., description="Reason for the handoff")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Handoff context")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Handoff timestamp")
-    status: str = Field(default="completed", description="Handoff status")
+    def update_quality_gate(self, gate_id: str, score: float, passed: bool) -> bool:
+        """Update a quality gate."""
+        if gate_id in self.state["quality_gates"]:
+            self.state["quality_gates"][gate_id]["current_score"] = score
+            self.state["quality_gates"][gate_id]["passed"] = passed
+            self.state["quality_gates"][gate_id]["timestamp"] = datetime.now().isoformat()
+            return True
+        return False
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
-class PerformanceMetrics(BaseModel):
-    """Performance metrics for agents and workflows."""
-    agent_id: str = Field(..., description="Agent identifier")
-    metric_type: str = Field(..., description="Type of metric")
-    value: float = Field(..., description="Metric value")
-    unit: str = Field(default="", description="Unit of measurement")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Metric timestamp")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Metric context")
+    def get_agent_status(self, agent_id: str) -> Optional[AgentStatus]:
+        """Get agent status."""
+        if agent_id in self.state["agent_status"]:
+            return AgentStatus(**self.state["agent_status"][agent_id])
+        return None
     
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
-
-
-def create_initial_supervisor_swarm_state(
-    project_context: str,
-    project_name: str = "",
-    session_id: str = ""
-) -> SupervisorSwarmState:
-    """Create an initial supervisor-swarm state."""
-    return SupervisorSwarmState(
-        project_context=project_context,
-        project_name=project_name,
-        session_id=session_id,
-        current_phase="started",
-        current_supervisor_task=None,
-        active_agent=None,
-        requirements=[],
-        architecture={},
-        code_files={},
-        tests={},
-        documentation={},
-        agent_outputs={},
-        supervisor_decisions=[],
-        quality_validations=[],
-        task_delegations=[],
-        escalations=[],
-        handoff_history=[],
-        agent_collaborations=[],
-        current_collaboration=None,
-        errors=[],
-        warnings=[],
-        retry_count=0,
-        execution_history=[],
-        performance_metrics={}
-    )
-
-
-def update_supervisor_swarm_state(
-    state: SupervisorSwarmState,
-    updates: Dict[str, Any]
-) -> SupervisorSwarmState:
-    """Update a supervisor-swarm state with new values."""
-    return SupervisorSwarmState(**{**state, **updates})
-
-
-def add_supervisor_decision(
-    state: SupervisorSwarmState,
-    decision: SupervisorDecision
-) -> SupervisorSwarmState:
-    """Add a supervisor decision to the state."""
-    decisions = state["supervisor_decisions"].copy()
-    decisions.append(decision.model_dump())
+    def update_agent_status(self, agent_id: str, status: str, task: str = None) -> None:
+        """Update agent status."""
+        if agent_id not in self.state["agent_status"]:
+            self.state["agent_status"][agent_id] = {
+                "agent_id": agent_id,
+                "agent_name": agent_id,
+                "status": status,
+                "current_task": task,
+                "capabilities": [],
+                "performance_metrics": {},
+                "last_activity": datetime.now().isoformat(),
+                "workload": 0.0
+            }
+        else:
+            self.state["agent_status"][agent_id]["status"] = status
+            if task:
+                self.state["agent_status"][agent_id]["current_task"] = task
+            self.state["agent_status"][agent_id]["last_activity"] = datetime.now().isoformat()
     
-    return update_supervisor_swarm_state(state, {
-        "supervisor_decisions": decisions
-    })
-
-
-def add_quality_validation(
-    state: SupervisorSwarmState,
-    validation: ValidationResult
-) -> SupervisorSwarmState:
-    """Add a quality validation to the state."""
-    validations = state["quality_validations"].copy()
-    validations.append(validation.model_dump())
+    def assign_task_to_agent(self, task_id: str, agent_id: str) -> None:
+        """Assign a task to an agent."""
+        self.state["agent_assignments"][task_id] = agent_id
+        self.update_agent_status(agent_id, "busy", task_id)
     
-    return update_supervisor_swarm_state(state, {
-        "quality_validations": validations,
-        "current_validation": validation.model_dump()
-    })
-
-
-def add_handoff_record(
-    state: SupervisorSwarmState,
-    handoff: HandoffRecord
-) -> SupervisorSwarmState:
-    """Add a handoff record to the state."""
-    handoffs = state["handoff_history"].copy()
-    handoffs.append(handoff.model_dump())
+    def get_available_agents(self) -> List[str]:
+        """Get list of available agents."""
+        available = []
+        for agent_id, status in self.state["agent_status"].items():
+            if status.get("status") == "available":
+                available.append(agent_id)
+        return available
     
-    return update_supervisor_swarm_state(state, {
-        "handoff_history": handoffs
-    })
-
-
-def add_error(
-    state: SupervisorSwarmState,
-    error: str
-) -> SupervisorSwarmState:
-    """Add an error to the state."""
-    errors = state["errors"].copy()
-    errors.append(error)
+    def add_error(self, error: Dict[str, Any]) -> None:
+        """Add an error to the state."""
+        error["timestamp"] = datetime.now().isoformat()
+        self.state["errors"].append(error)
     
-    return update_supervisor_swarm_state(state, {
-        "errors": errors
-    })
-
-
-def add_warning(
-    state: SupervisorSwarmState,
-    warning: str
-) -> SupervisorSwarmState:
-    """Add a warning to the state."""
-    warnings = state["warnings"].copy()
-    warnings.append(warning)
+    def add_warning(self, warning: Dict[str, Any]) -> None:
+        """Add a warning to the state."""
+        warning["timestamp"] = datetime.now().isoformat()
+        self.state["warnings"].append(warning)
     
-    return update_supervisor_swarm_state(state, {
-        "warnings": warnings
-    })
-
-
-def increment_retry_count(state: SupervisorSwarmState) -> SupervisorSwarmState:
-    """Increment the retry count."""
-    return update_supervisor_swarm_state(state, {
-        "retry_count": state["retry_count"] + 1
-    })
-
-
-def add_execution_history_entry(
-    state: SupervisorSwarmState,
-    entry: Dict[str, Any]
-) -> SupervisorSwarmState:
-    """Add an execution history entry."""
-    history = state["execution_history"].copy()
-    entry_with_timestamp = {
-        **entry,
-        "timestamp": datetime.now().isoformat()
-    }
-    history.append(entry_with_timestamp)
+    def add_approval_request(self, request: Dict[str, Any]) -> None:
+        """Add an approval request."""
+        request["timestamp"] = datetime.now().isoformat()
+        request["status"] = "pending"
+        self.state["approval_requests"].append(request)
     
-    return update_supervisor_swarm_state(state, {
-        "execution_history": history
-    })
-
-
-def add_performance_metric(
-    state: SupervisorSwarmState,
-    metric: PerformanceMetrics
-) -> SupervisorSwarmState:
-    """Add a performance metric to the state."""
-    metrics = state["performance_metrics"].copy()
-    agent_metrics = metrics.get(metric.agent_id, {})
-    agent_metrics[metric.metric_type] = metric.model_dump()
-    metrics[metric.agent_id] = agent_metrics
+    def get_state(self) -> SupervisorSwarmState:
+        """Get the current state."""
+        return self.state
     
-    return update_supervisor_swarm_state(state, {
-        "performance_metrics": metrics
-    })
+    def update_state(self, updates: Dict[str, Any]) -> None:
+        """Update the state with new values."""
+        self.state.update(updates)

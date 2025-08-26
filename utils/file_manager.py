@@ -78,8 +78,11 @@ class FileManager:
         saved_files = []
         
         for file_path, content in files.items():
+            # Validate and sanitize filename
+            safe_file_path = self._validate_and_sanitize_filename(file_path)
+            
             # Create full file path
-            full_path = project_path / file_path
+            full_path = project_path / safe_file_path
             
             # Create parent directories if they don't exist
             full_path.parent.mkdir(parents=True, exist_ok=True)
@@ -96,6 +99,50 @@ class FileManager:
         
         self.logger.info(f"Saved {len(saved_files)} files to {project_path}")
         return str(project_path)
+    
+    def _validate_and_sanitize_filename(self, filename: str) -> str:
+        """
+        Validate and sanitize a filename to make it safe for file system operations.
+        
+        Args:
+            filename: Original filename
+            
+        Returns:
+            Sanitized filename
+        """
+        if not filename or not isinstance(filename, str):
+            return "unknown_file.txt"
+        
+        # Check length
+        if len(filename) > 100:
+            # Truncate and add extension
+            safe_filename = filename[:95] + ".txt"
+        else:
+            safe_filename = filename
+        
+        # Check for invalid characters
+        invalid_chars = ['<', '>', ':', '"', '|', '?', '*', '\\', '/', '\n', '\r', '\t']
+        for char in invalid_chars:
+            safe_filename = safe_filename.replace(char, '_')
+        
+        # Check for common file extensions
+        valid_extensions = ['.py', '.js', '.ts', '.java', '.txt', '.json', '.yml', '.yaml', '.md', '.html', '.css', '.xml', '.go', '.rs', '.cpp', '.c']
+        if not any(safe_filename.endswith(ext) for ext in valid_extensions):
+            safe_filename += '.txt'
+        
+        # Check that filename doesn't look like content
+        if len(safe_filename) > 50 and (' ' in safe_filename or '\n' in safe_filename):
+            # Generate a safe filename
+            import hashlib
+            safe_hash = hashlib.md5(filename.encode()).hexdigest()[:8]
+            safe_filename = f"file_{safe_hash}.txt"
+        
+        # Ensure filename is not empty
+        if not safe_filename.strip():
+            safe_filename = "unknown_file.txt"
+        
+        self.logger.debug(f"Sanitized filename: '{filename}' -> '{safe_filename}'")
+        return safe_filename
     
     def create_project_structure(
         self,

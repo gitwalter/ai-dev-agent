@@ -1,0 +1,416 @@
+# LangChain and LangGraph Standards Rule
+
+**CRITICAL**: Always use established LangChain and LangGraph libraries and patterns instead of custom implementations. This rule enforces our migration to the LangChain ecosystem for 80% reduction in custom code.
+
+## Core Framework Requirements
+
+### 1. Primary Framework Stack (MANDATORY)
+- **LangGraph**: Multi-agent workflows with state management
+- **LangChain**: LLM integration, prompt management, output parsing
+- **LangSmith**: Observability, debugging, prompt optimization
+- **Pydantic**: Data validation and structured outputs
+
+### 2. Framework Selection Priority
+1. **LangChain + LangGraph + LangSmith** (Primary Choice)
+   - Use for all multi-agent workflows
+   - Use for all LLM integrations
+   - Use for all structured output parsing
+   - Use for all observability and debugging
+
+2. **AutoGen** (Secondary for Human-in-the-Loop)
+   - Use only for human interaction workflows
+   - Use for approval and review processes
+   - Use when human-in-the-loop is required
+
+3. **CrewAI** (Alternative)
+   - Use only if LangGraph doesn't meet specific requirements
+   - Use for role-based agent teams when LangGraph is insufficient
+
+## Implementation Standards
+
+### 1. LangGraph Workflow Patterns
+
+#### State Management
+```python
+# REQUIRED: Use TypedDict for state management
+from typing import TypedDict, Dict, Any, List
+
+class AgentState(TypedDict):
+    project_context: str
+    requirements: List[Dict[str, Any]]
+    architecture: Dict[str, Any]
+    code_files: Dict[str, Any]
+    agent_outputs: Dict[str, Any]
+    errors: List[str]
+    current_step: str
+    execution_history: List[Dict[str, Any]]
+
+# FORBIDDEN: Custom state management classes
+class CustomState:  # ❌ Don't do this
+    def __init__(self):
+        self.data = {}
+```
+
+#### Workflow Creation
+```python
+# REQUIRED: Use StateGraph for workflow creation
+from langgraph.graph import StateGraph, END
+
+def create_workflow() -> StateGraph:
+    workflow = StateGraph(AgentState)
+    
+    # Add nodes
+    workflow.add_node("requirements_analysis", requirements_node)
+    workflow.add_node("architecture_design", architecture_node)
+    
+    # Add edges
+    workflow.add_edge("requirements_analysis", "architecture_design")
+    workflow.add_edge("architecture_design", END)
+    
+    return workflow.compile()
+
+# FORBIDDEN: Custom workflow management
+class CustomWorkflow:  # ❌ Don't do this
+    def __init__(self):
+        self.nodes = []
+        self.edges = []
+```
+
+#### Node Implementation
+```python
+# REQUIRED: Use LangChain chains for node execution
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts import PromptTemplate
+from langchain.schema.runnable import RunnablePassthrough
+
+def create_agent_node(llm, output_model):
+    parser = PydanticOutputParser(pydantic_object=output_model)
+    
+    prompt = PromptTemplate(
+        template="""You are an expert {role}. {task_description}
+        
+        {format_instructions}""",
+        input_variables=["role", "task_description"],
+        partial_variables={"format_instructions": parser.get_format_instructions()}
+    )
+    
+    chain = prompt | llm | parser
+    return chain
+
+# FORBIDDEN: Custom LLM integration
+def custom_llm_call(prompt):  # ❌ Don't do this
+    # Custom implementation
+    pass
+```
+
+### 2. LangChain Integration Patterns
+
+#### LLM Setup
+```python
+# REQUIRED: Use LangChain LLM classes
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+def setup_llm(api_key: str, model: str = "gemini-2.5-flash-lite"):
+    return ChatGoogleGenerativeAI(
+        model=model,
+        google_api_key=api_key,
+        temperature=0.1,
+        max_tokens=8192
+    )
+
+# FORBIDDEN: Direct API calls
+import requests  # ❌ Don't do this
+def direct_api_call(prompt):
+    response = requests.post("https://api.gemini.com/...")
+```
+
+#### Structured Outputs
+```python
+# REQUIRED: Use Pydantic models with LangChain parsers
+from pydantic import BaseModel, Field
+from langchain.output_parsers import PydanticOutputParser
+
+class RequirementsAnalysisOutput(BaseModel):
+    functional_requirements: List[Dict[str, Any]] = Field(
+        description="List of functional requirements"
+    )
+    non_functional_requirements: List[Dict[str, Any]] = Field(
+        description="List of non-functional requirements"
+    )
+
+# Use with LangChain parser
+parser = PydanticOutputParser(pydantic_object=RequirementsAnalysisOutput)
+chain = prompt | llm | parser
+
+# FORBIDDEN: Custom JSON parsing
+def parse_json_response(response):  # ❌ Don't do this
+    import json
+    return json.loads(response)
+```
+
+#### Prompt Management
+```python
+# REQUIRED: Use LangChain PromptTemplate
+from langchain.prompts import PromptTemplate
+
+prompt = PromptTemplate(
+    template="""You are an expert {role}.
+    
+    PROJECT CONTEXT:
+    {project_context}
+    
+    TASK:
+    {task_description}
+    
+    {format_instructions}""",
+    input_variables=["role", "project_context", "task_description"],
+    partial_variables={"format_instructions": parser.get_format_instructions()}
+)
+
+# FORBIDDEN: String formatting for prompts
+def create_prompt(role, context):  # ❌ Don't do this
+    return f"You are an expert {role}. Context: {context}"
+```
+
+### 3. LangSmith Integration
+
+#### Observability Setup
+```python
+# REQUIRED: Use LangSmith for tracing and debugging
+import os
+from langsmith import Client
+
+# Set up LangSmith
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
+os.environ["LANGCHAIN_API_KEY"] = "your-api-key"
+os.environ["LANGCHAIN_PROJECT"] = "ai-dev-agent"
+
+# Use with chains
+chain = prompt | llm | parser
+result = chain.invoke({"role": "requirements_analyst", "project_context": "..."})
+
+# FORBIDDEN: Custom logging without LangSmith
+def custom_log_execution(step, result):  # ❌ Don't do this
+    with open("execution.log", "a") as f:
+        f.write(f"{step}: {result}\n")
+```
+
+### 4. Agent Factory Patterns
+
+#### Agent Node Factory
+```python
+# REQUIRED: Use LangGraph patterns for agent creation
+class AgentNodeFactory:
+    def __init__(self, llm):
+        self.llm = llm
+    
+    def create_requirements_node(self) -> Callable[[AgentState], AgentState]:
+        """Create requirements analysis node using LangChain patterns."""
+        parser = PydanticOutputParser(pydantic_object=RequirementsAnalysisOutput)
+        
+        prompt = PromptTemplate(
+            template="""You are an expert Requirements Analyst.
+            
+            PROJECT CONTEXT:
+            {project_context}
+            
+            {format_instructions}""",
+            input_variables=["project_context"],
+            partial_variables={"format_instructions": parser.get_format_instructions()}
+        )
+        
+        chain = prompt | self.llm | parser
+        
+        async def requirements_node(state: AgentState) -> AgentState:
+            try:
+                result = await chain.ainvoke({"project_context": state["project_context"]})
+                return {
+                    **state,
+                    "requirements": result.functional_requirements,
+                    "agent_outputs": {
+                        **state["agent_outputs"],
+                        "requirements_analyst": result.model_dump()
+                    },
+                    "current_step": "requirements_analysis"
+                }
+            except Exception as e:
+                return {
+                    **state,
+                    "errors": [*state["errors"], f"Requirements analysis failed: {str(e)}"]
+                }
+        
+        return requirements_node
+
+# FORBIDDEN: Custom agent implementations
+class CustomAgent:  # ❌ Don't do this
+    def __init__(self, name):
+        self.name = name
+        self.custom_logic = []
+```
+
+## Migration Requirements
+
+### 1. Immediate Replacements (CRITICAL)
+- **Custom workflow manager** → LangGraph StateGraph
+- **Manual JSON parsing** → PydanticOutputParser
+- **Custom prompt management** → LangChain PromptTemplate
+- **Custom state management** → LangGraph TypedDict
+- **Custom error handling** → LangGraph built-in error handling
+- **Custom logging** → LangSmith tracing
+
+### 2. Framework Integration
+```python
+# REQUIRED: Complete LangChain integration
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts import PromptTemplate
+from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
+
+# Use established patterns
+workflow = StateGraph(AgentState)
+workflow.add_node("agent_node", agent_node)
+workflow.add_edge("agent_node", END)
+compiled_workflow = workflow.compile(checkpointer=MemorySaver())
+
+# FORBIDDEN: Custom framework
+class CustomFramework:  # ❌ Don't do this
+    def __init__(self):
+        self.custom_components = []
+```
+
+### 3. Testing Standards
+```python
+# REQUIRED: Use LangChain testing patterns
+import pytest
+from unittest.mock import Mock, patch
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+@pytest.fixture
+def mock_llm():
+    """Create mock LLM for testing."""
+    mock = Mock(spec=ChatGoogleGenerativeAI)
+    mock.invoke = Mock()
+    mock.ainvoke = Mock()
+    return mock
+
+@pytest.fixture
+def agent_node_factory(mock_llm):
+    """Create agent node factory with mock LLM."""
+    return AgentNodeFactory(mock_llm)
+
+# FORBIDDEN: Custom testing frameworks
+class CustomTestFramework:  # ❌ Don't do this
+    def __init__(self):
+        self.custom_test_logic = []
+```
+
+## Quality Assurance
+
+### 1. Code Review Checklist
+- [ ] Uses LangGraph StateGraph for workflows
+- [ ] Uses LangChain PromptTemplate for prompts
+- [ ] Uses PydanticOutputParser for structured outputs
+- [ ] Uses LangSmith for observability
+- [ ] No custom LLM integration code
+- [ ] No custom workflow management
+- [ ] No custom state management
+- [ ] No custom error handling
+
+### 2. Performance Standards
+- **Execution Time**: <30s for complete workflow
+- **Memory Usage**: <2GB for typical workflows
+- **Error Rate**: <1% in production
+- **Test Coverage**: >90% for all components
+
+### 3. Maintainability Standards
+- **Custom Code**: <100 lines per agent
+- **Framework Usage**: >80% LangChain/LangGraph code
+- **Documentation**: 100% API documentation
+- **Testing**: Comprehensive test suite
+
+## Implementation Guidelines
+
+### 1. When to Use LangChain/LangGraph
+- **ALWAYS** for LLM integration
+- **ALWAYS** for workflow orchestration
+- **ALWAYS** for structured output parsing
+- **ALWAYS** for prompt management
+- **ALWAYS** for state management
+- **ALWAYS** for observability and debugging
+
+### 2. When Custom Code is Allowed
+- **ONLY** for business logic specific to our domain
+- **ONLY** for integration with external systems
+- **ONLY** for performance optimization (after profiling)
+- **ONLY** for security requirements not covered by frameworks
+
+### 3. Migration Process
+1. **Identify** custom implementations
+2. **Replace** with LangChain/LangGraph equivalents
+3. **Test** thoroughly with established patterns
+4. **Document** any remaining custom code
+5. **Monitor** performance and reliability
+
+## Benefits
+
+### 1. **Reduced Custom Code**
+- 80% reduction in custom implementation
+- Faster development and deployment
+- Reduced maintenance burden
+
+### 2. **Improved Reliability**
+- Battle-tested frameworks
+- Comprehensive error handling
+- Built-in observability
+
+### 3. **Enhanced Features**
+- Advanced workflow patterns
+- Built-in debugging tools
+- Performance optimization
+
+### 4. **Better Maintainability**
+- Standard patterns and practices
+- Comprehensive documentation
+- Active community support
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- New feature development
+- Code refactoring and optimization
+- Bug fixes and improvements
+- Integration with external systems
+- Performance optimization
+- Testing and validation
+
+**Violations of this rule require immediate remediation.**
+
+## Success Metrics
+
+### Technical Metrics
+- **Framework Usage**: >80% LangChain/LangGraph code
+- **Custom Code**: <100 lines per agent
+- **Test Coverage**: >90% for all components
+- **Performance**: <30s for complete workflow
+
+### Business Metrics
+- **Development Speed**: 3x faster with established patterns
+- **Debugging Time**: 90% reduction with LangSmith
+- **Maintenance Cost**: 50% reduction in custom code
+- **System Reliability**: 99.9% uptime with proper error handling
+
+## Conclusion
+
+This rule ensures we leverage the full power of the LangChain ecosystem while maintaining high code quality and system reliability. By following established patterns and using battle-tested frameworks, we can focus on business logic and domain-specific features rather than reinventing infrastructure.
+
+**Remember**: The goal is 80% reduction in custom code while maintaining 100% functionality and improving system reliability and maintainability.
+description: Enforces use of standard LangChain and LangGraph libraries instead of custom implementations
+globs:
+alwaysApply: true
+---
+description:
+globs:
+alwaysApply: true
+---

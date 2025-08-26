@@ -1,0 +1,376 @@
+# Test Isolation Rule
+
+**CRITICAL**: All tests must be designed for complete isolation, allowing individual test execution without dependencies on other tests or external state. This ensures efficient debugging and reliable test results.
+
+## Core Test Isolation Standards
+
+### 1. Test Independence Requirements
+- **NO SHARED STATE**: Each test must be completely independent of other tests
+- **NO EXTERNAL DEPENDENCIES**: Tests should not depend on external services or databases
+- **NO SIDE EFFECTS**: Tests must not modify global state that affects other tests
+- **NO ORDER DEPENDENCIES**: Tests must pass regardless of execution order
+- **CLEAN ENVIRONMENT**: Each test starts with a clean, predictable state
+
+### 2. Test Structure and Organization
+
+#### Individual Test Execution
+```python
+# CORRECT: Each test is self-contained
+@pytest.mark.asyncio
+async def test_requirements_analysis_success():
+    """Test requirements analysis with isolated setup and teardown."""
+    # Setup: Create isolated test data
+    test_state = create_isolated_test_state()
+    
+    # Execute: Run the test with isolated components
+    result = await requirements_node(test_state)
+    
+    # Assert: Verify results without external dependencies
+    assert result["requirements"] is not None
+    assert len(result["requirements"]) > 0
+    
+    # Cleanup: Automatic cleanup via pytest fixtures
+
+# INCORRECT: Test depends on external state
+@pytest.mark.asyncio
+async def test_requirements_analysis_bad():
+    """Test that depends on external state - AVOID THIS."""
+    # BAD: Depends on global state or other tests
+    global_shared_state = get_shared_state()  # DON'T DO THIS
+    result = await requirements_node(global_shared_state)
+```
+
+#### Test Fixtures for Isolation
+```python
+# CORRECT: Use fixtures for isolated test data
+@pytest.fixture
+def isolated_test_state():
+    """Create isolated test state for each test."""
+    return {
+        "project_context": "Create a simple todo list application",
+        "project_name": f"test-project-{uuid.uuid4()}",  # Unique per test
+        "session_id": f"test-session-{uuid.uuid4()}",   # Unique per test
+        "requirements": [],
+        "architecture": {},
+        "code_files": {},
+        "tests": {},
+        "documentation": {},
+        "diagrams": {},
+        "agent_outputs": {},
+        "errors": [],
+        "warnings": [],
+        "approval_requests": [],
+        "current_step": "started",
+        "execution_history": []
+    }
+
+@pytest.fixture
+def isolated_llm_mock():
+    """Create isolated LLM mock for each test."""
+    with patch('langchain_google_genai.ChatGoogleGenerativeAI') as mock_llm:
+        mock_llm.return_value.ainvoke.return_value = create_mock_response()
+        yield mock_llm
+```
+
+### 3. Test Execution Patterns
+
+#### Individual Test Execution Commands
+```bash
+# Run specific test in isolation
+python -m pytest tests/langgraph/unit/test_agent_nodes.py::TestRequirementsAnalystNode::test_requirements_node_execution_success -v
+
+# Run specific test class in isolation
+python -m pytest tests/langgraph/unit/test_agent_nodes.py::TestRequirementsAnalystNode -v
+
+# Run specific test with detailed output
+python -m pytest tests/langgraph/unit/test_agent_nodes.py::TestRealLLMIntegration::test_real_requirements_analysis -v -s --tb=long
+
+# Run failed test in isolation (after failure)
+python -m pytest tests/langgraph/unit/test_agent_nodes.py::TestRealLLMIntegration::test_real_requirements_analysis --lf -v
+```
+
+#### Test Discovery and Organization
+```python
+# CORRECT: Clear test class and method naming
+class TestRequirementsAnalystNode:
+    """Isolated tests for requirements analyst node."""
+    
+    def test_requirements_node_creation(self, isolated_llm_mock):
+        """Test node creation in isolation."""
+        # Test implementation
+    
+    def test_requirements_node_execution_success(self, isolated_test_state, isolated_llm_mock):
+        """Test successful execution in isolation."""
+        # Test implementation
+    
+    def test_requirements_node_execution_failure(self, isolated_test_state, isolated_llm_mock):
+        """Test failure handling in isolation."""
+        # Test implementation
+
+# CORRECT: Separate test classes for different concerns
+class TestRealLLMIntegration:
+    """Isolated tests for real LLM integration."""
+    
+    @pytest.mark.skipif(not _has_valid_api_key(), reason="No API key")
+    def test_real_requirements_analysis(self, real_node_factory):
+        """Test real LLM integration in isolation."""
+        # Test implementation
+```
+
+### 4. State Management and Cleanup
+
+#### Proper State Isolation
+```python
+# CORRECT: Each test manages its own state
+@pytest.mark.asyncio
+async def test_isolated_workflow_execution():
+    """Test complete workflow execution in isolation."""
+    # Setup: Create isolated workflow state
+    initial_state = {
+        "project_context": "Test project",
+        "project_name": f"isolated-test-{uuid.uuid4()}",
+        "session_id": f"session-{uuid.uuid4()}",
+        # ... other isolated state
+    }
+    
+    # Execute: Run workflow with isolated components
+    workflow_manager = create_isolated_workflow_manager()
+    result = await workflow_manager.execute_workflow(initial_state)
+    
+    # Assert: Verify results
+    assert result["current_step"] == "completed"
+    assert len(result["errors"]) == 0
+    
+    # Cleanup: Automatic via pytest fixtures
+
+# CORRECT: Use context managers for resource cleanup
+@pytest.fixture
+def isolated_database():
+    """Create isolated database for testing."""
+    db_path = f"/tmp/test_db_{uuid.uuid4()}.db"
+    db = create_test_database(db_path)
+    yield db
+    # Automatic cleanup
+    db.close()
+    os.remove(db_path)
+```
+
+### 5. Mocking and External Dependencies
+
+#### Isolated Mocking Strategy
+```python
+# CORRECT: Isolated mocks for each test
+@pytest.fixture
+def isolated_api_mock():
+    """Create isolated API mock."""
+    with patch('requests.get') as mock_get:
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = {"data": "test"}
+        yield mock_get
+
+@pytest.fixture
+def isolated_file_system():
+    """Create isolated file system for testing."""
+    temp_dir = tempfile.mkdtemp()
+    yield temp_dir
+    # Automatic cleanup
+    shutil.rmtree(temp_dir)
+
+# CORRECT: Test with isolated mocks
+def test_file_operations(isolated_file_system, isolated_api_mock):
+    """Test file operations with isolated dependencies."""
+    # Test implementation using isolated fixtures
+```
+
+### 6. Test Data Management
+
+#### Isolated Test Data
+```python
+# CORRECT: Generate unique test data for each test
+def create_isolated_test_data():
+    """Create isolated test data for each test."""
+    return {
+        "id": str(uuid.uuid4()),
+        "timestamp": datetime.now().isoformat(),
+        "data": f"test-data-{uuid.uuid4()}"
+    }
+
+# CORRECT: Use factories for test data
+class TestDataFactory:
+    """Factory for creating isolated test data."""
+    
+    @staticmethod
+    def create_project_context():
+        """Create isolated project context."""
+        return f"Create a test application {uuid.uuid4()}"
+    
+    @staticmethod
+    def create_requirements():
+        """Create isolated requirements."""
+        return [
+            {
+                "id": f"REQ-{uuid.uuid4()}",
+                "title": "Test Requirement",
+                "description": "Test description",
+                "priority": "high"
+            }
+        ]
+```
+
+### 7. Error Handling and Debugging
+
+#### Isolated Error Testing
+```python
+# CORRECT: Test error conditions in isolation
+@pytest.mark.asyncio
+async def test_isolated_error_handling():
+    """Test error handling in isolation."""
+    # Setup: Create error condition
+    error_state = create_error_test_state()
+    
+    # Execute: Trigger error condition
+    result = await error_prone_node(error_state)
+    
+    # Assert: Verify error handling
+    assert "errors" in result
+    assert len(result["errors"]) > 0
+    assert "error_handler" in result["execution_history"]
+
+# CORRECT: Test specific error types
+@pytest.mark.asyncio
+async def test_isolated_network_error():
+    """Test network error handling in isolation."""
+    with patch('requests.get', side_effect=requests.ConnectionError):
+        result = await network_dependent_node(test_state)
+        assert "network_error" in result["errors"]
+```
+
+### 8. Performance and Resource Management
+
+#### Isolated Performance Testing
+```python
+# CORRECT: Isolated performance tests
+@pytest.mark.asyncio
+async def test_isolated_performance():
+    """Test performance in isolation."""
+    start_time = time.time()
+    
+    # Execute: Run performance test
+    result = await performance_critical_node(test_state)
+    
+    # Assert: Verify performance requirements
+    execution_time = time.time() - start_time
+    assert execution_time < 5.0  # 5 second limit
+    assert result["status"] == "completed"
+
+# CORRECT: Resource cleanup verification
+@pytest.fixture
+def resource_monitor():
+    """Monitor resource usage during tests."""
+    initial_memory = psutil.Process().memory_info().rss
+    yield
+    final_memory = psutil.Process().memory_info().rss
+    # Verify no memory leaks
+    assert final_memory <= initial_memory * 1.1  # 10% tolerance
+```
+
+### 9. Test Configuration and Environment
+
+#### Isolated Test Configuration
+```python
+# CORRECT: Isolated test configuration
+@pytest.fixture(scope="function")
+def isolated_config():
+    """Create isolated configuration for each test."""
+    return {
+        "api_key": "test-key",
+        "model_name": "test-model",
+        "temperature": 0.1,
+        "max_tokens": 1000
+    }
+
+# CORRECT: Environment isolation
+@pytest.fixture(autouse=True)
+def isolated_environment():
+    """Ensure isolated environment for each test."""
+    # Save original environment
+    original_env = os.environ.copy()
+    
+    # Set test environment
+    os.environ["TEST_MODE"] = "true"
+    os.environ["API_KEY"] = "test-key"
+    
+    yield
+    
+    # Restore original environment
+    os.environ.clear()
+    os.environ.update(original_env)
+```
+
+### 10. Continuous Integration Integration
+
+#### CI/CD Test Isolation
+```yaml
+# Example: GitHub Actions with test isolation
+- name: Run Tests in Isolation
+  run: |
+    # Run tests with isolation flags
+    python -m pytest tests/ --isolated --no-cov-on-fail
+    
+    # Run failed tests in isolation
+    python -m pytest tests/ --lf --isolated -v
+    
+    # Run specific test categories
+    python -m pytest tests/langgraph/unit/ --isolated -v
+    python -m pytest tests/langgraph/integration/ --isolated -v
+```
+
+## Implementation Checklist
+
+### For Every Test
+- [ ] Test can be run individually without dependencies
+- [ ] Test uses isolated fixtures and mocks
+- [ ] Test generates unique test data
+- [ ] Test cleans up after itself
+- [ ] Test has clear, descriptive name
+- [ ] Test includes proper error handling
+- [ ] Test verifies expected outcomes
+- [ ] Test can be repeated reliably
+
+### For Test Classes
+- [ ] Each test class focuses on a single component
+- [ ] Test methods are independent of each other
+- [ ] Test class uses appropriate fixtures
+- [ ] Test class has clear documentation
+- [ ] Test class follows naming conventions
+
+### For Test Suites
+- [ ] Tests can be run in any order
+- [ ] Tests don't share global state
+- [ ] Tests use isolated external dependencies
+- [ ] Tests have proper error isolation
+- [ ] Tests support parallel execution
+
+## Benefits
+
+- **Faster Debugging**: Failed tests can be run in isolation
+- **Reliable Results**: Tests don't interfere with each other
+- **Parallel Execution**: Tests can run concurrently
+- **Easier Maintenance**: Clear test boundaries and responsibilities
+- **Better CI/CD**: More reliable automated testing
+- **Reduced Flakiness**: Eliminates test order dependencies
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- New test development
+- Test refactoring and maintenance
+- Test debugging and troubleshooting
+- CI/CD pipeline configuration
+- Test documentation and reviews
+
+**Violations of this rule require immediate remediation.**
+description:
+globs:
+alwaysApply: true
+---

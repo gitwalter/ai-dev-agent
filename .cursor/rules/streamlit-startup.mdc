@@ -1,0 +1,32 @@
+---
+description : Streamlit Startup Pattern Rule
+alwaysApply: false
+---
+# Streamlit Startup Pattern
+
+## Required Commands
+
+```bash
+# 1. Activate Anaconda environment
+D:/Anaconda/Scripts/activate
+conda activate base
+
+# 2. Start Streamlit app with Anaconda Python
+& 'D:\Anaconda\python.exe' 'c:\Users\wpoga\.cursor\extensions\ms-python.debugpy-2025.6.0-win32-x64\bundled\libs\debugpy\launcher' '62493' '--' '-m' 'streamlit' 'run' 'streamlit_app.py'
+```
+
+## Alternative (without debugger)
+```bash
+D:\Anaconda\python.exe -m streamlit run streamlit_app.py
+```
+
+## Expected Output
+```
+You can now view your Streamlit app in your browser.
+Local URL: http://localhost:8501
+Network URL: http://192.168.2.133:8501
+```
+description:
+globs:
+alwaysApply: true
+---

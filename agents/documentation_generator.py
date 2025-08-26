@@ -40,7 +40,9 @@ class DocumentationGenerator(BaseAgent):
         
         try:
             if not self.validate_input(state):
-                raise ValueError("Invalid input state for documentation generation")
+                error_msg = "Invalid input state for documentation generation - missing required code files from code generator"
+                self.add_log_entry("error", error_msg)
+                raise ValueError(error_msg)
             
             self.add_log_entry("info", "Input validation passed")
             
@@ -111,6 +113,8 @@ class DocumentationGenerator(BaseAgent):
             data["documentation_files"] = {}
         if "documentation_summary" not in data:
             data["documentation_summary"] = {"coverage_score": "5/10", "completeness": "50%"}
+        if "diagrams" not in data:
+            data["diagrams"] = {}
         
         if not data.get("documentation_files"):
             # Create basic documentation files if none provided
@@ -278,21 +282,29 @@ class DocumentationGenerator(BaseAgent):
         """Validate input state for documentation generation."""
         # Check for basic required fields
         if not super().validate_input(state):
+            self.logger.error("Basic validation failed - missing project_context or project_name")
             return False
         
-        # Check for code_files (should be set by code generator)
-        if "code_files" not in state or not state["code_files"]:
-            self.logger.error("No code_files found in state - code generator must run first")
-            return False
+        # Check for code files (should be set by code generator)
+        # Support both old format (code_files) and new format (source_files + configuration_files)
+        code_files = state.get("code_files", {})
+        source_files = state.get("source_files", {})
+        configuration_files = state.get("configuration_files", {})
         
-        # Check for architecture (should be set by architecture designer)
-        if "architecture" not in state or not state["architecture"]:
-            self.logger.error("No architecture found in state - architecture designer must run first")
+        # Log what we found for debugging
+        self.logger.info(f"Documentation generator validation - code_files: {len(code_files)}, source_files: {len(source_files) if source_files else 0}, configuration_files: {len(configuration_files) if configuration_files else 0}")
+        
+        # Check if we have any code files in any format
+        if not code_files and not source_files and not configuration_files:
+            self.logger.error("No code files found in state - code generator must run first and generate code successfully")
+            self.logger.error(f"Available state keys: {list(state.keys())}")
+            self.logger.error(f"Agent outputs: {list(state.get('agent_outputs', {}).keys())}")
             return False
         
         # Check for requirements (should be set by requirements analyst)
         if "requirements" not in state or not state["requirements"]:
-            self.logger.warning("No requirements found in state, will generate documentation from code and architecture only")
+            self.logger.warning("No requirements found in state, will generate documentation from code only")
             # Don't fail, just warn - we can still generate documentation
         
+        self.logger.info("Documentation generator validation passed")
         return True

@@ -155,7 +155,7 @@ Directory Structure:
 - tests/security/ - Security and vulnerability tests
 
 Commands:
-- python scripts/setup_test_environment.py --setup
+- python tests/setup_test_environment.py --setup
 - python tests/organize_tests.py --validate
 - python tests/organize_tests.py --create-structure
 - pytest tests/ --cov=. --cov-report=html

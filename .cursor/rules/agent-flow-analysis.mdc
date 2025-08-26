@@ -1,0 +1,101 @@
+---
+description: Agent Flow Analysis Rule
+alwaysApply: false
+---
+# Agent Flow Analysis Rule
+
+## Description
+When analyzing agent flows and debugging workflow issues, ALWAYS read the `logs/agent.log` file first to understand what's happening with agent execution.
+
+## Required Steps for Agent Flow Analysis
+
+### 1. Check Agent Log First
+- Always read `logs/agent.log` before making any assumptions
+- Look for agent execution logs, errors, and warnings
+- Check for missing agent executions or silent failures
+
+### 2. Verify Agent Execution
+- Confirm each agent is being called with `Starting execution with retry logic`
+- Check for `Successfully executed {agent_name}` messages
+- Look for any error messages or validation failures
+
+### 3. Check State Validation
+- Verify input validation is passing for each agent
+- Check for "Invalid input state" errors
+- Ensure required state fields are present
+
+### 4. Monitor Workflow Routing
+- Verify workflow edges are correctly defined
+- Check for conditional routing issues
+- Ensure quality gates are working properly
+
+### 5. Debug Missing Agents
+- If agents are missing from execution, check:
+  - Input validation logic
+  - State field names and formats
+  - Workflow routing configuration
+  - Agent initialization
+
+## Common Issues to Check
+
+- **State Field Mismatches**: Agents expecting different field names than what's provided
+- **Validation Failures**: Input validation preventing agent execution
+- **Silent Failures**: Agents failing without proper error logging
+- **Workflow Routing Issues**: Conditional edges not working as expected
+- **Quality Gate Problems**: Quality gates preventing agent execution
+
+## Log Analysis Commands
+
+```bash
+# Check for specific agent execution
+grep "test_generator.*INFO.*Successfully executed" logs/agent.log
+
+# Check for validation errors
+grep "Invalid input state" logs/agent.log
+
+# Check for missing agents
+grep "Starting execution with retry logic" logs/agent.log
+
+# Check for quality gate issues
+grep "quality_gate_failed" logs/agent.log
+```
+
+## Example Analysis Process
+
+1. **Read the log**: `tail -f logs/agent.log`
+2. **Check agent execution**: Look for execution start/end messages
+3. **Verify state**: Check if required state fields are present
+4. **Debug validation**: Look for validation error messages
+5. **Check routing**: Verify workflow edges are working
+6. **Fix issues**: Update validation logic or state management
+
+## State Field Compatibility
+
+Agents should support both old and new state field formats:
+- **Old Format**: `code_files` (single field)
+- **New Format**: `source_files` + `configuration_files` (separate fields)
+
+Always check for both formats in validation logic to ensure backward compatibility.
+
+## Implementation Guidelines
+
+### When Debugging Agent Issues
+1. **Always start with the log**: Read `logs/agent.log` first
+2. **Check execution patterns**: Look for missing agent executions
+3. **Verify state fields**: Ensure required fields are present
+4. **Check validation logic**: Look for input validation failures
+5. **Test fixes**: Verify the fix resolves the issue
+
+### When Adding New Agents
+1. **Follow state field compatibility**: Support both old and new formats
+2. **Implement proper validation**: Check for required state fields
+3. **Add comprehensive logging**: Log execution start, success, and errors
+4. **Test workflow integration**: Ensure proper routing and execution
+
+---
+
+**Remember**: The agent.log is the single source of truth for understanding what's happening in the workflow. Always check it first before making any changes or assumptions about agent behavior.
+description:
+globs:
+alwaysApply: false
+---

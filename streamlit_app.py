@@ -96,6 +96,10 @@ def initialize_session_state():
         st.session_state.is_running = False
     if 'api_key_configured' not in st.session_state:
         st.session_state.api_key_configured = False
+    if 'show_delete_confirm' not in st.session_state:
+        st.session_state.show_delete_confirm = False
+    if 'show_log_viewer' not in st.session_state:
+        st.session_state.show_log_viewer = False
 
 
 def configure_api_key():
@@ -239,6 +243,211 @@ def display_header():
     st.markdown('<p class="sub-header">Generate complete software projects with AI-powered agents</p>', unsafe_allow_html=True)
 
 
+def clear_logs():
+    """Clear (truncate) all log files to empty."""
+    try:
+        logs_dir = Path("logs")
+        if not logs_dir.exists():
+            return False, "No logs directory found."
+        
+        # Count files before clearing
+        total_files = 0
+        total_size = 0
+        cleared_files = 0
+        cleared_size = 0
+        
+        # Clear files in main logs directory
+        for log_file in logs_dir.glob("*.log"):
+            total_files += 1
+            total_size += log_file.stat().st_size
+            try:
+                log_file.write_text("")  # Truncate to empty
+                cleared_files += 1
+                cleared_size += total_size
+            except (PermissionError, OSError):
+                pass
+        
+        # Clear files in agents subdirectory
+        agents_dir = logs_dir / "agents"
+        if agents_dir.exists():
+            for log_file in agents_dir.glob("*.log"):
+                total_files += 1
+                total_size += log_file.stat().st_size
+                try:
+                    log_file.write_text("")  # Truncate to empty
+                    cleared_files += 1
+                    cleared_size += total_size
+                except (PermissionError, OSError):
+                    pass
+        
+        # Create success message
+        size_mb = total_size / (1024 * 1024)
+        
+        if cleared_files == total_files:
+            return True, f"Successfully cleared all {cleared_files} log files ({size_mb:.1f} MB)."
+        elif cleared_files > 0:
+            failed_count = total_files - cleared_files
+            return True, f"Cleared {cleared_files}/{total_files} log files ({size_mb:.1f} MB). {failed_count} files could not be cleared (may be in use)."
+        else:
+            return False, f"Could not clear any log files. All {total_files} files may be in use by another process."
+            
+    except Exception as e:
+        return False, f"Error clearing logs: {str(e)}"
+
+
+def delete_logs():
+    """Delete all log files."""
+    import os
+    
+    try:
+        logs_dir = Path("logs")
+        if not logs_dir.exists():
+            return False, "No logs directory found."
+        
+        # Count files before deletion
+        total_files = 0
+        total_size = 0
+        deleted_files = 0
+        deleted_size = 0
+        failed_files = []
+        
+        # Delete files in main logs directory
+        for log_file in logs_dir.glob("*.log"):
+            total_files += 1
+            total_size += log_file.stat().st_size
+            try:
+                log_file.unlink()
+                deleted_files += 1
+                deleted_size += log_file.stat().st_size
+            except (PermissionError, OSError) as e:
+                failed_files.append(f"{log_file.name}: {str(e)}")
+        
+        # Delete files in agents subdirectory
+        agents_dir = logs_dir / "agents"
+        if agents_dir.exists():
+            for log_file in agents_dir.glob("*.log"):
+                total_files += 1
+                total_size += log_file.stat().st_size
+                try:
+                    log_file.unlink()
+                    deleted_files += 1
+                    deleted_size += log_file.stat().st_size
+                except (PermissionError, OSError) as e:
+                    failed_files.append(f"agents/{log_file.name}: {str(e)}")
+        
+        # Create success message
+        size_mb = deleted_size / (1024 * 1024)
+        
+        if deleted_files == total_files:
+            return True, f"Successfully deleted all {deleted_files} log files ({size_mb:.1f} MB)."
+        elif deleted_files > 0:
+            failed_count = total_files - deleted_files
+            return True, f"Deleted {deleted_files}/{total_files} log files ({size_mb:.1f} MB). {failed_count} files could not be deleted (may be in use)."
+        else:
+            # Try alternative approach: truncate files instead of deleting
+            truncated_files = 0
+            for log_file in logs_dir.glob("*.log"):
+                try:
+                    log_file.write_text("")  # Truncate to empty
+                    truncated_files += 1
+                except (PermissionError, OSError):
+                    pass
+            
+            if agents_dir.exists():
+                for log_file in agents_dir.glob("*.log"):
+                    try:
+                        log_file.write_text("")  # Truncate to empty
+                        truncated_files += 1
+                    except (PermissionError, OSError):
+                        pass
+            
+            if truncated_files > 0:
+                return True, f"Could not delete files (in use), but truncated {truncated_files}/{total_files} log files to empty."
+            else:
+                return False, f"Could not delete or truncate any log files. All {total_files} files may be in use by another process. Try stopping the application first."
+            
+    except Exception as e:
+        return False, f"Error deleting logs: {str(e)}"
+
+
+def display_log_viewer():
+    """Display log viewer interface."""
+    st.header("📋 Log Viewer")
+    
+    # Get available log files
+    logs_dir = Path("logs")
+    if not logs_dir.exists():
+        st.info("No logs directory found.")
+        return
+    
+    # Main log file
+    main_log = logs_dir / "agent.log"
+    agent_logs = []
+    
+    if main_log.exists():
+        agent_logs.append(("Main Log", main_log))
+    
+    # Agent log files
+    agents_dir = logs_dir / "agents"
+    if agents_dir.exists():
+        for log_file in agents_dir.glob("*.log"):
+            agent_name = log_file.stem.replace("_", " ").title()
+            agent_logs.append((agent_name, log_file))
+    
+    if not agent_logs:
+        st.info("No log files found.")
+        return
+    
+    # Log file selection
+    selected_log_name, selected_log_path = st.selectbox(
+        "Select Log File:",
+        options=agent_logs,
+        format_func=lambda x: f"{x[0]} ({x[1].stat().st_size / 1024 / 1024:.1f} MB)"
+    )
+    
+    # Display log content
+    if selected_log_path.exists():
+        try:
+            with open(selected_log_path, 'r', encoding='utf-8') as f:
+                log_content = f.read()
+            
+            # Show last N lines
+            lines = log_content.split('\n')
+            num_lines = st.slider("Show last N lines:", min_value=10, max_value=1000, value=100)
+            
+            if len(lines) > num_lines:
+                display_lines = lines[-num_lines:]
+                st.info(f"Showing last {num_lines} lines of {len(lines)} total lines")
+            else:
+                display_lines = lines
+            
+            # Display log content
+            st.text_area(
+                f"Log Content - {selected_log_name}",
+                value='\n'.join(display_lines),
+                height=400,
+                disabled=True
+            )
+            
+            # Download button
+            st.download_button(
+                label=f"📥 Download {selected_log_name}",
+                data=log_content,
+                file_name=selected_log_path.name,
+                mime="text/plain"
+            )
+            
+        except Exception as e:
+            st.error(f"Error reading log file: {str(e)}")
+    else:
+        st.error(f"Log file {selected_log_path} not found.")
+    
+    # Close button
+    if st.button("❌ Close Log Viewer"):
+        st.session_state.show_log_viewer = False
+        st.rerun()
+
+
 def display_sidebar():
     """Display the sidebar with configuration options."""
     st.sidebar.title("⚙️ Configuration")
@@ -268,6 +477,72 @@ def display_sidebar():
     
     st.sidebar.subheader("Agent Settings")
     enable_logging = st.sidebar.checkbox("Enable Logging", value=True)
+    
+    # Log Management
+    st.sidebar.subheader("📋 Log Management")
+    
+    # Show log file sizes
+    logs_dir = Path("logs")
+    if logs_dir.exists():
+        total_size = 0
+        log_files = []
+        
+        # Main log file
+        main_log = logs_dir / "agent.log"
+        if main_log.exists():
+            size = main_log.stat().st_size
+            total_size += size
+            log_files.append(f"agent.log ({size / 1024 / 1024:.1f} MB)")
+        
+        # Agent log files
+        agents_dir = logs_dir / "agents"
+        if agents_dir.exists():
+            for log_file in agents_dir.glob("*.log"):
+                size = log_file.stat().st_size
+                total_size += size
+                log_files.append(f"{log_file.name} ({size / 1024 / 1024:.1f} MB)")
+        
+        if log_files:
+            st.sidebar.write(f"**Total Log Size:** {total_size / 1024 / 1024:.1f} MB")
+            with st.sidebar.expander("Log Files", expanded=False):
+                for log_file in log_files:
+                    st.write(f"• {log_file}")
+    
+    # Log viewer
+    if st.sidebar.button("📋 View Latest Logs", type="secondary"):
+        st.session_state.show_log_viewer = True
+        st.rerun()
+    
+    # Delete logs button
+    if not st.session_state.show_delete_confirm:
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            if st.sidebar.button("🗑️ Delete All Logs", type="secondary"):
+                st.session_state.show_delete_confirm = True
+                st.rerun()
+        with col2:
+            if st.sidebar.button("🧹 Clear Logs", type="secondary"):
+                success, message = clear_logs()
+                if success:
+                    st.sidebar.success(message)
+                else:
+                    st.sidebar.error(message)
+    else:
+        st.sidebar.write("⚠️ **Confirm deletion:**")
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            if st.sidebar.button("✅ Confirm", type="primary"):
+                success, message = delete_logs()
+                if success:
+                    st.sidebar.success(message)
+                else:
+                    st.sidebar.error(message)
+                st.session_state.show_delete_confirm = False
+                st.rerun()
+        with col2:
+            if st.sidebar.button("❌ Cancel", type="secondary"):
+                st.session_state.show_delete_confirm = False
+                st.rerun()
     
     st.sidebar.subheader("About")
     st.sidebar.info("""
@@ -309,17 +584,152 @@ def display_project_input():
         project_context = st.text_area(
             "Describe your project",
             value=st.session_state.project_context,
-            height=200,
-            placeholder="""Example: Create a REST API for a todo application with the following features:
-- User authentication and authorization
-- CRUD operations for todos
-- Database integration with PostgreSQL
-- JWT token authentication
-- API documentation with Swagger
-- Unit tests and integration tests
-- Docker containerization
-- CI/CD pipeline configuration""",
-            help="Describe your project requirements in detail",
+            height=400,
+            placeholder="""📋 Example Project Descriptions - Copy and Modify These Templates
+
+🎯 Simple Web Applications:
+
+Personal Blog System:
+"Create a personal blog application with user authentication, post creation and editing, comment system, and responsive design. Use Python Flask for the backend, SQLite for the database, and Bootstrap for the frontend. Include user registration, login/logout functionality, admin panel for managing posts and comments, search functionality, and social media sharing buttons."
+
+Portfolio Website:
+"Build a modern portfolio website with dynamic content management, project showcase, contact form, and blog section. Use React for the frontend, Node.js with Express for the backend, MongoDB for content storage, and AWS S3 for image hosting. Include responsive design, SEO optimization, and analytics tracking."
+
+Recipe Management App:
+"Develop a recipe management application where users can create, save, and share recipes. Use Django with PostgreSQL, implement user authentication, recipe categories, ingredient management, cooking instructions with step-by-step photos, rating system, and meal planning calendar."
+
+📊 Business Applications:
+
+Inventory Management System:
+"Create a comprehensive inventory management system for a retail business. Use FastAPI with PostgreSQL, implement product catalog, stock tracking, supplier management, purchase orders, sales tracking, barcode scanning, reporting dashboard, and low stock alerts."
+
+Customer Relationship Management (CRM):
+"Build a CRM system for managing customer interactions, sales pipeline, and business opportunities. Use Node.js with Express, MongoDB for data storage, implement contact management, lead tracking, deal pipeline, email integration, task management, and reporting analytics."
+
+Project Management Tool:
+"Develop a project management application with task tracking, team collaboration, and progress monitoring. Use React for the frontend, Django REST Framework for the backend, PostgreSQL database, implement user roles, project boards, time tracking, file sharing, and real-time notifications."
+
+🛒 E-commerce Solutions:
+
+Online Store Platform:
+"Create a full-featured e-commerce platform with product catalog, shopping cart, payment processing, and order management. Use FastAPI with PostgreSQL, implement user authentication, product categories, inventory management, Stripe payment integration, order tracking, and admin dashboard."
+
+Marketplace Application:
+"Build a marketplace platform connecting buyers and sellers. Use Django with PostgreSQL, implement user registration, product listings, messaging system, review system, payment escrow, dispute resolution, and analytics dashboard."
+
+Subscription Service:
+"Develop a subscription management platform with recurring billing, user management, and content delivery. Use Node.js with Express, MongoDB, implement subscription plans, payment processing with Stripe, content access control, usage analytics, and automated billing."
+
+📱 Mobile App Backends:
+
+Fitness Tracking API:
+"Create a backend API for a fitness tracking mobile app. Use Django REST Framework with PostgreSQL, implement user profiles, workout tracking, progress analytics, social features, push notifications, data visualization endpoints, and comprehensive API documentation."
+
+Food Delivery Service:
+"Build a backend for a food delivery app connecting restaurants, drivers, and customers. Use FastAPI with PostgreSQL, implement restaurant management, order processing, real-time tracking, driver assignment, payment processing, and notification system."
+
+Social Media Platform:
+"Develop a social media platform backend with user profiles, posts, comments, likes, follows, and messaging. Use Node.js with Express, MongoDB for data storage, implement real-time notifications, content moderation, hashtag system, and analytics."
+
+🏥 Healthcare Applications:
+
+Patient Management System:
+"Create a patient management system for a medical clinic. Use Django with PostgreSQL, implement patient records, appointment scheduling, medical history tracking, prescription management, billing integration, and HIPAA compliance features."
+
+Telemedicine Platform:
+"Build a telemedicine platform connecting patients and healthcare providers. Use FastAPI with PostgreSQL, implement video consultations, appointment scheduling, medical records, prescription management, payment processing, and secure messaging."
+
+Health Monitoring Dashboard:
+"Develop a health monitoring dashboard for tracking vital signs and health metrics. Use React frontend, Node.js backend, MongoDB database, implement data visualization, alert systems, trend analysis, and integration with wearable devices."
+
+🎓 Educational Platforms:
+
+Learning Management System (LMS):
+"Create a comprehensive LMS for online education. Use Django with PostgreSQL, implement course management, student enrollment, assignment submission, grading system, discussion forums, video streaming, and progress tracking."
+
+Tutoring Platform:
+"Build a platform connecting students with tutors for online learning. Use FastAPI with PostgreSQL, implement user matching, scheduling system, video conferencing, payment processing, progress tracking, and review system."
+
+Skill Assessment Platform:
+"Develop a platform for creating and taking skill assessments. Use Node.js with Express, MongoDB, implement quiz creation, automated grading, performance analytics, certificate generation, and adaptive learning algorithms."
+
+🏢 Enterprise Solutions:
+
+Employee Management System:
+"Create an HR management system for employee records, payroll, and performance tracking. Use Django with PostgreSQL, implement employee profiles, time tracking, leave management, performance reviews, payroll integration, and reporting."
+
+Document Management System:
+"Build a document management system with version control, collaboration, and search capabilities. Use FastAPI with PostgreSQL, implement file upload, version tracking, collaborative editing, search functionality, access control, and audit logging."
+
+Business Intelligence Dashboard:
+"Develop a BI dashboard for data visualization and business analytics. Use React frontend, Node.js backend, PostgreSQL database, implement data connectors, interactive charts, custom reports, user permissions, and automated data refresh."
+
+🔧 Developer Tools:
+
+API Gateway:
+"Create an API gateway for managing multiple microservices. Use FastAPI with Redis, implement request routing, rate limiting, authentication, logging, monitoring, load balancing, and API documentation."
+
+Code Review Platform:
+"Build a platform for code review and collaboration. Use Django with PostgreSQL, implement repository integration, pull request management, code commenting, automated testing, and review analytics."
+
+Deployment Automation Tool:
+"Develop a tool for automating application deployment and infrastructure management. Use Node.js with Express, implement deployment pipelines, environment management, monitoring integration, rollback capabilities, and deployment analytics."
+
+🎮 Gaming Applications:
+
+Multiplayer Game Backend:
+"Create a backend for a multiplayer online game. Use Node.js with Socket.io, Redis for real-time data, implement user authentication, game state management, matchmaking, leaderboards, and real-time communication."
+
+Gaming Tournament Platform:
+"Build a platform for organizing and managing gaming tournaments. Use FastAPI with PostgreSQL, implement tournament creation, player registration, bracket management, match scheduling, results tracking, and prize distribution."
+
+Game Analytics Dashboard:
+"Develop a dashboard for analyzing gaming data and player behavior. Use React frontend, Node.js backend, MongoDB database, implement data collection, player analytics, performance metrics, and predictive modeling."
+
+🚀 Advanced Projects:
+
+Machine Learning Platform:
+"Build a machine learning platform with data preprocessing, model training, evaluation, and deployment capabilities. Use Python with FastAPI, scikit-learn, TensorFlow, implement data pipelines, model versioning, automated training, and API deployment."
+
+Blockchain Application:
+"Create a decentralized application (DApp) using blockchain technology. Use Solidity for smart contracts, Web3.js for frontend integration, implement token management, transaction tracking, and decentralized storage."
+
+IoT Dashboard:
+"Develop an IoT dashboard for monitoring and controlling smart devices. Use React frontend, Node.js backend, MongoDB database, implement device management, real-time data visualization, alert systems, and mobile app integration."
+
+Microservices Architecture:
+"Create a microservices-based e-commerce system with separate services for user management, product catalog, order processing, and payment handling. Use Docker containers, Kubernetes orchestration, message queues, and service discovery."
+
+Real-time Collaboration Platform:
+"Build a real-time collaboration platform similar to Google Docs. Use React frontend, Node.js with Socket.io backend, MongoDB database, implement real-time editing, user presence, conflict resolution, and document versioning."
+
+AI-Powered Chatbot Platform:
+"Create a platform for building and deploying AI chatbots. Use FastAPI with PostgreSQL, implement natural language processing, conversation management, integration APIs, analytics dashboard, and multi-channel support."
+
+📋 How to Use These Templates:
+
+1. Copy one of the example descriptions above
+2. Modify it to match your specific requirements
+3. Add or remove features as needed
+4. Specify your preferred technology stack
+5. Include any specific business rules or constraints
+6. Add performance and scalability requirements
+7. Specify security and compliance needs
+8. Include deployment preferences
+
+💡 Tips for Customization:
+
+• Replace generic terms with your specific domain
+• Add your unique business requirements
+• Specify exact features you need
+• Include integration requirements
+• Mention performance expectations
+• Add security requirements
+• Specify user roles and permissions
+• Include reporting and analytics needs
+
+Start by copying and modifying one of these templates to describe your project!""",
+            help="Describe your project requirements in detail. Be specific about features, technology preferences, and requirements.",
             key="project_text_area"
         )
         
@@ -1200,13 +1610,13 @@ def main():
     
     display_header()
     
-    # Configure API key first
-    if not configure_api_key():
+    # Get configuration from sidebar (includes API key configuration)
+    config = display_sidebar()
+    
+    # Check if API key is configured
+    if not st.session_state.api_key_configured:
         st.warning("⚠️ Please configure your Gemini API key to use the application.")
         st.stop()
-    
-    # Get configuration from sidebar
-    config = display_sidebar()
     
     # Handle different pages
     if config['page'] == "🚀 Main App":
@@ -1235,6 +1645,10 @@ def main():
         
     elif config['page'] == "⚙️ System Prompts":
         display_system_prompts()
+    
+    # Log viewer (if activated from sidebar)
+    if st.session_state.show_log_viewer:
+        display_log_viewer()
     
     # Footer
     st.markdown("---")
