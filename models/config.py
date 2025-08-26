@@ -124,6 +124,37 @@ class SecurityConfig(BaseModel):
     enable_dependency_scanning: bool = Field(default=True, description="Enable dependency vulnerability scanning")
 
 
+class MCPServerConfig(BaseModel):
+    """Configuration for MCP server."""
+    
+    enabled: bool = Field(default=True, description="Enable MCP server")
+    server_path: str = Field(default="./mcp_server.py", description="Path to MCP server script")
+    tools_enabled: List[str] = Field(
+        default=[
+            "read_file", "write_file", "list_directory",
+            "git_status", "git_commit", "analyze_code",
+            "run_tests", "query_database", "call_api",
+            "generate_docs", "security_scan"
+        ],
+        description="List of enabled MCP tools"
+    )
+    max_file_size: int = Field(default=10 * 1024 * 1024, description="Maximum file size for operations")
+    enable_security_scanning: bool = Field(default=True, description="Enable security scanning tools")
+    enable_database_access: bool = Field(default=False, description="Enable database access tools")
+    enable_api_access: bool = Field(default=False, description="Enable external API access tools")
+    
+    # Security settings
+    allowed_paths: List[str] = Field(
+        default=["./generated", "./temp", "./backups"],
+        description="Allowed file system paths"
+    )
+    blocked_paths: List[str] = Field(
+        default=["/etc", "/var", "/usr"],
+        description="Blocked file system paths"
+    )
+    require_authentication: bool = Field(default=False, description="Require authentication for tool access")
+
+
 class UIConfig(BaseModel):
     """Configuration for the user interface."""
     
@@ -151,6 +182,7 @@ class SystemConfig(BaseModel):
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     security: SecurityConfig = Field(default_factory=SecurityConfig)
     ui: UIConfig = Field(default_factory=UIConfig)
+    mcp: MCPServerConfig = Field(default_factory=MCPServerConfig)
     
     # Agent configurations
     agents: Dict[str, AgentConfig] = Field(default_factory=dict)

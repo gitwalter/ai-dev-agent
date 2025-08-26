@@ -29,17 +29,28 @@ async def test_complete_workflow():
     """Test the complete workflow with real LLM usage."""
     print("🧪 Testing Complete Workflow with Real LLM...")
     
-    # Load API key from Streamlit secrets
+    # Load API key from Streamlit secrets or fallback to direct file reading
+    api_key = None
     try:
-        import streamlit as st
-        api_key = st.secrets.GEMINI_API_KEY
-        if not api_key or api_key == "your-gemini-api-key-here":
-            print("❌ Invalid Gemini API key in secrets.toml")
-            print("Please set a valid API key in .streamlit/secrets.toml")
+        # Try to load from .streamlit/secrets.toml directly
+        import tomllib
+        secrets_path = Path(".streamlit/secrets.toml")
+        if secrets_path.exists():
+            with open(secrets_path, "rb") as f:
+                secrets = tomllib.load(f)
+                api_key = secrets.get("GEMINI_API_KEY")
+                if api_key and api_key != "your-gemini-api-key-here":
+                    print("✅ API key loaded from .streamlit/secrets.toml")
+                else:
+                    print("❌ Invalid Gemini API key in .streamlit/secrets.toml")
+                    print("Please set a valid API key in .streamlit/secrets.toml")
+                    return False
+        else:
+            print("❌ .streamlit/secrets.toml file not found")
+            print("Please create .streamlit/secrets.toml with GEMINI_API_KEY")
             return False
-        print("✅ API key loaded from Streamlit secrets")
     except Exception as e:
-        print(f"❌ Failed to load API key from Streamlit secrets: {e}")
+        print(f"❌ Failed to load API key: {e}")
         print("Please ensure .streamlit/secrets.toml exists with GEMINI_API_KEY")
         return False
     
