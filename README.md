@@ -530,7 +530,7 @@ The system supports Retrieval-Augmented Generation (RAG) for enhanced knowledge 
 The easiest way to use the AI Development Agent is through the Streamlit web interface:
 
 ```bash
-streamlit run streamlit_app.py
+streamlit run apps/streamlit_app.py
 ```
 
 This will start the web application at `http://localhost:8501` where you can:
@@ -736,7 +736,9 @@ ai-dev-agent/
 ├── prompts/              # Prompt management
 │   ├── agent_prompt_loader.py # Agent prompt loading system
 │   └── __init__.py       # Prompt module initialization
-├── streamlit_app.py      # Streamlit web interface
+├── apps/
+│   ├── streamlit_app.py      # Main Streamlit web interface
+│   └── prompt_manager_app.py # Prompt management interface
 ├── main.py              # Main application entry point
 ├── requirements.txt     # Python dependencies
 ├── secrets.toml        # API keys and secrets (create this)

@@ -93,21 +93,21 @@ python tests/organize_tests.py --generate-index
 
 ### 2. Setup Script
 
-**File**: `scripts/setup_test_environment.py`
+**File**: `tests/setup_test_environment.py`
 
 **Commands**:
 ```bash
 # Setup complete test environment
-python scripts/setup_test_environment.py --setup
+python tests/setup_test_environment.py --setup
 
 # Validate test organization
-python scripts/setup_test_environment.py --validate
+python tests/setup_test_environment.py --validate
 
 # Run all tests
-python scripts/setup_test_environment.py --run-tests
+python tests/setup_test_environment.py --run-tests
 
 # Show help
-python scripts/setup_test_environment.py --help-info
+python tests/setup_test_environment.py --help-info
 ```
 
 ### 3. Pytest Configuration
@@ -213,7 +213,7 @@ The following files are **explicitly excluded** from the test organization rule:
 
 1. **Setup test environment**:
    ```bash
-   python scripts/setup_test_environment.py --setup
+   python tests/setup_test_environment.py --setup
    ```
 
 2. **Read the rules**:
@@ -249,7 +249,7 @@ The following files are **explicitly excluded** from the test organization rule:
 
 - **Detailed Rules**: `tests/TEST_ORGANIZATION_RULES.md`
 - **Test Index**: `tests/TEST_INDEX.md` (auto-generated)
-- **Setup Help**: `python scripts/setup_test_environment.py --help-info`
+- **Setup Help**: `python tests/setup_test_environment.py --help-info`
 - **Validation**: `python tests/organize_tests.py --validate`
 
 ## Conclusion
