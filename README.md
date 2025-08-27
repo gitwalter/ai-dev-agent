@@ -16,6 +16,8 @@ A multi-agent system for automated software development using LangGraph and Goog
 - **RAG Document Management**: URL scraping and file-based knowledge retrieval
 - **Comprehensive Testing**: Test suite with unit, integration, and system tests
 - **Structured Output Parsing**: JSON-based parsing with fallback mechanisms
+- **Cursor Rules System**: Automated development standards and quality enforcement
+- **LangSmith Observability**: Comprehensive agent logging and monitoring
 
 ### Specialized Agents
 1. **Requirements Analyst**: Transforms project descriptions into detailed specifications
@@ -25,6 +27,41 @@ A multi-agent system for automated software development using LangGraph and Goog
 5. **Code Reviewer**: Analyzes code quality and suggests improvements
 6. **Security Analyst**: Identifies vulnerabilities and security issues
 7. **Documentation Generator**: Creates project documentation
+
+## 🔍 Monitoring and Observability
+
+### LangSmith Integration
+
+The system includes comprehensive agent logging and observability through **LangSmith**, LangChain's official observability platform.
+
+#### View Agent Logs
+
+All agent executions, workflow steps, and LLM calls are automatically logged and can be viewed at:
+
+**🌐 [https://smith.langchain.com/](https://smith.langchain.com/)**
+
+#### What You Can Monitor
+
+- **Agent Executions**: Detailed logs of each agent's input, output, and execution time
+- **Workflow Steps**: Complete workflow progression with state changes
+- **LLM Calls**: Individual model calls with prompts and responses
+- **Error Tracking**: Comprehensive error logging with context
+- **Performance Metrics**: Execution times and performance analytics
+- **Session Tracking**: Complete session history for debugging
+
+#### Configuration
+
+LangSmith is configured in `.streamlit/secrets.toml`:
+
+```toml
+# LangSmith Configuration
+LANGSMITH_TRACING = "true"
+LANGSMITH_ENDPOINT = "https://api.smith.langchain.com"
+LANGSMITH_API_KEY = "your-langsmith-api-key"
+LANGSMITH_PROJECT = "ai-dev-agent"
+```
+
+📖 **For detailed LangSmith usage and debugging, see the [LangSmith Tracing Guide](docs/guides/observability/langsmith_tracing_guide.md)**
 
 ## 🏗️ Architecture
 
@@ -127,6 +164,114 @@ The system follows a sequential workflow where each agent builds upon the output
 6. **Security Analysis** → Identify and fix security vulnerabilities
 7. **Documentation** → Generate project documentation
 
+## 📋 Cursor Rules System
+
+This project implements a comprehensive **Cursor Rules System** that enforces development standards, quality assurance, and best practices through automated rule enforcement. The rules are stored in `.cursor/rules/` and are automatically applied during development.
+
+### Rule Categories and Purposes
+
+#### 🔧 **Development Standards** (Critical Priority)
+- **AI Model Selection**: Standardized LLM model selection using Gemini 2.5 Flash/Flash-Lite
+- **Framework Standards**: LangChain + LangGraph + LangSmith implementation standards
+- **Error Handling**: Zero-tolerance policy for silent errors and fallbacks
+- **Security**: Streamlit secrets management for API keys
+
+#### 🧪 **Testing & Quality Assurance** (Critical Priority)
+- **Test Organization**: Comprehensive test structure with unit/integration/system tests
+- **Test Monitoring**: Automated test monitoring with immediate error detection
+- **Test Isolation**: Isolated testing procedures for component isolation
+- **No Failing Tests**: Zero-tolerance policy for failing tests
+
+#### 📁 **Project Management** (High Priority)
+- **File Organization**: Standardized file structure and naming conventions
+- **Task Management**: Comprehensive tasklist management and progress tracking
+- **Implementation Roadmap**: Adherence to development plans and roadmaps
+- **Requirements Management**: Requirements tracking and validation
+
+#### 📚 **Documentation & Maintenance** (High Priority)
+- **Documentation Maintenance**: Comprehensive documentation upkeep and synchronization
+- **Naming Standards**: Consistent naming conventions across all project elements
+- **Prompt Database Management**: Database-first prompt management system
+
+#### 🤖 **Automation & Environment** (Medium Priority)
+- **Full Automation**: Comprehensive automation environment for development
+- **Agent Flow Analysis**: Debugging and analysis of agent workflows
+- **Streamlit Startup**: Standardized Streamlit application startup procedures
+
+### How Rules Work
+
+#### **Automatic Application**
+- Rules are automatically applied based on file patterns and context
+- Critical rules are always enforced across the entire project
+- High-priority rules apply to relevant file types and scenarios
+- Medium-priority rules apply when context is relevant
+
+#### **Rule Enforcement Examples**
+
+**AI Model Selection**:
+```python
+# ✅ CORRECT: Uses standardized model selection
+def get_llm_model(task_complexity="simple"):
+    api_key = st.secrets["GEMINI_API_KEY"]
+    model = "gemini-2.5-flash-lite" if task_complexity == "simple" else "gemini-2.5-flash"
+    return ChatGoogleGenerativeAI(model=model, google_api_key=api_key, temperature=0.1)
+
+# ❌ FORBIDDEN: Direct model selection without standards
+def get_llm():
+    return ChatGoogleGenerativeAI(model="gemini-pro")  # No standardization
+```
+
+**Test Organization**:
+```
+tests/
+├── unit/                    # ✅ Unit tests for individual components
+│   ├── agents/             # Agent unit tests
+│   └── models/             # Model unit tests
+├── integration/            # ✅ Integration tests for component interactions
+│   └── agent_workflows/    # Multi-agent workflow tests
+├── system/                 # ✅ System-level end-to-end tests
+│   └── complete_workflow/  # Full workflow tests
+└── langgraph/              # ✅ LangGraph-specific tests
+    └── nodes/              # Individual node tests
+```
+
+**Error Handling**:
+```python
+# ✅ CORRECT: Expose errors immediately
+try:
+    result = parser.parse(response)
+    return result
+except Exception as e:
+    logger.error(f"Parsing failed: {e}")
+    raise OutputParserException(f"Failed to parse response: {e}")
+
+# ❌ FORBIDDEN: Silent error handling with fallbacks
+try:
+    result = parser.parse(response)
+    return result
+except Exception as e:
+    logger.warning(f"Parsing failed, using fallback: {e}")
+    return get_fallback_data()  # Never do this
+```
+
+#### **Rule Benefits**
+
+- **Consistency**: Uniform standards across all development activities
+- **Quality**: Automated enforcement of best practices and quality standards
+- **Efficiency**: Reduced manual review and standardization efforts
+- **Reliability**: Consistent error handling and testing practices
+- **Maintainability**: Clear standards for code organization and structure
+- **Security**: Enforced security practices for API key management
+- **Scalability**: Standardized patterns for team collaboration
+
+#### **Rule Management**
+
+- **Location**: All rules stored in `.cursor/rules/` directory
+- **Format**: Rules use `.mdc` format with standardized metadata
+- **Naming**: Follows `category_action_rule.mdc` convention
+- **Priority**: Critical, High, Medium, Low priority levels
+- **Application**: Automatic application based on file patterns and context
+
 ## 📋 Prerequisites
 
 - Python 3.8+
@@ -156,22 +301,21 @@ The system follows a sequential workflow where each agent builds upon the output
 
 ### API Key Configuration
 
-The system uses a TOML-based configuration system for managing API keys.
+The system uses **Streamlit's built-in secrets management** for secure API key handling, following our security rules.
 
-#### Option 1: secrets.toml (Recommended)
+#### Option 1: .streamlit/secrets.toml (Recommended)
 
-Create a `secrets.toml` file in the project root:
+Create a `.streamlit/secrets.toml` file in the project root:
 
 ```toml
 # AI Development Agent Secrets Configuration
 # This file contains sensitive configuration data
 # DO NOT commit this file to version control
 
-[gemini]
-api_key = "your-actual-gemini-api-key-here"
+GEMINI_API_KEY = "your-actual-gemini-api-key-here"
 ```
 
-**Security Note**: The `secrets.toml` file is automatically ignored by git.
+**Security Note**: The `.streamlit/secrets.toml` file is automatically ignored by git.
 
 #### Option 2: Environment Variable
 
@@ -185,9 +329,35 @@ export GEMINI_API_KEY="your-gemini-api-key-here"
 set GEMINI_API_KEY=your-gemini-api-key-here
 ```
 
-#### Option 3: Streamlit Interface
+#### Option 3: Streamlit Cloud Secrets
 
-When running the Streamlit app, if no API key is found, you'll be prompted to enter it through the web interface.
+When deploying to Streamlit Cloud, add your API key through the Streamlit Cloud dashboard:
+1. Go to your app settings in Streamlit Cloud
+2. Navigate to "Secrets"
+3. Add: `GEMINI_API_KEY = "your-actual-api-key-here"`
+
+#### Option 4: Streamlit Interface
+
+When running the Streamlit app locally, if no API key is found, you'll be prompted to enter it through the web interface.
+
+### Code Access Pattern
+
+The system uses the standardized pattern for accessing secrets:
+
+```python
+import streamlit as st
+
+# ✅ CORRECT: Use Streamlit secrets
+api_key = st.secrets.get("GEMINI_API_KEY")
+if not api_key:
+    st.error("Missing Gemini API key in secrets")
+    return None
+
+# ❌ FORBIDDEN: Direct TOML file reading
+# import tomllib
+# with open(".streamlit/secrets.toml", "rb") as f:
+#     secrets = tomllib.load(f)
+```
 
 ### Getting Your Gemini API Key
 
@@ -213,7 +383,7 @@ The Streamlit web interface provides four main sections:
 The easiest way to use the AI Development Agent is through the Streamlit web interface:
 
 ```bash
-streamlit run streamlit_app.py
+streamlit run apps/streamlit_app.py
 ```
 
 This will start the web application at `http://localhost:8501` where you can:
@@ -232,7 +402,7 @@ You can also use the system programmatically:
 
 ```python
 import asyncio
-from main import AIDevelopmentAgent
+from apps.main import AIDevelopmentAgent
 from models.config import load_config_from_env
 
 async def main():
@@ -257,6 +427,14 @@ if __name__ == "__main__":
 
 ```
 ai-dev-agent/
+├── .cursor/              # Cursor IDE rules and automation
+│   └── rules/            # Development rules and standards
+│       ├── ai_model_selection_rule.mdc
+│       ├── framework_langchain_langgraph_standards_rule.mdc
+│       ├── testing_test_organization_rule.mdc
+│       ├── error_handling_no_silent_errors_rule.mdc
+│       ├── security_streamlit_secrets_rule.mdc
+│       └── [other rules...]
 ├── agents/                 # Agent implementations
 │   ├── base_agent.py      # Base agent class
 │   ├── requirements_analyst.py
@@ -268,11 +446,20 @@ ai-dev-agent/
 │   ├── documentation_generator.py
 │   └── supervisor/        # Supervisor agent implementations
 ├── apps/                  # Application entry points
+│   ├── main.py           # Main application entry point
+│   ├── streamlit_app.py  # Streamlit web interface
 │   └── prompt_manager_app.py
+├── config/               # Configuration files
+│   ├── pytest.ini       # Pytest configuration
+│   └── .pre-commit-config.yaml
 ├── context/               # Context management
 │   └── context_engine.py
 ├── docs/                  # Documentation
 │   ├── guides/            # Implementation guides
+│   │   ├── implementation/ # Project roadmap and implementation guides
+│   │   ├── database/      # Database automation guides
+│   │   ├── development/   # Development setup guides
+│   │   └── observability/ # LangSmith tracing guides
 │   ├── architecture/      # Architecture documentation
 │   ├── analysis/          # Analysis documents
 │   ├── concepts/          # Conceptual papers
@@ -294,6 +481,8 @@ ai-dev-agent/
 │   ├── system/           # System tests
 │   ├── langgraph/        # LangGraph tests
 │   └── supervisor/       # Supervisor tests
+├── tools/                # Development tools
+│   └── .pre-commit-config.yaml
 ├── utils/                # Utility functions
 │   ├── enhanced_output_parsers.py
 │   ├── file_manager.py
@@ -312,13 +501,37 @@ ai-dev-agent/
 │   ├── workflow_manager.py
 │   ├── langgraph_workflow_manager.py
 │   └── langgraph_workflow.py
-├── main.py               # Main application entry point
-├── streamlit_app.py      # Streamlit web interface
 ├── requirements.txt      # Python dependencies
 └── README.md             # Project documentation
 ```
 
 ## 🔧 Development
+
+### Development Standards and Rules
+
+This project follows a comprehensive set of automated development rules that ensure consistency, quality, and best practices. All rules are automatically enforced by the Cursor IDE.
+
+#### **Key Development Principles**
+
+1. **Framework-First Approach**: Always use established frameworks (LangChain, LangGraph, LangSmith) over custom implementations
+2. **Test-Driven Development**: Write tests before implementing functionality
+3. **Error Exposure**: Never use silent error handling or fallbacks - expose all errors immediately
+4. **Standardized AI Models**: Use Gemini 2.5 Flash/Flash-Lite with standardized selection criteria
+5. **Security Best Practices**: Use Streamlit secrets for all sensitive configuration
+
+#### **Quality Assurance**
+
+- **Zero Failing Tests**: All tests must pass before any code changes
+- **Comprehensive Test Coverage**: Unit, integration, and system tests for all components
+- **Automated Test Monitoring**: Immediate error detection and bug fixing workflow
+- **Code Quality Standards**: Pylint enforcement and naming conventions
+
+#### **Project Organization**
+
+- **Structured File Organization**: Clear separation of concerns and logical file grouping
+- **Consistent Naming**: Standardized naming conventions across all project elements
+- **Documentation Maintenance**: Automatic synchronization of documentation with code changes
+- **Task Management**: Comprehensive task tracking and progress management
 
 ### Prompt Management System
 
@@ -410,6 +623,12 @@ The system is optimized for:
 
 ## 🔧 Recent Improvements
 
+### Cursor Rules System Implementation
+- **Automated Development Standards**: Comprehensive rule system for consistent development practices
+- **Quality Enforcement**: Automated enforcement of testing, error handling, and security standards
+- **Framework Standardization**: Enforced use of LangChain + LangGraph + LangSmith ecosystem
+- **AI Model Optimization**: Standardized Gemini model selection for optimal performance and cost
+
 ### Enhanced Output Parsing
 - **Robust Fallback Mechanisms**: Multiple parsing strategies for AI responses
 - **Structured Output Validation**: Comprehensive validation of AI-generated content
@@ -421,14 +640,37 @@ The system is optimized for:
 - **Comprehensive Coverage**: Full workflow testing with real LLM integration
 - **Artifact Verification**: Automated verification of generated artifacts
 - **Error Scenario Testing**: Testing of edge cases and error conditions
+- **Automated Test Monitoring**: Immediate error detection and bug fixing workflow
 
 ## 🤝 Contributing
 
+### Development Standards
+
+This project follows strict development standards enforced by the Cursor Rules System. Before contributing:
+
+1. **Review the Rules**: Familiarize yourself with the rules in `.cursor/rules/`
+2. **Follow Standards**: Ensure your code follows the established patterns and conventions
+3. **Test Thoroughly**: All code must pass the comprehensive test suite
+4. **Document Changes**: Update documentation to reflect any changes
+
+### Contribution Process
+
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+3. **Follow Development Rules**: Ensure your code adheres to all automated rules
+4. **Write Tests**: Add comprehensive tests for new functionality
+5. **Run Full Test Suite**: Ensure all tests pass before submitting
+6. **Update Documentation**: Keep documentation synchronized with code changes
+7. Submit a pull request
+
+### Key Rules to Follow
+
+- **Framework Standards**: Use LangChain + LangGraph + LangSmith over custom implementations
+- **Error Handling**: Never use silent error handling - expose all errors immediately
+- **AI Model Selection**: Use standardized Gemini model selection patterns
+- **Security**: Use Streamlit secrets for all sensitive configuration
+- **Testing**: Maintain zero failing tests policy
+- **Documentation**: Keep all documentation up-to-date and synchronized
 
 ## 📄 License
 

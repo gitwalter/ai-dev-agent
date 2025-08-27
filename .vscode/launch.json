@@ -10,7 +10,7 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "run",
-                "streamlit_app.py"
+                "apps/streamlit_app.py"
             ],
             "justMyCode": true,
             "python": "C:/App/Anaconda/python.exe"
