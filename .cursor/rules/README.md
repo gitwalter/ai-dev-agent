@@ -25,6 +25,9 @@ tags: ["relevant tags for categorization"]
 - **ai_model_selection_rule.mdc** - Standardized LLM model selection strategy using Gemini models
 - **prompt_prompt_database_management_rule.mdc** - Database-first prompt management system
 
+### Automation and Environment
+- **automation_full_automation_rule.mdc** - Comprehensive automation environment rule for fully automated development
+
 ### Development and Configuration
 - **development_streamlit_startup_rule.mdc** - Standardized Streamlit application startup procedure
 - **security_streamlit_secrets_rule.mdc** - Mandatory use of Streamlit st.secrets for API keys
@@ -60,15 +63,16 @@ tags: ["relevant tags for categorization"]
 ## Rule Priority Levels
 
 ### Critical Priority (Always Applied)
+- **automation_full_automation_rule.mdc** - Ensures full automation environment
 - **naming_standards_rule.mdc** - Ensures consistency across entire project
 - **error_handling_no_silent_errors_rule.mdc** - Prevents hidden failures
 - **testing_no_failing_tests_rule.mdc** - Maintains code quality
+- **testing_test_monitoring_rule.mdc** - Automated test monitoring and bug fixing
+- **testing_test_organization_rule.mdc** - Comprehensive test organization standards
 - **prompt_prompt_database_management_rule.mdc** - Centralized prompt management
 - **security_streamlit_secrets_rule.mdc** - Security best practices
 
 ### High Priority (Applied to Relevant Files)
-- **testing_test_monitoring_rule.mdc** - Test quality assurance
-- **testing_test_organization_rule.mdc** - Test maintainability
 - **project_implementation_roadmap_rule.mdc** - Project consistency
 - **documentation_maintenance.mdc** - Documentation accuracy
 - **ai_model_selection_rule.mdc** - AI configuration consistency

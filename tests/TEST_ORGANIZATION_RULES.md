@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the rules and guidelines for organizing tests in the AI Development Agent project. All tests must follow these rules to maintain consistency and ensure proper test discovery.
+This document outlines the rules and guidelines for organizing tests in the AI Development Agent project. All tests must follow these rules to maintain consistency and ensure proper test discovery. This document aligns with the cursor rule for test organization and structure.
 
 ## Core Rules
 
@@ -15,8 +15,13 @@ This document outlines the rules and guidelines for organizing tests in the AI D
 - `tests/unit/` (unit tests)
 - `tests/integration/` (integration tests)
 - `tests/system/` (system tests)
+- `tests/langgraph/` (LangGraph-specific tests)
+- `tests/isolated/` (isolated agent tests)
+- `tests/supervisor/` (supervisor tests)
 - `tests/performance/` (performance tests)
 - `tests/security/` (security tests)
+- `tests/fixtures/` (test fixtures and data)
+- `tests/mocks/` (mock objects)
 
 **Forbidden Locations**:
 - Root project directory
@@ -61,39 +66,66 @@ This document outlines the rules and guidelines for organizing tests in the AI D
 
 ## Directory Structure
 
-### Recommended Structure
+### Actual Project Structure
 
 ```
 tests/
 ├── __init__.py                 # Package initialization
 ├── conftest.py                 # Shared pytest fixtures
 ├── test_utils.py               # Common test utilities
+├── setup_test_environment.py   # Test environment setup
+├── organize_tests.py           # Test organization script
 ├── TEST_ORGANIZATION_RULES.md  # This file
-├── TEST_INDEX.md               # Auto-generated test index
 ├── unit/                       # Unit tests
 │   ├── __init__.py
-│   ├── test_agents.py
-│   ├── test_models.py
-│   └── test_utils.py
+│   ├── agents/                 # Agent unit tests
+│   ├── models/                 # Model unit tests
+│   ├── utils/                  # Utility function tests
+│   └── test_base_agent.py
 ├── integration/                # Integration tests
 │   ├── __init__.py
-│   ├── test_workflow.py
-│   └── test_api.py
+│   ├── agent_workflows/        # Multi-agent workflow tests
+│   ├── test_agent_execution.py
+│   ├── test_agents_simple.py
+│   ├── test_api_key_validation.py
+│   ├── test_gemini_integration.py
+│   └── test_real_llm_integration.py
 ├── system/                     # System tests
 │   ├── __init__.py
-│   └── test_end_to_end.py
+│   ├── complete_workflow/      # Full workflow tests
+│   └── test_complete_workflow.py
+├── langgraph/                  # LangGraph-specific tests
+│   ├── __init__.py
+│   ├── integration/            # LangGraph integration tests
+│   ├── unit/                   # LangGraph unit tests
+│   ├── test_basic_workflow.py
+│   ├── test_simple_integration.py
+│   ├── test_langgraph_workflow_integration.py
+│   ├── test_workflow_manager.py
+│   └── TEST_DEVELOPMENT_PLAN.md
+├── isolated/                   # Isolated agent tests
+│   ├── __init__.py
+│   ├── test_problematic_agents.py
+│   ├── test_code_reviewer_only.py
+│   ├── debug_agent_factory.py
+│   └── simple_agent_test.py
+├── supervisor/                 # Supervisor tests
+│   ├── __init__.py
+│   ├── test_base_supervisor.py
+│   ├── test_project_manager_supervisor.py
+│   └── test_supervisor_state.py
 ├── performance/                # Performance tests
 │   ├── __init__.py
-│   └── test_workflow_performance.py
+│   └── README.md
 ├── security/                   # Security tests
 │   ├── __init__.py
-│   └── test_security_analysis.py
+│   └── README.md
 ├── fixtures/                   # Test fixtures and data
 │   ├── __init__.py
-│   └── sample_data.py
+│   └── README.md
 └── mocks/                      # Mock objects
     ├── __init__.py
-    └── mock_responses.py
+    └── README.md
 ```
 
 ### Category Guidelines
@@ -103,18 +135,43 @@ tests/
 - Use mocks for external dependencies
 - Fast execution (< 1 second per test)
 - High coverage of business logic
+- Organized by component type (agents/, models/, utils/)
 
 #### Integration Tests (`tests/integration/`)
 - Test component interactions
 - May use real external services
 - Moderate execution time (1-10 seconds per test)
 - Focus on data flow between components
+- Include agent workflow tests
 
 #### System Tests (`tests/system/`)
 - Test complete workflows
 - End-to-end scenarios
 - Longer execution time (10+ seconds per test)
 - Real external dependencies
+- Complete workflow testing
+
+#### LangGraph Tests (`tests/langgraph/`)
+- Test LangGraph-specific functionality
+- Individual node execution
+- Workflow orchestration
+- State management
+- Graph validation
+- Integration with LangChain components
+
+#### Isolated Tests (`tests/isolated/`)
+- Test problematic agents in isolation
+- Debug agent-specific issues
+- Mock inputs for parsing error resolution
+- Agent factory debugging
+- Simple agent testing scenarios
+
+#### Supervisor Tests (`tests/supervisor/`)
+- Test supervisor components
+- Base supervisor functionality
+- Project manager supervisor
+- Supervisor state management
+- Supervisor-agent interactions
 
 #### Performance Tests (`tests/performance/`)
 - Measure execution time and resource usage
@@ -152,6 +209,21 @@ def test_end_to_end_workflow():
     """System test for complete workflow."""
     pass
 
+@pytest.mark.langgraph
+def test_langgraph_workflow():
+    """LangGraph test for workflow orchestration."""
+    pass
+
+@pytest.mark.isolated
+def test_agent_parsing():
+    """Isolated test for agent parsing issues."""
+    pass
+
+@pytest.mark.supervisor
+def test_supervisor_management():
+    """Supervisor test for management functionality."""
+    pass
+
 @pytest.mark.performance
 def test_workflow_performance():
     """Performance test for workflow execution."""
@@ -168,6 +240,9 @@ def test_input_validation():
 - `@pytest.mark.unit` - Unit tests
 - `@pytest.mark.integration` - Integration tests
 - `@pytest.mark.system` - System tests
+- `@pytest.mark.langgraph` - LangGraph tests
+- `@pytest.mark.isolated` - Isolated agent tests
+- `@pytest.mark.supervisor` - Supervisor tests
 - `@pytest.mark.performance` - Performance tests
 - `@pytest.mark.security` - Security tests
 - `@pytest.mark.slow` - Slow running tests
@@ -215,6 +290,13 @@ If automatic organization fails, manually move test files:
 
 **Correct**:
 ```python
+import sys
+from pathlib import Path
+
+# Add project root to path for proper imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 from models.config import SystemConfig
 from agents.base_agent import BaseAgent
 from utils.logging_config import setup_logging
@@ -239,6 +321,53 @@ from tests.test_utils import create_mock_agent_response
 def test_agent_execution(test_config, mock_gemini_client):
     """Test agent execution with shared utilities."""
     pass
+```
+
+## Test File Creation Rules
+
+### When Creating New Tests
+1. **Identify Test Type**: Determine if it's unit, integration, system, LangGraph, isolated, or supervisor test
+2. **Choose Correct Directory**: Place in appropriate subfolder
+3. **Follow Naming Convention**: Use required naming pattern
+4. **Import Correctly**: Import from project root, not relative paths
+5. **Use Proper Fixtures**: Leverage shared fixtures from `conftest.py`
+
+### Required Test File Template
+```python
+#!/usr/bin/env python3
+"""
+Test file for <component_name>.
+
+<Brief description of what this test file covers>
+"""
+
+import pytest
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path for proper imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+# Import components to test
+from <component_path> import <ComponentName>
+
+class Test<ComponentName>:
+    """Test cases for <ComponentName>."""
+    
+    def setup_method(self):
+        """Set up test fixtures."""
+        pass
+        
+    def teardown_method(self):
+        """Clean up after tests."""
+        pass
+        
+    def test_<specific_functionality>(self):
+        """Test <specific functionality description>."""
+        # Test implementation
+        pass
 ```
 
 ## Validation and Enforcement
@@ -308,6 +437,13 @@ Add pre-commit hook to enforce rules:
 - Focus on critical business logic
 - Test edge cases and error conditions
 
+### 6. Parsing Error Resolution
+
+- Use isolated tests for parsing error debugging
+- Mock inputs to isolate parsing issues
+- Test different parser types systematically
+- Document successful parser-prompt combinations
+
 ## Troubleshooting
 
 ### Common Issues
@@ -316,6 +452,7 @@ Add pre-commit hook to enforce rules:
 2. **Import errors**: Use absolute imports from project root
 3. **Fixture not found**: Check `conftest.py` and import statements
 4. **Slow tests**: Use appropriate markers and consider optimization
+5. **Parsing errors**: Use isolated tests with mocked inputs
 
 ### Getting Help
 
@@ -323,6 +460,7 @@ Add pre-commit hook to enforce rules:
 2. Run validation script to identify issues
 3. Review existing test files for examples
 4. Consult the test utilities for common patterns
+5. Use isolated tests for debugging specific issues
 
 ## Compliance Checklist
 
@@ -338,6 +476,7 @@ Before committing test files, ensure:
 - [ ] Test is properly documented
 - [ ] Test follows isolation principles
 - [ ] Validation script passes
+- [ ] Test is in correct subfolder based on type
 
 ## Updates and Maintenance
 
@@ -348,5 +487,27 @@ This document should be updated when:
 - Directory structure is modified
 - New tools or scripts are added
 - Best practices evolve
+- Parsing error resolution patterns change
 
-Keep this document synchronized with the actual test organization implementation.
+Keep this document synchronized with the actual test organization implementation and cursor rules.
+
+## Alignment with Cursor Rules
+
+This test organization aligns with the cursor rule for test organization and structure, ensuring:
+
+- **Consistent Structure**: All tests follow the same organizational patterns
+- **Proper Isolation**: Isolated tests for debugging specific issues
+- **LangGraph Integration**: Dedicated tests for LangGraph functionality
+- **Supervisor Testing**: Comprehensive supervisor component testing
+- **Parsing Error Resolution**: Isolated tests for systematic parsing issue debugging
+- **Performance and Security**: Dedicated test categories for specialized testing
+
+## Benefits
+
+- **Consistency**: Standardized test organization across the project
+- **Maintainability**: Easy to find and update tests
+- **Scalability**: Clear structure for adding new tests
+- **Collaboration**: Team members can easily understand test organization
+- **CI/CD Integration**: Clear test execution patterns for automation
+- **Debugging**: Isolated tests for efficient issue resolution
+- **Framework Support**: Dedicated support for LangGraph and supervisor components

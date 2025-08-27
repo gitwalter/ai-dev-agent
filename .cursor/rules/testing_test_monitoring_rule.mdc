@@ -1,3 +1,13 @@
+---
+name: Test Monitoring and Bug Fixing Rule
+description: "Automated test monitoring with immediate error detection and bug fixing workflow for continuous integration"
+category: "testing"
+priority: "critical"
+alwaysApply: true
+globs: ["tests/**/*.py", "**/*test*.py", "pytest.ini", "conftest.py"]
+tags: ["testing", "monitoring", "automation", "ci-cd", "bug-fixing"]
+---
+
 # Test Monitoring and Bug Fixing Rule
 
 **CRITICAL**: Implement automated test monitoring with immediate error detection and bug fixing workflow.

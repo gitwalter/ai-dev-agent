@@ -1,5 +1,11 @@
 ---
-title: Test Organization and Structure Rule
+name: Test Organization and Structure Rule
+description: "Comprehensive test organization and structure standards for maintainable test suites"
+category: "testing"
+priority: "critical"
+alwaysApply: true
+globs: ["tests/**/*.py", "tests/**/*.md", "pytest.ini", "conftest.py"]
+tags: ["testing", "organization", "structure", "maintainability"]
 ---
 
 # Test Organization and Structure Rule
