@@ -134,6 +134,11 @@ logs/
 *.sqlite
 *.sqlite3
 
+# ChromaDB files
+chroma_db_*/
+*.bin
+chroma.sqlite3
+
 # API keys and secrets
 .env.local
 .env.temp
