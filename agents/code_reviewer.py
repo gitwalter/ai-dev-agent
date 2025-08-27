@@ -152,39 +152,11 @@ class CodeReviewer(BaseAgent):
             state: Current workflow state
             
         Returns:
-            Parsed review data
+            Parsed code review data
         """
-        # Create prompt template with JSON format instructions
-        prompt_template = """You are an expert Code Reviewer. Review the generated code for quality, security, and best practices.
-
-PROJECT CONTEXT: {project_context}
-CODE FILES: {code_files}
-REQUIREMENTS: {requirements}
-
-Review the code and provide comprehensive feedback.
-
-IMPORTANT: Respond ONLY with a valid JSON object in the following format:
-{{
-    "overall_score": 8.5,
-    "issues": [
-        {{
-            "title": "Issue Title",
-            "description": "Detailed description of the issue",
-            "severity": "high|medium|low",
-            "category": "security|performance|style|functionality",
-            "suggestion": "How to fix this issue"
-        }}
-    ],
-    "quality_gate_passed": true,
-    "summary": "Overall assessment of code quality",
-    "recommendations": [
-        "Recommendation 1",
-        "Recommendation 2"
-    ]
-}}
-
-Do not include any text before or after the JSON object."""
-
+        # Get prompt template from database
+        prompt_template = self.get_prompt_template()
+        
         # Create prompt
         prompt = PromptTemplate(
             template=prompt_template,
@@ -192,13 +164,15 @@ Do not include any text before or after the JSON object."""
         )
         
         # Create LangChain Gemini client
+        import streamlit as st
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash-lite",
+            google_api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0.1,
             max_output_tokens=8192
         )
         
-        # Create chain with JsonOutputParser
+        # Create chain
         chain = prompt | llm | self.json_parser
         
         # Execute the chain
@@ -209,20 +183,7 @@ Do not include any text before or after the JSON object."""
             "requirements": str(state.get("requirements", []))
         })
         
-        self.add_log_entry("info", "Successfully parsed review data with JsonOutputParser")
-        
-        # Handle case where JsonOutputParser returns a string instead of dict
-        if isinstance(result, str):
-            self.add_log_entry("warning", "JsonOutputParser returned string, attempting to parse as JSON")
-            try:
-                import json
-                result = json.loads(result)
-                self.add_log_entry("info", "Successfully parsed string result as JSON")
-            except json.JSONDecodeError as e:
-                self.add_log_entry("error", f"Failed to parse string result as JSON: {e}")
-                # Fall back to legacy parsing
-                return await self._execute_with_legacy_parsing(state)
-        
+        self.add_log_entry("info", "Successfully parsed code review data with JsonOutputParser")
         return result
     
     async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:

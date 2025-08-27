@@ -100,7 +100,9 @@ docs/
 - **main.py**: Main application entry point (stays in root)
 - **streamlit_app.py**: Streamlit application (stays in root)
 - **requirements.txt**: Python dependencies (stays in root)
-- **pytest.ini**: Pytest configuration (stays in root)
+
+### 7. Test Configuration Files
+- **tests/pytest.ini**: Pytest configuration (belongs in tests directory)
 
 ## File Naming Conventions
 
@@ -120,14 +122,15 @@ docs/
 - Group by type: `ARCHITECTURE_OVERVIEW.md`, `IMPLEMENTATION_PLAN.md`
 
 ### 4. Configuration Files
-- Use standard names: `.gitignore`, `requirements.txt`, `pytest.ini`
+- Use standard names: `.gitignore`, `requirements.txt`
 - Use descriptive names for custom configs: `streamlit_config.py`
+- Test configuration: `tests/pytest.ini`, `tests/conftest.py`
 
 ## File Placement Rules
 
 ### 1. NEVER Place Files in Root Directory
 **FORBIDDEN** in root directory:
-- Test files (except pytest.ini)
+- Test files (including pytest.ini)
 - Documentation files (except README.md and IMPLEMENTATION_ROADMAP.md)
 - Generated files
 - Temporary files
@@ -137,6 +140,7 @@ docs/
 ### 2. ALWAYS Place Files in Appropriate Folders
 **REQUIRED** placement:
 - Tests → `tests/` with appropriate subfolder
+- Test configuration → `tests/` (pytest.ini, conftest.py)
 - Documentation → `docs/` with appropriate subfolder
 - Generated files → `generated/` or `generated_projects/`
 - Logs → `logs/`

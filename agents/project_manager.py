@@ -8,11 +8,12 @@ import json
 import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 
 from .base_agent import BaseAgent
 from models.responses import AgentResult, AgentStatus
 from models.state import ProjectState
+from prompts import get_agent_prompt_loader
 
 
 @dataclass
@@ -55,12 +56,22 @@ class ProjectManagerAgent(BaseAgent):
     
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config, "project_manager")
+        self.prompt_loader = get_agent_prompt_loader("project_manager")
         self.feedback_requests: List[FeedbackRequest] = []
         self.decision_points: List[DecisionPoint] = []
         self.agent_feedback_history: Dict[str, List[Dict[str, Any]]] = {}
         self.iteration_count = 0
         self.max_iterations = 3
+    
+    def get_prompt_template(self) -> str:
+        """
+        Get the prompt template from the database.
         
+        Returns:
+            Prompt template string from database
+        """
+        return self.prompt_loader.get_system_prompt()
+    
     async def execute(self, state: ProjectState) -> AgentResult:
         """Execute the project manager workflow."""
         start_time = datetime.now()
@@ -307,7 +318,11 @@ class ProjectManagerAgent(BaseAgent):
     
     def _create_decision_prompt(self, decision_point: DecisionPoint) -> str:
         """Create a prompt for AI decision making."""
-        return f"""
+        # Get base prompt template from database
+        base_prompt = self.get_prompt_template()
+        
+        # Format the prompt with decision context
+        decision_context = f"""
         Decision Required: {decision_point.description}
         
         Context: {json.dumps(decision_point.context, indent=2)}
@@ -317,6 +332,8 @@ class ProjectManagerAgent(BaseAgent):
         
         Please select the best option and provide rationale.
         """
+        
+        return base_prompt + "\n\n" + decision_context
     
     def _apply_decision_to_state(self, state: ProjectState, decision_point: DecisionPoint) -> ProjectState:
         """Apply a decision to the project state."""

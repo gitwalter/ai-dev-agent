@@ -214,28 +214,46 @@ async def test_agent(agent_name: str, config) -> bool:
         # Get mock state for this agent
         state = get_mock_state_for_agent(agent_name)
         
+        # Create agent-specific config
+        from models.config import AgentConfig
+        agent_config = AgentConfig(
+            name=agent_name,
+            description=f"Test {agent_name} agent",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="Placeholder prompt template - using database",
+            system_prompt="Placeholder system prompt - using database",
+            parameters={
+                "temperature": 0.1,
+                "top_p": 0.8,
+                "top_k": 40,
+                "max_tokens": 8192
+            }
+        )
+        
         # Import the agent
         if agent_name == "requirements_analyst":
             from agents.requirements_analyst import RequirementsAnalyst
-            agent = RequirementsAnalyst(config)
+            agent = RequirementsAnalyst(agent_config, gemini_client)
         elif agent_name == "architecture_designer":
             from agents.architecture_designer import ArchitectureDesigner
-            agent = ArchitectureDesigner(config)
+            agent = ArchitectureDesigner(agent_config, gemini_client)
         elif agent_name == "code_generator":
             from agents.code_generator import CodeGenerator
-            agent = CodeGenerator(config)
+            agent = CodeGenerator(agent_config, gemini_client)
         elif agent_name == "test_generator":
             from agents.test_generator import TestGenerator
-            agent = TestGenerator(config)
+            agent = TestGenerator(agent_config, gemini_client)
         elif agent_name == "code_reviewer":
             from agents.code_reviewer import CodeReviewer
-            agent = CodeReviewer(config)
+            agent = CodeReviewer(agent_config, gemini_client)
         elif agent_name == "security_analyst":
             from agents.security_analyst import SecurityAnalyst
-            agent = SecurityAnalyst(config)
+            agent = SecurityAnalyst(agent_config, gemini_client)
         elif agent_name == "documentation_generator":
             from agents.documentation_generator import DocumentationGenerator
-            agent = DocumentationGenerator(config)
+            agent = DocumentationGenerator(agent_config, gemini_client)
         else:
             logger.error(f"Unknown agent: {agent_name}")
             return False
@@ -251,12 +269,30 @@ async def test_agent(agent_name: str, config) -> bool:
         
         # Check for specific outputs based on agent type
         if agent_name == "requirements_analyst":
-            requirements = result.get("requirements", [])
+            # Add detailed logging to debug the issue
+            logger.info(f"Requirements analyst result keys: {list(result.keys())}")
+            
+            # Check for requirements in the correct location based on actual output structure
+            requirements = []
+            agent_outputs = result.get("agent_outputs", {})
+            if "requirements_analyst" in agent_outputs:
+                requirements_analysis = agent_outputs["requirements_analyst"]
+                if isinstance(requirements_analysis, dict):
+                    # Check in requirements_analysis.output.requirements_analysis.requirements
+                    output = requirements_analysis.get("output", {})
+                    if isinstance(output, dict):
+                        req_analysis = output.get("requirements_analysis", {})
+                        if isinstance(req_analysis, dict):
+                            requirements = req_analysis.get("requirements", [])
+            
             if len(requirements) > 0:
                 logger.info(f"Generated {len(requirements)} requirements")
                 return True
             else:
                 logger.error("No requirements generated")
+                logger.error(f"Available keys in result: {list(result.keys())}")
+                # Log the actual result structure for debugging
+                logger.error(f"Result structure: {result}")
                 return False
         
         elif agent_name == "architecture_designer":

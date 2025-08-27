@@ -754,6 +754,23 @@ Return your response as a valid JSON object with the following structure:
             prompt = PromptTemplate(
                 template="""You are an expert Test Engineer. Generate comprehensive tests for the generated code.
 
+CRITICAL OUTPUT FORMAT REQUIREMENTS:
+Return ONLY a JSON object with this EXACT structure:
+{{
+    "test_files": {{
+        "test_filename.py": "complete test file content as string",
+        "test_another.py": "complete test file content as string"
+    }}
+}}
+
+CONSTRAINTS:
+- NO nested objects, arrays, or complex structures
+- NO metadata, descriptions, or test_cases arrays
+- NO test_type or other fields
+- Each value must be a complete, runnable Python test file as a string
+- Use descriptive filenames based on the code being tested
+- Include proper imports, test functions, and assertions
+
 PROJECT CONTEXT:
 {project_context}
 
@@ -769,60 +786,7 @@ CODE FILES:
 TASK:
 Generate comprehensive tests that cover all functionality and edge cases.
 
-Return your response as a valid JSON object with the following structure:
-{{
-    "test_files": {{
-        "unit_tests": [
-            {{
-                "filename": "test_module.py",
-                "content": "Complete unit test file content",
-                "description": "Description of what these tests cover",
-                "test_cases": [
-                    {{
-                        "name": "Test case name",
-                        "description": "What this test case validates",
-                        "coverage": "Functionality covered by this test"
-                    }}
-                ]
-            }}
-        ],
-        "integration_tests": [
-            {{
-                "filename": "test_integration.py",
-                "content": "Complete integration test file content",
-                "description": "Description of integration tests",
-                "test_cases": [
-                    {{
-                        "name": "Integration test name",
-                        "description": "What this integration test validates",
-                        "components": ["List of components being tested together"]
-                    }}
-                ]
-            }}
-        ],
-        "system_tests": [
-            {{
-                "filename": "test_system.py",
-                "content": "Complete system test file content",
-                "description": "Description of system tests",
-                "test_cases": [
-                    {{
-                        "name": "System test name",
-                        "description": "What this system test validates",
-                        "end_to_end": "End-to-end scenario being tested"
-                    }}
-                ]
-            }}
-        ],
-        "test_configuration": {{
-            "test_framework": "pytest",
-            "coverage_target": "90%",
-            "test_dependencies": ["List of test dependencies"],
-            "test_environment": "Description of test environment setup"
-        }},
-        "test_instructions": "Step-by-step instructions for running tests"
-    }}
-}}""",
+Return the exact JSON structure above with no additional fields or nested structures. Each test file should be a complete, runnable Python test file with proper imports, test functions, and assertions.""",
                 input_variables=["project_context", "project_type", "project_complexity", "requirements", "code_files"]
             )
             
@@ -840,9 +804,20 @@ Return your response as a valid JSON object with the following structure:
             completed_agents = state.get("completed_agents", [])
             completed_agents.append("test_generator")
             
-            return {
+            # Get test files directly from the result (now flattened)
+            test_files = result.get("test_files", {})
+            
+            # Debug: Print the test files result
+            print(f"DEBUG: Test generator result keys: {list(result.keys())}")
+            print(f"DEBUG: Test files type: {type(test_files)}")
+            print(f"DEBUG: Test files count: {len(test_files)}")
+            print(f"DEBUG: Test files keys: {list(test_files.keys())}")
+            
+            # Debug: Check state before and after update
+            print(f"DEBUG: State test_files before update: {len(state.get('test_files', {}))}")
+            updated_state = {
                 **state,
-                "test_files": result.get("test_files", {}),
+                "test_files": test_files,
                 "agent_outputs": {
                     **state.get("agent_outputs", {}),
                     "test_generator": result
@@ -858,6 +833,9 @@ Return your response as a valid JSON object with the following structure:
                     }
                 ]
             }
+            print(f"DEBUG: State test_files after update: {len(updated_state.get('test_files', {}))}")
+            
+            return updated_state
             
         except Exception as e:
             self.logger.error(f"Test generation failed: {e}")

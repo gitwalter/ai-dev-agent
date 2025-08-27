@@ -84,16 +84,32 @@ class TestGenerator(BaseAgent):
             if test_files:
                 # Convert TestFile objects to simple filename: content mapping for state
                 simple_test_files = {}
-                for filename, test_file in test_files.items():
-                    if hasattr(test_file, 'content'):
-                        # It's a TestFile object
-                        simple_test_files[filename] = {"content": test_file.content}
-                    elif isinstance(test_file, dict) and "content" in test_file:
-                        # It's already a dict with content
-                        simple_test_files[filename] = test_file
-                    else:
-                        # It's just content
-                        simple_test_files[filename] = {"content": str(test_file)}
+                
+                if isinstance(test_files, list):
+                    # If test_files is a list, convert to dictionary format
+                    for i, test_file in enumerate(test_files):
+                        filename = f"test_file_{i}.py"
+                        if hasattr(test_file, 'content'):
+                            # It's a TestFile object
+                            simple_test_files[filename] = {"content": test_file.content}
+                        elif isinstance(test_file, dict) and "content" in test_file:
+                            # It's already a dict with content
+                            simple_test_files[filename] = test_file
+                        else:
+                            # It's just content
+                            simple_test_files[filename] = {"content": str(test_file)}
+                elif isinstance(test_files, dict):
+                    # If test_files is a dictionary, process normally
+                    for filename, test_file in test_files.items():
+                        if hasattr(test_file, 'content'):
+                            # It's a TestFile object
+                            simple_test_files[filename] = {"content": test_file.content}
+                        elif isinstance(test_file, dict) and "content" in test_file:
+                            # It's already a dict with content
+                            simple_test_files[filename] = test_file
+                        else:
+                            # It's just content
+                            simple_test_files[filename] = {"content": str(test_file)}
                 
                 state["tests"] = simple_test_files
             else:
@@ -141,45 +157,9 @@ class TestGenerator(BaseAgent):
         Returns:
             Parsed test data
         """
-        # Create prompt template with JSON format instructions
-        prompt_template = """You are an expert Test Engineer. Generate comprehensive tests based on the code and requirements.
-
-PROJECT CONTEXT: {project_context}
-CODE FILES: {code_files}
-REQUIREMENTS: {requirements}
-
-Generate comprehensive test files and testing strategy.
-
-IMPORTANT: Respond ONLY with a valid JSON object in the following format:
-{{
-    "test_files": {{
-        "test_main.py": "import pytest\\n\\ndef test_main_functionality():\\n    assert True",
-        "test_auth.py": "import pytest\\n\\ndef test_authentication():\\n    assert True"
-    }},
-    "test_categories": {{
-        "unit_tests": ["Function-level tests", "Class-level tests"],
-        "integration_tests": ["API endpoint tests", "Database integration tests"]
-    }},
-    "test_data": {{
-        "fixtures": "Sample test data and fixtures",
-        "mocks": "Mock objects and stubs"
-    }},
-    "coverage_targets": {{
-        "unit_test_coverage": "80%",
-        "integration_test_coverage": "60%"
-    }},
-    "testing_strategy": {{
-        "framework": "pytest",
-        "assertion_library": "pytest assertions"
-    }},
-    "test_execution_plan": [
-        "1. Run unit tests: pytest tests/unit/",
-        "2. Run integration tests: pytest tests/integration/"
-    ]
-}}
-
-Do not include any text before or after the JSON object."""
-
+        # Get prompt template from database
+        prompt_template = self.get_prompt_template()
+        
         # Create prompt
         prompt = PromptTemplate(
             template=prompt_template,
@@ -187,13 +167,15 @@ Do not include any text before or after the JSON object."""
         )
         
         # Create LangChain Gemini client
+        import streamlit as st
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash-lite",
+            google_api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0.1,
             max_output_tokens=8192
         )
         
-        # Create chain with JsonOutputParser (not PydanticOutputParser)
+        # Create chain
         chain = prompt | llm | self.json_parser
         
         # Execute the chain
@@ -308,19 +290,35 @@ Do not include any text before or after the JSON object."""
         if test_files:
             # Convert TestFile objects to simple content for artifact storage
             simple_test_files = {}
-            for filename, test_file in test_files.items():
-                if hasattr(test_file, 'content'):
-                    # It's a TestFile object
-                    simple_test_files[filename] = test_file.content
-                else:
-                    # It's already a simple string
-                    simple_test_files[filename] = test_file
+            
+            if isinstance(test_files, list):
+                # If test_files is a list, convert to dictionary format
+                for i, test_file in enumerate(test_files):
+                    filename = f"test_file_{i}.py"
+                    if hasattr(test_file, 'content'):
+                        # It's a TestFile object
+                        simple_test_files[filename] = test_file.content
+                    elif isinstance(test_file, dict):
+                        # It's a dictionary
+                        simple_test_files[filename] = test_file.get("content", str(test_file))
+                    else:
+                        # It's already a simple string
+                        simple_test_files[filename] = str(test_file)
+            elif isinstance(test_files, dict):
+                # If test_files is a dictionary, process normally
+                for filename, test_file in test_files.items():
+                    if hasattr(test_file, 'content'):
+                        # It's a TestFile object
+                        simple_test_files[filename] = test_file.content
+                    else:
+                        # It's already a simple string
+                        simple_test_files[filename] = test_file
             
             self.add_artifact(
                 name="test_files",
                 type="test_code",
                 content=simple_test_files,
-                description=f"Generated {len(test_files)} test files"
+                description=f"Generated {len(simple_test_files)} test files"
             )
         
         # Create test strategy artifact
@@ -369,7 +367,7 @@ Do not include any text before or after the JSON object."""
             details={
                 "test_files": {
                     "total_files": len(test_files),
-                    "file_names": list(test_files.keys())
+                    "file_names": list(test_files.keys()) if isinstance(test_files, dict) else [f"test_file_{i}" for i in range(len(test_files))]
                 },
                 "test_types": {
                     "types": test_types,
@@ -405,26 +403,52 @@ Do not include any text before or after the JSON object."""
         
         # Create test files
         created_files = []
-        for filename, test_file in test_files.items():
-            try:
-                # Extract content from test file
-                if hasattr(test_file, 'content'):
-                    content = test_file.content
-                elif isinstance(test_file, dict):
-                    content = test_file.get("content", "")
-                else:
-                    content = str(test_file)
-                
-                # Create the test file
-                file_path = os.path.join(tests_dir, filename)
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                
-                created_files.append(filename)
-                self.add_log_entry("info", f"Created test file: {filename}")
-                
-            except Exception as e:
-                self.add_log_entry("error", f"Failed to create test file {filename}: {e}")
+        
+        if isinstance(test_files, list):
+            # If test_files is a list, convert to dictionary format
+            for i, test_file in enumerate(test_files):
+                filename = f"test_file_{i}.py"
+                try:
+                    # Extract content from test file
+                    if hasattr(test_file, 'content'):
+                        content = test_file.content
+                    elif isinstance(test_file, dict):
+                        content = test_file.get("content", "")
+                    else:
+                        content = str(test_file)
+                    
+                    # Create the test file
+                    file_path = os.path.join(tests_dir, filename)
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    
+                    created_files.append(filename)
+                    self.add_log_entry("info", f"Created test file: {filename}")
+                    
+                except Exception as e:
+                    self.add_log_entry("error", f"Failed to create test file {filename}: {e}")
+        elif isinstance(test_files, dict):
+            # If test_files is a dictionary, process normally
+            for filename, test_file in test_files.items():
+                try:
+                    # Extract content from test file
+                    if hasattr(test_file, 'content'):
+                        content = test_file.content
+                    elif isinstance(test_file, dict):
+                        content = test_file.get("content", "")
+                    else:
+                        content = str(test_file)
+                    
+                    # Create the test file
+                    file_path = os.path.join(tests_dir, filename)
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    
+                    created_files.append(filename)
+                    self.add_log_entry("info", f"Created test file: {filename}")
+                    
+                except Exception as e:
+                    self.add_log_entry("error", f"Failed to create test file {filename}: {e}")
         
         if created_files:
             self.add_log_entry("info", f"Successfully created {len(created_files)} test files")
@@ -508,30 +532,62 @@ Do not include any text before or after the JSON object."""
         # Convert test_files to proper TestFile objects if they're simple strings
         if data.get("test_files"):
             converted_test_files = {}
-            for filename, content in data["test_files"].items():
-                if isinstance(content, str):
-                    # Convert string content to TestFile object
-                    from utils.structured_outputs import TestFile
-                    converted_test_files[filename] = TestFile(
-                        filename=filename,
-                        content=content,
-                        test_type="unit",  # Default to unit tests
-                        coverage_target="80%",
-                        dependencies=["pytest"]
-                    )
-                elif isinstance(content, dict):
-                    # If it's already a dict, try to create TestFile from it
-                    from utils.structured_outputs import TestFile
-                    converted_test_files[filename] = TestFile(
-                        filename=filename,
-                        content=content.get("content", ""),
-                        test_type=content.get("test_type", "unit"),
-                        coverage_target=content.get("coverage_target", "80%"),
-                        dependencies=content.get("dependencies", ["pytest"])
-                    )
-                else:
-                    # Keep as is if it's already a TestFile object
-                    converted_test_files[filename] = content
+            test_files = data["test_files"]
+            
+            if isinstance(test_files, list):
+                # If test_files is a list, convert to dictionary format
+                for i, test_file in enumerate(test_files):
+                    filename = f"test_file_{i}.py"
+                    if isinstance(test_file, str):
+                        # Convert string content to TestFile object
+                        from utils.structured_outputs import TestFile
+                        converted_test_files[filename] = TestFile(
+                            filename=filename,
+                            content=test_file,
+                            test_type="unit",  # Default to unit tests
+                            coverage_target="80%",
+                            dependencies=["pytest"]
+                        )
+                    elif isinstance(test_file, dict):
+                        # If it's already a dict, try to create TestFile from it
+                        from utils.structured_outputs import TestFile
+                        converted_test_files[filename] = TestFile(
+                            filename=filename,
+                            content=test_file.get("content", ""),
+                            test_type=test_file.get("test_type", "unit"),
+                            coverage_target=test_file.get("coverage_target", "80%"),
+                            dependencies=test_file.get("dependencies", ["pytest"])
+                        )
+                    else:
+                        # Keep as is if it's already a TestFile object
+                        converted_test_files[filename] = test_file
+            elif isinstance(test_files, dict):
+                # If test_files is a dictionary, process normally
+                for filename, content in test_files.items():
+                    if isinstance(content, str):
+                        # Convert string content to TestFile object
+                        from utils.structured_outputs import TestFile
+                        converted_test_files[filename] = TestFile(
+                            filename=filename,
+                            content=content,
+                            test_type="unit",  # Default to unit tests
+                            coverage_target="80%",
+                            dependencies=["pytest"]
+                        )
+                    elif isinstance(content, dict):
+                        # If it's already a dict, try to create TestFile from it
+                        from utils.structured_outputs import TestFile
+                        converted_test_files[filename] = TestFile(
+                            filename=filename,
+                            content=content.get("content", ""),
+                            test_type=content.get("test_type", "unit"),
+                            coverage_target=content.get("coverage_target", "80%"),
+                            dependencies=content.get("dependencies", ["pytest"])
+                        )
+                    else:
+                        # Keep as is if it's already a TestFile object
+                        converted_test_files[filename] = content
+            
             data["test_files"] = converted_test_files
         else:
             # Create a basic test file if none provided
@@ -583,20 +639,41 @@ Do not include any text before or after the JSON object."""
         # Convert tests to simplified format
         tests = []
         
-        # Convert test files to simplified tests
-        for filename, test_file in data.get("test_files", {}).items():
-            if isinstance(test_file, dict):
-                content = test_file.get("content", "")
-                test_type = test_file.get("test_type", "unit")
-            else:
-                content = str(test_file)
-                test_type = "unit"
-            
-            tests.append(SimplifiedTestFile(
-                filename=filename,
-                content=content,
-                test_type=test_type
-            ))
+        # Handle test_files - could be a list or dictionary
+        test_files = data.get("test_files", {})
+        
+        if isinstance(test_files, list):
+            # If test_files is a list, convert to dictionary format
+            for i, test_file in enumerate(test_files):
+                if isinstance(test_file, dict):
+                    filename = test_file.get("filename", f"test_file_{i}.py")
+                    content = test_file.get("content", "")
+                    test_type = test_file.get("test_type", "unit")
+                else:
+                    filename = f"test_file_{i}.py"
+                    content = str(test_file)
+                    test_type = "unit"
+                
+                tests.append(SimplifiedTestFile(
+                    filename=filename,
+                    content=content,
+                    test_type=test_type
+                ))
+        elif isinstance(test_files, dict):
+            # If test_files is a dictionary, process normally
+            for filename, test_file in test_files.items():
+                if isinstance(test_file, dict):
+                    content = test_file.get("content", "")
+                    test_type = test_file.get("test_type", "unit")
+                else:
+                    content = str(test_file)
+                    test_type = "unit"
+                
+                tests.append(SimplifiedTestFile(
+                    filename=filename,
+                    content=content,
+                    test_type=test_type
+                ))
         
         # Get test framework from strategy
         test_framework = "pytest"

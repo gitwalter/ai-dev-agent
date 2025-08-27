@@ -138,34 +138,9 @@ class DocumentationGenerator(BaseAgent):
         Returns:
             Parsed documentation data
         """
-        # Create prompt template with JSON format instructions
-        prompt_template = """You are an expert Documentation Engineer. Generate comprehensive documentation for the project.
-
-PROJECT CONTEXT: {project_context}
-CODE FILES: {code_files}
-REQUIREMENTS: {requirements}
-ARCHITECTURE: {architecture}
-
-Generate comprehensive documentation including README, API docs, user guides, and technical documentation.
-
-IMPORTANT: Respond ONLY with a valid JSON object in the following format:
-{{
-    "documents": [
-        {{
-            "filename": "README.md",
-            "content": "# Project Title\\n\\nProject description...",
-            "doc_type": "readme|api|user_guide|technical|deployment",
-            "audience": "developers|end_users|stakeholders",
-            "format": "markdown|html|pdf",
-            "diagrams": null
-        }}
-    ],
-    "coverage_score": 9.0,
-    "documentation_gate_passed": true
-}}
-
-Do not include any text before or after the JSON object."""
-
+        # Get prompt template from database
+        prompt_template = self.get_prompt_template()
+        
         # Create prompt
         prompt = PromptTemplate(
             template=prompt_template,
@@ -173,8 +148,10 @@ Do not include any text before or after the JSON object."""
         )
         
         # Create LangChain Gemini client
+        import streamlit as st
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash-lite",
+            google_api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0.1,
             max_output_tokens=8192
         )

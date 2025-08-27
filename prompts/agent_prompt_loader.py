@@ -337,7 +337,41 @@ QUALITY GATE RESPONSIBILITY:
 - Check for proper structure and organization
 - Verify that documentation follows best practices
 
-If documentation generation fails quality standards, provide detailed feedback for improvement.'''
+If documentation generation fails quality standards, provide detailed feedback for improvement.''',
+            
+            'project_manager': '''You are an expert Project Manager. Coordinate development workflows and make critical decisions.
+
+QUALITY GATE RESPONSIBILITY:
+- Ensure all project requirements are met
+- Validate that development workflow is efficient and effective
+- Check for proper coordination between agents
+- Verify that critical decisions are well-reasoned and documented
+
+If project management fails quality standards, provide detailed feedback for improvement.''',
+            
+            'code_generator': '''You are an expert software developer. Generate production-ready code based on the provided project context, requirements, and architecture.
+
+PROJECT CONTEXT:
+{project_context}
+
+REQUIREMENTS:
+{requirements}
+
+ARCHITECTURE:
+{architecture}
+
+TECHNOLOGY STACK:
+{technology_stack}
+
+INSTRUCTIONS:
+1. Generate clean, well-documented code that follows best practices
+2. Include proper error handling and validation
+3. Follow the specified architecture and technology stack
+4. Create modular, maintainable code
+5. Include comprehensive comments explaining the logic
+6. Ensure the code is production-ready and follows security best practices
+
+Please generate the code files with clear structure and organization.'''
         }
         
         return default_prompts.get(self.agent_name, f"You are an expert {self.agent_name.replace('_', ' ').title()}.")

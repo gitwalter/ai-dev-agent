@@ -2,70 +2,127 @@
 
 A multi-agent system for automated software development using LangGraph and Google's Gemini API. This system implements a workflow-based approach to streamline software development tasks.
 
-## 🚀 Features
+## 🚀 Quick Start
 
-### Core Capabilities
-- **Multi-Agent Architecture**: Specialized agents for different development phases
-- **LangGraph Workflow Orchestration**: Workflow management with state persistence
-- **Gemini API Integration**: AI-powered code generation and analysis
-- **Human-in-the-Loop**: Approval mechanisms for critical decisions
-- **Error Recovery**: Retry logic and error handling
-- **Context Awareness**: Codebase indexing and context retrieval
-- **Streamlit Web Interface**: User-friendly web application
-- **Prompt Management System**: Database-driven prompt storage
-- **RAG Document Management**: URL scraping and file-based knowledge retrieval
-- **Comprehensive Testing**: Test suite with unit, integration, and system tests
-- **Structured Output Parsing**: JSON-based parsing with fallback mechanisms
-- **Cursor Rules System**: Automated development standards and quality enforcement
-- **LangSmith Observability**: Comprehensive agent logging and monitoring
+### Prerequisites
+- Python 3.8+
+- Google Gemini API key
+- Git
 
-### Specialized Agents
-1. **Requirements Analyst**: Transforms project descriptions into detailed specifications
-2. **Architecture Designer**: Designs system architecture and technology stack
-3. **Code Generator**: Generates source code based on requirements
-4. **Test Generator**: Creates test suites with coverage
-5. **Code Reviewer**: Analyzes code quality and suggests improvements
-6. **Security Analyst**: Identifies vulnerabilities and security issues
-7. **Documentation Generator**: Creates project documentation
+### Installation
 
-## 🔍 Monitoring and Observability
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd ai-dev-agent
+   ```
 
-### LangSmith Integration
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-The system includes comprehensive agent logging and observability through **LangSmith**, LangChain's official observability platform.
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-#### View Agent Logs
+### Configuration
 
-All agent executions, workflow steps, and LLM calls are automatically logged and can be viewed at:
+#### API Key Setup
 
-**🌐 [https://smith.langchain.com/](https://smith.langchain.com/)**
+The system uses **Streamlit's built-in secrets management** for secure API key handling.
 
-#### What You Can Monitor
+**Option 1: .streamlit/secrets.toml (Recommended)**
 
-- **Agent Executions**: Detailed logs of each agent's input, output, and execution time
-- **Workflow Steps**: Complete workflow progression with state changes
-- **LLM Calls**: Individual model calls with prompts and responses
-- **Error Tracking**: Comprehensive error logging with context
-- **Performance Metrics**: Execution times and performance analytics
-- **Session Tracking**: Complete session history for debugging
-
-#### Configuration
-
-LangSmith is configured in `.streamlit/secrets.toml`:
+Create a `.streamlit/secrets.toml` file in the project root:
 
 ```toml
-# LangSmith Configuration
-LANGSMITH_TRACING = "true"
-LANGSMITH_ENDPOINT = "https://api.smith.langchain.com"
-LANGSMITH_API_KEY = "your-langsmith-api-key"
-LANGSMITH_PROJECT = "ai-dev-agent"
+# AI Development Agent Secrets Configuration
+# This file contains sensitive configuration data
+# DO NOT commit this file to version control
+
+GEMINI_API_KEY = "your-actual-gemini-api-key-here"
 ```
 
-📖 **For detailed LangSmith usage and debugging, see the [LangSmith Tracing Guide](docs/guides/observability/langsmith_tracing_guide.md)**
+**Security Note**: The `.streamlit/secrets.toml` file is automatically ignored by git.
 
-## 🏗️ Architecture
+**Option 2: Environment Variable**
 
-### System Overview
+```bash
+# Linux/macOS
+export GEMINI_API_KEY="your-gemini-api-key-here"
+
+# Windows
+set GEMINI_API_KEY=your-gemini-api-key-here
+```
+
+**Option 3: Streamlit Cloud Secrets**
+
+When deploying to Streamlit Cloud, add your API key through the Streamlit Cloud dashboard:
+1. Go to your app settings in Streamlit Cloud
+2. Navigate to "Secrets"
+3. Add: `GEMINI_API_KEY = "your-actual-api-key-here"`
+
+**Getting Your Gemini API Key**
+
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key"
+4. Copy the generated key
+5. Add it to your `secrets.toml` file or set it as an environment variable
+
+### Usage
+
+#### Web Interface (Recommended)
+
+The easiest way to use the AI Development Agent is through the Streamlit web interface:
+
+```bash
+streamlit run apps/streamlit_app.py
+```
+
+This will start the web application at `http://localhost:8501` where you can:
+
+1. Configure your API key if not already set
+2. Enter your project description
+3. Configure project settings
+4. Start the development workflow
+5. View generated files and download the complete project
+6. Manage system prompts and agent prompts
+7. Add and manage RAG documents for enhanced knowledge retrieval
+
+#### Programmatic Usage
+
+You can also use the system programmatically:
+
+```python
+import asyncio
+from apps.main import AIDevelopmentAgent
+from models.config import load_config_from_env
+
+async def main():
+    # Initialize the agent
+    config = load_config_from_env()
+    agent = AIDevelopmentAgent(config)
+    
+    # Execute workflow
+    result = await agent.execute_workflow(
+        project_context="Create a REST API for user management...",
+        project_name="user-management-api",
+        output_dir="./generated_projects/user-management-api"
+    )
+    
+    print(f"Workflow completed: {result.status}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## 🏗️ System Architecture
+
+### Overview
 
 The AI Development Agent system uses a workflow-based architecture with specialized AI agents that work together to transform project requirements into complete applications.
 
@@ -163,6 +220,77 @@ The system follows a sequential workflow where each agent builds upon the output
 5. **Code Review** → Analyze code quality and suggest improvements
 6. **Security Analysis** → Identify and fix security vulnerabilities
 7. **Documentation** → Generate project documentation
+
+### Specialized Agents
+
+1. **Requirements Analyst**: Transforms project descriptions into detailed specifications
+2. **Architecture Designer**: Designs system architecture and technology stack
+3. **Code Generator**: Generates source code based on requirements
+4. **Test Generator**: Creates test suites with coverage
+5. **Code Reviewer**: Analyzes code quality and suggests improvements
+6. **Security Analyst**: Identifies vulnerabilities and security issues
+7. **Documentation Generator**: Creates project documentation
+
+## 🔍 Features
+
+### Core Capabilities
+- **Multi-Agent Architecture**: Specialized agents for different development phases
+- **LangGraph Workflow Orchestration**: Workflow management with state persistence
+- **Gemini API Integration**: AI-powered code generation and analysis
+- **Human-in-the-Loop**: Approval mechanisms for critical decisions
+- **Error Recovery**: Retry logic and error handling
+- **Context Awareness**: Codebase indexing and context retrieval
+- **Streamlit Web Interface**: User-friendly web application
+- **Prompt Management System**: Database-driven prompt storage
+- **RAG Document Management**: URL scraping and file-based knowledge retrieval
+- **Comprehensive Testing**: Test suite with unit, integration, and system tests
+- **Structured Output Parsing**: JSON-based parsing with fallback mechanisms
+- **Cursor Rules System**: Automated development standards and quality enforcement
+- **LangSmith Observability**: Comprehensive agent logging and monitoring
+
+### Web Interface Features
+
+The Streamlit web interface provides four main sections:
+
+1. **🚀 Main App**: Core project generation workflow
+2. **🔧 Prompt Manager**: Edit and manage agent prompts
+3. **📚 RAG Documents**: Add and manage knowledge documents
+4. **⚙️ System Prompts**: Manage system-wide prompts
+
+## 🔍 Monitoring and Observability
+
+### LangSmith Integration
+
+The system includes comprehensive agent logging and observability through **LangSmith**, LangChain's official observability platform.
+
+#### View Agent Logs
+
+All agent executions, workflow steps, and LLM calls are automatically logged and can be viewed at:
+
+**🌐 [https://smith.langchain.com/](https://smith.langchain.com/)**
+
+#### What You Can Monitor
+
+- **Agent Executions**: Detailed logs of each agent's input, output, and execution time
+- **Workflow Steps**: Complete workflow progression with state changes
+- **LLM Calls**: Individual model calls with prompts and responses
+- **Error Tracking**: Comprehensive error logging with context
+- **Performance Metrics**: Execution times and performance analytics
+- **Session Tracking**: Complete session history for debugging
+
+#### Configuration
+
+LangSmith is configured in `.streamlit/secrets.toml`:
+
+```toml
+# LangSmith Configuration
+LANGSMITH_TRACING = "true"
+LANGSMITH_ENDPOINT = "https://api.smith.langchain.com"
+LANGSMITH_API_KEY = "your-langsmith-api-key"
+LANGSMITH_PROJECT = "ai-dev-agent"
+```
+
+📖 **For detailed LangSmith usage and debugging, see the [LangSmith Tracing Guide](docs/guides/observability/langsmith_tracing_guide.md)**
 
 ## 📋 Cursor Rules System
 
@@ -271,157 +399,6 @@ except Exception as e:
 - **Naming**: Follows `category_action_rule.mdc` convention
 - **Priority**: Critical, High, Medium, Low priority levels
 - **Application**: Automatic application based on file patterns and context
-
-## 📋 Prerequisites
-
-- Python 3.8+
-- Google Gemini API key
-- Git
-
-## 🛠️ Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd ai-dev-agent
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## ⚙️ Configuration
-
-### API Key Configuration
-
-The system uses **Streamlit's built-in secrets management** for secure API key handling, following our security rules.
-
-#### Option 1: .streamlit/secrets.toml (Recommended)
-
-Create a `.streamlit/secrets.toml` file in the project root:
-
-```toml
-# AI Development Agent Secrets Configuration
-# This file contains sensitive configuration data
-# DO NOT commit this file to version control
-
-GEMINI_API_KEY = "your-actual-gemini-api-key-here"
-```
-
-**Security Note**: The `.streamlit/secrets.toml` file is automatically ignored by git.
-
-#### Option 2: Environment Variable
-
-Set the `GEMINI_API_KEY` environment variable:
-
-```bash
-# Linux/macOS
-export GEMINI_API_KEY="your-gemini-api-key-here"
-
-# Windows
-set GEMINI_API_KEY=your-gemini-api-key-here
-```
-
-#### Option 3: Streamlit Cloud Secrets
-
-When deploying to Streamlit Cloud, add your API key through the Streamlit Cloud dashboard:
-1. Go to your app settings in Streamlit Cloud
-2. Navigate to "Secrets"
-3. Add: `GEMINI_API_KEY = "your-actual-api-key-here"`
-
-#### Option 4: Streamlit Interface
-
-When running the Streamlit app locally, if no API key is found, you'll be prompted to enter it through the web interface.
-
-### Code Access Pattern
-
-The system uses the standardized pattern for accessing secrets:
-
-```python
-import streamlit as st
-
-# ✅ CORRECT: Use Streamlit secrets
-api_key = st.secrets.get("GEMINI_API_KEY")
-if not api_key:
-    st.error("Missing Gemini API key in secrets")
-    return None
-
-# ❌ FORBIDDEN: Direct TOML file reading
-# import tomllib
-# with open(".streamlit/secrets.toml", "rb") as f:
-#     secrets = tomllib.load(f)
-```
-
-### Getting Your Gemini API Key
-
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the generated key
-5. Add it to your `secrets.toml` file or set it as an environment variable
-
-## 🚀 Usage
-
-### Web Interface Features
-
-The Streamlit web interface provides four main sections:
-
-1. **🚀 Main App**: Core project generation workflow
-2. **🔧 Prompt Manager**: Edit and manage agent prompts
-3. **📚 RAG Documents**: Add and manage knowledge documents
-4. **⚙️ System Prompts**: Manage system-wide prompts
-
-### Running the Streamlit App (Recommended)
-
-The easiest way to use the AI Development Agent is through the Streamlit web interface:
-
-```bash
-streamlit run apps/streamlit_app.py
-```
-
-This will start the web application at `http://localhost:8501` where you can:
-
-1. Configure your API key if not already set
-2. Enter your project description
-3. Configure project settings
-4. Start the development workflow
-5. View generated files and download the complete project
-6. Manage system prompts and agent prompts
-7. Add and manage RAG documents for enhanced knowledge retrieval
-
-### Programmatic Usage
-
-You can also use the system programmatically:
-
-```python
-import asyncio
-from apps.main import AIDevelopmentAgent
-from models.config import load_config_from_env
-
-async def main():
-    # Initialize the agent
-    config = load_config_from_env()
-    agent = AIDevelopmentAgent(config)
-    
-    # Execute workflow
-    result = await agent.execute_workflow(
-        project_context="Create a REST API for user management...",
-        project_name="user-management-api",
-        output_dir="./generated_projects/user-management-api"
-    )
-    
-    print(f"Workflow completed: {result.status}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
 
 ## 📁 Project Structure
 

@@ -141,50 +141,9 @@ class RequirementsAnalyst(BaseAgent):
         Returns:
             Parsed requirements data
         """
-        # Create prompt template with JSON format instructions
-        prompt_template = """You are an expert Requirements Analyst. Analyze the project context and extract comprehensive requirements.
-
-PROJECT CONTEXT:
-{project_context}
-
-TASK:
-Analyze the project context above and generate a comprehensive requirements analysis.
-
-IMPORTANT: Respond ONLY with a valid JSON object in the following format:
-{{
-    "functional_requirements": [
-        {{
-            "id": "REQ-001",
-            "title": "Requirement Title",
-            "description": "Detailed description",
-            "priority": "high|medium|low",
-            "type": "functional|non-functional"
-        }}
-    ],
-    "non_functional_requirements": [
-        {{
-            "id": "NFR-001",
-            "title": "Non-functional requirement",
-            "description": "Description",
-            "category": "performance|security|usability|reliability"
-        }}
-    ],
-    "user_stories": [
-        {{
-            "id": "US-001",
-            "title": "User Story Title",
-            "description": "As a [user], I want [feature] so that [benefit]",
-            "acceptance_criteria": ["Criterion 1", "Criterion 2"]
-        }}
-    ],
-    "technical_constraints": ["Constraint 1", "Constraint 2"],
-    "assumptions": ["Assumption 1", "Assumption 2"],
-    "risks": ["Risk 1", "Risk 2"],
-    "summary": "Overall requirements summary"
-}}
-
-Do not include any text before or after the JSON object."""
-
+        # Get prompt template from database
+        prompt_template = self.get_prompt_template()
+        
         # Create prompt
         prompt = PromptTemplate(
             template=prompt_template,
@@ -192,8 +151,10 @@ Do not include any text before or after the JSON object."""
         )
         
         # Create LangChain Gemini client
+        import streamlit as st
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash-lite",
+            google_api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0.1,
             max_output_tokens=8192
         )
@@ -203,7 +164,9 @@ Do not include any text before or after the JSON object."""
         
         # Execute the chain
         self.add_log_entry("info", "Executing LangChain chain for requirements analysis")
-        result = await chain.ainvoke({"project_context": state["project_context"]})
+        result = await chain.ainvoke({
+            "project_context": state["project_context"]
+        })
         
         self.add_log_entry("info", "Successfully parsed requirements with JsonOutputParser")
         return result

@@ -1,0 +1,406 @@
+# TDD Prompt-Expected-Output Optimization Rule
+
+**CRITICAL**: Use Test-Driven Development (TDD) approach for prompt optimization to systematically improve agent performance and ensure consistent, reliable outputs.
+
+## Core TDD Prompt Optimization Process
+
+### 1. Test-First Approach
+**MANDATORY**: Write expected output tests BEFORE modifying prompts
+```python
+# CORRECT: Test-first approach
+def test_test_generator_output_structure():
+    """Test that test generator produces flattened file structure."""
+    expected_structure = {
+        "test_files": {
+            "test_auth_service.py": "import pytest\n...",
+            "test_user_service.py": "import pytest\n...",
+            "test_project_service.py": "import pytest\n..."
+        }
+    }
+    # Test with current prompt
+    result = run_agent_with_prompt(current_prompt, test_input)
+    assert result["test_files"] == expected_structure["test_files"]
+
+# THEN optimize prompt to pass the test
+```
+
+### 2. Expected Output Specification
+**MANDATORY**: Define exact expected output structure before prompt modification
+```python
+# Define expected output structure
+EXPECTED_TEST_GENERATOR_OUTPUT = {
+    "test_files": {
+        "filename.py": "file_content_as_string",
+        # No nested structures, no metadata, just filename -> content
+    }
+}
+
+# Define test cases
+TEST_CASES = [
+    {
+        "input": "simple_function.py",
+        "expected": {
+            "test_files": {
+                "test_simple_function.py": "import pytest\n..."
+            }
+        }
+    }
+]
+```
+
+### 3. Prompt Optimization Workflow
+
+#### Step 1: Analyze Current Output
+```python
+def analyze_current_output(agent_output):
+    """Analyze current agent output to identify issues."""
+    issues = []
+    
+    # Check for nested structures
+    if isinstance(agent_output.get("test_files"), dict):
+        for key, value in agent_output["test_files"].items():
+            if isinstance(value, dict):
+                issues.append(f"Nested structure found in {key}")
+            elif isinstance(value, list):
+                issues.append(f"List structure found in {key}")
+    
+    # Check for missing files
+    if not agent_output.get("test_files"):
+        issues.append("No test files generated")
+    
+    return issues
+```
+
+#### Step 2: Define Target Output Structure
+```python
+def define_target_structure():
+    """Define the exact output structure we want."""
+    return {
+        "test_files": {
+            # filename: content (string only)
+            "test_service.py": "import pytest\n...",
+            "test_models.py": "import pytest\n...",
+            "test_routes.py": "import pytest\n..."
+        }
+    }
+```
+
+#### Step 3: Optimize Prompt for Target Structure
+```python
+def optimize_prompt_for_structure(target_structure):
+    """Create prompt that produces the target structure."""
+    return f"""
+You are an expert Test Engineer. Generate comprehensive tests for the provided code.
+
+IMPORTANT OUTPUT FORMAT REQUIREMENTS:
+- Return ONLY a JSON object with this exact structure:
+{{
+    "test_files": {{
+        "test_filename.py": "complete test file content as string",
+        "test_another.py": "complete test file content as string"
+    }}
+}}
+
+- DO NOT include nested objects, metadata, or complex structures
+- DO NOT include test_cases arrays or descriptions
+- DO NOT include test_type or other metadata
+- Each test file should be a complete, runnable Python test file
+- Use descriptive filenames based on the code being tested
+
+PROJECT CONTEXT:
+{{project_context}}
+
+CODE FILES:
+{{code_files}}
+
+Generate test files that cover all functionality. Return the exact JSON structure above.
+"""
+```
+
+### 4. Systematic Prompt Testing
+
+#### Test-Driven Prompt Development
+```python
+class PromptOptimizationTest:
+    """Test suite for prompt optimization."""
+    
+    def test_output_structure(self):
+        """Test that output matches expected structure."""
+        prompt = self.get_optimized_prompt()
+        result = self.run_agent(prompt, test_input)
+        
+        # Structure tests
+        assert "test_files" in result
+        assert isinstance(result["test_files"], dict)
+        
+        # Content tests
+        for filename, content in result["test_files"].items():
+            assert isinstance(content, str), f"Content for {filename} should be string"
+            assert len(content) > 100, f"Content for {filename} should be substantial"
+            assert "import pytest" in content, f"Content for {filename} should be valid test"
+    
+    def test_file_naming(self):
+        """Test that files are named appropriately."""
+        prompt = self.get_optimized_prompt()
+        result = self.run_agent(prompt, test_input)
+        
+        for filename in result["test_files"].keys():
+            assert filename.startswith("test_"), f"Filename {filename} should start with 'test_'"
+            assert filename.endswith(".py"), f"Filename {filename} should end with '.py'"
+    
+    def test_content_quality(self):
+        """Test that generated content is high quality."""
+        prompt = self.get_optimized_prompt()
+        result = self.run_agent(prompt, test_input)
+        
+        for filename, content in result["test_files"].items():
+            # Quality checks
+            assert "def test_" in content, f"Content should contain test functions"
+            assert "assert" in content, f"Content should contain assertions"
+            assert "import" in content, f"Content should contain imports"
+```
+
+### 5. Prompt Optimization Patterns
+
+#### Pattern 1: Explicit Structure Definition
+```python
+# BEFORE: Vague prompt
+prompt = "Generate tests for the code."
+
+# AFTER: Explicit structure
+prompt = """
+Generate tests and return EXACTLY this JSON structure:
+{
+    "test_files": {
+        "test_service.py": "import pytest\n...",
+        "test_models.py": "import pytest\n..."
+    }
+}
+"""
+```
+
+#### Pattern 2: Constraint Specification
+```python
+# BEFORE: No constraints
+prompt = "Generate comprehensive tests."
+
+# AFTER: Clear constraints
+prompt = """
+Generate tests with these constraints:
+- Return only JSON with test_files object
+- Each test file must be a complete Python file
+- No nested structures or metadata
+- Use descriptive filenames
+- Include proper imports and assertions
+"""
+```
+
+#### Pattern 3: Example-Driven
+```python
+# BEFORE: No examples
+prompt = "Generate tests for the code."
+
+# AFTER: With examples
+prompt = """
+Generate tests following this exact pattern:
+
+INPUT: user_service.py
+OUTPUT:
+{
+    "test_files": {
+        "test_user_service.py": "import pytest\nfrom user_service import UserService\n\ndef test_create_user():\n    service = UserService()\n    result = service.create_user('test', 'test@example.com')\n    assert result is not None\n"
+    }
+}
+
+Now generate tests for:
+{code_files}
+"""
+```
+
+### 6. Validation and Iteration
+
+#### Output Validation
+```python
+def validate_agent_output(output, expected_structure):
+    """Validate agent output against expected structure."""
+    validation_results = {
+        "structure_valid": False,
+        "content_valid": False,
+        "naming_valid": False,
+        "quality_valid": False
+    }
+    
+    # Structure validation
+    if isinstance(output, dict) and "test_files" in output:
+        validation_results["structure_valid"] = True
+    
+    # Content validation
+    if validation_results["structure_valid"]:
+        test_files = output["test_files"]
+        if all(isinstance(content, str) for content in test_files.values()):
+            validation_results["content_valid"] = True
+    
+    # Naming validation
+    if validation_results["content_valid"]:
+        if all(name.startswith("test_") and name.endswith(".py") 
+               for name in test_files.keys()):
+            validation_results["naming_valid"] = True
+    
+    # Quality validation
+    if validation_results["content_valid"]:
+        if all("import pytest" in content and "def test_" in content 
+               for content in test_files.values()):
+            validation_results["quality_valid"] = True
+    
+    return validation_results
+```
+
+#### Iterative Improvement
+```python
+def iterative_prompt_improvement(base_prompt, test_cases):
+    """Iteratively improve prompt based on test results."""
+    current_prompt = base_prompt
+    iteration = 0
+    max_iterations = 5
+    
+    while iteration < max_iterations:
+        print(f"Iteration {iteration + 1}")
+        
+        # Test current prompt
+        results = []
+        for test_case in test_cases:
+            result = run_agent(current_prompt, test_case["input"])
+            validation = validate_agent_output(result, test_case["expected"])
+            results.append(validation)
+        
+        # Check if all tests pass
+        all_passed = all(all(validation.values()) for validation in results)
+        if all_passed:
+            print("✅ All tests passed!")
+            break
+        
+        # Identify issues and improve prompt
+        issues = identify_common_issues(results)
+        current_prompt = improve_prompt(current_prompt, issues)
+        iteration += 1
+    
+    return current_prompt
+```
+
+### 7. Implementation for Test Generator
+
+#### Current Issue Analysis
+```python
+# Current test generator output structure:
+{
+    "test_files": {
+        "unit_tests": [
+            {
+                "filename": "test_service.py",
+                "content": "import pytest\n...",
+                "description": "...",
+                "test_cases": [...]
+            }
+        ]
+    }
+}
+
+# Target structure:
+{
+    "test_files": {
+        "test_service.py": "import pytest\n...",
+        "test_models.py": "import pytest\n..."
+    }
+}
+```
+
+#### Optimized Test Generator Prompt
+```python
+OPTIMIZED_TEST_GENERATOR_PROMPT = """
+You are an expert Test Engineer. Generate comprehensive tests for the provided code.
+
+CRITICAL OUTPUT FORMAT REQUIREMENTS:
+Return ONLY a JSON object with this EXACT structure:
+{
+    "test_files": {
+        "test_filename.py": "complete test file content as string",
+        "test_another.py": "complete test file content as string"
+    }
+}
+
+CONSTRAINTS:
+- NO nested objects, arrays, or complex structures
+- NO metadata, descriptions, or test_cases arrays
+- NO test_type or other fields
+- Each value must be a complete, runnable Python test file as a string
+- Use descriptive filenames based on the code being tested
+- Include proper imports, test functions, and assertions
+
+PROJECT CONTEXT:
+{project_context}
+
+CODE FILES:
+{code_files}
+
+Generate comprehensive test files that cover all functionality. Return the exact JSON structure above with no additional fields or nested structures.
+"""
+```
+
+### 8. Testing Framework Integration
+
+#### Integration with Existing Tests
+```python
+def test_optimized_test_generator():
+    """Test the optimized test generator prompt."""
+    # Setup
+    prompt = OPTIMIZED_TEST_GENERATOR_PROMPT
+    test_input = {
+        "project_context": "Simple web service",
+        "code_files": {
+            "user_service.py": "def create_user(name, email): return {'id': 1, 'name': name}"
+        }
+    }
+    
+    # Execute
+    result = run_agent(prompt, test_input)
+    
+    # Validate structure
+    assert "test_files" in result
+    assert isinstance(result["test_files"], dict)
+    
+    # Validate content
+    test_files = result["test_files"]
+    assert len(test_files) > 0
+    
+    for filename, content in test_files.items():
+        assert isinstance(content, str)
+        assert filename.startswith("test_")
+        assert filename.endswith(".py")
+        assert "import pytest" in content
+        assert "def test_" in content
+        assert "assert" in content
+```
+
+### 9. Benefits of TDD Prompt Optimization
+
+- **Consistency**: Predictable output structure
+- **Reliability**: Tested and validated prompts
+- **Maintainability**: Clear expected outputs
+- **Debugging**: Easy to identify issues
+- **Iteration**: Systematic improvement process
+- **Quality**: Validated output quality
+
+### 10. Enforcement
+
+This rule is **ALWAYS APPLIED** when:
+- Creating new agent prompts
+- Modifying existing prompts
+- Debugging agent output issues
+- Optimizing agent performance
+- Ensuring consistent output structures
+
+**Violations require immediate remediation and prompt re-optimization.**
+description:
+globs:
+alwaysApply: true
+---

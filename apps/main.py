@@ -399,7 +399,7 @@ Your goal is to create professional, comprehensive documentation that includes c
             
             # Save generated files
             code_files = state.get("code_files", {})
-            test_files = state.get("tests", {})
+            test_files = state.get("test_files", {})  # Changed from "tests" to "test_files"
             doc_files = state.get("documentation", {})
             config_files = state.get("configuration_files", {})
             

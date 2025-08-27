@@ -57,7 +57,7 @@ class WorkflowManager:
             
             # Combine all file types for generated_files
             code_files = result_state.get("code_files", {})
-            test_files = result_state.get("tests", {})
+            test_files = result_state.get("test_files", {})  # Changed from "tests" to "test_files"
             documentation_files = result_state.get("documentation", {})
             configuration_files = result_state.get("configuration_files", {})
             

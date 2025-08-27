@@ -182,70 +182,9 @@ class ArchitectureDesigner(BaseAgent):
         Returns:
             Parsed architecture data
         """
-        # Create prompt template with JSON format instructions
-        prompt_template = """You are an expert Software Architect. Design a comprehensive system architecture based on the project context and requirements.
-
-PROJECT CONTEXT:
-{project_context}
-
-REQUIREMENTS:
-{requirements}
-
-TASK:
-Design a comprehensive system architecture that addresses all requirements.
-
-IMPORTANT: Respond ONLY with a valid JSON object in the following format:
-{{
-    "architecture_overview": "High-level architecture description",
-    "components": [
-        {{
-            "name": "Component Name",
-            "type": "service|database|api|ui|middleware",
-            "description": "Component description",
-            "responsibilities": ["Responsibility 1", "Responsibility 2"],
-            "technologies": ["Technology 1", "Technology 2"],
-            "dependencies": ["Dependency 1", "Dependency 2"]
-        }}
-    ],
-    "layers": [
-        {{
-            "name": "Layer Name",
-            "description": "Layer description",
-            "components": ["Component 1", "Component 2"],
-            "responsibilities": ["Responsibility 1", "Responsibility 2"]
-        }}
-    ],
-    "technologies": [
-        {{
-            "name": "Technology Name",
-            "category": "framework|database|language|tool",
-            "version": "Version",
-            "purpose": "Purpose description",
-            "rationale": "Why this technology was chosen"
-        }}
-    ],
-    "design_patterns": [
-        {{
-            "name": "Pattern Name",
-            "description": "Pattern description",
-            "implementation": "How to implement this pattern",
-            "benefits": ["Benefit 1", "Benefit 2"]
-        }}
-    ],
-    "data_flow": "Description of data flow between components",
-    "security_considerations": ["Security consideration 1", "Security consideration 2"],
-    "scalability_approach": "How the system will scale",
-    "deployment_strategy": "Deployment approach description",
-    "technology_stack": {{
-        "frontend": ["Technology 1", "Technology 2"],
-        "backend": ["Technology 1", "Technology 2"],
-        "database": ["Technology 1"],
-        "devops": ["Technology 1", "Technology 2"]
-    }}
-}}
-
-Do not include any text before or after the JSON object."""
-
+        # Get prompt template from database
+        prompt_template = self.get_prompt_template()
+        
         # Create prompt
         prompt = PromptTemplate(
             template=prompt_template,
@@ -253,8 +192,10 @@ Do not include any text before or after the JSON object."""
         )
         
         # Create LangChain Gemini client
+        import streamlit as st
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash-lite",
+            google_api_key=st.secrets["GEMINI_API_KEY"],
             temperature=0.1,
             max_output_tokens=8192
         )
