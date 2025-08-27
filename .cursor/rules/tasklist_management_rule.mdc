@@ -1,0 +1,352 @@
+# Tasklist Management Rule
+
+**CRITICAL**: Always maintain a comprehensive, up-to-date tasklist that enables seamless work continuation between sessions, agents, and team members. This ensures project momentum and prevents work duplication or misalignment.
+
+## Core Requirements
+
+### 1. Real-Time Tasklist Updates
+**MANDATORY**: Update tasklist immediately after any significant work or discovery
+```markdown
+# IMMEDIATE UPDATES REQUIRED:
+- After completing any task or milestone
+- After discovering new issues or requirements
+- After making architectural decisions
+- After encountering blockers or dependencies
+- After identifying new tasks or priorities
+- After changing technical approaches
+- After updating project status
+```
+
+### 2. Comprehensive Task Documentation
+**MANDATORY**: Each task must include complete context for seamless handoff
+```markdown
+## Task Documentation Template:
+- **Task ID**: Unique identifier for tracking
+- **Title**: Clear, descriptive task name
+- **Description**: Detailed explanation of what needs to be done
+- **Current Status**: NOT_STARTED | IN_PROGRESS | BLOCKED | COMPLETED | DEFERRED
+- **Priority**: CRITICAL | HIGH | MEDIUM | LOW
+- **Assigned To**: Who is responsible (if applicable)
+- **Dependencies**: List of prerequisite tasks
+- **Acceptance Criteria**: Specific criteria for completion
+- **Technical Context**: Relevant technical details and decisions
+- **Progress Notes**: Current progress and any blockers
+- **Estimated Effort**: Time/effort estimate
+- **Actual Effort**: Time/effort actually spent
+- **Last Updated**: Timestamp of last update
+- **Next Steps**: Immediate next actions required
+```
+
+### 3. Issue Tracking Integration
+**MANDATORY**: Link all issues and problems to specific tasks
+```markdown
+## Issue Documentation:
+- **Issue ID**: Reference to issue tracking system
+- **Problem Description**: Clear description of the issue
+- **Root Cause**: Analysis of why the issue occurred
+- **Impact Assessment**: How the issue affects the project
+- **Solution Approach**: How the issue will be resolved
+- **Prevention Measures**: How to prevent similar issues
+- **Related Tasks**: Tasks created to address the issue
+```
+
+## Tasklist Structure and Organization
+
+### 1. Primary Tasklist Location
+**MANDATORY**: Maintain primary tasklist in `docs/guides/implementation/roadmap.md`
+- **Main Project Roadmap**: Overall project phases and milestones
+- **Current Phase Status**: Detailed status of current phase
+- **Immediate Priorities**: Next 3-5 critical tasks
+- **Blockers and Issues**: Current blockers and their status
+- **Technical Decisions**: Recent decisions and their rationale
+
+### 2. Supporting Tasklists
+**MANDATORY**: Maintain specialized tasklists for different areas
+```markdown
+## Supporting Tasklists:
+- **tests/langgraph/TEST_DEVELOPMENT_PLAN.md**: Test-specific tasks
+- **AGENT_FRAMEWORK_MIGRATION_PLAN.md**: Migration-specific tasks
+- **SUPERVISOR_SWARM_HYBRID_ARCHITECTURE.md**: Architecture tasks
+- **docs/concepts/migration/framework_migration.md**: Framework migration tasks
+```
+
+### 3. Cross-Reference Validation
+**MANDATORY**: Ensure consistency across all tasklists
+```markdown
+## Validation Checklist:
+- [ ] All tasklists reflect current project status
+- [ ] Dependencies are correctly identified across tasklists
+- [ ] Priorities are consistent across tasklists
+- [ ] Completion percentages are accurate
+- [ ] Blockers are documented in all relevant tasklists
+- [ ] Technical decisions are reflected in all tasklists
+```
+
+## Update Process
+
+### 1. Before Starting Work
+**MANDATORY**: Review and update tasklist before beginning any work
+```markdown
+## Pre-Work Checklist:
+- [ ] Read all relevant tasklist documents
+- [ ] Verify current project status and progress
+- [ ] Identify next logical tasks based on dependencies
+- [ ] Update any outdated information
+- [ ] Document any new discoveries or requirements
+- [ ] Confirm task priorities and assignments
+```
+
+### 2. During Work Execution
+**MANDATORY**: Update tasklist as work progresses
+```markdown
+## During Work Updates:
+- [ ] Update task status as work progresses
+- [ ] Document any blockers or dependencies discovered
+- [ ] Record important technical decisions and rationale
+- [ ] Update progress percentages and metrics
+- [ ] Document any new tasks discovered
+- [ ] Update effort estimates based on actual time spent
+```
+
+### 3. After Completing Work
+**MANDATORY**: Comprehensive update after completing any significant work
+```markdown
+## Post-Work Updates:
+- [ ] Mark completed tasks as COMPLETED
+- [ ] Update overall project progress percentages
+- [ ] Document outcomes and results
+- [ ] Record lessons learned and insights
+- [ ] Identify next priority tasks
+- [ ] Update any dependent tasks
+- [ ] Document any new issues discovered
+```
+
+## Progress Tracking and Metrics
+
+### 1. Progress Metrics
+**MANDATORY**: Track comprehensive progress metrics
+```markdown
+## Required Metrics:
+- **Overall Progress**: Percentage complete across all phases
+- **Phase Progress**: Individual phase completion percentages
+- **Task Completion Rate**: Tasks completed vs. planned
+- **Blocker Resolution Time**: Time to resolve blockers
+- **Effort Accuracy**: Estimated vs. actual effort
+- **Quality Metrics**: Test coverage, error rates, performance
+```
+
+### 2. Status Reporting
+**MANDATORY**: Regular status reporting for stakeholders
+```markdown
+## Status Report Template:
+- **Current Phase**: What phase we're in and progress
+- **Recent Achievements**: What was completed recently
+- **Current Focus**: What we're working on now
+- **Next Priorities**: What's coming up next
+- **Blockers**: Any current blockers or issues
+- **Risks**: Potential risks and mitigation strategies
+- **Timeline**: Updated timeline and milestones
+```
+
+## Handoff Preparation
+
+### 1. Handoff Documentation
+**MANDATORY**: Prepare comprehensive handoff documentation
+```markdown
+## Handoff Documentation:
+- **Current State**: Exact current state of all tasks
+- **Active Work**: What's currently being worked on
+- **Next Priorities**: Clear next 3-5 priority tasks
+- **Blockers**: Any current blockers and their status
+- **Technical Context**: Important technical decisions and rationale
+- **Recent Changes**: What changed in the last session
+- **Pending Decisions**: Any decisions that need to be made
+```
+
+### 2. Knowledge Transfer
+**MANDATORY**: Ensure knowledge is properly transferred
+```markdown
+## Knowledge Transfer Checklist:
+- [ ] All technical decisions are documented with rationale
+- [ ] Important discoveries and insights are recorded
+- [ ] Lessons learned are documented for future reference
+- [ ] Best practices discovered are shared
+- [ ] Troubleshooting solutions are documented
+- [ ] Configuration changes are recorded
+```
+
+## Quality Assurance
+
+### 1. Tasklist Validation
+**MANDATORY**: Regular validation of tasklist accuracy
+```markdown
+## Validation Process:
+- [ ] Verify all task statuses reflect actual progress
+- [ ] Check that dependencies are correctly identified
+- [ ] Ensure priorities are appropriate and current
+- [ ] Validate that completion percentages are accurate
+- [ ] Confirm that blockers are properly documented
+- [ ] Check that technical decisions are reflected
+```
+
+### 2. Continuous Improvement
+**MANDATORY**: Continuously improve tasklist management
+```markdown
+## Improvement Process:
+- [ ] Identify areas where tasklist management can be improved
+- [ ] Document lessons learned about tasklist management
+- [ ] Update tasklist templates and processes based on experience
+- [ ] Share best practices with team members
+- [ ] Automate tasklist updates where possible
+```
+
+## Emergency and Exception Handling
+
+### 1. Critical Issue Documentation
+**MANDATORY**: Immediately document critical issues
+```markdown
+## Critical Issue Documentation:
+- **Issue Description**: Clear description of the critical issue
+- **Impact Assessment**: How it affects the project
+- **Immediate Actions**: What needs to be done immediately
+- **Root Cause Analysis**: Why the issue occurred
+- **Prevention Measures**: How to prevent similar issues
+- **Related Tasks**: Tasks created to address the issue
+```
+
+### 2. Scope Change Management
+**MANDATORY**: Document and manage scope changes
+```markdown
+## Scope Change Documentation:
+- **Change Description**: What changed and why
+- **Impact Assessment**: How it affects the project
+- **Timeline Impact**: How it affects the timeline
+- **Resource Impact**: How it affects resources
+- **Risk Assessment**: Risks associated with the change
+- **Approval Process**: Who approved the change
+```
+
+## Implementation Guidelines
+
+### 1. Daily Tasklist Management
+**MANDATORY**: Daily tasklist review and update
+```markdown
+## Daily Process:
+- [ ] Review current task status and progress
+- [ ] Update any completed tasks
+- [ ] Document any new issues or blockers
+- [ ] Update progress percentages
+- [ ] Identify next day's priorities
+- [ ] Update any dependent tasks
+```
+
+### 2. Weekly Tasklist Review
+**MANDATORY**: Weekly comprehensive tasklist review
+```markdown
+## Weekly Process:
+- [ ] Comprehensive review of all tasklists
+- [ ] Update project progress and metrics
+- [ ] Review and update priorities
+- [ ] Document lessons learned
+- [ ] Plan next week's priorities
+- [ ] Update timeline and milestones
+```
+
+### 3. Monthly Strategic Review
+**MANDATORY**: Monthly strategic tasklist review
+```markdown
+## Monthly Process:
+- [ ] Strategic review of project direction
+- [ ] Update long-term priorities and goals
+- [ ] Review and update project phases
+- [ ] Assess overall project health
+- [ ] Plan next month's major milestones
+- [ ] Update resource allocation and planning
+```
+
+## Tools and Automation
+
+### 1. Tasklist Tools
+**RECOMMENDED**: Use appropriate tools for tasklist management
+```markdown
+## Recommended Tools:
+- **Markdown**: For documentation and tasklists
+- **Version Control**: For tracking changes to tasklists
+- **Progress Tracking**: For automated progress calculation
+- **Dependency Management**: For tracking task dependencies
+- **Automation**: For automated tasklist updates
+```
+
+### 2. Automation Requirements
+**MANDATORY**: Automate tasklist updates where possible
+```markdown
+## Automation Areas:
+- **Progress Calculation**: Automate progress percentage calculation
+- **Dependency Validation**: Automate dependency checking
+- **Status Updates**: Automate status change tracking
+- **Report Generation**: Automate status report generation
+- **Consistency Checking**: Automate cross-reference validation
+```
+
+## Success Metrics
+
+### 1. Tasklist Quality Metrics
+**MANDATORY**: Track tasklist quality metrics
+```markdown
+## Quality Metrics:
+- **Accuracy**: Task status reflects actual progress (target: 95%+)
+- **Completeness**: All tasks are documented (target: 100%)
+- **Timeliness**: Updates are made promptly (target: <24 hours)
+- **Consistency**: Information is consistent across tasklists (target: 100%)
+- **Usefulness**: Tasklist enables seamless handoffs (target: 100%)
+```
+
+### 2. Project Success Metrics
+**MANDATORY**: Track project success metrics
+```markdown
+## Success Metrics:
+- **Handoff Quality**: Successful handoffs between agents (target: 100%)
+- **Progress Tracking**: Real-time accurate progress tracking (target: 95%+)
+- **Issue Resolution**: Quick resolution of blockers (target: <48 hours)
+- **Timeline Accuracy**: Accurate timeline predictions (target: 90%+)
+- **Stakeholder Satisfaction**: Positive stakeholder feedback (target: 90%+)
+```
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Task planning and execution
+- Progress tracking and reporting
+- Handoff preparation and execution
+- Issue tracking and resolution
+- Scope change management
+- Project status updates
+- Stakeholder communication
+
+**Violations of this rule require immediate remediation and tasklist correction.**
+
+## Benefits
+
+- **Seamless Continuation**: Enables seamless work continuation between sessions
+- **Reduced Duplication**: Prevents work duplication and misalignment
+- **Better Planning**: Improves project planning and resource allocation
+- **Faster Issue Resolution**: Quick identification and resolution of issues
+- **Improved Communication**: Better communication with stakeholders
+- **Quality Assurance**: Ensures project quality and success
+- **Knowledge Preservation**: Preserves important knowledge and decisions
+
+## Conclusion
+
+Comprehensive tasklist management is essential for project success and seamless work continuation. This rule ensures that all work is properly tracked, documented, and communicated, enabling successful project delivery and team collaboration.
+
+**CRITICAL SUCCESS FACTORS:**
+- Update tasklists immediately after any significant work
+- Maintain comprehensive documentation for all tasks
+- Ensure consistency across all tasklist documents
+- Prepare detailed handoff documentation
+- Track progress metrics and quality indicators
+- Continuously improve tasklist management processes
+description:
+globs:
+alwaysApply: true
+---

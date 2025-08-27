@@ -8,6 +8,7 @@ import logging
 import os
 import sys
 import uuid
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any
 
@@ -15,10 +16,11 @@ import google.generativeai as genai
 
 from models.config import SystemConfig, load_config_from_env, get_default_config
 from models.state import create_initial_state
-from models.responses import WorkflowResult, WorkflowStatus
-from workflow.workflow_graph import create_workflow_graph
+from models.responses import WorkflowResult, WorkflowStatus, AgentResponse, TaskStatus
+from workflow.langgraph_workflow import LangGraphWorkflowManager
 from context.context_engine import ContextEngine
 from utils.logging_config import setup_logging
+from utils.langchain_logging import setup_langchain_logging, get_logging_manager
 from utils.file_manager import FileManager
 
 
@@ -41,12 +43,23 @@ class AIDevelopmentAgent:
         self.config = config
         self.logger = logging.getLogger("ai_dev_agent")
         
+        # Initialize LangChain logging
+        self.logging_manager = get_logging_manager("ai-dev-agent", enable_langsmith=True)
+        
         # Initialize components
         self.gemini_client = self._initialize_gemini()
         self.context_engine = ContextEngine(config.context)
         self.file_manager = FileManager(config.storage)
         self.agents = self._initialize_agents()
-        self.workflow = create_workflow_graph(config, self.agents)
+        
+        # Initialize LangGraph workflow manager with agents and logging
+        llm_config = {
+            "api_key": self.config.gemini.api_key,
+            "model_name": self.config.gemini.model_name,
+            "temperature": self.config.gemini.temperature,
+            "max_tokens": self.config.gemini.max_tokens
+        }
+        self.workflow_manager = LangGraphWorkflowManager(llm_config, self.agents, self.logging_manager)
         
         self.logger.info("AI Development Agent system initialized successfully")
     
@@ -270,9 +283,19 @@ Your goal is to create professional, comprehensive documentation that includes c
         session_id = str(uuid.uuid4())
         start_time = asyncio.get_event_loop().time()
         
+        # Create session-specific logger
+        session_logger = self.logging_manager.create_session_logger(session_id)
+        
         self.logger.info(f"Starting workflow execution for project: {project_name}")
         self.logger.info(f"Project path: {project_path}")
         self.logger.info(f"Session ID: {session_id}")
+        
+        # Log workflow start
+        session_logger.log_workflow_step("workflow_start", {
+            "project_name": project_name,
+            "project_context": project_context[:200] + "...",
+            "output_dir": output_dir
+        }, "workflow_start")
         
         try:
             # Create initial state
@@ -282,25 +305,44 @@ Your goal is to create professional, comprehensive documentation that includes c
                 session_id=session_id
             )
             
-            # Index codebase if enabled
-            if self.config.context.enable_codebase_indexing:
-                self.logger.info("Indexing codebase...")
-                await self.context_engine.index_codebase(".")
+            # Skip codebase indexing for new project generation
+            # The context engine should not index the current project when generating a new one
+            self.logger.info("Skipping codebase indexing for new project generation")
             
-            # Execute workflow
+            # Execute workflow using LangGraph workflow manager with logging
             self.logger.info("Executing workflow...")
-            result_state = await self.workflow.ainvoke(
+            
+            # Get LangChain callback configuration
+            runnable_config = self.logging_manager.get_runnable_config(
+                session_id=session_id,
+                tags=["workflow_execution", project_name]
+            )
+            
+            result_state = await self.workflow_manager.workflow.ainvoke(
                 initial_state,
-                config={
-                    "configurable": {
-                        "thread_id": session_id,
-                        "checkpoint_id": session_id
-                    }
-                }
+                config=runnable_config
             )
             
             # Calculate execution time
             execution_time = asyncio.get_event_loop().time() - start_time
+            
+            # Log workflow completion
+            session_logger.log_workflow_step("workflow_complete", {
+                "execution_time": execution_time,
+                "agent_outputs_count": len(result_state.get("agent_outputs", {})),
+                "errors": result_state.get("errors", []),
+                "status": "success"
+            }, "workflow_complete")
+            
+            # Log performance metrics
+            session_logger.log_performance_metrics({
+                "total_execution_time": execution_time,
+                "agents_executed": len(result_state.get("agent_outputs", {})),
+                "files_generated": len(result_state.get("code_files", {})) + 
+                                 len(result_state.get("tests", {})) + 
+                                 len(result_state.get("documentation", {})),
+                "errors_count": len(result_state.get("errors", []))
+            })
             
             # Save results
             await self._save_results(result_state, project_path)
@@ -316,6 +358,20 @@ Your goal is to create professional, comprehensive documentation that includes c
         except Exception as e:
             self.logger.error(f"Workflow execution failed: {str(e)}")
             execution_time = asyncio.get_event_loop().time() - start_time
+            
+            # Log error
+            session_logger.log_error(e, {
+                "project_name": project_name,
+                "project_context": project_context[:200] + "...",
+                "execution_time": execution_time
+            }, agent_name="workflow_manager")
+            
+            # Log workflow failure
+            session_logger.log_workflow_step("workflow_failed", {
+                "execution_time": execution_time,
+                "error": str(e),
+                "status": "failed"
+            }, "workflow_failed")
             
             # Create error result
             error_state = create_initial_state(
@@ -497,27 +553,64 @@ Your goal is to create professional, comprehensive documentation that includes c
         else:
             status = WorkflowStatus.COMPLETED
         
-        # Extract agent results - ensure they are dictionaries for WorkflowResult
+        # Extract agent results - convert to AgentResponse objects for WorkflowResult
         agent_results = {}
         for agent_name, result in state.get("agent_outputs", {}).items():
-            if isinstance(result, dict):
-                # Already a dictionary, use as is
-                agent_results[agent_name] = result
-            elif hasattr(result, 'dict'):
-                # Convert AgentResponse object to dictionary
-                agent_results[agent_name] = result.dict()
-            else:
-                # Convert to dictionary format
-                agent_results[agent_name] = {
-                    "agent_name": agent_name,
-                    "task_name": f"{agent_name}_task",
-                    "status": "completed",
-                    "output": result.dict() if hasattr(result, 'dict') else result,
-                    "documentation": {},
-                    "logs": [],
-                    "decisions": [],
-                    "artifacts": []
-                }
+            try:
+                if isinstance(result, dict):
+                    # Convert dictionary to AgentResponse object
+                    agent_results[agent_name] = AgentResponse(
+                        agent_name=agent_name,
+                        task_name=f"{agent_name}_task",
+                        status=TaskStatus.COMPLETED,
+                        output=result.get("output", result),
+                        metadata=result.get("metadata", {}),
+                        timestamp=datetime.now(),
+                        execution_time=result.get("execution_time", 0.0),
+                        error_message=result.get("error_message"),
+                        warnings=result.get("warnings", []),
+                        documentation=result.get("documentation", {}),
+                        logs=result.get("logs", []),
+                        decisions=result.get("decisions", []),
+                        artifacts=result.get("artifacts", [])
+                    )
+                elif hasattr(result, 'agent_name') and hasattr(result, 'task_name'):
+                    # Already an AgentResponse object
+                    agent_results[agent_name] = result
+                else:
+                    # Convert unknown format to AgentResponse
+                    agent_results[agent_name] = AgentResponse(
+                        agent_name=agent_name,
+                        task_name=f"{agent_name}_task",
+                        status=TaskStatus.COMPLETED,
+                        output=result.dict() if hasattr(result, 'dict') else result,
+                        metadata={},
+                        timestamp=datetime.now(),
+                        execution_time=0.0,
+                        error_message=None,
+                        warnings=[],
+                        documentation={},
+                        logs=[],
+                        decisions=[],
+                        artifacts=[]
+                    )
+            except Exception as e:
+                # If conversion fails, create a minimal AgentResponse
+                agent_results[agent_name] = AgentResponse(
+                    agent_name=agent_name,
+                    task_name=f"{agent_name}_task",
+                    status=TaskStatus.FAILED,
+                    output={},
+                    metadata={},
+                    timestamp=datetime.now(),
+                    execution_time=0.0,
+                    error_message=f"Failed to convert agent result: {str(e)}",
+                    warnings=[],
+                    documentation={},
+                    logs=[],
+                    decisions=[],
+                    artifacts=[]
+                )
         
         # Combine all file types for generated_files
         code_files = state.get("code_files", {})
@@ -525,6 +618,13 @@ Your goal is to create professional, comprehensive documentation that includes c
         documentation_files = state.get("documentation", {})
         configuration_files = state.get("configuration_files", {})
         diagrams = state.get("diagrams", {})
+        
+        # Debug: Print state keys and file counts
+        print(f"DEBUG: State keys: {list(state.keys())}")
+        print(f"DEBUG: Code files in state: {len(code_files)}")
+        print(f"DEBUG: Test files in state: {len(test_files)}")
+        print(f"DEBUG: Documentation files in state: {len(documentation_files)}")
+        print(f"DEBUG: Configuration files in state: {len(configuration_files)}")
         
         # Process documentation files to extract content from DocumentationFile objects
         processed_documentation_files = {}
@@ -613,8 +713,8 @@ Your goal is to create professional, comprehensive documentation that includes c
             configuration_files=processed_configuration_files,
             diagram_files=processed_diagram_files,
             total_execution_time=execution_time,
-            start_time=state.get("created_at"),
-            end_time=state.get("updated_at"),
+            start_time=state.get("created_at") or datetime.now(),
+            end_time=state.get("updated_at") or datetime.now(),
             human_approvals=state.get("approval_requests", []),
             errors=state.get("errors", []),
             warnings=state.get("warnings", [])
@@ -647,6 +747,7 @@ async def main():
     """
     # Setup logging
     setup_logging()
+    setup_langchain_logging("ai-dev-agent", enable_langsmith=True)
     logger = logging.getLogger("main")
     
     try:

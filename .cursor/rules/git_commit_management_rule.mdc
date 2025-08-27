@@ -1,6 +1,6 @@
 # Git Commit Management Rule
 
-**CRITICAL**: Always maintain clean, well-organized git commits with proper commit messages, staging, and repository hygiene. This ensures code history is clear, maintainable, and professional.
+**CRITICAL**: Always maintain clean, well-organized git commits with proper commit messages and repository hygiene. The IDE automatically handles staging, so focus on commit quality and push operations. This ensures code history is clear, maintainable, and professional.
 
 ## Core Git Commit Requirements
 
@@ -54,9 +54,6 @@ rm -f test_*.py temp_*.py debug_*.py
 # Check for sensitive data
 grep -r "API_KEY\|password\|secret" . --exclude-dir=.git
 grep -r "your-actual-api-key" . --exclude-dir=.git
-
-# Verify .gitignore is working
-git status --ignored
 ```
 
 #### **Temporary File Cleanup**
@@ -66,21 +63,16 @@ git status --ignored
 - **Cache Files**: Clean Python cache and test cache directories
 - **Backup Files**: Remove backup and temporary files
 
-### 3. Staging and Commit Organization
+### 3. Commit Organization
 
 #### **Logical Grouping**: Group Related Changes
 ```bash
 # CORRECT: Logical grouping of related changes
-git add agents/code_reviewer.py
-git add agents/base_agent.py
 git commit -m "fix(agents): resolve code_reviewer artifact generation issues"
 
-git add tests/system/test_complete_workflow.py
-git add tests/conftest.py
 git commit -m "test(workflow): enhance complete workflow test with async support"
 
 # INCORRECT: Mixing unrelated changes
-git add agents/code_reviewer.py tests/system/test_complete_workflow.py docs/README.md
 git commit -m "fix stuff"
 ```
 
@@ -103,9 +95,6 @@ python -m py_compile tests/**/*.py
 
 # Verify no sensitive data
 grep -r "API_KEY\|password\|secret" . --exclude-dir=.git --exclude=*.md
-
-# Check file permissions
-git diff --cached --stat
 ```
 
 #### **Code Quality Checks**
@@ -146,7 +135,6 @@ Related: #123, #124"
 git checkout -b feature/langchain-parser-migration
 
 # Make changes and commit
-git add .
 git commit -m "feat(agents): migrate to LangChain parsers"
 
 # Push and create pull request
@@ -258,13 +246,12 @@ Resolves: SECURITY-001"
 ### Before Each Commit
 - [ ] Clean up temporary files and artifacts
 - [ ] Run relevant tests to ensure no regressions
-- [ ] Check for sensitive data in staged files
+- [ ] Check for sensitive data in files
 - [ ] Verify commit message follows conventional format
 - [ ] Ensure changes are logically grouped
 - [ ] Update documentation if needed
 
 ### During Commit Process
-- [ ] Stage related changes together
 - [ ] Write clear, descriptive commit message
 - [ ] Include detailed explanation in commit body
 - [ ] Reference related issues or tickets

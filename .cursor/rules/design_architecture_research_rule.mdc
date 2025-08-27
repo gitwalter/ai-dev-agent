@@ -1,0 +1,281 @@
+# Design and Architecture Research Rule
+
+**CRITICAL**: Always think long-term and conduct thorough research in the Cursor knowledge base and project concept papers before making any design or architecture decisions. This ensures decisions are well-informed, future-proof, and aligned with established best practices.
+
+## Core Research Requirements
+
+### 1. Knowledge Base Research
+**MANDATORY**: Before any design decision, research the Cursor knowledge base for:
+- **Existing Patterns**: Look for established design patterns and architectural approaches
+- **Best Practices**: Find documented best practices for similar problems
+- **Framework Guidelines**: Review framework-specific recommendations (LangChain, LangGraph, etc.)
+- **Anti-Patterns**: Identify common pitfalls and anti-patterns to avoid
+- **Case Studies**: Examine similar implementations and their outcomes
+
+### 2. Project Concept Papers Analysis
+**MANDATORY**: Review relevant project concept papers for:
+- **Architectural Vision**: Understand the overall architectural direction
+- **Design Principles**: Align with established design principles
+- **Technology Stack**: Ensure compatibility with chosen technologies
+- **Scalability Requirements**: Consider long-term scalability needs
+- **Integration Patterns**: Understand how components should interact
+
+### 3. Long-Term Thinking Framework
+**MANDATORY**: Consider the following long-term aspects:
+- **Maintainability**: How will this decision impact future maintenance?
+- **Scalability**: Will this approach scale with project growth?
+- **Extensibility**: Can this design accommodate future requirements?
+- **Performance**: What are the performance implications over time?
+- **Team Productivity**: How will this affect team development velocity?
+
+## Research Process
+
+### Step 1: Problem Analysis
+1. **Define the Problem**: Clearly articulate what needs to be solved
+2. **Identify Constraints**: List technical, business, and resource constraints
+3. **Scope the Solution**: Determine the boundaries of the solution space
+4. **Document Assumptions**: Explicitly state assumptions and validate them
+
+### Step 2: Knowledge Base Exploration
+1. **Search for Similar Problems**: Use semantic search in Cursor knowledge base
+2. **Review Framework Documentation**: Check LangChain, LangGraph, and other framework docs
+3. **Examine Best Practices**: Look for established patterns and guidelines
+4. **Study Anti-Patterns**: Understand what not to do
+
+### Step 3: Concept Paper Review
+1. **Identify Relevant Papers**: Find concept papers that address similar concerns
+2. **Extract Design Principles**: Understand the architectural vision
+3. **Analyze Trade-offs**: Consider the pros and cons of different approaches
+4. **Validate Alignment**: Ensure the decision aligns with project goals
+
+### Step 4: Alternative Analysis
+1. **Generate Alternatives**: Consider multiple approaches to the problem
+2. **Evaluate Trade-offs**: Compare alternatives across multiple dimensions
+3. **Assess Risks**: Identify potential risks and mitigation strategies
+4. **Consider Future Impact**: Think about long-term implications
+
+### Step 5: Decision Documentation
+1. **Document Rationale**: Clearly explain why this decision was made
+2. **Record Alternatives**: Document considered alternatives and why they were rejected
+3. **Note Assumptions**: Explicitly state assumptions that influenced the decision
+4. **Plan Validation**: Define how the decision will be validated
+
+## Research Tools and Methods
+
+### 1. Cursor Knowledge Base Search
+```python
+# Example research queries
+research_queries = [
+    "langgraph agent patterns cursor documentation",
+    "multi-agent architecture best practices",
+    "workflow orchestration patterns",
+    "state management in langgraph",
+    "error handling in multi-agent systems",
+    "memory management in ai agents",
+    "scalable agent communication patterns"
+]
+```
+
+### 2. Framework Documentation Review
+- **LangChain Documentation**: Review agent patterns and best practices
+- **LangGraph Documentation**: Study workflow orchestration patterns
+- **LangSmith Documentation**: Understand observability and debugging
+- **Community Resources**: Check GitHub repositories and community discussions
+
+### 3. Concept Paper Analysis
+- **AI Powered Software Systems**: Understand the collaborative AI mindset
+- **Supervisor-Swarm Architecture**: Review the hybrid architecture approach
+- **Memory Management**: Study long-term memory and recall patterns
+- **Handoff Systems**: Understand agent collaboration mechanisms
+
+## Decision-Making Criteria
+
+### 1. Technical Excellence
+- **Code Quality**: Does this approach produce high-quality, maintainable code?
+- **Performance**: Are there performance implications that need consideration?
+- **Reliability**: How reliable and robust is this approach?
+- **Security**: Are there security considerations to address?
+
+### 2. Alignment with Project Goals
+- **Architectural Vision**: Does this align with the overall architectural vision?
+- **Technology Stack**: Is this compatible with our chosen technologies?
+- **Team Capabilities**: Can the team effectively implement and maintain this?
+- **Business Requirements**: Does this meet the business requirements?
+
+### 3. Future-Proofing
+- **Scalability**: Will this approach scale with project growth?
+- **Extensibility**: Can this accommodate future requirements?
+- **Maintainability**: How easy will this be to maintain and modify?
+- **Technology Evolution**: How will this fare as technologies evolve?
+
+### 4. Risk Assessment
+- **Implementation Risk**: What are the risks during implementation?
+- **Operational Risk**: What are the risks during operation?
+- **Technical Debt**: Will this create technical debt?
+- **Dependency Risk**: Are there dependency risks to consider?
+
+## Documentation Requirements
+
+### 1. Decision Record
+Every design decision must be documented with:
+- **Problem Statement**: Clear description of what was being solved
+- **Research Summary**: Summary of knowledge base and concept paper research
+- **Alternatives Considered**: List of alternatives and why they were rejected
+- **Chosen Approach**: Detailed description of the chosen approach
+- **Rationale**: Clear explanation of why this approach was chosen
+- **Assumptions**: Explicit list of assumptions made
+- **Risks and Mitigation**: Identified risks and mitigation strategies
+- **Validation Plan**: How the decision will be validated
+
+### 2. Architecture Decision Records (ADRs)
+For significant architectural decisions:
+- **Context**: The context and problem being addressed
+- **Decision**: The decision that was made
+- **Consequences**: The consequences of the decision
+- **Status**: Current status of the decision (proposed, accepted, deprecated, etc.)
+
+### 3. Research Artifacts
+Maintain research artifacts including:
+- **Search Queries**: The queries used to search the knowledge base
+- **Relevant Documents**: Links to relevant documentation and papers
+- **Analysis Notes**: Notes from analyzing alternatives
+- **Validation Results**: Results from validating the decision
+
+## Implementation Guidelines
+
+### 1. Research Before Implementation
+- **Never implement without research**: Always conduct research before starting implementation
+- **Document research findings**: Keep detailed notes of research findings
+- **Validate assumptions**: Explicitly validate assumptions before proceeding
+- **Consider alternatives**: Always consider multiple approaches
+
+### 2. Iterative Validation
+- **Prototype when uncertain**: Create prototypes to validate complex decisions
+- **Test assumptions**: Design tests to validate key assumptions
+- **Gather feedback**: Seek feedback from team members and stakeholders
+- **Refine based on findings**: Adjust decisions based on validation results
+
+### 3. Continuous Learning
+- **Update knowledge base**: Contribute findings back to the knowledge base
+- **Share learnings**: Share learnings with the team
+- **Document patterns**: Document successful patterns for future use
+- **Learn from mistakes**: Document and learn from failed approaches
+
+## Quality Assurance
+
+### 1. Review Process
+- **Peer Review**: Have design decisions reviewed by peers
+- **Stakeholder Review**: Get input from relevant stakeholders
+- **Expert Review**: Seek review from domain experts when appropriate
+- **Documentation Review**: Ensure documentation is complete and clear
+
+### 2. Validation Criteria
+- **Technical Validation**: Does the solution work technically?
+- **Business Validation**: Does the solution meet business requirements?
+- **User Validation**: Does the solution meet user needs?
+- **Performance Validation**: Does the solution meet performance requirements?
+
+### 3. Success Metrics
+- **Implementation Success**: Was the implementation successful?
+- **Maintenance Burden**: What is the ongoing maintenance burden?
+- **Team Productivity**: How does this affect team productivity?
+- **User Satisfaction**: How satisfied are users with the solution?
+
+## Examples
+
+### Good Research Process
+```markdown
+## Decision: Choosing LangGraph for Workflow Orchestration
+
+### Problem Analysis
+- Need to orchestrate 7 agents in a complex workflow
+- Must support state management and error handling
+- Should be scalable and maintainable
+
+### Knowledge Base Research
+- Found LangGraph documentation on multi-agent workflows
+- Reviewed LangChain agent patterns
+- Studied state management best practices
+- Identified common pitfalls in agent orchestration
+
+### Concept Paper Review
+- AI Powered Software Systems: Supports collaborative AI approach
+- Supervisor-Swarm Architecture: Aligns with hybrid architecture vision
+- Memory Management: Compatible with long-term memory requirements
+
+### Alternatives Considered
+1. Custom workflow engine: Too complex, high maintenance burden
+2. Simple sequential execution: Doesn't support complex interactions
+3. LangGraph: Established framework, good community support
+
+### Chosen Approach
+LangGraph with StateGraph for workflow orchestration
+
+### Rationale
+- Established framework with good documentation
+- Supports complex state management
+- Aligns with project's use of LangChain ecosystem
+- Reduces custom code and maintenance burden
+```
+
+### Bad Research Process
+```markdown
+## Decision: Using Custom Workflow Engine
+
+### Problem Analysis
+- Need to orchestrate agents
+- Custom solution seems simpler
+
+### Knowledge Base Research
+- None conducted
+
+### Concept Paper Review
+- None conducted
+
+### Alternatives Considered
+- None considered
+
+### Chosen Approach
+Custom workflow engine
+
+### Rationale
+- Seemed simpler at the time
+- No research conducted
+```
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Architecture decisions
+- Design pattern selection
+- Technology choices
+- Framework selection
+- Integration approaches
+- Scalability decisions
+- Performance optimizations
+
+**Violations of this rule require immediate remediation and proper research.**
+
+## Benefits
+
+- **Better Decisions**: Research leads to more informed decisions
+- **Reduced Risk**: Understanding alternatives reduces implementation risk
+- **Future-Proofing**: Long-term thinking prevents short-sighted decisions
+- **Knowledge Sharing**: Research findings benefit the entire team
+- **Quality Improvement**: Better decisions lead to higher quality solutions
+- **Team Learning**: Research process improves team capabilities
+
+## Success Metrics
+
+- **Decision Quality**: Higher quality decisions with fewer reversals
+- **Implementation Success**: More successful implementations
+- **Maintenance Burden**: Reduced maintenance burden over time
+- **Team Productivity**: Improved team productivity and satisfaction
+- **Knowledge Base Growth**: Continuous growth of knowledge base
+- **Stakeholder Satisfaction**: Higher stakeholder satisfaction with solutions
+
+**Remember**: Good design and architecture decisions are the foundation of successful software systems. Always invest the time to research thoroughly and think long-term.
+description:
+globs:
+alwaysApply: true
+---

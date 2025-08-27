@@ -232,43 +232,29 @@ def load_config_from_env() -> SystemConfig:
 
 def _load_gemini_api_key() -> str:
     """
-    Load Gemini API key with fallback logic:
-    1. Try to load from Streamlit secrets (highest priority)
-    2. Try to load from secrets.toml
-    3. Fallback to GEMINI_API_KEY environment variable
-    4. Return empty string if not found
+    Load Gemini API key from .streamlit/secrets.toml and set environment variable for LangChain.
     
     Returns:
         API key string or empty string if not found
     """
-    # Priority 1: Try to load from Streamlit secrets
     try:
-        import streamlit as st
-        if hasattr(st.secrets, "GEMINI_API_KEY"):
-            api_key = st.secrets.GEMINI_API_KEY
-            if api_key and api_key != "your-gemini-api-key-here":
-                return api_key
-    except Exception:
-        # Continue to next source if Streamlit secrets fail
-        pass
-    
-    # Priority 2: Try to load from secrets.toml
-    try:
-        from utils.toml_config import load_gemini_api_key
-        toml_api_key = load_gemini_api_key()
-        if toml_api_key and toml_api_key != "your-gemini-api-key-here":
-            return toml_api_key
-    except Exception:
-        # Continue to environment variable if TOML loading fails
-        pass
-    
-    # Priority 3: Fallback to environment variable
-    env_api_key = os.getenv("GEMINI_API_KEY", "")
-    if env_api_key:
-        return env_api_key
-    
-    # Return empty string if no API key found
-    return ""
+        from utils.toml_config import TOMLConfigLoader
+        
+        # Look for secrets.toml in .streamlit directory
+        loader = TOMLConfigLoader(".streamlit")
+        api_key = loader.get_gemini_api_key()
+        
+        if api_key and api_key != "your-gemini-api-key-here":
+            # Set environment variable for LangChain compatibility
+            os.environ["GEMINI_API_KEY"] = api_key
+            return api_key
+        else:
+            return ""
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to load API key from .streamlit/secrets.toml: {e}")
+        return ""
 
 
 def load_config_from_file(config_path: str) -> SystemConfig:
@@ -297,38 +283,14 @@ def save_config_to_file(config: SystemConfig, config_path: str):
 def get_default_config() -> SystemConfig:
     """Get the default configuration."""
     
-    # Load API key from multiple sources with priority
-    api_key = None
+    # Load API key using the centralized function
+    api_key = _load_gemini_api_key()
     
-    # Priority 1: Try to load from Streamlit secrets (if available)
-    try:
-        import streamlit as st
-        if hasattr(st.secrets, "GEMINI_API_KEY"):
-            api_key = st.secrets.GEMINI_API_KEY
-    except ImportError:
-        pass
-    except Exception:
-        pass
-    
-    # Priority 2: Try to load from environment variable
-    if not api_key or api_key == "your-api-key-here":
-        import os
-        api_key = os.getenv("GEMINI_API_KEY", "")
-    
-    # Priority 3: Try to load from secrets.toml file
-    if not api_key or api_key == "your-api-key-here":
-        try:
-            from utils.toml_config import TOMLConfigLoader
-            toml_loader = TOMLConfigLoader()
-            api_key = toml_loader.get_gemini_api_key()
-        except Exception:
-            pass
-    
-    # If still no valid API key, use placeholder but log warning
+    # If no valid API key found, use placeholder but log warning
     if not api_key or api_key == "your-api-key-here":
         import logging
         logger = logging.getLogger(__name__)
-        logger.warning("No valid Gemini API key found. Please configure GEMINI_API_KEY in environment, Streamlit secrets, or secrets.toml")
+        logger.warning("No valid Gemini API key found. Please configure GEMINI_API_KEY in secrets.toml, Streamlit secrets, or environment variable")
         api_key = "your-api-key-here"
     
     gemini_config = GeminiConfig(
