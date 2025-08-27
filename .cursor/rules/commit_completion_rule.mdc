@@ -1,0 +1,270 @@
+# Commit Completion and Documentation Rule
+
+**CRITICAL**: Always update tasklists, roadmaps, and documentation before completing any commit to ensure project continuity and proper tracking.
+
+## Core Requirements
+
+### 1. Tasklist and Roadmap Updates
+**MANDATORY**: Update project documentation before committing
+```markdown
+# Required Updates for Every Commit:
+
+## 1. Roadmap Updates (docs/guides/implementation/roadmap.md)
+- [ ] Update current status section
+- [ ] Mark completed tasks as ✅ COMPLETED
+- [ ] Update progress percentages
+- [ ] Add new completed milestones
+- [ ] Update immediate next steps
+- [ ] Adjust task priorities if needed
+
+## 2. Tasklist Updates
+- [ ] Update task status (READY TO START → IN PROGRESS → ✅ COMPLETED)
+- [ ] Add completion timestamps
+- [ ] Update estimated vs actual time
+- [ ] Document any blockers or issues resolved
+- [ ] Update success metrics
+
+## 3. Documentation Updates
+- [ ] Update README.md if needed
+- [ ] Update architecture documentation
+- [ ] Update API documentation
+- [ ] Update configuration documentation
+- [ ] Update troubleshooting guides
+```
+
+### 2. Commit Message Standards
+**MANDATORY**: Use structured commit messages
+```bash
+# Commit Message Format:
+type(scope): brief description
+
+# Examples:
+feat(workflow): complete 7-agent workflow integration
+docs(architecture): convert PlantUML diagrams to Mermaid
+fix(agents): resolve test generator parsing issues
+refactor(workflow): optimize prompt templates for performance
+test(integration): add comprehensive workflow tests
+```
+
+### 3. Pre-Commit Checklist
+**MANDATORY**: Complete before every commit
+```markdown
+## Pre-Commit Checklist:
+- [ ] All code changes tested and working
+- [ ] Documentation updated (roadmap, tasklist, README)
+- [ ] Architecture diagrams updated if needed
+- [ ] Configuration files updated if needed
+- [ ] Test files updated if needed
+- [ ] No temporary files or debug code
+- [ ] No hardcoded API keys or secrets
+- [ ] Repository is clean and organized
+- [ ] Commit message follows standards
+- [ ] Changes are properly documented
+```
+
+## Documentation Update Requirements
+
+### 1. Roadmap Updates
+**MANDATORY**: Update `docs/guides/implementation/roadmap.md`
+```markdown
+# Required Roadmap Updates:
+
+## Status Section Updates:
+- Update "Current Status" with latest achievements
+- Mark completed phases as "100% COMPLETE"
+- Update progress percentages
+- Add new completed milestones
+
+## Task Updates:
+- Change task status from "READY TO START" to "✅ COMPLETED"
+- Add completion timestamps
+- Update estimated vs actual time
+- Document any issues resolved
+
+## Metrics Updates:
+- Update success metrics (agent success rate, etc.)
+- Update performance metrics
+- Update quality metrics
+- Update reliability metrics
+```
+
+### 2. Tasklist Updates
+**MANDATORY**: Update task tracking
+```markdown
+# Required Tasklist Updates:
+
+## Task Status Updates:
+- Mark completed tasks as "✅ COMPLETED"
+- Update task priorities if needed
+- Add completion notes and lessons learned
+- Update next steps and dependencies
+
+## Progress Tracking:
+- Update overall project progress
+- Update phase completion percentages
+- Update milestone completion status
+- Update blocker resolution status
+```
+
+### 3. Architecture Documentation
+**MANDATORY**: Update if architecture changes
+```markdown
+# Required Architecture Updates:
+
+## Diagram Updates:
+- Update class diagrams if new classes added
+- Update sequence diagrams if workflows changed
+- Update component diagrams if components added
+- Update activity diagrams if processes changed
+
+## Documentation Updates:
+- Update component descriptions
+- Update interface documentation
+- Update data flow documentation
+- Update integration documentation
+```
+
+## Commit Process Workflow
+
+### Step 1: Complete Work
+1. **Finish Implementation**: Complete all code changes
+2. **Test Thoroughly**: Ensure all changes work correctly
+3. **Clean Up**: Remove temporary files and debug code
+4. **Validate**: Check for any issues or errors
+
+### Step 2: Update Documentation
+1. **Update Roadmap**: Mark completed tasks and update status
+2. **Update Tasklist**: Update task tracking and progress
+3. **Update Architecture**: Update diagrams if needed
+4. **Update README**: Update if project structure changed
+
+### Step 3: Prepare Commit
+1. **Review Changes**: Check all modified files
+2. **Write Commit Message**: Follow structured format
+3. **Final Validation**: Ensure everything is ready
+4. **Commit**: Execute the commit
+
+### Step 4: Post-Commit
+1. **Verify**: Check that commit was successful
+2. **Update Tracking**: Update any external tracking systems
+3. **Communicate**: Notify team if needed
+4. **Plan Next**: Identify next priorities
+
+## Quality Standards
+
+### 1. Documentation Quality
+- **Accuracy**: All information must be current and accurate
+- **Completeness**: Cover all changes and updates
+- **Clarity**: Use clear, concise language
+- **Consistency**: Follow established formats and patterns
+
+### 2. Commit Quality
+- **Atomic**: Each commit should be a complete, logical unit
+- **Descriptive**: Commit messages should clearly describe changes
+- **Tested**: All changes should be tested before commit
+- **Clean**: No temporary files or debug code
+
+### 3. Tracking Quality
+- **Current**: Task status should reflect actual state
+- **Complete**: All tasks should be properly tracked
+- **Accurate**: Progress percentages should be correct
+- **Useful**: Information should help with project planning
+
+## Enforcement
+
+### 1. Mandatory Checks
+- [ ] Roadmap updated with current status
+- [ ] Tasklist updated with completed tasks
+- [ ] Documentation updated if needed
+- [ ] Commit message follows standards
+- [ ] No temporary files or debug code
+- [ ] All changes tested and working
+
+### 2. Validation Process
+- **Self-Review**: Review all changes before commit
+- **Documentation Review**: Ensure documentation is updated
+- **Quality Review**: Check for any issues or problems
+- **Final Validation**: Ensure everything is ready
+
+### 3. Consequences
+- **Incomplete Documentation**: Commit rejected until documentation updated
+- **Poor Commit Messages**: Commit rejected until message improved
+- **Untested Changes**: Commit rejected until testing completed
+- **Temporary Files**: Commit rejected until cleanup completed
+
+## Benefits
+
+### 1. Project Continuity
+- Clear tracking of project progress
+- Easy identification of next steps
+- Proper documentation of completed work
+- Consistent project state
+
+### 2. Team Collaboration
+- Clear understanding of current status
+- Easy handoff between team members
+- Proper documentation for new team members
+- Consistent communication
+
+### 3. Quality Assurance
+- Proper testing before commits
+- Clean, organized codebase
+- Current, accurate documentation
+- Professional commit history
+
+### 4. Project Management
+- Accurate progress tracking
+- Proper resource allocation
+- Clear milestone tracking
+- Effective project planning
+
+## Examples
+
+### Good Commit Completion
+```bash
+# 1. Update roadmap
+git add docs/guides/implementation/roadmap.md
+
+# 2. Update tasklist
+git add docs/tasklist.md
+
+# 3. Update documentation
+git add docs/architecture/diagrams/*.md
+
+# 4. Commit with proper message
+git commit -m "feat(workflow): complete 7-agent workflow integration
+
+- All 7 agents now working in complete workflow
+- State propagation verified between agents
+- End-to-end project generation tested
+- Updated roadmap and tasklist with completion status
+- Added comprehensive workflow documentation"
+```
+
+### Bad Commit Completion
+```bash
+# ❌ Missing documentation updates
+git commit -m "fix stuff"
+
+# ❌ No roadmap or tasklist updates
+git commit -m "working on agents"
+
+# ❌ Incomplete commit message
+git commit -m "updates"
+```
+
+## Conclusion
+
+This rule ensures that every commit is properly documented and tracked, maintaining project continuity and quality. Following this rule results in:
+
+- **Clear Project Status**: Always know where the project stands
+- **Proper Documentation**: Current, accurate documentation
+- **Quality Commits**: Professional, well-documented commits
+- **Team Efficiency**: Easy handoffs and collaboration
+- **Project Success**: Proper tracking and management
+
+**Remember**: A commit is not complete until all documentation is updated and the project state is properly tracked.
+description:
+globs:
+alwaysApply: true
+---
