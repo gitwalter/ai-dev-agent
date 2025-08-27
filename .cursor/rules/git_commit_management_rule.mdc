@@ -1,0 +1,367 @@
+# Git Commit Management Rule
+
+**CRITICAL**: Always maintain clean, well-organized git commits with proper commit messages, staging, and repository hygiene. This ensures code history is clear, maintainable, and professional.
+
+## Core Git Commit Requirements
+
+### 1. Commit Message Standards
+
+#### **MANDATORY**: Use Conventional Commit Format
+```bash
+# CORRECT: Conventional commit format
+git commit -m "feat(agents): migrate code_reviewer to LangChain JsonOutputParser
+
+- Replace PydanticOutputParser with JsonOutputParser for better reliability
+- Add type checking for review_data to prevent 'str' object errors
+- Update _create_review_artifacts to handle new output structure
+- Fix _calculate_overall_score with proper None value handling
+- Resolves parsing errors and improves artifact generation"
+
+# INCORRECT: Poor commit messages
+git commit -m "fix stuff"
+git commit -m "updated code"
+git commit -m "working on it"
+```
+
+#### **Commit Type Categories**
+- **feat**: New features or major functionality additions
+- **fix**: Bug fixes and error corrections
+- **refactor**: Code restructuring without changing functionality
+- **docs**: Documentation updates and improvements
+- **test**: Test additions, updates, or test infrastructure changes
+- **chore**: Maintenance tasks, dependency updates, build changes
+- **style**: Code formatting, whitespace, semicolons (no functional changes)
+- **perf**: Performance improvements
+- **ci**: CI/CD pipeline changes
+- **build**: Build system or external dependency changes
+
+#### **Scope and Description Requirements**
+- **Scope**: Specific area affected (agents, tests, docs, utils, etc.)
+- **Description**: Clear, concise summary of changes
+- **Body**: Detailed explanation of what, why, and how
+- **Breaking Changes**: Clearly marked if API changes occur
+
+### 2. Repository Cleanup Before Commits
+
+#### **MANDATORY**: Clean Repository State
+```bash
+# BEFORE COMMITTING: Always clean up
+# Remove temporary files
+rm -f *.tmp *.temp *.log *.bak
+rm -rf __pycache__/ .pytest_cache/ .coverage
+rm -f test_*.py temp_*.py debug_*.py
+
+# Check for sensitive data
+grep -r "API_KEY\|password\|secret" . --exclude-dir=.git
+grep -r "your-actual-api-key" . --exclude-dir=.git
+
+# Verify .gitignore is working
+git status --ignored
+```
+
+#### **Temporary File Cleanup**
+- **Test Artifacts**: Remove temporary test files and outputs
+- **Debug Files**: Clean up debug scripts and temporary debugging code
+- **Log Files**: Remove temporary log files (unless specifically needed)
+- **Cache Files**: Clean Python cache and test cache directories
+- **Backup Files**: Remove backup and temporary files
+
+### 3. Staging and Commit Organization
+
+#### **Logical Grouping**: Group Related Changes
+```bash
+# CORRECT: Logical grouping of related changes
+git add agents/code_reviewer.py
+git add agents/base_agent.py
+git commit -m "fix(agents): resolve code_reviewer artifact generation issues"
+
+git add tests/system/test_complete_workflow.py
+git add tests/conftest.py
+git commit -m "test(workflow): enhance complete workflow test with async support"
+
+# INCORRECT: Mixing unrelated changes
+git add agents/code_reviewer.py tests/system/test_complete_workflow.py docs/README.md
+git commit -m "fix stuff"
+```
+
+#### **Atomic Commits**: One Logical Change Per Commit
+- **Single Responsibility**: Each commit should address one specific issue or feature
+- **Testable**: Each commit should be independently testable
+- **Reversible**: Each commit should be able to be reverted independently
+- **Reviewable**: Each commit should be small enough for thorough review
+
+### 4. Pre-Commit Validation
+
+#### **MANDATORY**: Pre-Commit Checks
+```bash
+# Run tests before committing
+python -m pytest tests/ -v
+
+# Check for syntax errors
+python -m py_compile agents/*.py
+python -m py_compile tests/**/*.py
+
+# Verify no sensitive data
+grep -r "API_KEY\|password\|secret" . --exclude-dir=.git --exclude=*.md
+
+# Check file permissions
+git diff --cached --stat
+```
+
+#### **Code Quality Checks**
+- **Syntax Validation**: Ensure all Python files compile correctly
+- **Test Execution**: Run relevant tests to ensure no regressions
+- **Security Scan**: Check for accidentally committed sensitive data
+- **File Organization**: Verify files are in correct directories
+- **Documentation**: Ensure documentation is updated if needed
+
+### 5. Commit Message Content Standards
+
+#### **Detailed Commit Messages**
+```bash
+git commit -m "feat(agents): implement LangChain parser migration for requirements_analyst
+
+- Replace PydanticOutputParser with JsonOutputParser for better reliability
+- Add ChatGoogleGenerativeAI integration for LangChain compatibility
+- Implement _execute_with_langchain method with proper error handling
+- Update prompt template to ensure JSON output format
+- Add environment variable support for GOOGLE_API_KEY
+- Maintain backward compatibility with legacy parsing methods
+
+Resolves: Parsing errors in requirements_analyst agent
+Related: #123, #124"
+```
+
+#### **Message Structure Requirements**
+- **Subject Line**: Clear, concise summary (50 chars or less)
+- **Blank Line**: Separate subject from body
+- **Body**: Detailed explanation of changes and rationale
+- **Footer**: References to issues, breaking changes, or related commits
+
+### 6. Branch Management and Workflow
+
+#### **Feature Branch Workflow**
+```bash
+# Create feature branch for significant changes
+git checkout -b feature/langchain-parser-migration
+
+# Make changes and commit
+git add .
+git commit -m "feat(agents): migrate to LangChain parsers"
+
+# Push and create pull request
+git push origin feature/langchain-parser-migration
+```
+
+#### **Branch Naming Conventions**
+- **feature/**: New features and enhancements
+- **fix/**: Bug fixes and error corrections
+- **refactor/**: Code restructuring and improvements
+- **docs/**: Documentation updates
+- **test/**: Test-related changes
+- **chore/**: Maintenance and housekeeping
+
+### 7. Large Change Management
+
+#### **Breaking Changes and Major Refactoring**
+```bash
+# For large changes, use detailed commit messages
+git commit -m "refactor(agents): major migration to LangChain parsers
+
+BREAKING CHANGE: All agents now use LangChain parsers instead of Pydantic
+
+- Migrate all 7 agents from PydanticOutputParser to JsonOutputParser/StrOutputParser
+- Update ChatGoogleGenerativeAI integration across all agents
+- Implement proper error handling and type checking
+- Add comprehensive test coverage for new parser implementations
+- Update documentation and examples
+
+Migration Guide:
+- Update agent imports to use LangChain parsers
+- Ensure GOOGLE_API_KEY environment variable is set
+- Update test configurations for new parser requirements
+
+Resolves: #100, #101, #102
+Closes: #99"
+```
+
+#### **Migration and Breaking Changes**
+- **Clear Documentation**: Document breaking changes and migration steps
+- **Version Bumping**: Consider semantic versioning for breaking changes
+- **Rollback Plan**: Ensure changes can be reverted if needed
+- **Testing**: Comprehensive testing before and after changes
+
+### 8. Commit History Management
+
+#### **Interactive Rebase for Clean History**
+```bash
+# Clean up commit history before pushing
+git rebase -i HEAD~5
+
+# Squash related commits
+# pick abc1234 feat: initial implementation
+# squash def5678 fix: resolve parsing error
+# squash ghi9012 test: add test coverage
+```
+
+#### **Commit History Standards**
+- **Linear History**: Maintain clean, linear commit history when possible
+- **Meaningful Commits**: Each commit should represent a logical change
+- **No WIP Commits**: Avoid committing work-in-progress code
+- **Consistent Format**: Use consistent commit message format throughout
+
+### 9. Repository Hygiene
+
+#### **Regular Cleanup Tasks**
+```bash
+# Weekly repository cleanup
+git gc --prune=now
+git remote prune origin
+git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
+
+# Check for large files
+git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | sed -n 's/^blob //p' | sort -nr -k 2 | head -10
+```
+
+#### **Repository Maintenance**
+- **Garbage Collection**: Regular git garbage collection
+- **Branch Cleanup**: Remove merged and obsolete branches
+- **Large File Monitoring**: Check for accidentally committed large files
+- **Remote Synchronization**: Keep local and remote repositories in sync
+
+### 10. Emergency and Exception Handling
+
+#### **Emergency Commits**
+```bash
+# For critical fixes, use emergency commit format
+git commit -m "fix(critical): resolve security vulnerability in auth system
+
+URGENT: Security fix for authentication bypass vulnerability
+
+- Patch authentication validation logic
+- Add input sanitization for user credentials
+- Update security tests to cover vulnerability
+
+This is a critical security fix that must be deployed immediately.
+
+Resolves: SECURITY-001"
+```
+
+#### **Exception Documentation**
+- **Emergency Procedures**: Document emergency commit procedures
+- **Rollback Instructions**: Provide clear rollback instructions
+- **Communication**: Notify team of emergency changes
+- **Post-Mortem**: Conduct post-mortem analysis for emergency fixes
+
+## Implementation Checklist
+
+### Before Each Commit
+- [ ] Clean up temporary files and artifacts
+- [ ] Run relevant tests to ensure no regressions
+- [ ] Check for sensitive data in staged files
+- [ ] Verify commit message follows conventional format
+- [ ] Ensure changes are logically grouped
+- [ ] Update documentation if needed
+
+### During Commit Process
+- [ ] Stage related changes together
+- [ ] Write clear, descriptive commit message
+- [ ] Include detailed explanation in commit body
+- [ ] Reference related issues or tickets
+- [ ] Mark breaking changes appropriately
+- [ ] Test the commit locally before pushing
+
+### After Commit
+- [ ] Push changes to remote repository
+- [ ] Verify CI/CD pipeline passes
+- [ ] Update related documentation
+- [ ] Notify team of significant changes
+- [ ] Monitor for any issues in production
+
+## Benefits
+
+- **Clear History**: Easy to understand code evolution and changes
+- **Professional Standards**: Maintains professional development practices
+- **Debugging**: Easier to identify when and why changes were made
+- **Collaboration**: Better collaboration through clear change documentation
+- **Rollback**: Easier to revert specific changes when needed
+- **Compliance**: Better audit trail for compliance and security requirements
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Code commits and pushes
+- Repository maintenance
+- Branch management
+- Release preparation
+- Emergency fixes
+- Documentation updates
+
+**Violations of this rule require immediate remediation and commit correction.**
+
+## Success Metrics
+
+- **Commit Quality**: 95%+ commits follow conventional format
+- **Repository Cleanliness**: No temporary files or sensitive data in commits
+- **Test Coverage**: All commits pass relevant tests
+- **Documentation**: All significant changes are properly documented
+- **Team Satisfaction**: Positive feedback on commit clarity and organization
+
+## Examples
+
+### Good Commit Examples
+```bash
+# Feature addition
+git commit -m "feat(workflow): add quality gate system for agent validation
+
+- Implement quality gate checks before agent execution
+- Add validation for required state fields
+- Create quality gate configuration system
+- Add comprehensive test coverage for quality gates
+
+Resolves: #150"
+
+# Bug fix
+git commit -m "fix(agents): resolve code_reviewer artifact generation issue
+
+- Fix _create_review_artifacts method to handle new output structure
+- Add type checking for review_data to prevent errors
+- Update _calculate_overall_score with proper None handling
+- Ensure artifacts are properly returned in agent response
+
+Fixes: 'str' object has no attribute 'get' error
+Resolves: #145"
+
+# Documentation update
+git commit -m "docs(roadmap): update implementation roadmap with current progress
+
+- Mark Phase 1 parsing error fixes as completed
+- Update progress percentages to reflect current state
+- Add new tasks for LangGraph integration
+- Document lessons learned from parser migration
+
+Updates: docs/guides/implementation/roadmap.md"
+```
+
+### Bad Commit Examples
+```bash
+# Too vague
+git commit -m "fix stuff"
+
+# Too broad
+git commit -m "update everything"
+
+# No context
+git commit -m "working"
+
+# Mixed changes
+git commit -m "fix bugs and add features"
+```
+
+---
+
+**Remember**: Good commit practices are essential for maintainable, professional codebases. Always prioritize clarity, completeness, and organization in your commits.
+description:
+globs:
+alwaysApply: true
+---
