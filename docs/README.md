@@ -37,9 +37,10 @@ docs/
 ├── concepts/                           # Conceptual papers and plans
 │   ├── migration/                      # Migration and transition plans
 │   │   └── framework_migration.md      # Agent framework migration plan
-│   └── integration/                    # Integration concepts
-│       ├── mcp_integration.md          # MCP integration summary
-│       └── mcp_server_concept.md       # MCP server integration concept
+│   ├── integration/                    # Integration concepts
+│   │   ├── mcp_integration.md          # MCP integration summary
+│   │   └── mcp_server_concept.md       # MCP server integration concept
+│   └── agent_system_implementation_concept.md  # AI Development Agent System concept paper
 └── development/                        # Development resources
     ├── standards/                      # Development standards
     │   └── coding_standards.md         # Coding and development standards
@@ -140,10 +141,12 @@ docs/
 
 **Project Manager**
 - `guides/implementation/roadmap.md`
+- `concepts/agent_system_implementation_concept.md`
 - `concepts/migration/framework_migration.md`
 - `analysis/summaries/analysis_summary.md`
 
 **Software Architect**
+- `concepts/agent_system_implementation_concept.md`
 - `architecture/overview/supervisor_swarm.md`
 - `architecture/diagrams/`
 - `analysis/agent_analysis/framework_analysis.md`
@@ -166,6 +169,7 @@ docs/
 - `architecture/components/memory_system.md`
 
 **System Architecture**
+- `concepts/agent_system_implementation_concept.md`
 - `architecture/overview/supervisor_swarm.md`
 - `architecture/diagrams/`
 - `analysis/agent_analysis/supervisor_analysis.md`

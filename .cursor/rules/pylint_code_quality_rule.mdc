@@ -1,0 +1,334 @@
+# Pylint Code Quality and Error Detection Rule
+
+**CRITICAL**: Always use pylint to check code quality, detect errors, and enforce coding standards before considering any code complete or ready for testing.
+
+## Core Requirements
+
+### 1. Mandatory Pylint Usage
+**ALWAYS** run pylint on any modified Python file before:
+- Running tests
+- Committing code
+- Considering work complete
+- Moving to next task
+
+### 2. Error Tolerance
+**ZERO TOLERANCE** for pylint errors:
+- **E-errors**: Must be fixed immediately (syntax, import, callable issues)
+- **F-fatal**: Must be fixed immediately (parsing errors)
+- **W-warnings**: Should be addressed unless explicitly justified
+- **C-convention**: Should be fixed for consistency
+- **R-refactor**: Should be addressed for code quality
+
+### 3. Critical Error Categories
+
+#### **E1102: Not Callable Errors**
+- **CRITICAL**: Fix immediately when objects are not callable
+- **Common Issues**: Wrong instantiation methods, incorrect API usage
+- **Example**: `Chroma.from_documents()` vs `Chroma()` instantiation
+
+#### **E0611: No Name in Module**
+- **CRITICAL**: Fix import errors immediately
+- **Common Issues**: Missing imports, wrong module paths, deprecated imports
+- **Example**: `OpenAIEmbeddings` not found in `langchain_community.embeddings`
+
+#### **C0103: Invalid Name**
+- **HIGH PRIORITY**: Fix variable naming conventions
+- **Requirements**: Use snake_case for variables, descriptive names
+- **Forbidden**: Single letter variables (`e`, `f`) - use descriptive names (`error`, `file`)
+
+#### **W0718: Broad Exception Caught**
+- **MEDIUM PRIORITY**: Use specific exception types
+- **Best Practice**: Catch specific exceptions, not generic `Exception`
+- **Example**: `except ValueError as error:` instead of `except Exception as e:`
+
+## Implementation Workflow
+
+### 1. Pre-Code Review Pylint Check
+```bash
+# Always run pylint before any code review
+C:\App\Anaconda\Scripts\pylint.exe <file_path> --output-format=text
+```
+
+### 2. Error Classification and Priority
+```python
+# Priority order for fixing pylint errors:
+CRITICAL_ERRORS = [
+    "E1102",  # Not callable
+    "E0611",  # No name in module  
+    "F0001",  # Fatal parsing errors
+    "E0001",  # Syntax errors
+]
+
+HIGH_PRIORITY = [
+    "C0103",  # Invalid name
+    "W1514",  # Unspecified encoding
+    "C0415",  # Import outside toplevel
+]
+
+MEDIUM_PRIORITY = [
+    "W0718",  # Broad exception caught
+    "R0913",  # Too many arguments
+    "C0303",  # Trailing whitespace
+]
+```
+
+### 3. Error Fixing Process
+
+#### **Step 1: Identify Critical Errors**
+```bash
+# Run pylint and identify E/F errors first
+C:\App\Anaconda\Scripts\pylint.exe <file> | grep -E "(E[0-9]{4}|F[0-9]{4})"
+```
+
+#### **Step 2: Fix in Priority Order**
+1. **E/F Errors**: Fix immediately (syntax, imports, callable issues)
+2. **C0103**: Fix variable naming (e → error, f → file)
+3. **W0718**: Use specific exceptions
+4. **C0415**: Move imports to top level
+5. **W1514**: Add explicit encoding to file operations
+
+#### **Step 3: Verify Fixes**
+```bash
+# Re-run pylint to confirm fixes
+C:\App\Anaconda\Scripts\pylint.exe <file> --score=y
+```
+
+## Common Pylint Error Fixes
+
+### 1. Import and Module Errors
+```python
+# INCORRECT
+from langchain_community.embeddings import OpenAIEmbeddings  # E0611
+
+# CORRECT
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+```
+
+### 2. Callable Errors
+```python
+# INCORRECT
+self.vector_store = Chroma.from_documents(...)  # E1102
+
+# CORRECT
+self.vector_store = Chroma(
+    persist_directory=persist_directory,
+    embedding_function=self.embeddings
+)
+```
+
+### 3. Variable Naming
+```python
+# INCORRECT
+except Exception as e:  # C0103
+    with open(file, 'r') as f:  # C0103
+
+# CORRECT
+except Exception as error:  # C0103
+    with open(file_path, 'r', encoding='utf-8') as file_handle:  # C0103, W1514
+```
+
+### 4. Import Organization
+```python
+# INCORRECT
+def some_function():
+    from utils.helpers import get_llm_model  # C0415
+
+# CORRECT
+from utils.helpers import get_llm_model  # Move to top level
+
+def some_function():
+    # Use imported function
+```
+
+### 5. Exception Handling
+```python
+# INCORRECT
+try:
+    result = some_operation()
+except Exception as e:  # W0718
+    print(f"Error: {e}")
+
+# CORRECT
+try:
+    result = some_operation()
+except (ValueError, TypeError) as error:  # Specific exceptions
+    print(f"Error: {error}")
+```
+
+## Pylint Configuration
+
+### 1. Pylint Configuration File
+```ini
+# .pylintrc or pyproject.toml
+[MASTER]
+disable=
+    C0114,  # Missing module docstring (optional)
+    C0115,  # Missing class docstring (optional)
+    C0116,  # Missing function docstring (optional)
+
+[MESSAGES CONTROL]
+disable=
+    C0301,  # Line too long (if using black formatter)
+    R0903,  # Too few public methods (for data classes)
+
+[FORMAT]
+max-line-length=88  # Match black formatter
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,id  # Allow common short names
+```
+
+### 2. Pylint Command Options
+```bash
+# Standard check
+C:\App\Anaconda\Scripts\pylint.exe <file> --output-format=text
+
+# With score
+C:\App\Anaconda\Scripts\pylint.exe <file> --score=y
+
+# Specific error codes
+C:\App\Anaconda\Scripts\pylint.exe <file> --disable=all --enable=E,F
+
+# Generate report
+C:\App\Anaconda\Scripts\pylint.exe <file> --reports=y
+```
+
+## Integration with Development Workflow
+
+### 1. Pre-Test Validation
+```bash
+# Always run pylint before tests
+C:\App\Anaconda\Scripts\pylint.exe tests/unit/test_*.py
+C:\App\Anaconda\Scripts\pytest.exe tests/unit/test_*.py
+```
+
+### 2. Pre-Commit Hook
+```bash
+# Run pylint on modified files before commit
+git diff --cached --name-only --diff-filter=ACM | grep '\.py$' | xargs pylint
+```
+
+### 3. Continuous Integration
+```yaml
+# .github/workflows/pylint.yml
+- name: Run Pylint
+  run: |
+    C:\App\Anaconda\Scripts\pylint.exe **/*.py --fail-under=8.0
+```
+
+## Error Prevention Strategies
+
+### 1. Common Error Patterns to Avoid
+```python
+# AVOID: Generic exception handling
+except Exception as e:  # W0718
+
+# AVOID: Single letter variables
+for i in range(10):  # C0103 if not in good-names
+
+# AVOID: Import inside functions
+def function():
+    import some_module  # C0415
+
+# AVOID: Unspecified encoding
+with open(file, 'r') as f:  # W1514
+```
+
+### 2. Best Practices
+```python
+# USE: Specific exceptions
+except (ValueError, TypeError) as error:
+
+# USE: Descriptive variable names
+for index in range(10):
+for file_path in files:
+
+# USE: Top-level imports
+import some_module
+
+# USE: Explicit encoding
+with open(file_path, 'r', encoding='utf-8') as file_handle:
+```
+
+## Quality Metrics
+
+### 1. Pylint Score Requirements
+- **Minimum Score**: 8.0/10 for production code
+- **Target Score**: 9.0/10 for new code
+- **Critical Files**: 9.5/10 for core modules
+
+### 2. Error Count Limits
+- **E/F Errors**: 0 (zero tolerance)
+- **W Warnings**: ≤ 5 per file
+- **C Conventions**: ≤ 10 per file
+- **R Refactor**: ≤ 5 per file
+
+## Documentation Requirements
+
+### 1. Error Documentation
+- Document any pylint suppressions with justification
+- Include error codes in commit messages when fixing
+- Maintain list of common errors and their fixes
+
+### 2. Code Review Checklist
+- [ ] Pylint score ≥ 8.0
+- [ ] No E/F errors
+- [ ] Variable names follow conventions
+- [ ] Imports are properly organized
+- [ ] Exception handling is specific
+- [ ] File operations use explicit encoding
+
+## Enforcement
+
+### 1. Mandatory Checks
+- **Before Testing**: Run pylint on modified files
+- **Before Committing**: Ensure no E/F errors
+- **Before Code Review**: Pylint score ≥ 8.0
+- **Before Deployment**: Full pylint validation
+
+### 2. Failure Actions
+- **E/F Errors**: Stop development, fix immediately
+- **Low Score**: Improve code quality before proceeding
+- **Multiple Warnings**: Address systematically
+- **Convention Violations**: Fix for consistency
+
+### 3. Success Criteria
+- **Zero E/F Errors**: All critical errors resolved
+- **High Pylint Score**: ≥ 8.0 for all files
+- **Clean Code**: Follows Python conventions
+- **Maintainable**: Easy to read and understand
+
+## Benefits
+
+- **Early Error Detection**: Catch issues before testing
+- **Code Quality**: Enforce consistent coding standards
+- **Maintainability**: Improve code readability
+- **Reliability**: Reduce runtime errors
+- **Team Consistency**: Standardize coding practices
+
+## Tools and Resources
+
+### 1. Pylint Documentation
+- [Pylint User Guide](https://pylint.pycqa.org/en/latest/user_guide/)
+- [Error Codes Reference](https://pylint.pycqa.org/en/latest/user_guide/messages/messages_overview.html)
+- [Configuration Options](https://pylint.pycqa.org/en/latest/user_guide/configuration/)
+
+### 2. IDE Integration
+- **VS Code**: Python extension with pylint
+- **PyCharm**: Built-in pylint integration
+- **Cursor**: Configure pylint in settings
+
+### 3. Automation
+- **Pre-commit hooks**: Automatic pylint checks
+- **CI/CD**: Automated quality gates
+- **IDE plugins**: Real-time error detection
+
+## Conclusion
+
+This rule ensures that all Python code meets high quality standards and catches errors early in the development process. Following this rule will result in more reliable, maintainable, and professional code.
+
+**REMEMBER**: Pylint is not just a tool, it's a quality gate that ensures your code is production-ready.
+description:
+globs:
+alwaysApply: true
+---

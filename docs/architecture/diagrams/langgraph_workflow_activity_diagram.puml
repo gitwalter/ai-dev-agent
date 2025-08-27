@@ -1,0 +1,171 @@
+@startuml LangGraph Workflow System - Activity Diagram
+
+skinparam activityFontSize 12
+skinparam activityFontStyle bold
+skinparam activityDiamondFontSize 10
+skinparam activityDiamondFontStyle normal
+
+start
+
+:Initialize LangGraph Workflow Manager;
+:Setup LLM Configuration;
+:Create StateGraph with AgentState;
+
+:Initialize Memory Manager;
+note right: Setup Chroma vector store\nwith embeddings
+
+:Initialize Handoff Manager;
+note right: Load agent capabilities\nand validation rules
+
+:Create Initial State;
+note right: Set project context,\nsession ID, timestamps
+
+:Add Workflow Nodes;
+note right: requirements_analysis\narchitecture_design\ncode_generation\ntest_generation\ncode_review\nsecurity_analysis\ndocumentation_generation
+
+:Add Workflow Edges;
+note right: Linear flow with\noptional handoffs
+
+:Compile Workflow;
+note right: With MemorySaver\ncheckpointer
+
+partition "Requirements Analysis Phase" {
+    :Load Relevant Memories;
+    note right: Search vector store\nfor similar requirements
+    
+    :Create Memory Context;
+    note right: Format memories for\nagent consumption
+    
+    :Execute Requirements Analysis;
+    note right: LLM with structured\noutput parsing
+    
+    if (Analysis Successful?) then (yes)
+        :Save Analysis to Memory;
+        :Extract Knowledge Triples;
+        :Update State with Requirements;
+    else (no)
+        :Log Error;
+        :Add to Error List;
+        :Continue with Fallback;
+    endif
+}
+
+partition "Architecture Design Phase" {
+    :Load Architecture Memories;
+    :Create Memory Context;
+    
+    :Execute Architecture Design;
+    note right: Design based on\nrequirements
+    
+    if (Design Valid?) then (yes)
+        :Save Design to Memory;
+        :Update State with Architecture;
+    else (no)
+        :Request Handoff;
+        note right: Suggest alternative\nagents if needed
+    endif
+}
+
+partition "Code Generation Phase" {
+    :Load Code Generation Memories;
+    :Create Memory Context;
+    
+    :Execute Code Generation;
+    note right: Generate code based on\narchitecture and requirements
+    
+    if (Code Generated Successfully?) then (yes)
+        :Save Code to Memory;
+        :Update State with Code Files;
+    else (no)
+        :Log Generation Error;
+        :Add to Warnings;
+    endif
+}
+
+partition "Test Generation Phase" {
+    :Load Test Generation Memories;
+    :Create Memory Context;
+    
+    :Execute Test Generation;
+    note right: Generate tests for\ngenerated code
+    
+    if (Tests Generated?) then (yes)
+        :Save Tests to Memory;
+        :Update State with Tests;
+    else (no)
+        :Log Test Generation Error;
+    endif
+}
+
+partition "Code Review Phase" {
+    :Load Code Review Memories;
+    :Create Memory Context;
+    
+    :Execute Code Review;
+    note right: Review generated code\nfor quality and issues
+    
+    if (Review Passed?) then (yes)
+        :Save Review to Memory;
+        :Update State with Review;
+    else (no)
+        :Add Issues to State;
+        :Request Code Fixes;
+    endif
+}
+
+partition "Security Analysis Phase" {
+    :Load Security Memories;
+    :Create Memory Context;
+    
+    :Execute Security Analysis;
+    note right: Analyze code for\nsecurity vulnerabilities
+    
+    if (Security Issues Found?) then (yes)
+        :Add Security Issues to State;
+        :Generate Security Report;
+    else (no)
+        :Mark as Security Compliant;
+    endif
+    
+    :Save Security Analysis to Memory;
+}
+
+partition "Documentation Generation Phase" {
+    :Load Documentation Memories;
+    :Create Memory Context;
+    
+    :Execute Documentation Generation;
+    note right: Generate comprehensive\ndocumentation
+    
+    if (Documentation Complete?) then (yes)
+        :Save Documentation to Memory;
+        :Update State with Documentation;
+    else (no)
+        :Log Documentation Error;
+    endif
+}
+
+partition "Workflow Completion" {
+    :Validate Final State;
+    note right: Check all required\nartifacts are present
+    
+    if (State Valid?) then (yes)
+        :Process Handoff Queue;
+        note right: Execute any pending\nagent handoffs
+        
+        :Generate Memory Statistics;
+        :Create Final Report;
+        
+        :Workflow Complete;
+    else (no)
+        :Log Validation Errors;
+        :Add to Error List;
+        :Generate Error Report;
+    endif
+}
+
+:Return Final State and Artifacts;
+
+stop
+
+@enduml

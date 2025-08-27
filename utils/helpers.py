@@ -7,7 +7,44 @@ import string
 from typing import List, Optional
 import logging
 
+import streamlit as st
+from langchain_google_genai import ChatGoogleGenerativeAI
+
 logger = logging.getLogger(__name__)
+
+
+def get_llm_model(task_complexity: str = "simple"):
+    """
+    Get appropriate LLM model based on task complexity.
+    
+    Args:
+        task_complexity (str): "simple" or "complex"
+        
+    Returns:
+        ChatGoogleGenerativeAI: Configured LLM instance
+    """
+    try:
+        # Get API key from Streamlit secrets
+        api_key = st.secrets.get("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY not found in Streamlit secrets")
+        
+        # Select model based on complexity
+        if task_complexity == "complex":
+            model_name = "gemini-2.5-flash"
+        else:
+            model_name = "gemini-2.5-flash-lite"
+        
+        return ChatGoogleGenerativeAI(
+            model=model_name,
+            google_api_key=api_key,
+            temperature=0.1,
+            max_tokens=8192
+        )
+        
+    except Exception as e:
+        logger.error(f"Error creating LLM model: {e}")
+        raise
 
 
 def sanitize_filename(filename: str) -> str:

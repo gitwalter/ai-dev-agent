@@ -44,6 +44,20 @@ class AgentState(TypedDict):
     warnings: List[Dict[str, Any]]
     retry_count: int
     
+    # Memory system fields (Phase 2 enhancement)
+    memory_context: str
+    memory_query: str
+    memory_timestamp: str
+    recall_memories: List[Dict[str, Any]]
+    knowledge_triples: List[Dict[str, Any]]
+    memory_stats: Dict[str, Any]
+    
+    # Handoff system fields (Phase 2 enhancement)
+    handoff_queue: List[Dict[str, Any]]
+    handoff_history: List[Dict[str, Any]]
+    agent_availability: Dict[str, bool]
+    collaboration_context: Dict[str, Any]
+    
     # Metadata
     created_at: datetime
     updated_at: datetime
@@ -108,6 +122,47 @@ class ErrorInfo(BaseModel):
     retry_count: int = 0
 
 
+class MemoryInfo(BaseModel):
+    """Memory information for state tracking."""
+    
+    memory_id: str
+    content: str
+    context: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    relevance_score: float = 0.0
+    timestamp: datetime = Field(default_factory=datetime.now)
+    source: str = "agent"
+
+
+class KnowledgeTriple(BaseModel):
+    """Structured knowledge triple for memory."""
+    
+    triple_id: str
+    subject: str
+    predicate: str
+    object: str
+    context: str
+    confidence: float = 1.0
+    timestamp: datetime = Field(default_factory=datetime.now)
+    source: str = "agent"
+    user_id: str = "default"
+
+
+class HandoffRequest(BaseModel):
+    """Represents a handoff request between agents."""
+    
+    handoff_id: str
+    from_agent: str
+    to_agent: str
+    task_description: str
+    data_to_transfer: Dict[str, Any]
+    priority: str = "normal"  # low, normal, high, urgent
+    context: Dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.now)
+    completed_at: Optional[datetime] = None
+    status: str = "pending"  # pending, in_progress, completed, failed
+
+
 def create_initial_state(
     project_context: str,
     project_name: str,
@@ -137,6 +192,27 @@ def create_initial_state(
         errors=[],
         warnings=[],
         retry_count=0,
+        # Memory system fields
+        memory_context="",
+        memory_query="",
+        memory_timestamp="",
+        recall_memories=[],
+        knowledge_triples=[],
+        memory_stats={},
+        # Handoff system fields
+        handoff_queue=[],
+        handoff_history=[],
+        agent_availability={
+            "requirements_analyst": True,
+            "architecture_designer": True,
+            "code_generator": True,
+            "test_generator": True,
+            "code_reviewer": True,
+            "security_analyst": True,
+            "documentation_generator": True
+        },
+        collaboration_context={},
+        # Metadata
         created_at=datetime.now(),
         updated_at=datetime.now(),
         session_id=session_id
@@ -222,4 +298,114 @@ def add_approval_request(
     state["approval_requests"].append(request.dict())
     state["human_approval_needed"] = True
     
+    return update_state_timestamp(state)
+
+
+def add_memory_to_state(
+    state: AgentState,
+    memory_content: str,
+    memory_context: str = "",
+    metadata: Optional[Dict[str, Any]] = None,
+    relevance_score: float = 0.0
+) -> AgentState:
+    """Add a memory to the state."""
+    
+    memory = MemoryInfo(
+        memory_id=f"memory_{len(state['recall_memories'])}",
+        content=memory_content,
+        context=memory_context,
+        metadata=metadata or {},
+        relevance_score=relevance_score
+    )
+    
+    state["recall_memories"].append(memory.model_dump())
+    return update_state_timestamp(state)
+
+
+def add_knowledge_triple_to_state(
+    state: AgentState,
+    subject: str,
+    predicate: str,
+    obj: str,
+    context: str = "",
+    confidence: float = 1.0,
+    source: str = "agent"
+) -> AgentState:
+    """Add a knowledge triple to the state."""
+    
+    triple = KnowledgeTriple(
+        triple_id=f"triple_{len(state['knowledge_triples'])}",
+        subject=subject,
+        predicate=predicate,
+        object=obj,
+        context=context,
+        confidence=confidence,
+        source=source
+    )
+    
+    # Add triple to state
+    state["knowledge_triples"].append(triple.model_dump())
+    return update_state_timestamp(state)
+
+
+def add_handoff_request(
+    state: AgentState,
+    from_agent: str,
+    to_agent: str,
+    task_description: str,
+    data_to_transfer: Dict[str, Any],
+    priority: str = "normal",
+    context: Optional[Dict[str, Any]] = None
+) -> AgentState:
+    """Add a handoff request to the state."""
+    
+    handoff = HandoffRequest(
+        handoff_id=f"handoff_{len(state['handoff_queue'])}",
+        from_agent=from_agent,
+        to_agent=to_agent,
+        task_description=task_description,
+        data_to_transfer=data_to_transfer,
+        priority=priority,
+        context=context or {}
+    )
+    
+    # Add handoff to state
+    state["handoff_queue"].append(handoff.model_dump())
+    return update_state_timestamp(state)
+
+
+def update_agent_availability(
+    state: AgentState,
+    agent_name: str,
+    available: bool
+) -> AgentState:
+    """Update agent availability status."""
+    
+    if agent_name in state["agent_availability"]:
+        state["agent_availability"][agent_name] = available
+    
+    return update_state_timestamp(state)
+
+
+def update_memory_context(
+    state: AgentState,
+    memory_context: str,
+    memory_query: str = ""
+) -> AgentState:
+    """Update memory context in the state."""
+    
+    state["memory_context"] = memory_context
+    state["memory_query"] = memory_query
+    state["memory_timestamp"] = datetime.now().isoformat()
+    
+    return update_state_timestamp(state)
+
+
+def update_memory_stats(
+    state: AgentState,
+    stats: Dict[str, Any]
+) -> AgentState:
+    """Update memory statistics in the state."""
+    
+    state["memory_stats"] = stats
     return update_state_timestamp(state)
