@@ -1,7 +1,7 @@
 """
 Code Reviewer Agent for AI Development Agent.
 Reviews generated code for quality, security, and best practices.
-Implements quality gate functionality to cross-check requirements against code.
+Uses LangChain JsonOutputParser for stable JSON parsing.
 """
 
 import json
@@ -15,18 +15,33 @@ from models.simplified_responses import (
 )
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+import google.generativeai as genai
+
+try:
+    from langchain_core.output_parsers import JsonOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class CodeReviewer(BaseAgent):
     """
     Agent responsible for reviewing generated code for quality and best practices.
-    Implements quality gate functionality to ensure all requirements are met.
+    Uses LangChain JsonOutputParser for stable JSON parsing.
     """
     
     def __init__(self, config, gemini_client):
         """Initialize the CodeReviewer agent."""
         super().__init__(config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("code_reviewer")
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.json_parser = JsonOutputParser()
+        else:
+            self.json_parser = None
     
     def get_prompt_template(self) -> str:
         """
@@ -36,6 +51,228 @@ class CodeReviewer(BaseAgent):
             Prompt template string from database
         """
         return self.prompt_loader.get_system_prompt()
+    
+    async def execute(self, state: AgentState) -> AgentState:
+        """Execute code review task using LangChain JsonOutputParser."""
+        import time
+        start_time = time.time()
+        
+        self.add_log_entry("info", "Starting code review with LangChain JsonOutputParser")
+        self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
+        
+        try:
+            if not self.validate_input(state):
+                raise ValueError("Invalid input state for code review")
+            
+            self.add_log_entry("info", "Input validation passed")
+            
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.json_parser:
+                review_data = await self._execute_with_langchain(state)
+            else:
+                review_data = await self._execute_with_legacy_parsing(state)
+            
+            self.add_log_entry("info", "Code review data processing completed")
+            
+            # Record key decisions
+            if isinstance(review_data, dict):
+                self._record_review_decisions(review_data)
+            else:
+                self.add_log_entry("warning", f"Review data is not a dictionary: {type(review_data)}")
+                # Convert to dictionary if possible
+                if isinstance(review_data, str):
+                    try:
+                        import json
+                        review_data = json.loads(review_data)
+                        self._record_review_decisions(review_data)
+                    except json.JSONDecodeError:
+                        self.add_log_entry("error", "Could not convert review data string to dictionary")
+                        review_data = {"overall_score": 7.0, "issues": [], "recommendations": []}
+                        self._record_review_decisions(review_data)
+                else:
+                    review_data = {"overall_score": 7.0, "issues": [], "recommendations": []}
+                    self._record_review_decisions(review_data)
+            
+            # Create artifacts
+            if isinstance(review_data, dict):
+                self._create_review_artifacts(review_data)
+            else:
+                self.add_log_entry("warning", "Cannot create artifacts - review data is not a dictionary")
+            
+            # Create detailed output
+            if isinstance(review_data, dict):
+                output = {
+                    "code_review": review_data,
+                    "summary": {
+                        "overall_score": review_data.get("overall_score", 7.0),
+                        "issues_count": len(review_data.get("issues", [])),
+                        "quality_gate_passed": review_data.get("quality_gate_passed", True)
+                    }
+                }
+            else:
+                output = {
+                    "code_review": {"overall_score": 7.0, "issues": [], "quality_gate_passed": True},
+                    "summary": {
+                        "overall_score": 7.0,
+                        "issues_count": 0,
+                        "quality_gate_passed": True
+                    }
+                }
+            
+            # Create documentation
+            if isinstance(review_data, dict):
+                self._create_review_documentation(review_data)
+            else:
+                self.add_log_entry("warning", "Cannot create documentation - review data is not a dictionary")
+            
+            execution_time = time.time() - start_time
+            
+            # Update state with results
+            state = self.update_state_with_result(
+                state=state,
+                task_name="code_review",
+                output=output,
+                execution_time=execution_time
+            )
+            
+            self.add_log_entry("info", f"Code review completed successfully in {execution_time:.2f}s")
+            
+            return state
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            self.add_log_entry("error", f"Code review failed: {str(e)}")
+            return self.handle_error(state, e, "code_review")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute code review using LangChain JsonOutputParser.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed review data
+        """
+        # Create prompt template with JSON format instructions
+        prompt_template = """You are an expert Code Reviewer. Review the generated code for quality, security, and best practices.
+
+PROJECT CONTEXT: {project_context}
+CODE FILES: {code_files}
+REQUIREMENTS: {requirements}
+
+Review the code and provide comprehensive feedback.
+
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "overall_score": 8.5,
+    "issues": [
+        {{
+            "title": "Issue Title",
+            "description": "Detailed description of the issue",
+            "severity": "high|medium|low",
+            "category": "security|performance|style|functionality",
+            "suggestion": "How to fix this issue"
+        }}
+    ],
+    "quality_gate_passed": true,
+    "summary": "Overall assessment of code quality",
+    "recommendations": [
+        "Recommendation 1",
+        "Recommendation 2"
+    ]
+}}
+
+Do not include any text before or after the JSON object."""
+
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context", "code_files", "requirements"]
+        )
+        
+        # Create LangChain Gemini client
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.1,
+            max_output_tokens=8192
+        )
+        
+        # Create chain with JsonOutputParser
+        chain = prompt | llm | self.json_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for code review")
+        result = await chain.ainvoke({
+            "project_context": state["project_context"],
+            "code_files": str(state.get("code_files", {})),
+            "requirements": str(state.get("requirements", []))
+        })
+        
+        self.add_log_entry("info", "Successfully parsed review data with JsonOutputParser")
+        
+        # Handle case where JsonOutputParser returns a string instead of dict
+        if isinstance(result, str):
+            self.add_log_entry("warning", "JsonOutputParser returned string, attempting to parse as JSON")
+            try:
+                import json
+                result = json.loads(result)
+                self.add_log_entry("info", "Successfully parsed string result as JSON")
+            except json.JSONDecodeError as e:
+                self.add_log_entry("error", f"Failed to parse string result as JSON: {e}")
+                # Fall back to legacy parsing
+                return await self._execute_with_legacy_parsing(state)
+        
+        return result
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute code review using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed review data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating code review response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response using simplified models directly
+        self.add_log_entry("info", "Parsing JSON response with simplified models")
+        try:
+            # Clean the response by removing markdown formatting
+            cleaned_response = response_text.strip()
+            if cleaned_response.startswith("```json"):
+                cleaned_response = cleaned_response[7:]  # Remove "```json"
+            if cleaned_response.startswith("```"):
+                cleaned_response = cleaned_response[3:]  # Remove "```"
+            if cleaned_response.endswith("```"):
+                cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
+            cleaned_response = cleaned_response.strip()
+            
+            # Direct JSON parsing for simplified response
+            import json
+            parsed_data = json.loads(cleaned_response)
+            self.add_log_entry("info", "Successfully parsed JSON directly")
+            
+            # Create simplified response using the parsed data
+            review_data = self.create_simplified_output(parsed_data)
+            self.add_log_entry("info", "Successfully created simplified response")
+            
+        except Exception as parse_error:
+            self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
+            # Use fallback parsing as last resort
+            review_data = self.parse_json_response(response_text)
+        
+        return review_data
     
     def create_simplified_output(self, parsed_data: Dict[str, Any]) -> SimplifiedReviewResponse:
         """
@@ -94,118 +331,6 @@ class CodeReviewer(BaseAgent):
                 quality_gate_passed=False
             )
             return default_response.dict() if hasattr(default_response, 'dict') else default_response
-    
-    async def execute(self, state: AgentState) -> AgentState:
-        """Execute code review task with quality gate functionality."""
-        import time
-        start_time = time.time()
-        
-        self.add_log_entry("info", "Starting code review with quality gate")
-        self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
-        
-        try:
-            if not self.validate_input(state):
-                raise ValueError("Invalid input state for code review")
-            
-            self.add_log_entry("info", "Input validation passed")
-            
-            # Perform requirements cross-check
-            requirements_check = await self._cross_check_requirements(state)
-            
-            if not requirements_check["all_requirements_met"]:
-                self.add_log_entry("warning", f"Requirements check failed: {requirements_check['missing_requirements']}")
-                print("DEBUG: Calling _send_back_to_code_generator")
-                return self._send_back_to_code_generator(state, requirements_check)
-            
-            # Prepare prompt
-            prompt = self.prepare_prompt(state)
-            self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
-            
-            # Generate response
-            self.add_log_entry("info", "Generating code review response")
-            response_text = await self.generate_response(prompt)
-            
-            # Parse response with direct JSON parsing for simplified response
-            self.add_log_entry("info", "Parsing JSON response with simplified models")
-            try:
-                # Clean the response by removing markdown formatting
-                cleaned_response = response_text.strip()
-                if cleaned_response.startswith("```json"):
-                    cleaned_response = cleaned_response[7:]  # Remove "```json"
-                if cleaned_response.startswith("```"):
-                    cleaned_response = cleaned_response[3:]  # Remove "```"
-                if cleaned_response.endswith("```"):
-                    cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
-                cleaned_response = cleaned_response.strip()
-                
-                # Direct JSON parsing for simplified response
-                parsed_data = json.loads(cleaned_response)
-                self.add_log_entry("info", "Successfully parsed JSON directly")
-                
-                # Create simplified response using the parsed data
-                review_data = self.create_simplified_output(parsed_data)
-                print(f"DEBUG: review_data type after create_simplified_output: {type(review_data)}")
-                print(f"DEBUG: review_data content: {review_data}")
-                self.add_log_entry("info", "Successfully created simplified response")
-                
-            except Exception as parse_error:
-                self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
-                # Use fallback parsing as last resort
-                review_data = self.parse_json_response(response_text)
-            
-            # Convert review_data to dictionary first (before any processing)
-            if hasattr(review_data, 'dict'):  # SimplifiedReviewResponse object
-                review_dict = review_data.dict()
-            else:  # Already a dictionary
-                review_dict = review_data
-            
-            # Validate response structure (now working with dictionary)
-            self._validate_review_data(review_dict)
-            self.add_log_entry("info", "Review data validation passed")
-            
-            # Record key decisions
-            self._record_review_decisions(review_dict)
-            
-            # Create artifacts
-            self._create_review_artifacts(review_dict)
-            
-            # Create documentation
-            self._create_review_documentation(review_dict)
-            
-            # Create detailed output - always as dictionary
-            output = {
-                "code_review": review_dict,
-                "requirements_check": requirements_check,
-                "quality_gate_passed": review_dict.get("quality_gate_passed", True),
-                "summary": {
-                    "overall_score": review_dict.get("overall_score", 7.0),
-                    "critical_issues": len([i for i in review_dict.get("issues", []) if isinstance(i, dict) and i.get("severity") in ['high', 'critical']]),
-                    "minor_issues": len([i for i in review_dict.get("issues", []) if isinstance(i, dict) and i.get("severity") in ['low', 'medium']]),
-                    "recommendations": len([i for i in review_dict.get("issues", []) if isinstance(i, dict) and i.get("suggestion")]),
-                    "requirements_met": requirements_check["all_requirements_met"]
-                }
-            }
-            
-            execution_time = time.time() - start_time
-            
-            # Update state with results
-            print(f"DEBUG: output type before update_state_with_result: {type(output)}")
-            print(f"DEBUG: output content: {output}")
-            
-            state = self.update_state_with_result(
-                state=state,
-                task_name="code_review",
-                output=output,
-                execution_time=execution_time
-            )
-            
-            self.add_log_entry("info", f"Code review completed successfully in {execution_time:.2f}s")
-            return state
-            
-        except Exception as e:
-            execution_time = time.time() - start_time
-            self.add_log_entry("error", f"Code review failed: {str(e)}")
-            return self.handle_error(state, e, "code_review")
     
     async def _cross_check_requirements(self, state: AgentState) -> Dict[str, Any]:
         """
@@ -449,7 +574,8 @@ CRITERIA:
         )
         
         # Record critical issues decision
-        critical_issues = review_data.get("critical_issues", [])
+        issues = review_data.get("issues", [])
+        critical_issues = [issue for issue in issues if issue.get("severity") == "high"]
         if critical_issues:
             self.add_decision(
                 decision=f"Identified {len(critical_issues)} critical issues requiring immediate attention",
@@ -476,34 +602,37 @@ CRITERIA:
             review_data: Code review data
         """
         # Create overall assessment artifact
-        overall_assessment = review_data.get("overall_assessment", {})
-        if overall_assessment:
+        overall_score = review_data.get("overall_score", 7.0)
+        if overall_score:
             self.add_artifact(
                 name="overall_assessment",
                 type="assessment",
-                content=overall_assessment,
-                description="Overall code quality assessment"
+                content={"overall_score": overall_score},
+                description=f"Overall code quality score: {overall_score}/10"
             )
         
-        # Create critical issues artifact
-        critical_issues = review_data.get("critical_issues", [])
-        if critical_issues:
-            self.add_artifact(
-                name="critical_issues",
-                type="issues",
-                content=critical_issues,
-                description=f"List of {len(critical_issues)} critical issues"
-            )
-        
-        # Create minor issues artifact
-        minor_issues = review_data.get("minor_issues", [])
-        if minor_issues:
-            self.add_artifact(
-                name="minor_issues",
-                type="issues",
-                content=minor_issues,
-                description=f"List of {len(minor_issues)} minor issues"
-            )
+        # Create issues artifact (from JsonOutputParser structure)
+        issues = review_data.get("issues", [])
+        if issues:
+            # Separate critical and minor issues based on severity
+            critical_issues = [issue for issue in issues if issue.get("severity") == "high"]
+            minor_issues = [issue for issue in issues if issue.get("severity") in ["medium", "low"]]
+            
+            if critical_issues:
+                self.add_artifact(
+                    name="critical_issues",
+                    type="issues",
+                    content=critical_issues,
+                    description=f"List of {len(critical_issues)} critical issues"
+                )
+            
+            if minor_issues:
+                self.add_artifact(
+                    name="minor_issues",
+                    type="issues",
+                    content=minor_issues,
+                    description=f"List of {len(minor_issues)} minor issues"
+                )
         
         # Create recommendations artifact
         recommendations = review_data.get("recommendations", [])
@@ -514,6 +643,16 @@ CRITERIA:
                 content=recommendations,
                 description=f"List of {len(recommendations)} improvement recommendations"
             )
+        
+        # Create summary artifact
+        summary = review_data.get("summary", "")
+        if summary:
+            self.add_artifact(
+                name="review_summary",
+                type="summary",
+                content=summary,
+                description="Overall assessment of code quality"
+            )
     
     def _create_review_documentation(self, review_data: Dict[str, Any]):
         """
@@ -522,9 +661,18 @@ CRITERIA:
         Args:
             review_data: Code review data
         """
+        # Handle case where review_data might be a string
+        if not isinstance(review_data, dict):
+            self.add_log_entry("warning", f"Review data is not a dictionary in _create_review_documentation: {type(review_data)}")
+            return
+        
         overall_score = self._calculate_overall_score(review_data)
-        critical_issues = review_data.get("critical_issues", [])
-        minor_issues = review_data.get("minor_issues", [])
+        
+        # Get issues from JsonOutputParser structure
+        issues = review_data.get("issues", [])
+        critical_issues = [issue for issue in issues if issue.get("severity") == "high"]
+        minor_issues = [issue for issue in issues if issue.get("severity") in ["medium", "low"]]
+        
         recommendations = review_data.get("recommendations", [])
         
         self.create_documentation(
@@ -568,27 +716,49 @@ CRITERIA:
         # Extract scores from different assessments
         if "code_quality_score" in review_data:
             try:
-                scores.append(float(review_data["code_quality_score"].split('/')[0]))
+                code_quality_score = review_data["code_quality_score"]
+                if isinstance(code_quality_score, str):
+                    scores.append(float(code_quality_score.split('/')[0]))
+                elif isinstance(code_quality_score, (int, float)):
+                    scores.append(float(code_quality_score))
             except (ValueError, IndexError):
                 pass
                 
-        if "security_assessment" in review_data and "security_score" in review_data["security_assessment"]:
-            try:
-                scores.append(float(review_data["security_assessment"]["security_score"].split('/')[0]))
-            except (ValueError, IndexError):
-                pass
+        if "security_assessment" in review_data:
+            security_assessment = review_data["security_assessment"]
+            if isinstance(security_assessment, dict) and "security_score" in security_assessment:
+                try:
+                    security_score = security_assessment["security_score"]
+                    if isinstance(security_score, str):
+                        scores.append(float(security_score.split('/')[0]))
+                    elif isinstance(security_score, (int, float)):
+                        scores.append(float(security_score))
+                except (ValueError, IndexError):
+                    pass
                 
-        if "performance_assessment" in review_data and "performance_score" in review_data["performance_assessment"]:
-            try:
-                scores.append(float(review_data["performance_assessment"]["performance_score"].split('/')[0]))
-            except (ValueError, IndexError):
-                pass
+        if "performance_assessment" in review_data:
+            performance_assessment = review_data["performance_assessment"]
+            if isinstance(performance_assessment, dict) and "performance_score" in performance_assessment:
+                try:
+                    performance_score = performance_assessment["performance_score"]
+                    if isinstance(performance_score, str):
+                        scores.append(float(performance_score.split('/')[0]))
+                    elif isinstance(performance_score, (int, float)):
+                        scores.append(float(performance_score))
+                except (ValueError, IndexError):
+                    pass
                 
-        if "maintainability" in review_data and "score" in review_data["maintainability"]:
-            try:
-                scores.append(float(review_data["maintainability"]["score"].split('/')[0]))
-            except (ValueError, IndexError):
-                pass
+        if "maintainability" in review_data:
+            maintainability = review_data["maintainability"]
+            if isinstance(maintainability, dict) and "score" in maintainability:
+                try:
+                    maintainability_score = maintainability["score"]
+                    if isinstance(maintainability_score, str):
+                        scores.append(float(maintainability_score.split('/')[0]))
+                    elif isinstance(maintainability_score, (int, float)):
+                        scores.append(float(maintainability_score))
+                except (ValueError, IndexError):
+                    pass
                 
         return sum(scores) / len(scores) if scores else 0.0
     

@@ -1,6 +1,7 @@
 """
 Architecture Designer Agent for AI Development Agent.
 Designs system architecture based on requirements.
+Uses LangChain JsonOutputParser for stable JSON parsing.
 """
 
 import json
@@ -10,6 +11,15 @@ from models.responses import ArchitectureDesignResponse
 from models.simplified_responses import SimplifiedComponent, SimplifiedArchitectureResponse, create_simplified_architecture_response
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+import google.generativeai as genai
+
+try:
+    from langchain_core.output_parsers import JsonOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class ArchitectureDesigner(BaseAgent):
@@ -21,6 +31,12 @@ class ArchitectureDesigner(BaseAgent):
         """Initialize the ArchitectureDesigner agent."""
         super().__init__(config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("architecture_designer")
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.json_parser = JsonOutputParser()
+        else:
+            self.json_parser = None
     
     def get_prompt_template(self) -> str:
         """
@@ -88,11 +104,11 @@ class ArchitectureDesigner(BaseAgent):
         return formatted_prompt
     
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute architecture design task."""
+        """Execute architecture design task using LangChain JsonOutputParser."""
         import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting architecture design")
+        self.add_log_entry("info", "Starting architecture design with LangChain JsonOutputParser")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
         try:
@@ -101,43 +117,11 @@ class ArchitectureDesigner(BaseAgent):
             
             self.add_log_entry("info", "Input validation passed")
             
-            # Prepare prompt
-            prompt = self.prepare_prompt(state)
-            self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
-            
-            # Generate response
-            self.add_log_entry("info", "Generating architecture design response")
-            response_text = await self.generate_response(prompt)
-            
-            # Parse response using simplified models directly
-            self.add_log_entry("info", "Parsing JSON response with simplified models")
-            
-            # Parse JSON directly without using the old structured output parser
-            import json
-            try:
-                # Find JSON in the response
-                start = response_text.find('{')
-                end = response_text.rfind('}') + 1
-                if start != -1 and end != 0:
-                    json_str = response_text[start:end]
-                    architecture_data = json.loads(json_str)
-                    self.add_log_entry("info", "Successfully parsed JSON directly")
-                else:
-                    raise ValueError("No JSON found in response")
-            except Exception as e:
-                self.add_log_entry("error", f"Failed to parse JSON directly: {e}")
-                # Fall back to old parser
-                architecture_data = self.parse_json_response(response_text)
-            
-            # Create simplified response
-            try:
-                simplified_response = self.create_architecture_response(architecture_data)
-                architecture_data = simplified_response.dict()
-                self.add_log_entry("info", "Successfully created simplified response")
-            except Exception as e:
-                self.add_log_entry("warning", f"Failed to create simplified response: {e}")
-                # Fall back to validation of original format
-                self._validate_architecture_data(architecture_data)
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.json_parser:
+                architecture_data = await self._execute_with_langchain(state)
+            else:
+                architecture_data = await self._execute_with_legacy_parsing(state)
             
             self.add_log_entry("info", "Architecture data processing completed")
             
@@ -149,15 +133,20 @@ class ArchitectureDesigner(BaseAgent):
             
             # Update state
             state["architecture"] = architecture_data
-            state["tech_stack"] = architecture_data.get("technology_stack", {})
+            
+            # Also set tech_stack for compatibility with code generator
+            tech_stack = architecture_data.get("technology_stack", {})
+            if tech_stack:
+                state["tech_stack"] = tech_stack
             
             # Create detailed output
             output = {
                 "architecture_design": architecture_data,
                 "summary": {
-                    "pattern": architecture_data.get("architecture_pattern"),
                     "components_count": len(architecture_data.get("components", [])),
-                    "tech_stack_summary": self._summarize_tech_stack(architecture_data.get("technology_stack", {}))
+                    "layers_count": len(architecture_data.get("layers", [])),
+                    "technologies_count": len(architecture_data.get("technologies", [])),
+                    "patterns_count": len(architecture_data.get("design_patterns", []))
                 }
             }
             
@@ -182,6 +171,157 @@ class ArchitectureDesigner(BaseAgent):
             execution_time = time.time() - start_time
             self.add_log_entry("error", f"Architecture design failed: {str(e)}")
             return self.handle_error(state, e, "architecture_design")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute architecture design using LangChain JsonOutputParser.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed architecture data
+        """
+        # Create prompt template with JSON format instructions
+        prompt_template = """You are an expert Software Architect. Design a comprehensive system architecture based on the project context and requirements.
+
+PROJECT CONTEXT:
+{project_context}
+
+REQUIREMENTS:
+{requirements}
+
+TASK:
+Design a comprehensive system architecture that addresses all requirements.
+
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "architecture_overview": "High-level architecture description",
+    "components": [
+        {{
+            "name": "Component Name",
+            "type": "service|database|api|ui|middleware",
+            "description": "Component description",
+            "responsibilities": ["Responsibility 1", "Responsibility 2"],
+            "technologies": ["Technology 1", "Technology 2"],
+            "dependencies": ["Dependency 1", "Dependency 2"]
+        }}
+    ],
+    "layers": [
+        {{
+            "name": "Layer Name",
+            "description": "Layer description",
+            "components": ["Component 1", "Component 2"],
+            "responsibilities": ["Responsibility 1", "Responsibility 2"]
+        }}
+    ],
+    "technologies": [
+        {{
+            "name": "Technology Name",
+            "category": "framework|database|language|tool",
+            "version": "Version",
+            "purpose": "Purpose description",
+            "rationale": "Why this technology was chosen"
+        }}
+    ],
+    "design_patterns": [
+        {{
+            "name": "Pattern Name",
+            "description": "Pattern description",
+            "implementation": "How to implement this pattern",
+            "benefits": ["Benefit 1", "Benefit 2"]
+        }}
+    ],
+    "data_flow": "Description of data flow between components",
+    "security_considerations": ["Security consideration 1", "Security consideration 2"],
+    "scalability_approach": "How the system will scale",
+    "deployment_strategy": "Deployment approach description",
+    "technology_stack": {{
+        "frontend": ["Technology 1", "Technology 2"],
+        "backend": ["Technology 1", "Technology 2"],
+        "database": ["Technology 1"],
+        "devops": ["Technology 1", "Technology 2"]
+    }}
+}}
+
+Do not include any text before or after the JSON object."""
+
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context", "requirements"]
+        )
+        
+        # Create LangChain Gemini client
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.1,
+            max_output_tokens=8192
+        )
+        
+        # Create chain
+        chain = prompt | llm | self.json_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for architecture design")
+        result = await chain.ainvoke({
+            "project_context": state["project_context"],
+            "requirements": str(state.get("requirements", []))
+        })
+        
+        self.add_log_entry("info", "Successfully parsed architecture with JsonOutputParser")
+        return result
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute architecture design using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed architecture data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating architecture design response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response using simplified models directly
+        self.add_log_entry("info", "Parsing JSON response with simplified models")
+        
+        # Parse JSON directly without using the old structured output parser
+        try:
+            # Find JSON in the response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end != 0:
+                json_str = response_text[start:end]
+                architecture_data = json.loads(json_str)
+                self.add_log_entry("info", "Successfully parsed JSON directly")
+            else:
+                raise ValueError("No JSON found in response")
+        except Exception as e:
+            self.add_log_entry("error", f"Failed to parse JSON directly: {e}")
+            # Fall back to old parser
+            architecture_data = self.parse_json_response(response_text)
+        
+        # Create simplified response
+        try:
+            simplified_response = self.create_architecture_response(architecture_data)
+            architecture_data = simplified_response.dict()
+            self.add_log_entry("info", "Successfully created simplified response")
+        except Exception as e:
+            self.add_log_entry("warning", f"Failed to create simplified response: {e}")
+            # Fall back to validation of original format
+            self._validate_architecture_data(architecture_data)
+        
+        return architecture_data
     
     def _validate_architecture_data(self, data: Dict[str, Any]) -> None:
         """Validate architecture design data and provide fallback values."""

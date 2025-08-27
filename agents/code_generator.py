@@ -1,6 +1,7 @@
 """
 Code Generator Agent for AI Development Agent.
 Generates code based on architecture and requirements.
+Uses LangChain StrOutputParser for markdown with code blocks.
 Implements quality gate functionality to validate generated code.
 """
 
@@ -12,13 +13,23 @@ from models.responses import CodeGenerationResponse
 from models.simplified_responses import SimplifiedCodeFile, SimplifiedCodeResponse, create_simplified_code_response
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+import google.generativeai as genai
 from utils.output_parsers import OutputParserFactory
 import re
+
+try:
+    from langchain_core.output_parsers.string import StrOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class CodeGenerator(BaseAgent):
     """
     Agent responsible for generating code based on architecture and requirements.
+    Uses LangChain StrOutputParser for markdown with code blocks.
     Implements quality gate functionality to validate generated code.
     """
     
@@ -47,7 +58,14 @@ class CodeGenerator(BaseAgent):
         agent_config = CodeGeneratorConfig(config)
         super().__init__(agent_config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("code_generator")
-        # Initialize the parser with format instructions
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.str_parser = StrOutputParser()
+        else:
+            self.str_parser = None
+        
+        # Initialize the legacy parser with format instructions
         self.parser = OutputParserFactory.get_parser("code_generator")
     
     def get_prompt_template(self) -> str:
@@ -103,81 +121,25 @@ class CodeGenerator(BaseAgent):
         # Add architecture details
         architecture = state.get("architecture", {})
         if architecture:
-            context_info.append("ARCHITECTURE DESIGN:")
+            context_info.append("ARCHITECTURE TO FOLLOW:")
             if isinstance(architecture, dict):
                 for key, value in architecture.items():
-                    if key == "components" and isinstance(value, list):
-                        context_info.append(f"- Components: {', '.join([comp.get('name', str(comp)) for comp in value[:5]])}")
-                    elif key == "technology_stack" and isinstance(value, dict):
-                        tech_details = []
-                        for tech_type, techs in value.items():
-                            if isinstance(techs, list):
-                                tech_details.append(f"{tech_type}: {', '.join(techs)}")
-                        if tech_details:
-                            context_info.append(f"- Technology Stack: {'; '.join(tech_details)}")
+                    if key in ["components", "layers", "technologies"]:
+                        context_info.append(f"{key.upper()}: {str(value)[:200]}...")
                     else:
-                        context_info.append(f"- {key}: {value}")
+                        context_info.append(f"{key.upper()}: {str(value)[:100]}...")
             else:
-                context_info.append(f"- Architecture: {architecture}")
+                context_info.append(f"ARCHITECTURE: {str(architecture)[:200]}...")
         
-        # Add tech stack details
-        tech_stack = state.get("tech_stack", {})
-        if tech_stack:
-            context_info.append("TECHNOLOGY STACK:")
-            if isinstance(tech_stack, dict):
-                for tech_type, techs in tech_stack.items():
-                    if isinstance(techs, list):
-                        context_info.append(f"- {tech_type}: {', '.join(techs)}")
-                    else:
-                        context_info.append(f"- {tech_type}: {techs}")
-            else:
-                context_info.append(f"- Tech Stack: {tech_stack}")
-        
-        # Add user stories if available
-        user_stories = state.get("user_stories", [])
-        if user_stories:
-            context_info.append("USER STORIES:")
-            for i, story in enumerate(user_stories[:5], 1):  # Limit to first 5
-                if isinstance(story, dict):
-                    context_info.append(f"{i}. {story.get('story', str(story))}")
-                else:
-                    context_info.append(f"{i}. {story}")
+        # Add project name
+        project_name = state.get("project_name", "Unknown Project")
+        context_info.append(f"PROJECT NAME: {project_name}")
         
         # Combine all context
         if context_info:
-            formatted_prompt += "\n\n" + "\n\n".join(context_info)
+            formatted_prompt = formatted_prompt + "\n\n" + "\n\n".join(context_info)
         
-        # Quality gate feedback removed for development phase - focusing on getting working code first
-        
-        # Add CRITICAL instructions for comprehensive code generation
-        comprehensive_instructions = """
-
-CRITICAL CODE GENERATION REQUIREMENTS:
-1. Generate COMPLETE, FUNCTIONAL code that implements ALL requirements
-2. Create MULTIPLE source files with proper separation of concerns
-3. Include ALL necessary configuration files (requirements.txt, package.json, etc.)
-4. Implement proper error handling, validation, and security measures
-5. Follow the specified technology stack and architecture patterns
-6. Generate code that is PRODUCTION-READY, not just "Hello World" examples
-7. Include database models, API endpoints, authentication, and business logic
-8. Create comprehensive test files and documentation
-9. Ensure all user stories and requirements are fully implemented
-10. Generate substantial, functional code with real business logic
-
-DO NOT generate minimal examples or "Hello World" applications. Generate comprehensive, production-ready code that implements all the specified requirements and features.
-
-"""
-        
-        # Add the format instructions to ensure proper JSON output
-        final_prompt = f"""{formatted_prompt}
-
-{comprehensive_instructions}
-
-{format_instructions}
-
-CRITICAL: You must respond with ONLY the JSON object as specified above. Do not include any text before or after the JSON. Ensure all strings are properly escaped and the JSON is valid."""
-        
-        return final_prompt
+        return formatted_prompt
     
     def _get_quality_gate_feedback(self, state: AgentState) -> str:
         """
@@ -193,130 +155,241 @@ CRITICAL: You must respond with ONLY the JSON object as specified above. Do not 
         return ""
     
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute code generation task (quality gates relaxed for development)."""
+        """Execute code generation task using LangChain StrOutputParser."""
+        import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting code generation (quality gates relaxed for development)")
+        self.add_log_entry("info", "Starting code generation with LangChain StrOutputParser")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
-        # Simplified retry logic for development
-        max_retries = 1  # Only try once for now
+        try:
+            if not self.validate_input(state):
+                raise ValueError("Invalid input state for code generation")
+            
+            self.add_log_entry("info", "Input validation passed")
+            
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.str_parser:
+                code_data = await self._execute_with_langchain(state)
+            else:
+                code_data = await self._execute_with_legacy_parsing(state)
+            
+            self.add_log_entry("info", "Code data processing completed")
+            
+            # Record key decisions
+            self._record_code_decisions(code_data)
+            
+            # Create artifacts
+            self._create_code_artifacts(code_data)
+            
+            # Update state
+            state["code_files"] = code_data.get("source_files", {})
+            state["configuration_files"] = code_data.get("configuration_files", {})
+            
+            # Create detailed output
+            output = {
+                "code_generation": code_data,
+                "summary": {
+                    "source_files_count": len(code_data.get("source_files", {})),
+                    "configuration_files_count": len(code_data.get("configuration_files", {})),
+                    "total_lines_of_code": self._calculate_total_lines(code_data)
+                }
+            }
+            
+            # Create documentation
+            self._create_code_documentation(code_data)
+            
+            execution_time = time.time() - start_time
+            
+            # Update state with results
+            state = self.update_state_with_result(
+                state=state,
+                task_name="code_generation",
+                output=output,
+                execution_time=execution_time
+            )
+            
+            self.add_log_entry("info", f"Code generation completed successfully in {execution_time:.2f}s")
+            
+            return state
+            
+        except Exception as e:
+            execution_time = time.time() - start_time
+            self.add_log_entry("error", f"Code generation failed: {str(e)}")
+            return self.handle_error(state, e, "code_generation")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute code generation using LangChain StrOutputParser.
         
-        for attempt in range(max_retries):
-            try:
-                self.add_log_entry("info", f"Code generation attempt {attempt + 1}")
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed code data
+        """
+        # Create prompt template with markdown format instructions
+        prompt_template = """You are an expert Software Developer. Generate production-ready code based on the requirements and architecture.
+
+PROJECT CONTEXT: {project_context}
+REQUIREMENTS: {requirements}
+ARCHITECTURE: {architecture}
+
+Generate the complete source code in markdown format with code blocks. For each file, use this format:
+
+## File: filename.py
+```python
+# code content here
+```
+
+## File: requirements.txt
+```txt
+# dependencies here
+```
+
+## File: README.md
+```markdown
+# documentation here
+```
+
+Include all necessary files for a complete, working application. Make sure the code is production-ready with proper error handling, documentation, and follows best practices.
+
+Return ONLY the markdown with code blocks, no additional text."""
+
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context", "requirements", "architecture"]
+        )
+        
+        # Create LangChain Gemini client
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.1,
+            max_output_tokens=8192
+        )
+        
+        # Create chain
+        chain = prompt | llm | self.str_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for code generation")
+        result = await chain.ainvoke({
+            "project_context": state["project_context"],
+            "requirements": str(state.get("requirements", [])),
+            "architecture": str(state.get("architecture", {}))
+        })
+        
+        # Parse the markdown result to extract code files
+        source_files = self._parse_markdown_code_blocks(result)
+        
+        self.add_log_entry("info", "Successfully parsed code with StrOutputParser")
+        return {
+            "source_files": source_files,
+            "configuration_files": {},
+            "project_structure": list(source_files.keys()),
+            "total_files": len(source_files)
+        }
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute code generation using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed code data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating code generation response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response using simplified models directly
+        self.add_log_entry("info", "Parsing JSON response with simplified models")
+        
+        # Parse JSON directly without using the old structured output parser
+        try:
+            # Find JSON in the response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end != 0:
+                json_str = response_text[start:end]
+                code_data = json.loads(json_str)
+                self.add_log_entry("info", "Successfully parsed JSON directly")
+            else:
+                raise ValueError("No JSON found in response")
+        except Exception as e:
+            self.add_log_entry("error", f"Failed to parse JSON directly: {e}")
+            # Fall back to old parser
+            code_data = self.parse_json_response(response_text)
+        
+        # Create simplified response
+        try:
+            simplified_response = self.create_code_response(code_data)
+            code_data = simplified_response.dict()
+            self.add_log_entry("info", "Successfully created simplified response")
+        except Exception as e:
+            self.add_log_entry("warning", f"Failed to create simplified response: {e}")
+            # Fall back to validation of original format
+            self._validate_code_data(code_data)
+        
+        return code_data
+    
+    def _parse_markdown_code_blocks(self, markdown_text: str) -> Dict[str, str]:
+        """
+        Parse markdown text to extract code blocks as files.
+        
+        Args:
+            markdown_text: Markdown text with code blocks
+            
+        Returns:
+            Dictionary of filename -> content
+        """
+        source_files = {}
+        
+        # Split by markdown headers
+        lines = markdown_text.split('\n')
+        current_file = None
+        current_content = []
+        in_code_block = False
+        
+        for line in lines:
+            # Check for file header
+            if line.startswith('## File:'):
+                # Save previous file if exists
+                if current_file and current_content:
+                    source_files[current_file] = '\n'.join(current_content)
                 
-                # Validate input
-                if not self.validate_input(state):
-                    raise ValueError("Invalid input state for code generation")
+                # Start new file
+                current_file = line.replace('## File:', '').strip()
+                current_content = []
+                in_code_block = False
                 
-                self.add_log_entry("info", "Input validation passed")
-                
-                # Simplified prompt preparation for development
-                
-                # Prepare the prompt
-                prompt = self.prepare_prompt(state)
-                self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
-                
-                # Generate code response
-                response = await self.generate_response(prompt)
-                
-                # Store raw response for quality gate analysis
-                state["last_raw_response"] = response
-                
-                # Parse the response with direct JSON parsing for simplified response
-                try:
-                    # Clean the response by removing markdown formatting
-                    cleaned_response = response.strip()
-                    if cleaned_response.startswith("```json"):
-                        cleaned_response = cleaned_response[7:]  # Remove "```json"
-                    if cleaned_response.startswith("```"):
-                        cleaned_response = cleaned_response[3:]  # Remove "```"
-                    if cleaned_response.endswith("```"):
-                        cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
-                    cleaned_response = cleaned_response.strip()
-                    
-                    # Direct JSON parsing for simplified response
-                    import json
-                    parsed_data = json.loads(cleaned_response)
-                    self.add_log_entry("info", "Direct JSON parsing successful")
-                    
-                    # Create simplified response using the parsed data
-                    code_data = self.create_simplified_code_response(parsed_data)
-                    self.add_log_entry("info", "Simplified response creation successful")
-                    
-                except Exception as parse_error:
-                    self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
-                    # Use fallback parsing as last resort
-                    code_data = self._create_fallback_code_data(response)
-                
-                self.add_log_entry("info", "Code data validation passed")
-                
-                # Perform internal quality gate check (but don't block execution)
-                internal_quality_check = await self._perform_internal_quality_gate(code_data, state)
-                
-                # Log quality gate results but don't block execution
-                if internal_quality_check["quality_gate_passed"]:
-                    self.add_log_entry("info", "Quality gate passed - code generation successful")
+            # Check for code block start
+            elif line.startswith('```'):
+                if in_code_block:
+                    # End of code block
+                    in_code_block = False
                 else:
-                    self.add_log_entry("warning", f"Quality gate failed on attempt {attempt + 1}, but continuing execution")
-                    self.add_log_entry("warning", f"Quality issues: {internal_quality_check['issues']}")
-                
-                # Always proceed with the generated code regardless of quality gate result
-                self.add_log_entry("info", "Proceeding with code generation regardless of quality gate result")
-                
-                # Store additional state data
-                state["code_generation"] = code_data
-                state["internal_quality_check"] = internal_quality_check
-                state["current_agent"] = "code_generator"
-                state["current_task"] = "code_generation"
-                
-                # Store code files in legacy state format for backward compatibility
-                if hasattr(code_data, 'files'):  # SimplifiedCodeResponse object
-                    source_files = {}
-                    configuration_files = {}
-                    for file in code_data.files:
-                        if file.file_type in ['source', 'test']:
-                            source_files[file.filename] = {"content": file.content}
-                        elif file.file_type == 'config':
-                            configuration_files[file.filename] = {"content": file.content}
+                    # Start of code block
+                    in_code_block = True
                     
-                    state["code_files"] = source_files
-                    state["configuration_files"] = configuration_files
-                else:  # Dictionary format (old)
-                    if "source_files" in code_data:
-                        state["code_files"] = code_data["source_files"]
-                    if "configuration_files" in code_data:
-                        state["configuration_files"] = code_data["configuration_files"]
-                
-                # Convert SimplifiedCodeResponse to dictionary for state update
-                if hasattr(code_data, 'dict'):  # Pydantic model
-                    code_data_dict = code_data.dict()
-                elif hasattr(code_data, '__dict__'):  # Regular object
-                    code_data_dict = code_data.__dict__
-                else:
-                    code_data_dict = code_data
-                
-                # Update state with results using base agent method to ensure proper agent_outputs structure
-                execution_time = time.time() - start_time
-                updated_state = self.update_state_with_result(
-                    state, 
-                    "code_generation", 
-                    code_data_dict, 
-                    execution_time
-                )
-                
-                return updated_state
-                    
-            except Exception as e:
-                self.add_log_entry("error", f"Code generation attempt {attempt + 1} failed: {e}")
-                
-                # If this is the last attempt, raise the error
-                if attempt == max_retries - 1:
-                    raise
-                
-                # Continue to next attempt
-                continue
+            # Add content if in code block
+            elif in_code_block and current_file:
+                current_content.append(line)
+        
+        # Save last file
+        if current_file and current_content:
+            source_files[current_file] = '\n'.join(current_content)
+        
+        return source_files
     
     def _log_quality_gate_feedback(self, state: AgentState):
         """Log quality gate feedback for debugging (simplified for development)."""

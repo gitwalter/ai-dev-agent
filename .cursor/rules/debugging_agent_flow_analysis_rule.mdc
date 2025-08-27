@@ -1,11 +1,6 @@
----
-description: Agent Flow Analysis Rule
-alwaysApply: false
----
 # Agent Flow Analysis Rule
 
-## Description
-When analyzing agent flows and debugging workflow issues, ALWAYS read the `logs/agent.log` file first to understand what's happening with agent execution.
+**CRITICAL**: When analyzing agent flows and debugging workflow issues, ALWAYS read the `logs/agent.log` file first to understand what's happening with agent execution.
 
 ## Required Steps for Agent Flow Analysis
 
@@ -97,5 +92,9 @@ Always check for both formats in validation logic to ensure backward compatibili
 **Remember**: The agent.log is the single source of truth for understanding what's happening in the workflow. Always check it first before making any changes or assumptions about agent behavior.
 description:
 globs:
-alwaysApply: false
+alwaysApply: true
+---
+
+globs:
+alwaysApply: true
 ---

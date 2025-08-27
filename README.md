@@ -1,53 +1,49 @@
 # AI Development Agent
 
-A comprehensive Multi-Agent System (MAS) for automated software development using LangGraph and Google's Gemini API. This system implements the principles outlined in AI-powered software development frameworks to streamline the entire Software Development Lifecycle (SDLC).
+A multi-agent system for automated software development using LangGraph and Google's Gemini API. This system implements a workflow-based approach to streamline software development tasks.
 
 ## 🚀 Features
 
 ### Core Capabilities
-- **Multi-Agent Architecture**: Specialized agents for each phase of development
-- **LangGraph Workflow Orchestration**: Robust workflow management with state persistence
-- **Gemini API Integration**: Advanced AI-powered code generation and analysis
-- **Human-in-the-Loop**: Built-in approval mechanisms for critical decisions
-- **Error Recovery**: Automatic retry logic and error handling
-- **Context Awareness**: Intelligent codebase indexing and context retrieval
-- **Streamlit Web Interface**: User-friendly web application for project generation
-- **Prompt Management System**: Database-driven prompt storage and editing capabilities
-- **RAG Document Management**: Support for URL scraping and file-based knowledge retrieval
-- **Enhanced Prompt System**: High-quality, structured prompts for improved AI performance
-- **Comprehensive Testing**: Full test suite with unit, integration, and system tests
-- **Structured Output Parsing**: Robust parsing of AI responses with fallback mechanisms
-- **Artifact Generation**: Complete project artifacts including code, tests, documentation, and diagrams
+- **Multi-Agent Architecture**: Specialized agents for different development phases
+- **LangGraph Workflow Orchestration**: Workflow management with state persistence
+- **Gemini API Integration**: AI-powered code generation and analysis
+- **Human-in-the-Loop**: Approval mechanisms for critical decisions
+- **Error Recovery**: Retry logic and error handling
+- **Context Awareness**: Codebase indexing and context retrieval
+- **Streamlit Web Interface**: User-friendly web application
+- **Prompt Management System**: Database-driven prompt storage
+- **RAG Document Management**: URL scraping and file-based knowledge retrieval
+- **Comprehensive Testing**: Test suite with unit, integration, and system tests
+- **Structured Output Parsing**: JSON-based parsing with fallback mechanisms
 
 ### Specialized Agents
-1. **Requirements Analyst**: Transforms high-level ideas into detailed specifications
-2. **Architecture Designer**: Designs optimal system architecture and technology stack
-3. **Code Generator**: Generates production-ready code based on requirements
-4. **Test Generator**: Creates comprehensive test suites with high coverage
+1. **Requirements Analyst**: Transforms project descriptions into detailed specifications
+2. **Architecture Designer**: Designs system architecture and technology stack
+3. **Code Generator**: Generates source code based on requirements
+4. **Test Generator**: Creates test suites with coverage
 5. **Code Reviewer**: Analyzes code quality and suggests improvements
 6. **Security Analyst**: Identifies vulnerabilities and security issues
-7. **Documentation Generator**: Creates comprehensive documentation
+7. **Documentation Generator**: Creates project documentation
 
 ## 🏗️ Architecture
 
 ### System Overview
 
-The AI Development Agent system is a sophisticated multi-agent architecture designed to automate the entire software development lifecycle. The system uses specialized AI agents that work together in a coordinated workflow to transform high-level project requirements into complete, production-ready applications.
+The AI Development Agent system uses a workflow-based architecture with specialized AI agents that work together to transform project requirements into complete applications.
 
 ```mermaid
 graph TB
     %% User Interface Layer
     subgraph "User Interface"
         UI[Streamlit Web App]
-        CLI[Command Line Interface]
     end
     
     %% Core System Layer
     subgraph "Core System"
-        PM[Project Manager Agent]
+        PM[Project Manager]
         WF[Workflow Manager]
         EH[Error Handler]
-        HA[Human Approval]
     end
     
     %% Agent Layer
@@ -73,15 +69,13 @@ graph TB
     subgraph "External Services"
         AI[Gemini AI API]
         FS[File System]
-        DB[(Database)]
+        DB[(SQLite Database)]
     end
     
     %% Connections
     UI --> PM
-    CLI --> PM
     PM --> WF
     WF --> EH
-    WF --> HA
     
     %% Agent Workflow
     PM --> RA
@@ -91,14 +85,6 @@ graph TB
     PM --> DG
     PM --> CR
     PM --> SA
-    
-    %% Feedback Loops
-    RA -.->|Feedback| AD
-    AD -.->|Feedback| CG
-    CG -.->|Feedback| CR
-    CR -.->|Feedback| CG
-    SA -.->|Feedback| CG
-    TG -.->|Feedback| CR
     
     %% Data Flow
     RA --> PS
@@ -127,273 +113,19 @@ graph TB
     PM --> CF
     PM --> LG
     PM --> CT
-    
-    %% Styling
-    classDef userInterface fill:#e1f5fe
-    classDef coreSystem fill:#f3e5f5
-    classDef agents fill:#e8f5e8
-    classDef dataLayer fill:#fff3e0
-    classDef external fill:#ffebee
-    
-    class UI,CLI userInterface
-    class PM,WF,EH,HA coreSystem
-    class RA,AD,CG,TG,DG,CR,SA agents
-    class PS,CF,LG,CT dataLayer
-    class AI,FS,DB external
 ```
 
-### System Components
-
-#### User Interface Layer
-- **Streamlit Web App**: Primary web interface for project creation and management
-- **Command Line Interface**: Alternative interface for automation and scripting
-
-#### Core System Layer
-- **Project Manager Agent**: Orchestrates the entire development workflow
-- **Workflow Manager**: Manages the execution flow and agent coordination
-- **Error Handler**: Handles errors and exceptions gracefully
-- **Human Approval**: Manages points where human intervention is required
-
-#### AI Agents Layer
-- **Requirements Analyst**: Analyzes project requirements and creates specifications
-- **Architecture Designer**: Designs system architecture and technical decisions
-- **Code Generator**: Generates source code based on requirements and architecture
-- **Test Generator**: Creates comprehensive test suites
-- **Documentation Generator**: Generates project documentation
-- **Code Reviewer**: Reviews code quality and provides feedback
-- **Security Analyst**: Analyzes security aspects and vulnerabilities
-
-#### Data & State Layer
-- **Project State**: Maintains the current state of the project
-- **Configuration**: Manages system configuration and settings
-- **Logging**: Provides comprehensive logging and monitoring
-- **Context Engine**: Manages context and knowledge sharing between agents
-
-#### External Services
-- **Gemini AI API**: Provides AI capabilities for all agents
-- **File System**: Stores generated project files
-- **Database**: Stores project metadata and configurations
-
-### Agent Workflow
+### Workflow Process
 
 The system follows a sequential workflow where each agent builds upon the output of previous agents:
 
-```mermaid
-graph TD
-    A[Project Input] --> B[Requirements Analyst]
-    B --> C[Architecture Designer]
-    C --> D[Code Generator]
-    D --> E[Test Generator]
-    E --> F[Code Reviewer]
-    F --> G[Security Analyst]
-    G --> H[Documentation Generator]
-    H --> I[Final Output]
-    
-    C --> J{Approval Needed?}
-    J -->|Yes| K[Human Approval]
-    J -->|No| D
-    K --> L{Approved?}
-    L -->|Yes| D
-    L -->|No| M[Handle Rejection]
-    
-    G --> N{Approval Needed?}
-    N -->|Yes| O[Human Approval]
-    N -->|No| H
-    O --> P{Approved?}
-    P -->|Yes| H
-    P -->|No| Q[Handle Rejection]
-```
-
-### Workflow Process
-
-### Workflow Process
 1. **Requirements Analysis** → Extract detailed requirements from project description
 2. **Architecture Design** → Design system architecture and technology stack
-3. **Code Generation** → Generate production-ready code
-4. **Test Generation** → Create comprehensive test suites
+3. **Code Generation** → Generate source code
+4. **Test Generation** → Create test suites
 5. **Code Review** → Analyze code quality and suggest improvements
 6. **Security Analysis** → Identify and fix security vulnerabilities
-7. **Documentation** → Generate comprehensive documentation
-
-### Detailed Workflow Sequence
-
-The following sequence diagram illustrates the detailed interaction flow between all system components:
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant UI as Streamlit UI
-    participant PM as Project Manager
-    participant RA as Requirements Analyst
-    participant AD as Architecture Designer
-    participant CG as Code Generator
-    participant CR as Code Reviewer
-    participant TG as Test Generator
-    participant DG as Documentation Generator
-    participant SA as Security Analyst
-    participant FS as File System
-    
-    %% Initial Setup
-    User->>UI: Enter project description
-    UI->>PM: Initialize project workflow
-    PM->>PM: Create project state
-    
-    %% First Iteration - Requirements Analysis
-    PM->>RA: Execute requirements analysis
-    RA->>RA: Analyze project context
-    RA-->>PM: Return requirements specification
-    PM->>PM: Update project state with requirements
-    
-    %% Architecture Design
-    PM->>AD: Execute architecture design
-    AD->>AD: Design system architecture
-    AD-->>PM: Return architecture specification
-    PM->>PM: Update project state with architecture
-    
-    %% Code Generation
-    PM->>CG: Execute code generation
-    CG->>CG: Generate source code
-    CG-->>PM: Return generated code
-    PM->>PM: Update project state with code
-    
-    %% Feedback Loop - Code Review
-    PM->>CR: Execute code review
-    CR->>CR: Review generated code
-    CR-->>PM: Return review feedback
-    PM->>PM: Check if feedback requires iteration
-    
-    alt Feedback requires code changes
-        PM->>CG: Re-execute with feedback
-        CG->>CG: Update code based on feedback
-        CG-->>PM: Return updated code
-        PM->>PM: Update project state
-        PM->>CR: Re-review updated code
-        CR->>CR: Review updated code
-        CR-->>PM: Return final review
-    end
-    
-    %% Test Generation
-    PM->>TG: Execute test generation
-    TG->>TG: Generate test suites
-    TG-->>PM: Return generated tests
-    PM->>PM: Update project state with tests
-    
-    %% Documentation Generation
-    PM->>DG: Execute documentation generation
-    DG->>DG: Generate project documentation
-    DG-->>PM: Return generated documentation
-    PM->>PM: Update project state with documentation
-    
-    %% Security Analysis
-    PM->>SA: Execute security analysis
-    SA->>SA: Analyze code and architecture
-    SA-->>PM: Return security assessment
-    PM->>PM: Update project state with security analysis
-    
-    %% Final Quality Check
-    PM->>PM: Assess overall project quality
-    
-    alt Quality issues detected
-        PM->>PM: Create decision point
-        PM->>PM: Make quality improvement decisions
-        PM->>CG: Re-execute with improvements
-        CG->>CG: Apply quality improvements
-        CG-->>PM: Return improved code
-        PM->>PM: Update project state
-    end
-    
-    %% File Generation
-    PM->>FS: Save all generated files
-    FS-->>PM: Confirm file creation
-    
-    %% Final Result
-    PM-->>UI: Return complete project
-    UI-->>User: Display project results
-```
-
-### Workflow State Management
-
-The system uses a sophisticated state machine to manage the workflow progression and handle various scenarios:
-
-```mermaid
-stateDiagram-v2
-    [*] --> Initialized
-    
-    %% Main Workflow States
-    Initialized --> RequirementsAnalysis : Start Project
-    RequirementsAnalysis --> ArchitectureDesign : Requirements Complete
-    ArchitectureDesign --> CodeGeneration : Architecture Complete
-    CodeGeneration --> CodeReview : Code Generated
-    CodeReview --> TestGeneration : Review Passed
-    TestGeneration --> DocumentationGeneration : Tests Generated
-    DocumentationGeneration --> SecurityAnalysis : Documentation Complete
-    SecurityAnalysis --> QualityAssessment : Security Analysis Complete
-    
-    %% Feedback Loop States
-    CodeReview --> CodeIteration : Issues Found
-    CodeIteration --> CodeReview : Code Updated
-    SecurityAnalysis --> CodeIteration : Security Issues Found
-    
-    %% Quality Assessment States
-    QualityAssessment --> ProjectComplete : Quality Acceptable
-    QualityAssessment --> QualityIteration : Quality Issues Found
-    QualityIteration --> QualityAssessment : Improvements Applied
-    
-    %% Decision Point States
-    QualityAssessment --> DecisionPoint : Critical Issues Found
-    DecisionPoint --> HumanApproval : Human Input Required
-    HumanApproval --> DecisionPoint : Decision Made
-    DecisionPoint --> QualityIteration : Decision Applied
-    
-    %% Error States
-    RequirementsAnalysis --> ErrorState : Analysis Failed
-    ArchitectureDesign --> ErrorState : Design Failed
-    CodeGeneration --> ErrorState : Generation Failed
-    CodeReview --> ErrorState : Review Failed
-    TestGeneration --> ErrorState : Test Generation Failed
-    DocumentationGeneration --> ErrorState : Documentation Failed
-    SecurityAnalysis --> ErrorState : Security Analysis Failed
-    
-    %% Recovery from Error States
-    ErrorState --> RequirementsAnalysis : Retry from Start
-    ErrorState --> ArchitectureDesign : Retry from Architecture
-    ErrorState --> CodeGeneration : Retry from Code Generation
-    ErrorState --> CodeReview : Retry from Review
-    ErrorState --> TestGeneration : Retry from Tests
-    ErrorState --> DocumentationGeneration : Retry from Documentation
-    ErrorState --> SecurityAnalysis : Retry from Security
-    
-    %% Final States
-    ProjectComplete --> [*] : Project Delivered
-    ErrorState --> [*] : Project Failed
-```
-
-### Key Features
-
-#### Feedback Loops
-The system implements sophisticated feedback loops where agents can provide feedback to each other:
-- Requirements Analyst → Architecture Designer
-- Architecture Designer → Code Generator
-- Code Generator → Code Reviewer
-- Code Reviewer → Code Generator (iterative improvement)
-- Security Analyst → Code Generator
-- Test Generator → Code Reviewer
-
-#### Decision Management
-The Project Manager Agent can intervene when:
-- Agents disagree on technical decisions
-- Quality thresholds are not met
-- Human approval is required for critical decisions
-- Iteration limits are reached
-
-#### State Management
-All agents work with a shared Project State that maintains:
-- Current requirements and specifications
-- Architecture decisions and diagrams
-- Generated code and files
-- Test results and coverage
-- Documentation artifacts
-- Review feedback and decisions
+7. **Documentation** → Generate project documentation
 
 ## 📋 Prerequisites
 
@@ -424,7 +156,7 @@ All agents work with a shared Project State that maintains:
 
 ### API Key Configuration
 
-The AI Development Agent uses a secure TOML-based configuration system for managing API keys and sensitive data.
+The system uses a TOML-based configuration system for managing API keys.
 
 #### Option 1: secrets.toml (Recommended)
 
@@ -437,13 +169,9 @@ Create a `secrets.toml` file in the project root:
 
 [gemini]
 api_key = "your-actual-gemini-api-key-here"
-
-# Add other secrets as needed
-[secrets]
-# Add any other sensitive configuration here
 ```
 
-**Security Note**: The `secrets.toml` file is automatically ignored by git to prevent accidental commits.
+**Security Note**: The `secrets.toml` file is automatically ignored by git.
 
 #### Option 2: Environment Variable
 
@@ -459,15 +187,7 @@ set GEMINI_API_KEY=your-gemini-api-key-here
 
 #### Option 3: Streamlit Interface
 
-When running the Streamlit app, if no API key is found, you'll be prompted to enter it through the web interface. The key will be automatically saved to `secrets.toml`.
-
-### Configuration Priority
-
-The system loads the API key in the following order:
-
-1. **secrets.toml** (highest priority)
-2. **GEMINI_API_KEY environment variable**
-3. **Streamlit interface input** (if no key found)
+When running the Streamlit app, if no API key is found, you'll be prompted to enter it through the web interface.
 
 ### Getting Your Gemini API Key
 
@@ -487,43 +207,6 @@ The Streamlit web interface provides four main sections:
 2. **🔧 Prompt Manager**: Edit and manage agent prompts
 3. **📚 RAG Documents**: Add and manage knowledge documents
 4. **⚙️ System Prompts**: Manage system-wide prompts
-
-### Prompt Management System
-
-The AI Development Agent includes a comprehensive prompt management system:
-
-#### Agent Prompts
-- **Database Storage**: All prompts are stored in SQLite database (`prompt_templates.db`)
-- **Enhanced Prompts**: High-quality, structured prompts for optimal AI performance
-- **Version Control**: Track prompt changes and performance metrics
-- **Web Editor**: Edit prompts directly through the Streamlit interface
-
-#### System Prompts
-- **Category-based Organization**: Organize prompts by workflow, general, error handling, etc.
-- **Template Management**: Create and edit system-wide prompt templates
-- **Performance Tracking**: Monitor prompt usage and success rates
-
-### RAG Document Management
-
-The system supports Retrieval-Augmented Generation (RAG) for enhanced knowledge retrieval:
-
-#### URL Document Processing
-- **Web Scraping**: Extract content from web pages
-- **Content Cleaning**: Remove ads, navigation, and irrelevant content
-- **Metadata Extraction**: Capture titles, descriptions, and source information
-- **Agent Association**: Link documents to specific agents for targeted retrieval
-
-#### File Document Processing
-- **Multiple Formats**: Support for TXT, MD, PY, JS, HTML, CSS, JSON files
-- **Content Analysis**: Automatic content extraction and processing
-- **Tagging System**: Organize documents with custom tags
-- **Chunking**: Intelligent text chunking for optimal retrieval
-
-#### Document Management Features
-- **Search and Filter**: Find documents by agent, tags, or content
-- **Content Preview**: View document content before processing
-- **Bulk Operations**: Process multiple documents efficiently
-- **Performance Metrics**: Track document usage and retrieval success
 
 ### Running the Streamlit App (Recommended)
 
@@ -572,13 +255,9 @@ if __name__ == "__main__":
 
 ## 📁 Project Structure
 
-### Organized File Structure
-
-The project follows a clean, organized structure with clear separation of concerns:
-
 ```
 ai-dev-agent/
-├── agents/                 # Agent implementations and logic
+├── agents/                 # Agent implementations
 │   ├── base_agent.py      # Base agent class
 │   ├── requirements_analyst.py
 │   ├── architecture_designer.py
@@ -588,330 +267,93 @@ ai-dev-agent/
 │   ├── security_analyst.py
 │   ├── documentation_generator.py
 │   └── supervisor/        # Supervisor agent implementations
-│       ├── base_supervisor.py
-│       └── project_manager_supervisor.py
-├── apps/                  # Application entry points and UI
+├── apps/                  # Application entry points
 │   └── prompt_manager_app.py
-├── context/               # Context management and processing
+├── context/               # Context management
 │   └── context_engine.py
-├── docs/                  # Documentation, concept papers, and analysis
-│   ├── analysis/          # Analysis documents and reports
-│   │   ├── agent_framework_analysis.md
-│   │   ├── AGENT_SUPERVISOR_ANALYSIS.md
-│   │   ├── AGENT_ANALYSIS_SUMMARY.md
-│   │   └── AGENT_PROMPT_RESPONSE_ANALYSIS.md
+├── docs/                  # Documentation
+│   ├── guides/            # Implementation guides
 │   ├── architecture/      # Architecture documentation
-│   │   └── SUPERVISOR_SWARM_HYBRID_ARCHITECTURE.md
-│   ├── concept_papers/    # High-level concept documents
-│   │   ├── AGENT_FRAMEWORK_MIGRATION_PLAN.md
-│   │   ├── MCP_INTEGRATION_SUMMARY.md
-│   │   └── MCP_SERVER_INTEGRATION_CONCEPT.md
-│   ├── diagrams/          # System diagrams and visualizations
-│   │   ├── agent-graph.md
-│   │   ├── class-diagram.md
-│   │   ├── sequence-diagram.md
-│   │   ├── state-machine-diagram.md
-│   │   └── system-diagram.md
-│   ├── enhanced_structured_outputs.md
-│   └── quality-gate-system.md
-├── generated/             # Generated files and artifacts
+│   ├── analysis/          # Analysis documents
+│   ├── concepts/          # Conceptual papers
+│   └── development/       # Development resources
+├── generated/             # Generated files
 ├── generated_projects/    # Complete generated projects
-├── logs/                  # Log files and execution history
-│   └── agents/           # Agent-specific logs
+├── logs/                  # Log files
 ├── models/                # Data models and schemas
 │   ├── config.py         # Configuration management
 │   ├── state.py          # Workflow state management
-│   ├── supervisor_state.py # Supervisor state management
+│   ├── supervisor_state.py
 │   └── responses.py      # Response models
 ├── prompts/               # Prompt templates and database
-│   ├── agent_prompt_loader.py # Agent prompt loading system
-│   ├── prompt_templates.db    # SQLite database for prompt storage
-│   └── __init__.py
-├── tests/                 # Comprehensive test suite
-│   ├── unit/             # Unit tests for individual functions/classes
-│   │   ├── test_base_agent.py
-│   │   ├── test_diagram_generation.py
-│   │   ├── test_quality_gate_system.py
-│   │   └── test_src_error_fix.py
-│   ├── integration/      # Integration tests for component interactions
-│   │   ├── test_agent_execution.py
-│   │   ├── test_gemini_integration.py
-│   │   ├── test_real_llm_integration.py
-│   │   ├── test_api_key_validation.py
-│   │   ├── test_agents_simple.py
-│   │   ├── test_agent_interface.py
-│   │   └── test_agent_streamlit.py
-│   ├── system/           # System-level tests for complete workflows
-│   │   └── test_complete_workflow.py
-│   ├── langgraph/        # LangGraph-specific tests
-│   │   ├── test_basic_workflow.py
-│   │   ├── test_langgraph_workflow_integration.py
-│   │   ├── test_workflow_manager.py
-│   │   └── TEST_DEVELOPMENT_PLAN.md
-│   ├── supervisor/       # Supervisor-specific tests
-│   │   ├── test_base_supervisor.py
-│   │   ├── test_project_manager_supervisor.py
-│   │   └── test_supervisor_state.py
-│   ├── performance/      # Performance and load tests
-│   ├── security/         # Security-focused tests
-│   ├── fixtures/         # Test fixtures and data
-│   ├── mocks/            # Mock objects and stubs
-│   ├── conftest.py       # Pytest configuration and shared fixtures
-│   └── test_utils.py     # Test utilities and helpers
-├── ui/                   # User interface components
-├── utils/                # Utility functions and helpers
-│   ├── enhanced_output_parsers.py # Enhanced output parsing
-│   ├── file_manager.py   # File management utilities
-│   ├── helpers.py        # General helper functions
-│   ├── langchain_data_exchange.py # LangChain integration
-│   ├── logging_config.py # Logging configuration
-│   ├── output_parsers.py # Output parsing utilities
-│   ├── prompt_editor.py  # Prompt editing interface
-│   ├── prompt_manager.py # Prompt management and database operations
-│   ├── rag_processor.py  # RAG document processing
-│   ├── structured_outputs.py # Structured output handling
-│   ├── toml_config.py    # TOML configuration loader
-│   └── update_prompt_database.py # Prompt database utilities
-├── workflow/             # Workflow management and orchestration
-│   ├── error_handler.py  # Error handling utilities
-│   ├── human_approval.py # Human approval mechanisms
-│   ├── workflow_graph.py # LangGraph workflow definition
-│   ├── workflow_manager.py # Workflow management
-│   ├── langgraph_workflow_manager.py # LangGraph integration
-│   └── langgraph_workflow.py # LangGraph workflow implementation
-├── .cursor/              # Cursor IDE configuration and rules
-│   └── rules/            # Project rules and guidelines
-│       ├── file_organization.mdc # File organization standards
-│       └── [other rules]
-├── .github/              # GitHub workflows and templates
-├── .streamlit/           # Streamlit configuration
-├── .vscode/              # VS Code configuration
-├── backups/              # Backup files and archives
-├── temp/                 # Temporary files (auto-cleanup)
+│   ├── agent_prompt_loader.py
+│   └── prompt_templates.db
+├── tests/                 # Test suite
+│   ├── unit/             # Unit tests
+│   ├── integration/      # Integration tests
+│   ├── system/           # System tests
+│   ├── langgraph/        # LangGraph tests
+│   └── supervisor/       # Supervisor tests
+├── utils/                # Utility functions
+│   ├── enhanced_output_parsers.py
+│   ├── file_manager.py
+│   ├── helpers.py
+│   ├── logging_config.py
+│   ├── output_parsers.py
+│   ├── prompt_editor.py
+│   ├── prompt_manager.py
+│   ├── rag_processor.py
+│   ├── structured_outputs.py
+│   └── toml_config.py
+├── workflow/             # Workflow management
+│   ├── error_handler.py
+│   ├── human_approval.py
+│   ├── workflow_graph.py
+│   ├── workflow_manager.py
+│   ├── langgraph_workflow_manager.py
+│   └── langgraph_workflow.py
 ├── main.py               # Main application entry point
 ├── streamlit_app.py      # Streamlit web interface
 ├── requirements.txt      # Python dependencies
-├── pytest.ini           # Pytest configuration
-├── README.md             # Project documentation
-├── IMPLEMENTATION_ROADMAP.md # Project roadmap and task tracking
-└── .gitignore           # Git ignore rules
+└── README.md             # Project documentation
 ```
-
-### Documentation Organization
-
-The project includes comprehensive documentation organized by type:
-
-#### **Analysis Documents** (`docs/analysis/`)
-- **Agent Framework Analysis**: Detailed analysis of agent framework capabilities
-- **Agent Supervisor Analysis**: Analysis of supervisor agent implementations
-- **Agent Analysis Summary**: Summary of agent performance and capabilities
-- **Agent Prompt Response Analysis**: Analysis of prompt-response patterns
-
-#### **Architecture Documents** (`docs/architecture/`)
-- **Supervisor-Swarm Hybrid Architecture**: Complete architecture documentation
-- **System Diagrams**: Visual representations of system components
-- **Class Diagrams**: Object-oriented design documentation
-- **Sequence Diagrams**: Interaction flow documentation
-
-#### **Concept Papers** (`docs/concept_papers/`)
-- **Agent Framework Migration Plan**: Migration strategy documentation
-- **MCP Integration Summary**: Model Context Protocol integration
-- **MCP Server Integration Concept**: Server integration concepts
-
-#### **System Documentation** (`docs/`)
-- **Quality Gate System**: Quality control mechanisms
-- **Enhanced Structured Outputs**: Output parsing documentation
-- **Agent Graph**: Agent relationship documentation
-- **State Machine Diagrams**: Workflow state management
-
-### Test Organization
-
-The test suite is comprehensively organized by type and purpose:
-
-#### **Unit Tests** (`tests/unit/`)
-- Individual function and class testing
-- Isolated component validation
-- Mock-based testing for dependencies
-
-#### **Integration Tests** (`tests/integration/`)
-- Component interaction testing
-- Real LLM integration testing
-- API key validation testing
-- Agent workflow integration
-
-#### **System Tests** (`tests/system/`)
-- End-to-end workflow testing
-- Complete system validation
-- Real-world scenario testing
-
-#### **Specialized Tests**
-- **LangGraph Tests** (`tests/langgraph/`): LangGraph-specific functionality
-- **Supervisor Tests** (`tests/supervisor/`): Supervisor agent testing
-- **Performance Tests** (`tests/performance/`): Load and performance testing
-- **Security Tests** (`tests/security/`): Security vulnerability testing
-
-### Object-Oriented Architecture
-
-The system follows a clean object-oriented design with clear separation of concerns:
-
-```mermaid
-classDiagram
-    %% Base Classes
-    class BaseAgent {
-        <<abstract>>
-        +config: Dict[str, Any]
-        +name: str
-        +logger: Logger
-        +logs: List[Dict]
-        +decisions: List[Dict]
-        +artifacts: List[Dict]
-        +execute(state: ProjectState): AgentResult*
-        +_log(message: str, level: str)
-        +_add_decision(decision: Dict)
-        +_add_artifact(artifact: Dict)
-    }
-    
-    %% Agent Classes
-    class RequirementsAnalyst {
-        +execute(state: ProjectState): AgentResult
-        +_analyze_requirements(context: str): Dict
-        +_validate_requirements(requirements: Dict): bool
-    }
-    
-    class ArchitectureDesigner {
-        +execute(state: ProjectState): AgentResult
-        +_design_architecture(requirements: Dict): Dict
-        +_validate_architecture(architecture: Dict): bool
-    }
-    
-    class CodeGenerator {
-        +execute(state: ProjectState): AgentResult
-        +_generate_code(requirements: Dict, architecture: Dict): Dict
-        +_validate_code(code: Dict): bool
-    }
-    
-    class TestGenerator {
-        +execute(state: ProjectState): AgentResult
-        +_generate_tests(code: Dict, requirements: Dict): Dict
-        +_validate_tests(tests: Dict): bool
-    }
-    
-    class DocumentationGenerator {
-        +execute(state: ProjectState): AgentResult
-        +_generate_documentation(project_data: Dict): Dict
-        +_validate_documentation(docs: Dict): bool
-    }
-    
-    class CodeReviewer {
-        +execute(state: ProjectState): AgentResult
-        +_review_code(code: Dict): Dict
-        +_validate_review(review: Dict): bool
-    }
-    
-    class SecurityAnalyst {
-        +execute(state: ProjectState): AgentResult
-        +_analyze_security(code: Dict, architecture: Dict): Dict
-        +_validate_security_analysis(analysis: Dict): bool
-    }
-    
-    class ProjectManagerAgent {
-        +feedback_requests: List[FeedbackRequest]
-        +decision_points: List[DecisionPoint]
-        +agent_feedback_history: Dict[str, List[Dict]]
-        +iteration_count: int
-        +max_iterations: int
-        +execute(state: ProjectState): AgentResult
-        +_execute_development_workflow(state: ProjectState): ProjectState
-        +_execute_iteration(state: ProjectState): ProjectState
-        +_assess_feedback_needs(state: ProjectState): bool
-        +_process_feedback_loop(state: ProjectState): ProjectState
-        +_resolve_decision_points(state: ProjectState): ProjectState
-        +_make_decision(decision_point: DecisionPoint): Dict
-    }
-    
-    %% Data Classes
-    class ProjectState {
-        +project_name: str
-        +project_context: str
-        +requirements: Dict[str, Any]
-        +architecture: Dict[str, Any]
-        +code_files: Dict[str, str]
-        +test_files: Dict[str, str]
-        +documentation_files: Dict[str, str]
-        +configuration_files: Dict[str, str]
-        +to_dict(): Dict[str, Any]
-        +from_dict(data: Dict[str, Any]): ProjectState
-    }
-    
-    class AgentResult {
-        +status: AgentStatus
-        +output: Dict[str, Any]
-        +documentation: Dict[str, Any]
-        +execution_time: float
-        +logs: List[Dict[str, Any]]
-        +decisions: List[Dict[str, Any]]
-        +artifacts: List[Dict[str, Any]]
-    }
-    
-    %% Inheritance
-    BaseAgent <|-- RequirementsAnalyst
-    BaseAgent <|-- ArchitectureDesigner
-    BaseAgent <|-- CodeGenerator
-    BaseAgent <|-- TestGenerator
-    BaseAgent <|-- DocumentationGenerator
-    BaseAgent <|-- CodeReviewer
-    BaseAgent <|-- SecurityAnalyst
-    BaseAgent <|-- ProjectManagerAgent
-    
-    %% Relationships
-    ProjectManagerAgent --> ProjectState
-    RequirementsAnalyst --> ProjectState
-    ArchitectureDesigner --> ProjectState
-    CodeGenerator --> ProjectState
-    TestGenerator --> ProjectState
-    DocumentationGenerator --> ProjectState
-    CodeReviewer --> ProjectState
-    SecurityAnalyst --> ProjectState
-    
-    ProjectManagerAgent --> AgentResult
-    RequirementsAnalyst --> AgentResult
-    ArchitectureDesigner --> AgentResult
-    CodeGenerator --> AgentResult
-    TestGenerator --> AgentResult
-    DocumentationGenerator --> AgentResult
-    CodeReviewer --> AgentResult
-    SecurityAnalyst --> AgentResult
-```
-
-
 
 ## 🔧 Development
 
-### Enhanced Prompt System
+### Prompt Management System
 
-The AI Development Agent uses an advanced prompt management system that prioritizes quality and performance:
+The system includes a comprehensive prompt management system:
 
-#### Prompt Hierarchy
-1. **Enhanced Prompts**: High-quality, structured prompts stored in the database
-2. **Best Performing Prompts**: Automatically selected based on success rates
-3. **Default Prompts**: Fallback prompts for basic functionality
+#### Agent Prompts
+- **Database Storage**: All prompts stored in SQLite database (`prompt_templates.db`)
+- **Enhanced Prompts**: Structured prompts for optimal AI performance
+- **Version Control**: Track prompt changes and performance metrics
+- **Web Editor**: Edit prompts through the Streamlit interface
 
-#### Prompt Features
-- **JSON Structure**: Structured output format for consistent responses
-- **Variable Substitution**: Dynamic prompt customization
-- **Performance Tracking**: Monitor prompt effectiveness
-- **Version Management**: Track prompt changes and improvements
+#### System Prompts
+- **Category-based Organization**: Organize prompts by workflow, general, error handling
+- **Template Management**: Create and edit system-wide prompt templates
+- **Performance Tracking**: Monitor prompt usage and success rates
 
-#### Database Schema
-The `prompt_templates.db` contains:
-- **Agent Prompts**: Specialized prompts for each agent
-- **System Prompts**: General system prompts
-- **RAG Documents**: Knowledge base documents
-- **Performance Metrics**: Usage statistics and success rates
+### RAG Document Management
+
+The system supports Retrieval-Augmented Generation (RAG) for enhanced knowledge retrieval:
+
+#### URL Document Processing
+- **Web Scraping**: Extract content from web pages
+- **Content Cleaning**: Remove ads, navigation, and irrelevant content
+- **Metadata Extraction**: Capture titles, descriptions, and source information
+- **Agent Association**: Link documents to specific agents
+
+#### File Document Processing
+- **Multiple Formats**: Support for TXT, MD, PY, JS, HTML, CSS, JSON files
+- **Content Analysis**: Automatic content extraction and processing
+- **Tagging System**: Organize documents with custom tags
+- **Chunking**: Intelligent text chunking for optimal retrieval
 
 ### Running Tests
 
-The project includes a comprehensive test suite organized by type and purpose:
+The project includes a comprehensive test suite:
 
 ```bash
 # Run all tests
@@ -920,14 +362,9 @@ python -m pytest tests/
 # Run specific test types
 python -m pytest tests/unit/          # Unit tests
 python -m pytest tests/integration/   # Integration tests  
-python -m pytest tests/system/        # System tests (end-to-end)
-python -m pytest tests/langgraph/     # LangGraph-specific tests
+python -m pytest tests/system/        # System tests
+python -m pytest tests/langgraph/     # LangGraph tests
 python -m pytest tests/supervisor/    # Supervisor tests
-
-# Run individual test files
-python tests/system/test_complete_workflow.py    # Complete workflow test
-python tests/unit/test_diagram_generation.py     # Diagram generation test
-python tests/integration/test_real_llm_integration.py  # Real LLM integration test
 ```
 
 #### Test Organization
@@ -937,26 +374,6 @@ python tests/integration/test_real_llm_integration.py  # Real LLM integration te
 - **System Tests** (`tests/system/`): End-to-end workflow testing
 - **LangGraph Tests** (`tests/langgraph/`): LangGraph-specific functionality
 - **Supervisor Tests** (`tests/supervisor/`): Supervisor agent testing
-- **Performance Tests** (`tests/performance/`): Performance and load testing
-- **Security Tests** (`tests/security/`): Security vulnerability testing
-
-#### Test Results
-
-✅ **Complete Workflow Test**: All agents working together successfully
-✅ **Diagram Generation**: Documentation and diagram generation verified
-✅ **Structured Output Parsing**: Robust parsing with fallback mechanisms
-✅ **Artifact Generation**: Complete project artifacts produced
-✅ **Error Handling**: Comprehensive error recovery and retry logic
-
-### Code Quality
-
-The project follows Python best practices and includes:
-
-- Type hints throughout the codebase
-- Comprehensive error handling
-- Structured logging
-- Clean architecture patterns
-- Extensive documentation
 
 ## 🛡️ Security
 
@@ -966,7 +383,6 @@ The project follows Python best practices and includes:
 - ✅ Never commit `secrets.toml` to version control
 - ✅ Use environment variables in production
 - ✅ Rotate API keys regularly
-- ✅ Use different keys for development and production
 
 ### Troubleshooting
 
@@ -974,25 +390,13 @@ The project follows Python best practices and includes:
 
 1. Check that `secrets.toml` exists and contains a valid API key
 2. Verify the API key format: `api_key = "your-key-here"`
-3. Ensure the key is not the placeholder value: `"your-gemini-api-key-here"`
+3. Ensure the key is not the placeholder value
 
 #### "Invalid API key" Error
 
 1. Verify your API key is correct
 2. Check that you have sufficient quota
 3. Ensure the key is active in Google AI Studio
-
-#### Prompt Management Issues
-
-1. **Database Connection**: Ensure `prompt_templates.db` is accessible
-2. **Prompt Loading**: Check that prompts are properly stored in the database
-3. **Enhanced Prompts**: Verify enhanced prompts are marked with `enhanced: true` flag
-
-#### RAG Document Issues
-
-1. **URL Access**: Ensure URLs are accessible and not blocked
-2. **File Permissions**: Check file upload permissions
-3. **Content Processing**: Verify document content is in supported formats
 
 ## 📊 Performance
 
@@ -1002,8 +406,7 @@ The system is optimized for:
 - **Memory Efficiency**: Streaming responses and efficient state management
 - **Error Recovery**: Automatic retry logic with exponential backoff
 - **Scalability**: Modular architecture allows for easy scaling
-- **Prompt Optimization**: Database-driven prompt management for improved performance
-- **RAG Efficiency**: Intelligent document chunking and retrieval optimization
+- **Prompt Optimization**: Database-driven prompt management
 
 ## 🔧 Recent Improvements
 
@@ -1018,12 +421,6 @@ The system is optimized for:
 - **Comprehensive Coverage**: Full workflow testing with real LLM integration
 - **Artifact Verification**: Automated verification of generated artifacts
 - **Error Scenario Testing**: Testing of edge cases and error conditions
-
-### Code Quality Enhancements
-- **Repository Cleanup**: Automated cleanup of temporary files and artifacts
-- **Import Path Fixes**: Proper module imports for moved test files
-- **Documentation Updates**: Comprehensive documentation of all features
-- **Security Improvements**: Enhanced API key management and validation
 
 ## 🤝 Contributing
 
@@ -1044,7 +441,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Streamlit for the web interface
 - BeautifulSoup4 for web scraping capabilities
 - SQLite for reliable database storage
-- The open-source community for inspiration and tools
 
 ## 📞 Support
 

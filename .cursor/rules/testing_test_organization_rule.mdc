@@ -1,0 +1,352 @@
+---
+title: Test Organization and Structure Rule
+---
+
+# Test Organization and Structure Rule
+
+**CRITICAL**: All tests must be organized in the correct subfolder structure within the `tests/` directory. This rule ensures consistent test organization and maintainability.
+
+## Test Directory Structure
+
+### Required Test Directory Layout
+```
+tests/
+├── unit/                    # Unit tests for individual components
+│   ├── agents/             # Agent unit tests
+│   ├── models/             # Model unit tests
+│   ├── utils/              # Utility function tests
+│   └── prompts/            # Prompt management tests
+├── integration/            # Integration tests for component interactions
+│   ├── agent_workflows/    # Multi-agent workflow tests
+│   ├── langchain/          # LangChain integration tests
+│   └── database/           # Database integration tests
+├── system/                 # System-level end-to-end tests
+│   ├── complete_workflow/  # Full workflow tests
+│   ├── performance/        # Performance and load tests
+│   └── deployment/         # Deployment and environment tests
+├── langgraph/              # LangGraph-specific tests
+│   ├── nodes/              # Individual node tests
+│   ├── workflows/          # Workflow orchestration tests
+│   └── state_management/   # State management tests
+├── fixtures/               # Shared test fixtures and data
+├── conftest.py            # Pytest configuration and shared fixtures
+└── __init__.py            # Package initialization
+```
+
+## Test File Naming Conventions
+
+### Required Naming Patterns
+- **Unit Tests**: `test_<module_name>.py` or `test_<class_name>.py`
+- **Integration Tests**: `test_<component>_integration.py`
+- **System Tests**: `test_<feature>_system.py`
+- **LangGraph Tests**: `test_<node_or_workflow>_langgraph.py`
+
+### Examples
+```
+tests/unit/agents/test_requirements_analyst.py
+tests/unit/models/test_config.py
+tests/integration/agent_workflows/test_requirements_to_architecture.py
+tests/system/complete_workflow/test_complete_workflow.py
+tests/langgraph/nodes/test_requirements_node.py
+```
+
+## Test Organization Rules
+
+### 1. Unit Tests (`tests/unit/`)
+**Purpose**: Test individual components in isolation
+**Location**: `tests/unit/<component_type>/`
+**Scope**: 
+- Individual agent methods
+- Model validation and serialization
+- Utility functions
+- Prompt loading and validation
+
+**Required Structure**:
+```python
+# tests/unit/agents/test_requirements_analyst.py
+import pytest
+from agents.requirements_analyst import RequirementsAnalyst
+
+class TestRequirementsAnalyst:
+    def test_initialization(self):
+        # Test agent initialization
+        
+    def test_validate_input(self):
+        # Test input validation
+        
+    def test_execute_method(self):
+        # Test main execution method
+```
+
+### 2. Integration Tests (`tests/integration/`)
+**Purpose**: Test component interactions and data flow
+**Location**: `tests/integration/<integration_type>/`
+**Scope**:
+- Agent-to-agent communication
+- LangChain integration
+- Database operations
+- State management between components
+
+**Required Structure**:
+```python
+# tests/integration/agent_workflows/test_requirements_to_architecture.py
+import pytest
+from agents.requirements_analyst import RequirementsAnalyst
+from agents.architecture_designer import ArchitectureDesigner
+
+class TestRequirementsToArchitectureIntegration:
+    @pytest.mark.asyncio
+    async def test_requirements_to_architecture_flow(self):
+        # Test complete flow from requirements to architecture
+```
+
+### 3. System Tests (`tests/system/`)
+**Purpose**: Test complete end-to-end workflows
+**Location**: `tests/system/<system_type>/`
+**Scope**:
+- Complete workflow execution
+- Performance testing
+- Deployment scenarios
+- Real LLM integration
+
+**Required Structure**:
+```python
+# tests/system/complete_workflow/test_complete_workflow.py
+import pytest
+import asyncio
+
+@pytest.mark.asyncio
+async def test_complete_workflow():
+    # Test complete 7-agent workflow
+```
+
+### 4. LangGraph Tests (`tests/langgraph/`)
+**Purpose**: Test LangGraph-specific functionality
+**Location**: `tests/langgraph/<langgraph_type>/`
+**Scope**:
+- Individual node execution
+- Workflow orchestration
+- State management
+- Graph validation
+
+**Required Structure**:
+```python
+# tests/langgraph/nodes/test_requirements_node.py
+import pytest
+from langgraph.graph import StateGraph
+
+class TestRequirementsNode:
+    def test_node_execution(self):
+        # Test individual node execution
+        
+    def test_node_integration(self):
+        # Test node within graph context
+```
+
+## Test File Creation Rules
+
+### When Creating New Tests
+1. **Identify Test Type**: Determine if it's unit, integration, system, or LangGraph test
+2. **Choose Correct Directory**: Place in appropriate subfolder
+3. **Follow Naming Convention**: Use required naming pattern
+4. **Import Correctly**: Import from project root, not relative paths
+5. **Use Proper Fixtures**: Leverage shared fixtures from `conftest.py`
+
+### Required Test File Template
+```python
+#!/usr/bin/env python3
+"""
+Test file for <component_name>.
+
+<Brief description of what this test file covers>
+"""
+
+import pytest
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path for proper imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+# Import components to test
+from <component_path> import <ComponentName>
+
+class Test<ComponentName>:
+    """Test cases for <ComponentName>."""
+    
+    def setup_method(self):
+        """Set up test fixtures."""
+        pass
+        
+    def teardown_method(self):
+        """Clean up after tests."""
+        pass
+        
+    def test_<specific_functionality>(self):
+        """Test <specific functionality description>."""
+        # Test implementation
+        pass
+```
+
+## Test Organization Enforcement
+
+### Mandatory Checks
+- [ ] Test file is in correct subfolder based on test type
+- [ ] Test file follows naming convention
+- [ ] Test file uses proper imports from project root
+- [ ] Test file includes proper docstrings and comments
+- [ ] Test file uses appropriate pytest decorators
+- [ ] Test file leverages shared fixtures from `conftest.py`
+
+### Forbidden Patterns
+```python
+# FORBIDDEN: Tests in wrong location
+tests/test_requirements_analyst.py  # Should be in tests/unit/agents/
+
+# FORBIDDEN: Relative imports
+from ..agents.requirements_analyst import RequirementsAnalyst
+
+# FORBIDDEN: Missing project root path setup
+from agents.requirements_analyst import RequirementsAnalyst  # Will fail
+```
+
+### Required Patterns
+```python
+# REQUIRED: Correct location and imports
+# File: tests/unit/agents/test_requirements_analyst.py
+import sys
+from pathlib import Path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from agents.requirements_analyst import RequirementsAnalyst
+```
+
+## Test Fixture Organization
+
+### Shared Fixtures (`tests/conftest.py`)
+**Purpose**: Provide common test fixtures across all test types
+**Required Fixtures**:
+- `mock_llm`: Mock LLM for testing
+- `basic_state`: Basic workflow state
+- `agent_configs`: Common agent configurations
+- `gemini_client`: Mock Gemini client
+
+### Test-Specific Fixtures
+**Location**: Individual test files or `conftest.py` in subdirectories
+**Purpose**: Provide fixtures specific to test type or component
+
+## Test Data Organization
+
+### Test Data Location
+```
+tests/
+├── fixtures/
+│   ├── data/              # Test data files
+│   ├── configs/           # Test configuration files
+│   └── responses/         # Mock LLM responses
+```
+
+### Test Data Usage
+```python
+# Load test data from fixtures
+def load_test_data(filename):
+    data_path = Path(__file__).parent.parent / "fixtures" / "data" / filename
+    with open(data_path, 'r') as f:
+        return json.load(f)
+```
+
+## Test Execution Rules
+
+### Running Tests by Type
+```bash
+# Run unit tests only
+pytest tests/unit/
+
+# Run integration tests only
+pytest tests/integration/
+
+# Run system tests only
+pytest tests/system/
+
+# Run LangGraph tests only
+pytest tests/langgraph/
+
+# Run all tests
+pytest tests/
+```
+
+### Test Execution Order
+1. **Unit Tests**: Fastest, run first
+2. **Integration Tests**: Medium speed, run second
+3. **System Tests**: Slowest, run last
+4. **LangGraph Tests**: Can run in parallel with others
+
+## Quality Assurance
+
+### Test Coverage Requirements
+- **Unit Tests**: 90%+ coverage for core components
+- **Integration Tests**: All major component interactions
+- **System Tests**: Complete workflow scenarios
+- **LangGraph Tests**: All nodes and workflows
+
+### Test Documentation
+- Each test file must have a docstring explaining its purpose
+- Each test method must have a descriptive docstring
+- Complex test scenarios must include comments explaining the test logic
+
+### Test Maintenance
+- Tests must be updated when components change
+- Deprecated tests must be removed
+- Test data must be kept current with component changes
+
+## Implementation Checklist
+
+### For New Test Files
+- [ ] Determine correct test type and subfolder
+- [ ] Create test file with proper naming
+- [ ] Add project root path setup
+- [ ] Import components correctly
+- [ ] Use appropriate pytest decorators
+- [ ] Add comprehensive docstrings
+- [ ] Leverage shared fixtures
+- [ ] Follow test organization patterns
+
+### For Existing Test Files
+- [ ] Verify correct location in directory structure
+- [ ] Update imports to use project root path
+- [ ] Ensure proper naming convention
+- [ ] Add missing docstrings and comments
+- [ ] Use shared fixtures where appropriate
+
+## Benefits
+
+- **Consistency**: Standardized test organization across the project
+- **Maintainability**: Easy to find and update tests
+- **Scalability**: Clear structure for adding new tests
+- **Collaboration**: Team members can easily understand test organization
+- **CI/CD Integration**: Clear test execution patterns for automation
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- New test file creation
+- Test file modifications
+- Test organization changes
+- Test execution and CI/CD integration
+- **Parsing error resolution** - When fixing parsing errors, ensure tests are properly organized
+- **Agent updates** - When updating agents to use LangChain parsers, update corresponding tests
+
+**Violations of this rule require immediate remediation and test reorganization.**
+
+## Alignment with Project Roadmap
+
+This test organization rule aligns with the current project roadmap (`docs/guides/implementation/roadmap.md`) and supports:
+- **Phase 1**: Foundation Implementation - Test framework setup and organization
+- **Phase 2**: Memory Foundation and Handoff System - Integration testing for memory-enhanced agents
+- **Phase 3**: Advanced Memory and Hybrid Workflow - System testing for complex workflows
+- **Phase 4**: Memory Analysis and Advanced Features - Performance and analysis testing
+
+**Current Focus**: Immediate parsing error fixes and test reorganization to support LangChain parser migration.

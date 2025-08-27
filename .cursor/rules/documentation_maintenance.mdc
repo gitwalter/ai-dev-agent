@@ -1,7 +1,13 @@
+---
+name: Documentation Maintenance and Update Rule
+description: All documentation must be kept up-to-date and synchronized with the current project structure, file organization, and codebase changes. This ensures accurate, reliable, and helpful documentation for users and developers.
+globs:
+alwaysApply: true
+---
+
 # Documentation Maintenance and Update Rule
 
-## Description
-All documentation must be kept up-to-date and synchronized with the current project structure, file organization, and codebase changes. This ensures accurate, reliable, and helpful documentation for users and developers.
+**CRITICAL**: All documentation must be kept up-to-date and synchronized with the current project structure, file organization, and codebase changes. This ensures accurate, reliable, and helpful documentation for users and developers.
 
 ## Documentation Update Requirements
 
@@ -412,7 +418,3 @@ Maintaining accurate, up-to-date documentation is essential for project success.
 - Maintain comprehensive coverage
 - Review documentation regularly
 - Include documentation in code reviews
-description:
-globs:
-alwaysApply: true
----

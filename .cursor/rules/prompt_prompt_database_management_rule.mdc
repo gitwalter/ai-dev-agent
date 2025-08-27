@@ -1,7 +1,3 @@
----
-description: Prompt Database Management Rule
-alwaysApply: true
----
 # Prompt Database Management Rule
 
 **CRITICAL**: All prompts must be stored in and managed through the prompt database. Hardcoded prompts are only permitted as emergency fallbacks.
@@ -302,6 +298,10 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 
 **Violations of this rule require immediate remediation.**
 
+---
+description: Enforces prompt database management with database-first approach and minimal fallbacks
+globs:
+alwaysApply: true
 ---
 description: Enforces prompt database management with database-first approach and minimal fallbacks
 globs:

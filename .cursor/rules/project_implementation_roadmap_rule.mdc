@@ -1,12 +1,13 @@
 ---
 name: Implementation Roadmap and Development Rule
+description: This rule enforces adherence to our comprehensive development plans while maintaining flexibility to modify them as needed. The goal is to create a stable, multi-agent software development system using established frameworks and best practices.
+globs:
 alwaysApply: true
 ---
+
 # Implementation Roadmap and Development Rule
 
-## Overview
-
-This rule enforces adherence to our comprehensive development plans while maintaining flexibility to modify them as needed. The goal is to create a stable, multi-agent software development system using established frameworks and best practices.
+**CRITICAL**: This rule enforces adherence to our comprehensive development plans while maintaining flexibility to modify them as needed. The goal is to create a stable, multi-agent software development system using established frameworks and best practices.
 
 ## Core Development Plans
 
@@ -55,8 +56,8 @@ This rule enforces adherence to our comprehensive development plans while mainta
 - Custom error handling → LangGraph built-in
 - Custom logging → LangSmith tracing
 
-### 3. Implementation Roadmap (IMPLEMENTATION_ROADMAP.md)
-**Location**: `IMPLEMENTATION_ROADMAP.md`
+### 3. Implementation Roadmap (roadmap.md)
+**Location**: `docs/guides/implementation/roadmap.md`
 
 **CRITICAL REQUIREMENTS**:
 - Implement Supervisor-Swarm Hybrid Architecture
@@ -64,12 +65,14 @@ This rule enforces adherence to our comprehensive development plans while mainta
 - Implement handoff system for dynamic agent collaboration
 - Add quality control and validation system
 - Create hybrid workflow manager
+- **Use LangChain parsers (JsonOutputParser, StrOutputParser) instead of Pydantic parsers**
+- **Remove complex Pydantic models and use simple JSON parsing**
 
 **IMPLEMENTATION PHASES**:
-- Phase 1: Foundation Implementation (Week 1)
-- Phase 2: Handoff System Implementation (Week 2)
-- Phase 3: Hybrid Workflow Implementation (Week 3)
-- Phase 4: Testing and Validation (Week 4)
+- Phase 1: Foundation Implementation (Week 1) - ✅ COMPLETED
+- Phase 2: Memory Foundation and Handoff System (Week 2-3) - 25% Complete
+- Phase 3: Advanced Memory and Hybrid Workflow (Week 3-4) - 0% Complete
+- Phase 4: Memory Analysis and Advanced Features (Week 4-5) - 0% Complete
 
 ## Plan Modification Rules
 
@@ -302,8 +305,4 @@ This rule ensures we maintain our goal of creating a stable, multi-agent softwar
 - Track and validate success metrics
 
 **REMEMBER**: The goal is a stable, scalable, and maintainable multi-agent system. All modifications must support this goal while addressing real technical or business needs.
-description:
-globs:
-alwaysApply: false
----
 

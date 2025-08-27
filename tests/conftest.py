@@ -349,3 +349,33 @@ def mock_uuid():
     with patch('uuid.uuid4') as mock_uuid_func:
         mock_uuid_func.return_value = "test-uuid-1234-5678-90ab-cdef12345678"
         yield mock_uuid_func
+
+
+@pytest.fixture
+def mock_llm():
+    """Provide mock LLM for testing LangChain components."""
+    mock = Mock()
+    mock.invoke = Mock()
+    mock.ainvoke = Mock()
+    return mock
+
+
+@pytest.fixture
+def basic_state():
+    """Provide basic state for LangGraph workflow testing."""
+    return {
+        "project_context": "Create a simple task management system",
+        "project_name": "test-project",
+        "session_id": "test-session-123",
+        "requirements": [],
+        "architecture": {},
+        "code_files": {},
+        "tests": {},
+        "documentation": {},
+        "diagrams": {},
+        "agent_outputs": {},
+        "errors": [],
+        "warnings": [],
+        "approval_requests": [],
+        "current_step": "start"
+    }

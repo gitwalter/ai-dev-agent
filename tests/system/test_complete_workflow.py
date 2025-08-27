@@ -8,6 +8,7 @@ import asyncio
 import sys
 import os
 import json
+import pytest
 from datetime import datetime
 from pathlib import Path
 
@@ -27,6 +28,7 @@ from agents.security_analyst import SecurityAnalyst
 import google.generativeai as genai
 
 
+@pytest.mark.asyncio
 async def test_complete_workflow():
     """Test the complete workflow with real LLM usage."""
     print("🧪 Testing Complete Workflow with Real LLM...")
@@ -60,6 +62,11 @@ async def test_complete_workflow():
     # Setup Gemini client
     try:
         genai.configure(api_key=gemini_config.api_key)
+        
+        # Set environment variable for LangChain Google GenAI integration
+        import os
+        os.environ["GOOGLE_API_KEY"] = gemini_config.api_key
+        
         gemini_client = genai.GenerativeModel(
             model_name=gemini_config.model_name,
             generation_config={

@@ -1,8 +1,6 @@
----
-description : Streamlit Startup Pattern Rule
-alwaysApply: false
----
 # Streamlit Startup Pattern
+
+**CRITICAL**: Always use the standardized Streamlit startup procedure with Anaconda Python interpreter.
 
 ## Required Commands
 
@@ -27,6 +25,10 @@ Local URL: http://localhost:8501
 Network URL: http://192.168.2.133:8501
 ```
 description:
+globs:
+alwaysApply: true
+---
+
 globs:
 alwaysApply: true
 ---

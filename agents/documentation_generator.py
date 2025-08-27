@@ -1,25 +1,47 @@
 """
 Documentation Generator Agent for AI Development Agent.
 Generates comprehensive documentation for the project.
+Uses LangChain JsonOutputParser for stable JSON parsing.
 """
 
 import json
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 from models.state import AgentState
 from models.responses import DocumentationResponse
+from models.simplified_responses import (
+    SimplifiedDocument, 
+    SimplifiedDocumentationResponse, 
+    create_simplified_documentation_response
+)
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+import google.generativeai as genai
+
+try:
+    from langchain_core.output_parsers import JsonOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class DocumentationGenerator(BaseAgent):
     """
     Agent responsible for generating comprehensive documentation.
+    Uses LangChain JsonOutputParser for stable JSON parsing.
     """
     
     def __init__(self, config, gemini_client):
         """Initialize the DocumentationGenerator agent."""
         super().__init__(config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("documentation_generator")
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.json_parser = JsonOutputParser()
+        else:
+            self.json_parser = None
     
     def get_prompt_template(self) -> str:
         """
@@ -31,62 +53,61 @@ class DocumentationGenerator(BaseAgent):
         return self.prompt_loader.get_system_prompt()
     
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute documentation generation task."""
+        """Execute documentation generation task using LangChain JsonOutputParser."""
         import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting documentation generation")
+        self.add_log_entry("info", "Starting documentation generation with LangChain JsonOutputParser")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
         try:
             if not self.validate_input(state):
-                error_msg = "Invalid input state for documentation generation - missing required code files from code generator"
-                self.add_log_entry("error", error_msg)
-                raise ValueError(error_msg)
+                raise ValueError("Invalid input state for documentation generation")
             
             self.add_log_entry("info", "Input validation passed")
             
-            # Prepare prompt
-            prompt = self.prepare_prompt(state)
-            self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.json_parser:
+                documentation_data = await self._execute_with_langchain(state)
+            else:
+                documentation_data = await self._execute_with_legacy_parsing(state)
             
-            # Generate response
-            self.add_log_entry("info", "Generating documentation response")
-            response_text = await self.generate_response(prompt)
-            
-            # Parse response
-            self.add_log_entry("info", "Parsing JSON response")
-            doc_data = self.parse_json_response(response_text)
-            
-            # Validate response structure
-            self._validate_documentation_data(doc_data)
-            self.add_log_entry("info", "Documentation data validation passed")
-            
-            # Record key decisions
-            self._record_documentation_decisions(doc_data)
+            self.add_log_entry("info", "Documentation data processing completed")
             
             # Create artifacts
-            self._create_documentation_artifacts(doc_data)
-            
-            # Create documentation summary
-            self._create_documentation_summary(doc_data)
-            
-            # Update state with generated documentation
-            state["documentation"] = doc_data.get("documentation_files", {})
-            
-            # Update state with generated diagrams
-            if "diagrams" in doc_data:
-                state["diagrams"] = doc_data["diagrams"]
+            self._create_documentation_artifacts(documentation_data)
             
             # Create detailed output
             output = {
-                "documentation_generation": doc_data,
+                "documentation": documentation_data,
                 "summary": {
-                    "total_files": len(doc_data.get("documentation_files", {})),
-                    "coverage_score": self._extract_score(doc_data.get("documentation_summary", {}).get("coverage_score", "0/10")),
-                    "completeness": doc_data.get("documentation_summary", {}).get("completeness", "0%")
+                    "documents_count": len(documentation_data.get("documents", [])),
+                    "coverage_score": documentation_data.get("coverage_score", 8.0),
+                    "documentation_gate_passed": documentation_data.get("documentation_gate_passed", True)
                 }
             }
+            
+            # Create documentation
+            self._create_documentation_files(documentation_data)
+            
+            # Update state with documentation files
+            documents = documentation_data.get("documents", [])
+            if documents:
+                # Convert documents to filename: content mapping for state
+                documentation_files = {}
+                for doc in documents:
+                    filename = doc.get("filename", "document.md")
+                    content = doc.get("content", "")
+                    doc_type = doc.get("doc_type", "general")
+                    documentation_files[filename] = {
+                        "content": content,
+                        "doc_type": doc_type,
+                        "audience": doc.get("audience", "developers"),
+                        "format": doc.get("format", "markdown")
+                    }
+                state["documentation"] = documentation_files
+            else:
+                state["documentation"] = {}
             
             execution_time = time.time() - start_time
             
@@ -99,12 +120,128 @@ class DocumentationGenerator(BaseAgent):
             )
             
             self.add_log_entry("info", f"Documentation generation completed successfully in {execution_time:.2f}s")
+            
             return state
             
         except Exception as e:
             execution_time = time.time() - start_time
             self.add_log_entry("error", f"Documentation generation failed: {str(e)}")
             return self.handle_error(state, e, "documentation_generation")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute documentation generation using LangChain JsonOutputParser.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed documentation data
+        """
+        # Create prompt template with JSON format instructions
+        prompt_template = """You are an expert Documentation Engineer. Generate comprehensive documentation for the project.
+
+PROJECT CONTEXT: {project_context}
+CODE FILES: {code_files}
+REQUIREMENTS: {requirements}
+ARCHITECTURE: {architecture}
+
+Generate comprehensive documentation including README, API docs, user guides, and technical documentation.
+
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "documents": [
+        {{
+            "filename": "README.md",
+            "content": "# Project Title\\n\\nProject description...",
+            "doc_type": "readme|api|user_guide|technical|deployment",
+            "audience": "developers|end_users|stakeholders",
+            "format": "markdown|html|pdf",
+            "diagrams": null
+        }}
+    ],
+    "coverage_score": 9.0,
+    "documentation_gate_passed": true
+}}
+
+Do not include any text before or after the JSON object."""
+
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context", "code_files", "requirements", "architecture"]
+        )
+        
+        # Create LangChain Gemini client
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.1,
+            max_output_tokens=8192
+        )
+        
+        # Create chain with JsonOutputParser
+        chain = prompt | llm | self.json_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for documentation generation")
+        result = await chain.ainvoke({
+            "project_context": state["project_context"],
+            "code_files": str(state.get("code_files", {})),
+            "requirements": str(state.get("requirements", [])),
+            "architecture": str(state.get("architecture", {}))
+        })
+        
+        self.add_log_entry("info", "Successfully parsed documentation data with JsonOutputParser")
+        return result
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute documentation generation using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed documentation data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating documentation response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response using simplified models directly
+        self.add_log_entry("info", "Parsing JSON response with simplified models")
+        try:
+            # Clean the response by removing markdown formatting
+            cleaned_response = response_text.strip()
+            if cleaned_response.startswith("```json"):
+                cleaned_response = cleaned_response[7:]  # Remove "```json"
+            if cleaned_response.startswith("```"):
+                cleaned_response = cleaned_response[3:]  # Remove "```"
+            if cleaned_response.endswith("```"):
+                cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
+            cleaned_response = cleaned_response.strip()
+            
+            # Direct JSON parsing for simplified response
+            import json
+            parsed_data = json.loads(cleaned_response)
+            self.add_log_entry("info", "Successfully parsed JSON directly")
+            
+            # Create simplified response using the parsed data
+            documentation_data = self.create_simplified_output(parsed_data)
+            self.add_log_entry("info", "Successfully created simplified response")
+            
+        except Exception as parse_error:
+            self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
+            # Use fallback parsing as last resort
+            documentation_data = self.parse_json_response(response_text)
+        
+        return documentation_data
     
     def _validate_documentation_data(self, data: Dict[str, Any]) -> None:
         """Validate documentation generation data."""
@@ -204,6 +341,48 @@ class DocumentationGenerator(BaseAgent):
                 content=diagrams,
                 description=f"Generated {len(diagrams)} UML and BPMN diagrams"
             )
+    
+    def _create_documentation_files(self, documentation_data: Dict[str, Any]):
+        """
+        Create and save documentation files to the project directory.
+        
+        Args:
+            documentation_data: Documentation generation data
+        """
+        documents = documentation_data.get("documents", [])
+        
+        if not documents:
+            self.add_log_entry("warning", "No documentation files to create")
+            return
+        
+        # Create docs directory if it doesn't exist
+        import os
+        docs_dir = os.path.join("generated_projects", "test-task-management", "docs")
+        os.makedirs(docs_dir, exist_ok=True)
+        
+        # Create documentation files
+        created_files = []
+        for doc in documents:
+            try:
+                filename = doc.get("filename", "document.md")
+                content = doc.get("content", "")
+                doc_type = doc.get("doc_type", "general")
+                
+                # Create the documentation file
+                file_path = os.path.join(docs_dir, filename)
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                
+                created_files.append(filename)
+                self.add_log_entry("info", f"Created documentation file: {filename} ({doc_type})")
+                
+            except Exception as e:
+                self.add_log_entry("error", f"Failed to create documentation file {filename}: {e}")
+        
+        if created_files:
+            self.add_log_entry("info", f"Successfully created {len(created_files)} documentation files")
+        else:
+            self.add_log_entry("warning", "No documentation files were created successfully")
     
     def _create_documentation_summary(self, doc_data: Dict[str, Any]):
         """

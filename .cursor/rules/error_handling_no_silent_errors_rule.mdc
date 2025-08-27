@@ -1,7 +1,13 @@
+---
+name: No Silent Errors and Mock Fallbacks Rule
+description:
+globs:
+alwaysApply: true
+---
+
 # No Silent Errors and Mock Fallbacks Rule
 
-## Description
-Never use silent error handling, mock fallbacks, or placeholder data that masks real parsing failures. All errors must be exposed and addressed properly to ensure system reliability and quality.
+**CRITICAL**: Never use silent error handling, mock fallbacks, or placeholder data that masks real parsing failures. All errors must be exposed and addressed properly to ensure system reliability and quality.
 
 ## Core Requirements
 
@@ -417,7 +423,3 @@ def parse_response(self, response: str):
 ```
 
 **Remember**: The goal is to expose all errors, not hide them. This ensures system reliability and forces proper error handling and validation.
-description:
-globs:
-alwaysApply: true
----

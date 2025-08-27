@@ -5,7 +5,7 @@ Defines configuration classes for agents, workflow, and system settings.
 
 import os
 from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 
 
@@ -20,13 +20,15 @@ class GeminiConfig(BaseModel):
     top_k: int = Field(default=40, description="Top-k sampling parameter")
     safety_settings: Dict[str, Any] = Field(default_factory=dict)
     
-    @validator('api_key')
+    @field_validator('api_key')
+    @classmethod
     def validate_api_key(cls, v):
         if not v:
             raise ValueError("Gemini API key is required")
         return v
     
-    @validator('temperature')
+    @field_validator('temperature')
+    @classmethod
     def validate_temperature(cls, v):
         if not 0.0 <= v <= 1.0:
             raise ValueError("Temperature must be between 0.0 and 1.0")
@@ -87,7 +89,8 @@ class StorageConfig(BaseModel):
     max_backup_count: int = Field(default=10, description="Maximum number of backups to keep")
     enable_compression: bool = Field(default=True, description="Enable compression for backups")
     
-    @validator('output_dir', 'temp_dir', 'backup_dir')
+    @field_validator('output_dir', 'temp_dir', 'backup_dir')
+    @classmethod
     def validate_directories(cls, v):
         Path(v).mkdir(parents=True, exist_ok=True)
         return v
@@ -103,7 +106,8 @@ class LoggingConfig(BaseModel):
     enable_console_logging: bool = Field(default=True, description="Enable console logging")
     enable_file_logging: bool = Field(default=True, description="Enable file logging")
     
-    @validator('log_level')
+    @field_validator('log_level')
+    @classmethod
     def validate_log_level(cls, v):
         valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         if v.upper() not in valid_levels:
@@ -187,7 +191,8 @@ class SystemConfig(BaseModel):
     # Agent configurations
     agents: Dict[str, AgentConfig] = Field(default_factory=dict)
     
-    @validator('environment')
+    @field_validator('environment')
+    @classmethod
     def validate_environment(cls, v):
         valid_environments = ["development", "staging", "production"]
         if v not in valid_environments:

@@ -1,8 +1,5 @@
----
-description: Automated Test Monitoring and Immediate Bug Fixing Rule
-alwaysApply: false
----
-# 
+# Test Monitoring and Bug Fixing Rule
+
 **CRITICAL**: Implement automated test monitoring with immediate error detection and bug fixing workflow.
 
 ## Terminal Monitoring Requirements
@@ -305,6 +302,10 @@ def analyze_and_fix_error(output_lines, error_line):
 
 - **Error Detection Time**: < 5 seconds after test failure
 - **Fix Implementation Time**: < 2 minutes for common errors
+- **Re-test Cycle Time**: < 30 seconds
+- **Fix Success Rate**: > 80% for automated fixes
+- **False Positive Rate**: < 5%
+- **Test Suite Recovery Time**: < 5 minutes for critical failures
 - **Re-test Cycle Time**: < 30 seconds
 - **Fix Success Rate**: > 80% for automated fixes
 - **False Positive Rate**: < 5%

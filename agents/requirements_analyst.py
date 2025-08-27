@@ -1,6 +1,7 @@
 """
 Requirements Analyst Agent for the AI Development Agent system.
 Analyzes project descriptions and extracts detailed requirements.
+Uses LangChain JsonOutputParser for stable JSON parsing.
 """
 
 import json
@@ -10,6 +11,15 @@ from models.responses import RequirementsAnalysisResponse
 from models.simplified_responses import SimplifiedRequirement, SimplifiedRequirementsResponse, create_simplified_requirements_response
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+import google.generativeai as genai
+
+try:
+    from langchain_core.output_parsers import JsonOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class RequirementsAnalyst(BaseAgent):
@@ -29,6 +39,12 @@ class RequirementsAnalyst(BaseAgent):
         """Initialize the RequirementsAnalyst agent."""
         super().__init__(config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("requirements_analyst")
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.json_parser = JsonOutputParser()
+        else:
+            self.json_parser = None
     
     def get_prompt_template(self) -> str:
         """
@@ -41,7 +57,7 @@ class RequirementsAnalyst(BaseAgent):
     
     async def execute(self, state: AgentState) -> AgentState:
         """
-        Execute requirements analysis.
+        Execute requirements analysis using LangChain JsonOutputParser.
         
         Args:
             state: Current workflow state
@@ -52,7 +68,7 @@ class RequirementsAnalyst(BaseAgent):
         import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting requirements analysis")
+        self.add_log_entry("info", "Starting requirements analysis with LangChain JsonOutputParser")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
         try:
@@ -62,43 +78,11 @@ class RequirementsAnalyst(BaseAgent):
             
             self.add_log_entry("info", "Input validation passed")
             
-            # Prepare prompt
-            prompt = self.prepare_prompt(state)
-            self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
-            
-            # Generate response
-            self.add_log_entry("info", "Generating requirements analysis response")
-            response_text = await self.generate_response(prompt)
-            
-            # Parse response using simplified models directly
-            self.add_log_entry("info", "Parsing JSON response with simplified models")
-            
-            # Parse JSON directly without using the old structured output parser
-            import json
-            try:
-                # Find JSON in the response
-                start = response_text.find('{')
-                end = response_text.rfind('}') + 1
-                if start != -1 and end != 0:
-                    json_str = response_text[start:end]
-                    requirements_data = json.loads(json_str)
-                    self.add_log_entry("info", "Successfully parsed JSON directly")
-                else:
-                    raise ValueError("No JSON found in response")
-            except Exception as e:
-                self.add_log_entry("error", f"Failed to parse JSON directly: {e}")
-                # Fall back to old parser
-                requirements_data = self.parse_json_response(response_text)
-            
-            # Create simplified response
-            try:
-                simplified_response = self.create_requirements_response(requirements_data)
-                requirements_data = simplified_response.dict()
-                self.add_log_entry("info", "Successfully created simplified response")
-            except Exception as e:
-                self.add_log_entry("warning", f"Failed to create simplified response: {e}")
-                # Fall back to validation of original format
-                self._validate_requirements_data(requirements_data)
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.json_parser:
+                requirements_data = await self._execute_with_langchain(state)
+            else:
+                requirements_data = await self._execute_with_legacy_parsing(state)
             
             self.add_log_entry("info", "Requirements data processing completed")
             
@@ -109,7 +93,7 @@ class RequirementsAnalyst(BaseAgent):
             self._create_requirements_artifacts(requirements_data)
             
             # Update state with simplified format
-            requirements = requirements_data.get("requirements", [])
+            requirements = requirements_data.get("functional_requirements", [])
             state["requirements"] = requirements
             
             # Create detailed output
@@ -118,7 +102,7 @@ class RequirementsAnalyst(BaseAgent):
                 "summary": {
                     "total_requirements_count": len(requirements),
                     "functional_requirements_count": len([r for r in requirements if r.get("type") == "functional"]),
-                    "non_functional_requirements_count": len([r for r in requirements if r.get("type") == "non_functional"]),
+                    "non_functional_requirements_count": len([r for r in requirements if r.get("type") == "non-functional"]),
                     "user_stories_count": len([r for r in requirements if r.get("type") == "user_story"]),
                     "technical_constraints_count": len(requirements_data.get("technical_constraints", [])),
                     "risks_count": len(requirements_data.get("risks", []))
@@ -146,6 +130,134 @@ class RequirementsAnalyst(BaseAgent):
             execution_time = time.time() - start_time
             self.add_log_entry("error", f"Requirements analysis failed: {str(e)}")
             return self.handle_error(state, e, "requirements_analysis")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute requirements analysis using LangChain JsonOutputParser.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed requirements data
+        """
+        # Create prompt template with JSON format instructions
+        prompt_template = """You are an expert Requirements Analyst. Analyze the project context and extract comprehensive requirements.
+
+PROJECT CONTEXT:
+{project_context}
+
+TASK:
+Analyze the project context above and generate a comprehensive requirements analysis.
+
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "functional_requirements": [
+        {{
+            "id": "REQ-001",
+            "title": "Requirement Title",
+            "description": "Detailed description",
+            "priority": "high|medium|low",
+            "type": "functional|non-functional"
+        }}
+    ],
+    "non_functional_requirements": [
+        {{
+            "id": "NFR-001",
+            "title": "Non-functional requirement",
+            "description": "Description",
+            "category": "performance|security|usability|reliability"
+        }}
+    ],
+    "user_stories": [
+        {{
+            "id": "US-001",
+            "title": "User Story Title",
+            "description": "As a [user], I want [feature] so that [benefit]",
+            "acceptance_criteria": ["Criterion 1", "Criterion 2"]
+        }}
+    ],
+    "technical_constraints": ["Constraint 1", "Constraint 2"],
+    "assumptions": ["Assumption 1", "Assumption 2"],
+    "risks": ["Risk 1", "Risk 2"],
+    "summary": "Overall requirements summary"
+}}
+
+Do not include any text before or after the JSON object."""
+
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context"]
+        )
+        
+        # Create LangChain Gemini client
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.1,
+            max_output_tokens=8192
+        )
+        
+        # Create chain
+        chain = prompt | llm | self.json_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for requirements analysis")
+        result = await chain.ainvoke({"project_context": state["project_context"]})
+        
+        self.add_log_entry("info", "Successfully parsed requirements with JsonOutputParser")
+        return result
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute requirements analysis using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed requirements data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating requirements analysis response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response using simplified models directly
+        self.add_log_entry("info", "Parsing JSON response with simplified models")
+        
+        # Parse JSON directly without using the old structured output parser
+        try:
+            # Find JSON in the response
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end != 0:
+                json_str = response_text[start:end]
+                requirements_data = json.loads(json_str)
+                self.add_log_entry("info", "Successfully parsed JSON directly")
+            else:
+                raise ValueError("No JSON found in response")
+        except Exception as e:
+            self.add_log_entry("error", f"Failed to parse JSON directly: {e}")
+            # Fall back to old parser
+            requirements_data = self.parse_json_response(response_text)
+        
+        # Create simplified response
+        try:
+            simplified_response = self.create_requirements_response(requirements_data)
+            requirements_data = simplified_response.dict()
+            self.add_log_entry("info", "Successfully created simplified response")
+        except Exception as e:
+            self.add_log_entry("warning", f"Failed to create simplified response: {e}")
+            # Fall back to validation of original format
+            self._validate_requirements_data(requirements_data)
+        
+        return requirements_data
     
     def _record_requirements_decisions(self, requirements_data: Dict[str, Any]):
         """

@@ -1,3 +1,10 @@
+---
+name: Model Selection
+description:
+globs:
+alwaysApply: true
+---
+
 # Model Selection Rule
 
 **CRITICAL**: Always use the standardized model selection approach for all LLM operations in this project.
@@ -287,7 +294,3 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Quality**: Higher quality outputs for complex tasks
 - **Maintainability**: Clear guidelines for model selection decisions
 - **Scalability**: Easy to adjust model selection as needs evolve
-description:
-globs:
-alwaysApply: true
----

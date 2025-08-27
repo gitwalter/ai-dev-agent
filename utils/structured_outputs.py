@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional, List, Union, Literal
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field, validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.types import conint, constr
 
 # Configure logging
@@ -147,7 +147,8 @@ class SourceFile(BaseModel):
     content: str
     language: Optional[str] = None
     
-    @validator('filename')
+    @field_validator('filename')
+    @classmethod
     def validate_filename(cls, v):
         """Validate filename length and format."""
         if len(v) > 500:
@@ -179,7 +180,8 @@ class ConfigurationFile(BaseModel):
         example="Python package dependencies"
     )
     
-    @validator('filename')
+    @field_validator('filename')
+    @classmethod
     def validate_filename(cls, v):
         """Validate filename length and format."""
         if len(v) > 500:
@@ -214,7 +216,8 @@ class TestFile(BaseModel):
         example=["pytest", "httpx"]
     )
     
-    @validator('filename')
+    @field_validator('filename')
+    @classmethod
     def validate_filename(cls, v):
         """Validate filename length and format."""
         if len(v) > 500:
@@ -254,7 +257,8 @@ class DocumentationFile(BaseModel):
         }
     )
     
-    @validator('filename')
+    @field_validator('filename')
+    @classmethod
     def validate_filename(cls, v):
         """Validate filename length and format."""
         if len(v) > 500:

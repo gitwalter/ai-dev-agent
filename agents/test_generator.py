@@ -1,6 +1,7 @@
 """
 Test Generator Agent for AI Development Agent.
 Generates comprehensive tests for the generated code.
+Uses LangChain JsonOutputParser for stable JSON parsing.
 """
 
 import json
@@ -10,17 +11,33 @@ from models.responses import TestGenerationResponse
 from models.simplified_responses import SimplifiedTestFile, SimplifiedTestResponse, create_simplified_test_response
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+import google.generativeai as genai
+
+try:
+    from langchain_core.output_parsers import JsonOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class TestGenerator(BaseAgent):
     """
     Agent responsible for generating comprehensive tests for the codebase.
+    Uses LangChain JsonOutputParser for stable JSON parsing.
     """
     
     def __init__(self, config, gemini_client):
         """Initialize the TestGenerator agent."""
         super().__init__(config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("test_generator")
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.json_parser = JsonOutputParser()
+        else:
+            self.json_parser = None
     
     def get_prompt_template(self) -> str:
         """
@@ -32,11 +49,11 @@ class TestGenerator(BaseAgent):
         return self.prompt_loader.get_system_prompt()
     
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute test generation task."""
+        """Execute test generation task using LangChain JsonOutputParser."""
         import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting test generation")
+        self.add_log_entry("info", "Starting test generation with LangChain JsonOutputParser")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
         try:
@@ -45,50 +62,22 @@ class TestGenerator(BaseAgent):
             
             self.add_log_entry("info", "Input validation passed")
             
-            # Prepare prompt
-            prompt = self.prepare_prompt(state)
-            self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.json_parser:
+                test_data = await self._execute_with_langchain(state)
+            else:
+                test_data = await self._execute_with_legacy_parsing(state)
             
-            # Generate response
-            self.add_log_entry("info", "Generating test response")
-            response_text = await self.generate_response(prompt)
-            
-            # Parse response with direct JSON parsing for simplified response
-            self.add_log_entry("info", "Parsing JSON response with simplified models")
-            try:
-                # Clean the response by removing markdown formatting
-                cleaned_response = response_text.strip()
-                if cleaned_response.startswith("```json"):
-                    cleaned_response = cleaned_response[7:]  # Remove "```json"
-                if cleaned_response.startswith("```"):
-                    cleaned_response = cleaned_response[3:]  # Remove "```"
-                if cleaned_response.endswith("```"):
-                    cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
-                cleaned_response = cleaned_response.strip()
-                
-                # Direct JSON parsing for simplified response
-                import json
-                parsed_data = json.loads(cleaned_response)
-                self.add_log_entry("info", "Successfully parsed JSON directly")
-                
-                # Create simplified response using the parsed data
-                test_data = self.create_simplified_test_response(parsed_data)
-                self.add_log_entry("info", "Successfully created simplified response")
-                
-            except Exception as parse_error:
-                self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
-                # Use fallback parsing as last resort
-                test_data = self.parse_json_response(response_text)
-            
-            # Validate response structure
-            self._validate_test_data(test_data)
-            self.add_log_entry("info", "Test data validation passed")
+            self.add_log_entry("info", "Test data processing completed")
             
             # Record key decisions
             self._record_test_decisions(test_data)
             
             # Create artifacts
             self._create_test_artifacts(test_data)
+            
+            # Create test files
+            self._create_test_files(test_data)
             
             # Update state with generated tests - convert TestFile objects to simple content
             test_files = test_data.get("test_files", {})
@@ -98,27 +87,30 @@ class TestGenerator(BaseAgent):
                 for filename, test_file in test_files.items():
                     if hasattr(test_file, 'content'):
                         # It's a TestFile object
-                        simple_test_files[filename] = test_file.content
-                    else:
-                        # It's already a simple string
+                        simple_test_files[filename] = {"content": test_file.content}
+                    elif isinstance(test_file, dict) and "content" in test_file:
+                        # It's already a dict with content
                         simple_test_files[filename] = test_file
+                    else:
+                        # It's just content
+                        simple_test_files[filename] = {"content": str(test_file)}
+                
                 state["tests"] = simple_test_files
             else:
                 state["tests"] = {}
-            
-            # Create documentation
-            self._create_test_documentation(test_data)
             
             # Create detailed output
             output = {
                 "test_generation": test_data,
                 "summary": {
-                    "total_test_files": len(test_data.get("test_files", {})),
-                    "test_types": test_data.get("test_types", []),
-                    "coverage_targets": test_data.get("coverage_targets", {}),
-                    "test_strategy": test_data.get("test_strategy", "")
+                    "test_files_count": len(test_files),
+                    "test_categories_count": len(test_data.get("test_categories", {})),
+                    "coverage_targets_count": len(test_data.get("coverage_targets", {}))
                 }
             }
+            
+            # Create documentation
+            self._create_test_documentation(test_data)
             
             execution_time = time.time() - start_time
             
@@ -131,12 +123,142 @@ class TestGenerator(BaseAgent):
             )
             
             self.add_log_entry("info", f"Test generation completed successfully in {execution_time:.2f}s")
+            
             return state
             
         except Exception as e:
             execution_time = time.time() - start_time
             self.add_log_entry("error", f"Test generation failed: {str(e)}")
             return self.handle_error(state, e, "test_generation")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute test generation using LangChain JsonOutputParser.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed test data
+        """
+        # Create prompt template with JSON format instructions
+        prompt_template = """You are an expert Test Engineer. Generate comprehensive tests based on the code and requirements.
+
+PROJECT CONTEXT: {project_context}
+CODE FILES: {code_files}
+REQUIREMENTS: {requirements}
+
+Generate comprehensive test files and testing strategy.
+
+IMPORTANT: Respond ONLY with a valid JSON object in the following format:
+{{
+    "test_files": {{
+        "test_main.py": "import pytest\\n\\ndef test_main_functionality():\\n    assert True",
+        "test_auth.py": "import pytest\\n\\ndef test_authentication():\\n    assert True"
+    }},
+    "test_categories": {{
+        "unit_tests": ["Function-level tests", "Class-level tests"],
+        "integration_tests": ["API endpoint tests", "Database integration tests"]
+    }},
+    "test_data": {{
+        "fixtures": "Sample test data and fixtures",
+        "mocks": "Mock objects and stubs"
+    }},
+    "coverage_targets": {{
+        "unit_test_coverage": "80%",
+        "integration_test_coverage": "60%"
+    }},
+    "testing_strategy": {{
+        "framework": "pytest",
+        "assertion_library": "pytest assertions"
+    }},
+    "test_execution_plan": [
+        "1. Run unit tests: pytest tests/unit/",
+        "2. Run integration tests: pytest tests/integration/"
+    ]
+}}
+
+Do not include any text before or after the JSON object."""
+
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context", "code_files", "requirements"]
+        )
+        
+        # Create LangChain Gemini client
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.1,
+            max_output_tokens=8192
+        )
+        
+        # Create chain with JsonOutputParser (not PydanticOutputParser)
+        chain = prompt | llm | self.json_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for test generation")
+        result = await chain.ainvoke({
+            "project_context": state["project_context"],
+            "code_files": str(state.get("code_files", {})),
+            "requirements": str(state.get("requirements", []))
+        })
+        
+        self.add_log_entry("info", "Successfully parsed test data with JsonOutputParser")
+        return result
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute test generation using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed test data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating test response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response using simplified models directly
+        self.add_log_entry("info", "Parsing JSON response with simplified models")
+        try:
+            # Clean the response by removing markdown formatting
+            cleaned_response = response_text.strip()
+            if cleaned_response.startswith("```json"):
+                cleaned_response = cleaned_response[7:]  # Remove "```json"
+            if cleaned_response.startswith("```"):
+                cleaned_response = cleaned_response[3:]  # Remove "```"
+            if cleaned_response.endswith("```"):
+                cleaned_response = cleaned_response[:-3]  # Remove trailing "```"
+            cleaned_response = cleaned_response.strip()
+            
+            # Direct JSON parsing for simplified response
+            import json
+            parsed_data = json.loads(cleaned_response)
+            self.add_log_entry("info", "Successfully parsed JSON directly")
+            
+            # Create simplified response using the parsed data
+            test_data = self.create_simplified_test_response(parsed_data)
+            self.add_log_entry("info", "Successfully created simplified response")
+            
+        except Exception as parse_error:
+            self.add_log_entry("warning", f"Direct JSON parsing failed: {parse_error}")
+            # Use fallback parsing as last resort
+            test_data = self.parse_json_response(response_text)
+        
+        # Validate response structure
+        self._validate_test_data(test_data)
+        self.add_log_entry("info", "Test data validation passed")
+        
+        return test_data
     
     def _record_test_decisions(self, test_data: Dict[str, Any]):
         """
@@ -262,6 +384,52 @@ class TestGenerator(BaseAgent):
                 }
             }
         )
+    
+    def _create_test_files(self, test_data: Dict[str, Any]):
+        """
+        Create and save test files to the project directory.
+        
+        Args:
+            test_data: Test generation data
+        """
+        test_files = test_data.get("test_files", {})
+        
+        if not test_files:
+            self.add_log_entry("warning", "No test files to create")
+            return
+        
+        # Create tests directory if it doesn't exist
+        import os
+        tests_dir = os.path.join("generated_projects", "test-task-management", "tests")
+        os.makedirs(tests_dir, exist_ok=True)
+        
+        # Create test files
+        created_files = []
+        for filename, test_file in test_files.items():
+            try:
+                # Extract content from test file
+                if hasattr(test_file, 'content'):
+                    content = test_file.content
+                elif isinstance(test_file, dict):
+                    content = test_file.get("content", "")
+                else:
+                    content = str(test_file)
+                
+                # Create the test file
+                file_path = os.path.join(tests_dir, filename)
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                
+                created_files.append(filename)
+                self.add_log_entry("info", f"Created test file: {filename}")
+                
+            except Exception as e:
+                self.add_log_entry("error", f"Failed to create test file {filename}: {e}")
+        
+        if created_files:
+            self.add_log_entry("info", f"Successfully created {len(created_files)} test files")
+        else:
+            self.add_log_entry("warning", "No test files were created successfully")
     
     def _validate_test_data(self, data) -> None:
         """Validate test generation data."""

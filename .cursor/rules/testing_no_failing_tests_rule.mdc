@@ -181,3 +181,7 @@ description:
 globs:
 alwaysApply: true
 ---
+
+globs:
+alwaysApply: true
+---
