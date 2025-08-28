@@ -8,16 +8,17 @@
 #### **Application Priority: CRITICAL - Always Applied**
 
 1. **No Failing Tests Rule** 🚨 **RULE #1**
-   - **When**: ALWAYS - before any other development work
-   - **How**: Zero tolerance for failing tests, fix all failures immediately
-   - **Validation**: 100% test success rate, no exceptions
-   - **Priority**: **ABSOLUTE - NO PROGRESS UNTIL ALL TESTS PASS**
+   - **When**: ALWAYS - before any other development work, during development, before commits
+   - **How**: Zero tolerance for failing tests, fix all failures immediately, block commits with failing tests
+   - **Validation**: 100% test success rate, no exceptions, CI/CD pipeline failures on test failures
+   - **Priority**: **ABSOLUTE - NO PROGRESS UNTIL ALL TESTS PASS - ZERO TOLERANCE**
 
 2. **Keep Things in Order Rule** 📋 **RULE #2**
    - **When**: ALWAYS - maintain order in everything
    - **How**: Keep tasklists, filenames, folder structure, commit messages, documentation organized
    - **Validation**: Clean, organized, professional project structure
    - **Priority**: **CRITICAL - MAINTAIN ORDER ALWAYS**
+   - **Related**: File Organization Cleanup Rule - automatically delete empty files and organize misplaced files
 
 3. **Maintain Focus and Big Picture Rule** 🎯 **RULE #3**
    - **When**: ALWAYS - during every development task
@@ -106,10 +107,11 @@
   - Documentation - Simple documentation generation
   - Basic Code Generation - Straightforward code implementation
 
-14. **File Organization Rule** 🔧
-    - **When**: All file and directory management
-    - **How**: Consistent naming, logical grouping, clear hierarchy
-    - **Validation**: Easy navigation, clear structure, scalable organization
+14. **File Organization & Cleanup Rule** 🔧
+    - **When**: All file and directory management, before every commit
+    - **How**: Consistent naming, logical grouping, clear hierarchy, automatic deletion of empty files, organize misplaced files
+    - **Validation**: Easy navigation, clear structure, scalable organization, zero empty files, all files in correct locations
+    - **Automation**: Pre-commit hooks, scheduled cleanup, CI/CD validation
 
 15. **Documentation Maintenance Rule** 🔧
     - **When**: All code changes and updates
@@ -129,6 +131,14 @@
 ### **TIER 3: TESTING & QUALITY ASSURANCE** 🧪
 **These rules ensure comprehensive testing and quality standards**
 
+#### **Application Priority: ABSOLUTE - ZERO TOLERANCE**
+
+21. **No Failing Tests Rule** 🧪 **ABSOLUTE PRIORITY**
+    - **When**: ALWAYS - before commits, during development, in CI/CD
+    - **How**: Block all progress on failing tests, immediate fixes required
+    - **Validation**: 100% pass rate, no exceptions, commit blocking
+    - **Priority**: **CRITICAL - STOP ALL WORK UNTIL FIXED**
+
 #### **Application Priority: HIGH - Applied to Relevant Contexts**
 
 18. **Test Organization Rule** 🧪
@@ -141,17 +151,10 @@
     - **How**: Isolated testing, systematic prompt-parser optimization
     - **Validation**: Optimal agent performance, reliable parsing
 
-#### **Application Priority: MEDIUM - Applied When Context is Relevant**
-
 20. **Test Monitoring Rule** 🧪
     - **When**: All test execution and monitoring
     - **How**: Automated monitoring, immediate error detection
     - **Validation**: Fast bug detection, improved test reliability
-
-21. **No Failing Tests Rule** 🧪
-    - **When**: All test execution and code changes
-    - **How**: Maintain zero failing tests, immediate fixes
-    - **Validation**: All tests passing, no regression issues
 
 ### **TIER 4: PROJECT MANAGEMENT** 📊
 **These rules ensure effective project management and organization**

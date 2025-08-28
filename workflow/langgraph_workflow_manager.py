@@ -315,7 +315,7 @@ Return ONLY the markdown with code blocks, no additional text.""",
                 })
                 
                 # Parse the markdown result to extract code files
-                source_files = parse_markdown_code_blocks(result)
+                source_files = self.parse_markdown_code_blocks(result)
                 
                 return {
                     **state,

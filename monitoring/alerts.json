@@ -1,0 +1,131 @@
+{
+  "timestamp": "2025-08-28T21:44:11.431118",
+  "alerts": [
+    {
+      "alert_id": "requirements_analyst_1756410251",
+      "level": "emergency",
+      "agent_name": "requirements_analyst",
+      "message": "Agent requirements_analyst is offline - last heartbeat: 2025-08-28 21:44:11.322157",
+      "timestamp": "2025-08-28T21:44:11.322157",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "requirements_analyst_1756410251",
+      "level": "critical",
+      "agent_name": "requirements_analyst",
+      "message": "Agent requirements_analyst recovery failed",
+      "timestamp": "2025-08-28T21:44:11.324160",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "architecture_designer_1756410251",
+      "level": "emergency",
+      "agent_name": "architecture_designer",
+      "message": "Agent architecture_designer is offline - last heartbeat: 2025-08-28 21:44:11.330033",
+      "timestamp": "2025-08-28T21:44:11.330033",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "architecture_designer_1756410251",
+      "level": "critical",
+      "agent_name": "architecture_designer",
+      "message": "Agent architecture_designer recovery failed",
+      "timestamp": "2025-08-28T21:44:11.330033",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "code_generator_1756410251",
+      "level": "emergency",
+      "agent_name": "code_generator",
+      "message": "Agent code_generator is offline - last heartbeat: 2025-08-28 21:44:11.344540",
+      "timestamp": "2025-08-28T21:44:11.344540",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "code_generator_1756410251",
+      "level": "critical",
+      "agent_name": "code_generator",
+      "message": "Agent code_generator recovery failed",
+      "timestamp": "2025-08-28T21:44:11.348033",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "test_generator_1756410251",
+      "level": "emergency",
+      "agent_name": "test_generator",
+      "message": "Agent test_generator is offline - last heartbeat: 2025-08-28 21:44:11.348033",
+      "timestamp": "2025-08-28T21:44:11.348033",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "test_generator_1756410251",
+      "level": "critical",
+      "agent_name": "test_generator",
+      "message": "Agent test_generator recovery failed",
+      "timestamp": "2025-08-28T21:44:11.367538",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "code_reviewer_1756410251",
+      "level": "emergency",
+      "agent_name": "code_reviewer",
+      "message": "Agent code_reviewer is offline - last heartbeat: 2025-08-28 21:44:11.381138",
+      "timestamp": "2025-08-28T21:44:11.386462",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "code_reviewer_1756410251",
+      "level": "critical",
+      "agent_name": "code_reviewer",
+      "message": "Agent code_reviewer recovery failed",
+      "timestamp": "2025-08-28T21:44:11.397747",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "security_analyst_1756410251",
+      "level": "emergency",
+      "agent_name": "security_analyst",
+      "message": "Agent security_analyst is offline - last heartbeat: 2025-08-28 21:44:11.403745",
+      "timestamp": "2025-08-28T21:44:11.403745",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "security_analyst_1756410251",
+      "level": "critical",
+      "agent_name": "security_analyst",
+      "message": "Agent security_analyst recovery failed",
+      "timestamp": "2025-08-28T21:44:11.414640",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "documentation_generator_1756410251",
+      "level": "emergency",
+      "agent_name": "documentation_generator",
+      "message": "Agent documentation_generator is offline - last heartbeat: 2025-08-28 21:44:11.420644",
+      "timestamp": "2025-08-28T21:44:11.420644",
+      "resolved": false,
+      "resolution_time": null
+    },
+    {
+      "alert_id": "documentation_generator_1756410251",
+      "level": "critical",
+      "agent_name": "documentation_generator",
+      "message": "Agent documentation_generator recovery failed",
+      "timestamp": "2025-08-28T21:44:11.430112",
+      "resolved": false,
+      "resolution_time": null
+    }
+  ]
+}

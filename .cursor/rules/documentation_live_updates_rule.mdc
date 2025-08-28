@@ -1,0 +1,583 @@
+# Live Documentation Updates Rule
+
+**CRITICAL**: All documentation must be updated immediately when any relevant changes occur. Documentation debt is not permitted.
+
+## Description
+This rule enforces real-time documentation updates whenever changes are made to code, architecture, processes, rules, configurations, or any other documented elements. Documentation must always reflect the current state of the system.
+
+## Core Requirements
+
+### 1. Immediate Update Obligation
+**MANDATORY**: Update documentation within the same work session as the change
+```yaml
+# REQUIRED: Document updates must be atomic with changes
+change_documentation_pattern:
+  - Make code/system change
+  - Update affected documentation immediately
+  - Verify documentation accuracy
+  - Commit both together
+```
+
+### 2. Documentation Triggers
+**MANDATORY**: Update documentation when ANY of these events occur:
+```yaml
+triggers:
+  code_changes:
+    - "New functions, classes, or modules added"
+    - "API endpoints created, modified, or removed"
+    - "Configuration parameters changed"
+    - "Database schema modifications"
+    - "Environment variable updates"
+    - "Dependency changes (requirements.txt, package.json)"
+  
+  architecture_changes:
+    - "System architecture modifications"
+    - "Component relationships updated"
+    - "Data flow changes"
+    - "Integration points modified"
+    - "Security model updates"
+  
+  process_changes:
+    - "Workflow modifications"
+    - "Testing procedures updated"
+    - "Deployment processes changed"
+    - "Development environment setup"
+    - "Git workflow changes"
+  
+  rule_changes:
+    - "New rules created"
+    - "Existing rules modified"
+    - "Rule priorities changed"
+    - "Rule applications updated"
+    - "Process guidelines modified"
+  
+  configuration_changes:
+    - "Environment configurations"
+    - "Build configurations"
+    - "CI/CD pipeline updates"
+    - "Docker/containerization changes"
+    - "Infrastructure modifications"
+```
+
+### 3. Documentation Types and Update Requirements
+**MANDATORY**: Keep ALL documentation types current
+
+#### Code Documentation
+```python
+# REQUIRED: Update immediately with code changes
+def new_function(param1: str, param2: int) -> dict:
+    """
+    MANDATORY: Complete docstring with current functionality.
+    
+    Args:
+        param1: Updated parameter description
+        param2: Current parameter usage
+        
+    Returns:
+        dict: Current return value structure
+        
+    Example:
+        >>> new_function("test", 42)
+        {"status": "success", "data": "current_format"}
+    """
+    pass
+
+# REQUIRED: Update class documentation
+class UpdatedClass:
+    """
+    MANDATORY: Current class description and responsibilities.
+    
+    Updated: 2024-01-15 - Added new functionality
+    """
+    pass
+```
+
+#### API Documentation
+```markdown
+# REQUIRED: Update API docs with endpoint changes
+## POST /api/v1/new-endpoint
+
+**Added**: 2024-01-15
+**Status**: Active
+
+### Request
+```json
+{
+  "current_field": "string",
+  "new_field": "integer"  // Added: 2024-01-15
+}
+```
+
+### Response
+```json
+{
+  "status": "success",
+  "data": {
+    "updated_structure": "current_format"
+  }
+}
+```
+```
+
+#### Architecture Documentation
+```markdown
+# REQUIRED: Update architecture docs with system changes
+## System Architecture - Updated 2024-01-15
+
+### Components (Updated)
+- **New Component**: Added microservice for user management
+- **Updated Component**: Authentication service now supports OAuth2
+- **Removed Component**: Legacy session handler deprecated
+
+### Data Flow (Current)
+```mermaid
+graph TD
+    A[Client] --> B[API Gateway]
+    B --> C[Auth Service - Updated]
+    B --> D[User Service - New]
+```
+
+### Changes Log
+- 2024-01-15: Added user management microservice
+- 2024-01-15: Updated authentication to OAuth2
+```
+
+### 4. Documentation Standards
+**MANDATORY**: Follow these update standards
+
+#### Version Information
+```markdown
+# REQUIRED: Include version/date information
+## Document Title
+**Last Updated**: 2024-01-15
+**Version**: 2.1.0
+**Updated By**: Sprint 2 Implementation
+
+### Change History
+- 2024-01-15: Added new authentication flow
+- 2024-01-10: Updated API endpoints
+- 2024-01-05: Initial documentation
+```
+
+#### Change Tracking
+```markdown
+# REQUIRED: Track what changed and why
+### Recent Changes
+
+#### 2024-01-15 - Authentication Update
+- **Added**: OAuth2 support
+- **Modified**: User login flow
+- **Removed**: Legacy token authentication
+- **Reason**: Security improvement and standards compliance
+```
+
+### 5. Documentation Validation
+**MANDATORY**: Validate documentation accuracy
+
+#### Accuracy Verification
+```bash
+# REQUIRED: Verify documentation matches implementation
+function validate_documentation() {
+    echo "Validating API documentation..."
+    
+    # Check if documented endpoints exist
+    for endpoint in $(grep -o "POST /api/[^[:space:]]*" docs/api.md); do
+        if ! grep -r "$endpoint" src/; then
+            echo "ERROR: Documented endpoint $endpoint not found in code"
+            exit 1
+        fi
+    done
+    
+    # Check if code functions are documented
+    for function in $(grep -o "def [a-zA-Z_][a-zA-Z0-9_]*" src/*.py); do
+        func_name=$(echo $function | cut -d' ' -f2)
+        if ! grep -r "$func_name" docs/; then
+            echo "WARNING: Function $func_name not documented"
+        fi
+    done
+    
+    echo "Documentation validation complete"
+}
+```
+
+#### Link Verification
+```bash
+# REQUIRED: Ensure all documentation links work
+function verify_documentation_links() {
+    echo "Checking documentation links..."
+    
+    # Find broken internal links
+    for file in docs/*.md; do
+        grep -o "\[.*\](.*\.md)" "$file" | while read link; do
+            target=$(echo "$link" | grep -o "(.*)" | tr -d "()")
+            if [ ! -f "docs/$target" ]; then
+                echo "ERROR: Broken link in $file: $target"
+            fi
+        done
+    done
+}
+```
+
+### 6. Automated Documentation Updates
+**MANDATORY**: Implement automation where possible
+
+#### Code Comment Extraction
+```python
+# REQUIRED: Auto-generate API docs from code
+def extract_api_documentation():
+    """Auto-extract API documentation from code comments."""
+    import ast
+    import inspect
+    
+    # Extract docstrings and type hints
+    # Generate markdown documentation
+    # Update API documentation files
+    pass
+```
+
+#### Schema Documentation
+```python
+# REQUIRED: Auto-generate schema docs
+def update_schema_documentation():
+    """Update database/API schema documentation."""
+    # Extract current schema
+    # Compare with documented schema
+    # Update documentation with changes
+    # Log what was updated
+    pass
+```
+
+### 7. Documentation Review Process
+**MANDATORY**: Review documentation changes
+
+#### Pre-Commit Validation
+```bash
+# REQUIRED: Git pre-commit hook for documentation
+#!/bin/bash
+# .git/hooks/pre-commit
+
+echo "Validating documentation updates..."
+
+# Check if code changes have corresponding doc updates
+if git diff --cached --name-only | grep -E '\.(py|js|ts)$'; then
+    if ! git diff --cached --name-only | grep -E '\.(md|rst)$'; then
+        echo "ERROR: Code changes detected without documentation updates"
+        echo "Please update relevant documentation before committing"
+        exit 1
+    fi
+fi
+
+# Validate documentation format
+python scripts/validate_documentation.py
+
+echo "Documentation validation passed"
+```
+
+#### Documentation Completeness Check
+```python
+# REQUIRED: Ensure documentation covers all features
+def check_documentation_completeness():
+    """Verify all code features are documented."""
+    
+    checks = {
+        "api_endpoints": verify_api_docs(),
+        "functions": verify_function_docs(),
+        "classes": verify_class_docs(),
+        "configurations": verify_config_docs(),
+        "deployment": verify_deployment_docs()
+    }
+    
+    incomplete = [k for k, v in checks.items() if not v]
+    
+    if incomplete:
+        raise DocumentationError(f"Incomplete documentation: {incomplete}")
+    
+    return True
+```
+
+### 8. Documentation Organization
+**MANDATORY**: Maintain organized documentation structure
+
+#### File Structure
+```
+docs/
+├── README.md                 # Always current project overview
+├── CHANGELOG.md             # Real-time change tracking
+├── api/
+│   ├── README.md           # API overview - updated with changes
+│   ├── endpoints.md        # Current endpoint documentation
+│   └── schemas.md          # Current data schemas
+├── architecture/
+│   ├── overview.md         # Current system architecture
+│   ├── components.md       # Updated component descriptions
+│   └── diagrams/           # Current architecture diagrams
+├── deployment/
+│   ├── setup.md           # Current setup instructions
+│   ├── configuration.md   # Updated configuration guide
+│   └── troubleshooting.md # Current troubleshooting guide
+└── development/
+    ├── getting-started.md  # Current development setup
+    ├── contributing.md     # Updated contribution guidelines
+    └── testing.md          # Current testing procedures
+```
+
+#### Cross-References
+```markdown
+# REQUIRED: Maintain accurate cross-references
+## Related Documentation
+- [API Endpoints](api/endpoints.md) - Updated 2024-01-15
+- [Architecture Overview](architecture/overview.md) - Updated 2024-01-15
+- [Deployment Guide](deployment/setup.md) - Updated 2024-01-10
+
+## See Also
+- [Configuration Reference](deployment/configuration.md#authentication)
+- [Testing Guide](development/testing.md#integration-tests)
+```
+
+### 9. Documentation Quality Standards
+**MANDATORY**: Maintain high documentation quality
+
+#### Clarity Requirements
+```markdown
+# REQUIRED: Documentation must be clear and actionable
+
+## Good Documentation Example
+### Setting Up Authentication
+
+1. **Install dependencies**:
+   ```bash
+   pip install python-oauth2 python-jwt
+   ```
+
+2. **Configure environment variables**:
+   ```bash
+   export OAUTH_CLIENT_ID="your_client_id"
+   export OAUTH_CLIENT_SECRET="your_client_secret"
+   ```
+
+3. **Initialize OAuth handler** (Updated 2024-01-15):
+   ```python
+   from auth import OAuthHandler
+   
+   handler = OAuthHandler(
+       client_id=os.getenv("OAUTH_CLIENT_ID"),
+       client_secret=os.getenv("OAUTH_CLIENT_SECRET"),
+       redirect_uri="http://localhost:8000/callback"  # New parameter
+   )
+   ```
+
+## Bad Documentation Example (FORBIDDEN)
+### Authentication Setup
+- Install stuff
+- Configure things
+- Run the code
+```
+
+#### Accuracy Requirements
+```markdown
+# REQUIRED: Documentation must match actual implementation
+
+## Code-Documentation Sync Check
+- [ ] Function signatures match documentation
+- [ ] API endpoints match implementation
+- [ ] Configuration examples work as written
+- [ ] Installation steps produce working environment
+- [ ] All examples execute successfully
+```
+
+### 10. Documentation Metrics and Monitoring
+**MANDATORY**: Track documentation health
+
+#### Coverage Metrics
+```python
+# REQUIRED: Track documentation coverage
+def calculate_documentation_coverage():
+    """Calculate percentage of code covered by documentation."""
+    
+    metrics = {
+        "functions_documented": count_documented_functions(),
+        "functions_total": count_total_functions(),
+        "classes_documented": count_documented_classes(),
+        "classes_total": count_total_classes(),
+        "api_endpoints_documented": count_documented_endpoints(),
+        "api_endpoints_total": count_total_endpoints()
+    }
+    
+    coverage = {
+        k: (metrics[k] / metrics[k.replace("_documented", "_total")]) * 100
+        for k in metrics if "_documented" in k
+    }
+    
+    return coverage
+```
+
+#### Freshness Tracking
+```python
+# REQUIRED: Track documentation freshness
+def check_documentation_freshness():
+    """Check if documentation is up to date with code changes."""
+    
+    for doc_file in find_documentation_files():
+        code_files = find_related_code_files(doc_file)
+        
+        doc_modified = get_file_modified_time(doc_file)
+        latest_code_modified = max(get_file_modified_time(f) for f in code_files)
+        
+        if latest_code_modified > doc_modified:
+            print(f"WARNING: {doc_file} is stale (code updated {latest_code_modified})")
+```
+
+### 11. Integration with Development Workflow
+**MANDATORY**: Integrate documentation into development process
+
+#### Pull Request Requirements
+```yaml
+# REQUIRED: PR checklist must include documentation
+pull_request_checklist:
+  - [ ] Code changes implemented
+  - [ ] Tests added/updated
+  - [ ] Documentation updated for all changes
+  - [ ] API documentation reflects endpoint changes
+  - [ ] README updated if setup process changed
+  - [ ] CHANGELOG updated with changes
+  - [ ] Documentation links verified
+```
+
+#### CI/CD Integration
+```yaml
+# REQUIRED: CI pipeline validates documentation
+documentation_checks:
+  - name: "Documentation Coverage"
+    run: python scripts/check_doc_coverage.py --min-coverage 90
+  
+  - name: "Documentation Links"
+    run: python scripts/verify_doc_links.py
+  
+  - name: "Documentation Freshness"
+    run: python scripts/check_doc_freshness.py
+  
+  - name: "API Documentation Sync"
+    run: python scripts/validate_api_docs.py
+```
+
+### 12. Emergency Documentation Procedures
+**MANDATORY**: Handle urgent documentation needs
+
+#### Hotfix Documentation
+```bash
+# REQUIRED: Hotfix must include documentation updates
+function deploy_hotfix() {
+    local fix_description="$1"
+    
+    echo "Applying hotfix: $fix_description"
+    
+    # Apply code fix
+    git apply hotfix.patch
+    
+    # MANDATORY: Update documentation
+    update_changelog "$fix_description"
+    update_troubleshooting_docs "$fix_description"
+    
+    # Commit both together
+    git add .
+    git commit -m "Hotfix: $fix_description (includes doc updates)"
+    
+    # Deploy
+    ./deploy.sh
+    
+    echo "Hotfix deployed with documentation updates"
+}
+```
+
+#### Documentation Debt Recovery
+```python
+# REQUIRED: Process for eliminating documentation debt
+def recover_documentation_debt():
+    """Systematic approach to updating outdated documentation."""
+    
+    steps = [
+        "Audit all existing documentation",
+        "Identify outdated/missing sections", 
+        "Prioritize updates by impact",
+        "Create update timeline",
+        "Assign documentation owners",
+        "Implement updates systematically",
+        "Establish prevention measures"
+    ]
+    
+    for step in steps:
+        print(f"Step: {step}")
+        # Implement each step
+```
+
+## Enforcement
+
+### 1. Automated Enforcement
+```bash
+# REQUIRED: Git hooks prevent commits without doc updates
+#!/bin/bash
+# pre-commit hook
+
+if [ "$(git diff --cached --name-only | grep -E '\.(py|js|ts|yaml|json)$')" ]; then
+    if [ -z "$(git diff --cached --name-only | grep -E '\.(md|rst)$')" ]; then
+        echo "ERROR: Code changes require documentation updates"
+        exit 1
+    fi
+fi
+```
+
+### 2. Code Review Requirements
+- [ ] All code changes have corresponding documentation updates
+- [ ] Documentation accurately reflects implementation
+- [ ] Examples work as written
+- [ ] Links are valid and current
+- [ ] Change history is updated
+
+### 3. Quality Gates
+- [ ] Documentation coverage ≥ 90%
+- [ ] No documentation older than 30 days from related code
+- [ ] All examples execute successfully
+- [ ] No broken internal links
+- [ ] Changelog updated with all changes
+
+## Benefits
+
+- **Improved Onboarding**: New team members have current documentation
+- **Reduced Support Burden**: Accurate docs reduce questions
+- **Better Maintenance**: Clear documentation aids debugging
+- **Compliance**: Audit requirements met with current documentation
+- **Knowledge Preservation**: Institutional knowledge captured and maintained
+
+## Monitoring
+
+### Success Metrics:
+- Documentation coverage percentage
+- Average documentation age relative to code
+- Number of documentation-related support tickets
+- Time to resolve documentation issues
+- Developer satisfaction with documentation quality
+
+### Failure Indicators:
+- Documentation coverage below 90%
+- Documentation older than 30 days from related code changes
+- Broken or outdated examples
+- Increasing support tickets about undocumented features
+- Developer complaints about stale documentation
+
+## Remember
+
+**"Code without current documentation is technical debt."**
+
+**"Every change is a documentation opportunity."**
+
+**"Outdated documentation is worse than no documentation."**
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Code changes and new features
+- API modifications and additions
+- Architecture and design updates
+- Process and workflow changes
+- Configuration and environment updates
+- Rule and policy modifications
+
+**Violations of this rule require immediate documentation updates before work can be considered complete.**

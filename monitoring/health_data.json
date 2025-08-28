@@ -1,0 +1,97 @@
+{
+  "timestamp": "2025-08-28T21:44:53.193098",
+  "summary": {
+    "overall_status": "healthy",
+    "healthy_agents": 7,
+    "total_agents": 7,
+    "active_alerts": 0,
+    "system_uptime_hours": 0.0008410691666666666,
+    "last_update": "2025-08-28T21:44:53.193098"
+  },
+  "agents": {
+    "requirements_analyst": {
+      "agent_name": "requirements_analyst",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.146841",
+      "response_time_ms": 2964.7462368011475,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.00082822,
+      "last_error": null
+    },
+    "architecture_designer": {
+      "agent_name": "architecture_designer",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.156837",
+      "response_time_ms": 9.996652603149414,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.0008309966666666667,
+      "last_error": null
+    },
+    "code_generator": {
+      "agent_name": "code_generator",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.164834",
+      "response_time_ms": 7.996082305908203,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.0008332180555555556,
+      "last_error": null
+    },
+    "test_generator": {
+      "agent_name": "test_generator",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.174834",
+      "response_time_ms": 10.000228881835938,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.0008359958333333333,
+      "last_error": null
+    },
+    "code_reviewer": {
+      "agent_name": "code_reviewer",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.177249",
+      "response_time_ms": 2.4156570434570312,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.0008366666666666667,
+      "last_error": null
+    },
+    "security_analyst": {
+      "agent_name": "security_analyst",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.190301",
+      "response_time_ms": 13.051509857177734,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.0008402922222222223,
+      "last_error": null
+    },
+    "documentation_generator": {
+      "agent_name": "documentation_generator",
+      "status": "healthy",
+      "last_heartbeat": "2025-08-28T21:44:53.193098",
+      "response_time_ms": 2.7968883514404297,
+      "error_count": 0,
+      "success_rate": 100.0,
+      "memory_usage_mb": 0.0,
+      "cpu_usage_percent": 0.0,
+      "uptime_hours": 0.0008410691666666666,
+      "last_error": null
+    }
+  }
+}

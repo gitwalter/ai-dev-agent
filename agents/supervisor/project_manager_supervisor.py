@@ -8,7 +8,7 @@ from datetime import datetime
 
 from .base_supervisor import BaseSupervisor, SupervisorConfig
 from models.supervisor_state import SupervisorSwarmState
-from utils.structured_outputs import Task, TaskResult, Escalation
+from models.supervisor_state import Task, TaskResult, Escalation
 
 
 class ProjectManagerSupervisor(BaseSupervisor):

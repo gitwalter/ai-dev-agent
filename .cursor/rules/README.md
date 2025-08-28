@@ -22,15 +22,21 @@ tags: ["relevant tags for categorization"]
 ## Rule Inventory
 
 ### Core Development Principles (Tier 1 - Critical)
-- **OPTIMIZED_DEVELOPMENT_RULES.mdc** - Core development principles including TDD, systematic problem-solving, framework-first development, error exposure, continuous validation, Agile/XP integration, and code quality
+- **meta_rule_enforcement_rule.mdc** - MANDATORY systematic rule review and application before ALL actions
+- **development_core_principles_rule.mdc** - Core development principles including TDD, systematic problem-solving, framework-first development, error exposure, continuous validation, Agile/XP integration, and code quality
+- **boyscout_leave_cleaner_rule.mdc** - CRITICAL Boy Scout Rule: Always leave the codebase cleaner than you found it with proactive improvements
 - **agile_sprint_management_rule.mdc** - Comprehensive Agile sprint management with 2-week iterations and daily standups
 - **xp_test_first_development_rule.mdc** - Extreme Programming test-first methodology with continuous refactoring
 - **agile_user_story_management_rule.mdc** - Agile user story management with INVEST criteria and TDD integration
 
 ### Quality Assurance and Testing (Tier 1 - Critical)
+- **no_failing_tests_rule.mdc** - CRITICAL zero tolerance for failing tests - all tests must pass at all times
 - **testing_test_monitoring_rule.mdc** - Automated test monitoring with immediate error detection and bug fixing workflow
 - **code_review_quality_gates_rule.mdc** - Systematic code review process with quality gates and automated validation
 - **performance_monitoring_optimization_rule.mdc** - Proactive performance monitoring and optimization with continuous measurement
+- **quality_validation_rule.mdc** - Mandatory evidence-based validation before declaring success or completion
+- **documentation_live_updates_rule.mdc** - Mandatory real-time documentation updates with all changes
+- **development_courage_completion_rule.mdc** - MANDATORY courage to complete ALL work systematically - never stop at partial results
 
 ### Security and Configuration (Tier 1 - Critical)
 - **security_vulnerability_assessment_rule.mdc** - Comprehensive security vulnerability assessment and prevention with proactive security practices
@@ -45,6 +51,7 @@ tags: ["relevant tags for categorization"]
 - **framework_langchain_langgraph_standards_rule.mdc** - LangChain and LangGraph implementation standards
 - **automation_full_automation_rule.mdc** - Comprehensive automation environment rule for fully automated development
 - **naming_conventions_strict_rule.mdc** - Comprehensive naming standards enforcement for all project elements
+- **file_organization_cleanup_rule.mdc** - Mandatory file organization and empty file cleanup with automated maintenance
 
 ### Debugging and Analysis (Tier 2 - High)
 - **debugging_agent_flow_analysis_rule.mdc** - Agent workflow debugging using logs/agent.log as primary source for comprehensive flow analysis
@@ -53,22 +60,27 @@ tags: ["relevant tags for categorization"]
 
 ### Critical Priority (Always Applied)
 - **OPTIMIZED_DEVELOPMENT_RULES.mdc** - Core development principles and methodologies
+- **no_failing_tests_rule.mdc** - No failing tests rule - zero tolerance policy
+- **boyscout_leave_cleaner_rule.mdc** - Boy Scout Rule: Always leave codebase cleaner
 - **agile_sprint_management_rule.mdc** - Agile sprint management and continuous delivery
 - **xp_test_first_development_rule.mdc** - XP test-first methodology and continuous refactoring
 - **agile_user_story_management_rule.mdc** - Agile user story management and TDD integration
 - **testing_test_monitoring_rule.mdc** - Automated test monitoring and bug fixing
 - **code_review_quality_gates_rule.mdc** - Code review and quality gates
 - **performance_monitoring_optimization_rule.mdc** - Performance monitoring and optimization
+- **no-premature-victory.mdc** - Evidence-based validation before declaring success
+- **documentation_live_updates_rule.mdc** - Real-time documentation maintenance
 - **security_vulnerability_assessment_rule.mdc** - Security vulnerability assessment
 - **security_streamlit_secrets_rule.mdc** - Security best practices
 - **error_handling_no_silent_errors_rule.mdc** - Error handling standards
 - **ai_model_selection_rule.mdc** - AI configuration consistency
-- **prompt_prompt_database_management_rule.mdc** - Centralized prompt management
+- **prompt_database_management_rule.mdc** - Centralized prompt management
 
 ### High Priority (Applied to Relevant Files)
 - **framework_langchain_langgraph_standards_rule.mdc** - Framework usage standards
 - **automation_full_automation_rule.mdc** - Automation environment
 - **naming_conventions_strict_rule.mdc** - Naming standards
+- **file_organization_cleanup_rule.mdc** - File organization and cleanup
 - **debugging_agent_flow_analysis_rule.mdc** - Debugging assistance
 
 ## Rule Optimization Summary
@@ -144,27 +156,32 @@ All rules should be validated for:
 - **Quarterly**: Comprehensive rule review and optimization
 - **As Needed**: Immediate updates for critical issues or new requirements
 
-## Current Rule Count: 16 Rules
+## Current Rule Count: 21 Rules
 
-### Critical Rules (12):
+### Critical Rules (16):
 1. OPTIMIZED_DEVELOPMENT_RULES.mdc
-2. agile_sprint_management_rule.mdc
-3. xp_test_first_development_rule.mdc
-4. agile_user_story_management_rule.mdc
-5. testing_test_monitoring_rule.mdc
-6. code_review_quality_gates_rule.mdc
-7. performance_monitoring_optimization_rule.mdc
-8. security_vulnerability_assessment_rule.mdc
-9. security_streamlit_secrets_rule.mdc
-10. error_handling_no_silent_errors_rule.mdc
-11. ai_model_selection_rule.mdc
-12. prompt_prompt_database_management_rule.mdc
+2. no_failing_tests_rule.mdc
+3. boyscout_leave_cleaner_rule.mdc
+4. agile_sprint_management_rule.mdc
+5. xp_test_first_development_rule.mdc
+6. agile_user_story_management_rule.mdc
+7. testing_test_monitoring_rule.mdc
+8. code_review_quality_gates_rule.mdc
+9. performance_monitoring_optimization_rule.mdc
+10. no-premature-victory.mdc
+11. documentation_live_updates_rule.mdc
+12. security_vulnerability_assessment_rule.mdc
+13. security_streamlit_secrets_rule.mdc
+14. error_handling_no_silent_errors_rule.mdc
+15. ai_model_selection_rule.mdc
+16. prompt_prompt_database_management_rule.mdc
 
-### High Priority Rules (4):
-13. framework_langchain_langgraph_standards_rule.mdc
-14. automation_full_automation_rule.mdc
-15. naming_conventions_strict_rule.mdc
-16. debugging_agent_flow_analysis_rule.mdc
+### High Priority Rules (5):
+17. framework_langchain_langgraph_standards_rule.mdc
+18. automation_full_automation_rule.mdc
+19. naming_conventions_strict_rule.mdc
+20. file_organization_cleanup_rule.mdc
+21. debugging_agent_flow_analysis_rule.mdc
 
 ## Rule Effectiveness Metrics
 

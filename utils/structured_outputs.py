@@ -206,6 +206,28 @@ class CodeGenerationOutput(BaseModel):
     recommendations: List[Recommendation] = Field(default_factory=list, description="Code improvement recommendations")
 
 
+class TestFile(BaseModel):
+    """Represents a generated test file - LangChain compatible."""
+    model_config = ConfigDict(
+        extra="forbid",
+        validate_assignment=True,
+        json_schema_extra={
+            "description": "Generated test file with metadata",
+            "examples": [{
+                "filename": "test_main.py",
+                "content": "# Generated test code\nimport pytest\n\ndef test_example():\n    assert True",
+                "test_type": "unit",
+                "coverage": "85%"
+            }]
+        }
+    )
+    
+    filename: str = Field(description="Test file name", min_length=1)
+    content: str = Field(description="Test file content", min_length=1)
+    test_type: str = Field(description="Type of test (unit, integration, etc.)", min_length=1)
+    coverage: str = Field(description="Coverage information for this test file", min_length=1)
+
+
 class TestGenerationOutput(BaseModel):
     """Output from test generation agent - LangChain compatible."""
     model_config = ConfigDict(
