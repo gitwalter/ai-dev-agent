@@ -48,16 +48,21 @@
 ## 🧪 **Testing Documentation**
 
 ### **Testing Strategy**
-- [Testing Overview](guides/testing/testing_strategy.md) - Overall testing approach
-- [Test Organization](tests/TEST_ORGANIZATION_RULES.md) - Test structure and organization
-- [Test Suite Summary](tests/TEST_SUITE_SUMMARY.md) - Comprehensive test coverage overview
+- [Testing Overview](testing/README.md) - Comprehensive testing documentation hub
+- [Test Organization Rules](testing/TEST_ORGANIZATION_RULES.md) - Test structure and organization guidelines
+- [Test Suite Summary](testing/TEST_SUITE_SUMMARY.md) - Comprehensive test coverage overview
+- [Test Development Plan](testing/TEST_DEVELOPMENT_PLAN.md) - LangGraph-specific testing approaches
 
 ### **Test Categories**
-- [Unit Tests](tests/unit/) - Individual component testing
-- [Integration Tests](tests/integration/) - Component integration testing
-- [System Tests](tests/system/) - End-to-end system testing
-- [Performance Tests](tests/performance/) - Performance and load testing
-- [Security Tests](tests/security/) - Security testing and validation
+- [Unit Testing](testing/unit_testing.md) - Individual component testing strategies
+- [Integration Testing](testing/integration_testing.md) - Component integration testing approaches
+- [System Testing](testing/system_testing.md) - End-to-end system testing methodologies
+- [Performance Testing](testing/performance_testing.md) - Performance and load testing guidelines
+- [Security Testing](testing/security_testing.md) - Security testing and validation procedures
+
+### **Testing Infrastructure**
+- [Test Fixtures](testing/test_fixtures.md) - Shared test data and setup utilities
+- [Mocking Guide](testing/mocking_guide.md) - Mock objects and test isolation strategies
 
 ## 📊 **Analysis Documentation**
 
@@ -75,7 +80,7 @@
 ### **Development Workflow**
 1. **Setup**: Follow [Development Setup](guides/development/development_setup.md)
 2. **Implementation**: Use [Development Workflow](guides/development/development_workflow.md)
-3. **Testing**: Apply [Testing Strategy](guides/testing/testing_strategy.md)
+3. **Testing**: Apply [Testing Strategy](testing/README.md)
 
 ### **Architecture Decisions**
 - **Dual-Mode System**: See [Dual-Mode Workflow Concept](concepts/dual_mode_workflow_concept.md)
