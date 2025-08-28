@@ -133,18 +133,71 @@ python utils/github_database_automation.py restore --force
 python setup_git_hooks.py --force
 ```
 
+## Expected Behavior: Database Commit Cycle
+
+### 🔄 **Normal Operation Cycle**
+
+After every `git push`, you will see pending changes for database files. **This is expected and correct behavior:**
+
+```bash
+# After git push, you'll see:
+Changes not staged for commit:
+        modified:   .gitignore
+        modified:   prompts/prompt_templates.db
+        modified:   prompts/prompt_templates_development.db
+```
+
+### **Why This Happens:**
+
+1. **Pre-Push Hook Triggers** → Automatically cleans database for GitHub
+2. **Database Files Updated**:
+   - `prompt_templates.db` → Clean version for public repository
+   - `prompt_templates_development.db` → Backup of full development data
+   - `.gitignore` → Updated with latest exclusion rules
+
+3. **Security Protection** → Prevents sensitive data from reaching GitHub
+
+### **📊 What Each File Contains:**
+
+| File | Purpose | Content |
+|------|---------|---------|
+| `prompt_templates.db` | **GitHub Version** | Clean templates only (no user data) |
+| `prompt_templates_development.db` | **Development Backup** | Full data (chat history, executions, user data) |
+| `prompt_templates_backup.db` | **Safety Backup** | Previous state backup |
+
+### **🎯 Action Required: NONE**
+
+The pending changes are **intentional security features**:
+
+- ✅ **Protects sensitive data** from being exposed on GitHub
+- ✅ **Maintains clean state** for public repository distribution
+- ✅ **Preserves development data** locally for continued work
+- ✅ **Automates security compliance** with every push
+
+### **💡 Development Workflow:**
+
+1. **Work normally** → Full database with all your data
+2. **Git push** → System automatically secures database
+3. **See pending changes** → This is the security system working correctly
+4. **Continue development** → Use development database locally
+5. **Optional**: Commit database updates if desired (safe, no sensitive data)
+
+**The "open db files for git" is the automation protecting your data - not an error!** 🔒
+
 ## Benefits
 
 - **Seamless Collaboration**: Team members can run the app immediately after pull
 - **Data Preservation**: User data and chat history preserved during development
-- **Automated Process**: No manual intervention required
+- **Security Compliance**: Automated prevention of sensitive data exposure
 - **Git Integration**: Works with existing Git workflow
 - **Automated Process**: No manual intervention required
+- **Development Continuity**: Local work continues with full data access
 
 ## Support
 
 For issues with:
 - **Database automation**: Check the troubleshooting section
 - **Git hooks**: Run the setup script again
+- **"Pending database changes"**: This is normal security operation
 
 The system is designed to be self-maintaining and requires minimal manual intervention.
