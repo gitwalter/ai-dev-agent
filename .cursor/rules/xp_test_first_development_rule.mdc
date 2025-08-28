@@ -1,0 +1,433 @@
+# XP Test-First Development Rule
+
+**CRITICAL**: Always follow Extreme Programming test-first methodology with continuous refactoring and pair programming principles. This rule enhances the existing TDD philosophy with XP practices for maximum quality and efficiency.
+
+## Core XP Requirements
+
+### 1. Test-First Development Cycle Enhancement
+**MANDATORY**: Follow enhanced Red-Green-Refactor cycle with systematic problem-solving integration.
+
+```python
+# XP Test-First Development Template - Enhanced TDD Integration
+class XPDevelopmentCycle:
+    def __init__(self):
+        self.current_cycle = "red"
+        self.test_cases = []
+        self.implementation = None
+        self.refactoring_needed = False
+        self.pair_programming_session = None
+        self.continuous_integration_status = "pending"
+        self.validation_checks = []  # Continuous Validation Rule integration
+    
+    def red_phase(self, test_description: str, acceptance_criteria: List[str] = None):
+        """Write failing test first with systematic validation"""
+        # Validate test description (Continuous Validation Rule)
+        if not self._validate_test_description(test_description):
+            raise ValueError("Test description must be clear and specific")
+        
+        # Create comprehensive test case
+        test_case = self._create_test_case(test_description, acceptance_criteria)
+        self.test_cases.append(test_case)
+        
+        # Verify test fails (Red phase validation)
+        test_result = self.run_tests()
+        if test_result["passed"]:
+            raise ValueError("Test should fail in red phase - implementation not yet written")
+        
+        # Add validation check
+        self.validation_checks.append({
+            "phase": "red",
+            "test_description": test_description,
+            "test_failed": True,
+            "timestamp": datetime.now(),
+            "validation_passed": True
+        })
+        
+        logger.info(f"Red phase completed: Test '{test_description}' written and failing")
+    
+    def green_phase(self, implementation_strategy: str = "minimal"):
+        """Write minimal code to pass test with quality validation"""
+        # Validate implementation strategy
+        if implementation_strategy not in ["minimal", "simple", "clean"]:
+            raise ValueError("Implementation strategy must be minimal, simple, or clean")
+        
+        # Write implementation
+        self.implementation = self._write_implementation(implementation_strategy)
+        
+        # Run tests and validate
+        test_result = self.run_tests()
+        if not test_result["passed"]:
+            raise ValueError(f"All tests must pass in green phase. Failed tests: {test_result['failed_tests']}")
+        
+        # Validate code quality (Continuous Validation Rule)
+        quality_metrics = self._validate_code_quality(self.implementation)
+        if quality_metrics["score"] < 80:
+            logger.warning(f"Code quality below threshold: {quality_metrics['score']}/100")
+        
+        # Add validation check
+        self.validation_checks.append({
+            "phase": "green",
+            "implementation_strategy": implementation_strategy,
+            "tests_passed": True,
+            "quality_score": quality_metrics["score"],
+            "timestamp": datetime.now(),
+            "validation_passed": test_result["passed"]
+        })
+        
+        logger.info(f"Green phase completed: Implementation passes all tests")
+    
+    def refactor_phase(self, refactoring_goals: List[str] = None):
+        """Refactor code while keeping tests green with systematic improvement"""
+        if not refactoring_goals:
+            refactoring_goals = ["improve_readability", "reduce_complexity", "enhance_maintainability"]
+        
+        # Identify refactoring opportunities
+        opportunities = self._identify_refactoring_opportunities(self.implementation)
+        
+        if not opportunities:
+            logger.info("No refactoring opportunities identified")
+            return
+        
+        # Perform refactoring with safety checks
+        for opportunity in opportunities:
+            if opportunity["type"] in refactoring_goals:
+                # Run tests before refactoring
+                pre_refactor_tests = self.run_tests()
+                if not pre_refactor_tests["passed"]:
+                    raise ValueError("Tests must pass before refactoring")
+                
+                # Perform refactoring
+                refactored_code = self._perform_refactoring(self.implementation, opportunity)
+                
+                # Verify tests still pass
+                post_refactor_tests = self.run_tests()
+                if not post_refactor_tests["passed"]:
+                    raise ValueError(f"Tests failed after refactoring: {post_refactor_tests['failed_tests']}")
+                
+                # Update implementation
+                self.implementation = refactored_code
+                
+                # Add validation check
+                self.validation_checks.append({
+                    "phase": "refactor",
+                    "refactoring_type": opportunity["type"],
+                    "tests_remained_green": True,
+                    "quality_improvement": opportunity["improvement"],
+                    "timestamp": datetime.now(),
+                    "validation_passed": True
+                })
+                
+                logger.info(f"Refactoring completed: {opportunity['type']} - tests remain green")
+    
+    def run_tests(self) -> Dict[str, Any]:
+        """Run all tests with comprehensive reporting"""
+        test_results = {
+            "passed": False,
+            "total_tests": len(self.test_cases),
+            "passed_tests": 0,
+            "failed_tests": [],
+            "coverage_percentage": 0,
+            "execution_time": 0
+        }
+        
+        start_time = time.time()
+        
+        for test_case in self.test_cases:
+            try:
+                test_result = self._execute_test(test_case)
+                if test_result["passed"]:
+                    test_results["passed_tests"] += 1
+                else:
+                    test_results["failed_tests"].append({
+                        "test": test_case["description"],
+                        "error": test_result["error"]
+                    })
+            except Exception as e:
+                test_results["failed_tests"].append({
+                    "test": test_case["description"],
+                    "error": str(e)
+                })
+        
+        test_results["execution_time"] = time.time() - start_time
+        test_results["passed"] = test_results["passed_tests"] == test_results["total_tests"]
+        test_results["coverage_percentage"] = self._calculate_test_coverage()
+        
+        return test_results
+```
+
+### 2. User Story Acceptance Testing Enhancement
+**MANDATORY**: Write acceptance tests before implementation with BDD integration.
+
+```python
+# User Story Acceptance Testing - Enhanced with BDD
+class UserStoryAcceptance:
+    def __init__(self, story_title: str, story_description: str, user_type: str):
+        self.story_title = story_title
+        self.story_description = story_description
+        self.user_type = user_type
+        self.acceptance_criteria = []
+        self.acceptance_tests = []
+        self.behavior_scenarios = []
+        self.test_coverage_target = 90  # Aligns with TDD rule
+    
+    def add_acceptance_criterion(self, criterion: str, business_value: str = None):
+        """Add acceptance criterion with business value tracking"""
+        criterion_obj = {
+            "criterion": criterion,
+            "business_value": business_value,
+            "test_generated": False,
+            "test_passed": False
+        }
+        self.acceptance_criteria.append(criterion_obj)
+        
+        # Generate corresponding acceptance test
+        test = self._generate_acceptance_test(criterion, business_value)
+        self.acceptance_tests.append(test)
+        criterion_obj["test_generated"] = True
+    
+    def generate_behavior_scenarios(self) -> List[str]:
+        """Generate BDD-style behavior scenarios"""
+        scenarios = []
+        
+        for criterion in self.acceptance_criteria:
+            scenario = f"""
+            Feature: {self.story_title}
+            As a {self.user_type}
+            I want {self.story_description}
+            So that {criterion['business_value'] or 'I can achieve my goal'}
+            
+            Scenario: {criterion['criterion']}
+            Given {self._extract_given_from_criterion(criterion['criterion'])}
+            When {self._extract_when_from_criterion(criterion['criterion'])}
+            Then {self._extract_then_from_criterion(criterion['criterion'])}
+            """
+            scenarios.append(scenario)
+        
+        self.behavior_scenarios = scenarios
+        return scenarios
+    
+    def validate_acceptance_criteria(self, implementation_result: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate all acceptance criteria are met"""
+        validation_results = {
+            "all_criteria_met": True,
+            "passed_criteria": [],
+            "failed_criteria": [],
+            "coverage_percentage": 0,
+            "business_value_delivered": 0
+        }
+        
+        for criterion in self.acceptance_criteria:
+            if criterion["test_passed"]:
+                validation_results["passed_criteria"].append(criterion["criterion"])
+            else:
+                validation_results["failed_criteria"].append(criterion["criterion"])
+                validation_results["all_criteria_met"] = False
+        
+        validation_results["coverage_percentage"] = len(validation_results["passed_criteria"]) / len(self.acceptance_criteria) * 100
+        
+        # Calculate business value delivered
+        delivered_value = sum(
+            criterion.get("business_value_score", 0) 
+            for criterion in self.acceptance_criteria 
+            if criterion["test_passed"]
+        )
+        validation_results["business_value_delivered"] = delivered_value
+        
+        return validation_results
+```
+
+### 3. Continuous Refactoring Enhancement
+**MANDATORY**: Refactor code continuously to maintain quality with systematic improvement.
+
+```python
+# Continuous Refactoring Template - Enhanced with Quality Metrics
+class ContinuousRefactoring:
+    def __init__(self):
+        self.refactoring_opportunities = []
+        self.code_quality_metrics = {}
+        self.refactoring_history = []
+        self.quality_thresholds = {
+            "complexity": 10,  # Cyclomatic complexity
+            "maintainability": 80,  # Maintainability index
+            "readability": 85,  # Readability score
+            "test_coverage": 90  # Test coverage percentage
+        }
+    
+    def identify_refactoring_opportunities(self, code: str) -> List[Dict[str, Any]]:
+        """Identify code smells and refactoring opportunities with systematic analysis"""
+        opportunities = []
+        
+        # Analyze code complexity
+        complexity_analysis = self._analyze_complexity(code)
+        if complexity_analysis["cyclomatic_complexity"] > self.quality_thresholds["complexity"]:
+            opportunities.append({
+                "type": "reduce_complexity",
+                "method": complexity_analysis["complex_methods"],
+                "priority": "high",
+                "improvement": "Reduce cyclomatic complexity",
+                "estimated_effort": "medium"
+            })
+        
+        # Analyze code duplication
+        duplication_analysis = self._analyze_duplication(code)
+        if duplication_analysis["duplication_percentage"] > 5:
+            opportunities.append({
+                "type": "eliminate_duplication",
+                "duplicated_code": duplication_analysis["duplicated_sections"],
+                "priority": "medium",
+                "improvement": "Extract common functionality",
+                "estimated_effort": "low"
+            })
+        
+        # Analyze method length
+        method_analysis = self._analyze_method_length(code)
+        long_methods = [m for m in method_analysis["methods"] if m["lines"] > 20]
+        if long_methods:
+            opportunities.append({
+                "type": "extract_method",
+                "long_methods": long_methods,
+                "priority": "medium",
+                "improvement": "Extract smaller, focused methods",
+                "estimated_effort": "low"
+            })
+        
+        # Analyze class responsibility
+        class_analysis = self._analyze_class_responsibility(code)
+        if class_analysis["responsibility_score"] < self.quality_thresholds["maintainability"]:
+            opportunities.append({
+                "type": "extract_class",
+                "classes": class_analysis["large_classes"],
+                "priority": "high",
+                "improvement": "Extract focused classes",
+                "estimated_effort": "high"
+            })
+        
+        self.refactoring_opportunities = opportunities
+        return opportunities
+    
+    def refactor_with_safety(self, code: str, refactoring_type: str, 
+                            refactoring_details: Dict[str, Any]) -> str:
+        """Perform refactoring while maintaining test coverage and quality"""
+        # Pre-refactoring validation
+        pre_refactor_metrics = self._calculate_quality_metrics(code)
+        pre_refactor_tests = self._run_test_suite()
+        
+        if not pre_refactor_tests["all_passed"]:
+            raise ValueError("All tests must pass before refactoring")
+        
+        # Perform refactoring
+        refactored_code = self._perform_refactoring(code, refactoring_type, refactoring_details)
+        
+        # Post-refactoring validation
+        post_refactor_metrics = self._calculate_quality_metrics(refactored_code)
+        post_refactor_tests = self._run_test_suite()
+        
+        # Validate refactoring success
+        if not post_refactor_tests["all_passed"]:
+            raise ValueError("Tests must remain green after refactoring")
+        
+        # Check quality improvement
+        quality_improvement = self._calculate_quality_improvement(
+            pre_refactor_metrics, post_refactor_metrics
+        )
+        
+        # Record refactoring history
+        self.refactoring_history.append({
+            "type": refactoring_type,
+            "timestamp": datetime.now(),
+            "quality_improvement": quality_improvement,
+            "tests_remained_green": True,
+            "details": refactoring_details
+        })
+        
+        return refactored_code
+    
+    def _calculate_quality_metrics(self, code: str) -> Dict[str, Any]:
+        """Calculate comprehensive code quality metrics"""
+        return {
+            "complexity": self._calculate_complexity(code),
+            "maintainability": self._calculate_maintainability(code),
+            "readability": self._calculate_readability(code),
+            "test_coverage": self._calculate_test_coverage(code),
+            "duplication": self._calculate_duplication(code),
+            "documentation": self._calculate_documentation_coverage(code)
+        }
+```
+
+## Implementation Guidelines
+
+### 1. Test-First Development Process
+- **Red Phase**: Write failing test that describes desired behavior with clear acceptance criteria
+- **Green Phase**: Write minimal code to make test pass while maintaining quality standards
+- **Refactor Phase**: Improve code quality while keeping tests green with systematic improvement
+- **Repeat**: Continue cycle for each new feature or behavior with continuous validation
+
+### 2. Acceptance Test-Driven Development
+- **User Story Creation**: Write user story with clear acceptance criteria and business value
+- **Acceptance Test Generation**: Create BDD-style acceptance tests with Given-When-Then format
+- **Implementation**: Write code to pass acceptance tests with quality validation
+- **Validation**: Verify all acceptance criteria are met with business value tracking
+
+### 3. Continuous Refactoring Process
+- **Code Smell Detection**: Identify refactoring opportunities using systematic analysis
+- **Safe Refactoring**: Use automated refactoring tools when possible with safety checks
+- **Test Coverage**: Maintain 90%+ test coverage during refactoring
+- **Quality Metrics**: Track improvement over time with comprehensive metrics
+
+### 4. Pair Programming Integration
+- **Role Definition**: Clear driver and navigator responsibilities with regular switching
+- **Communication**: Continuous verbal communication and collaboration
+- **Code Review**: Real-time code review during pair programming sessions
+- **Knowledge Sharing**: Share knowledge and best practices during pairing
+
+## Integration with Existing Rules
+
+### TDD Integration
+- **Enhanced Test-First**: Builds upon existing TDD rule with XP practices
+- **Test Coverage**: Maintains 90%+ test coverage requirement
+- **Test Quality**: Ensures high-quality, maintainable tests
+- **Test Automation**: Automated test execution in CI/CD pipeline
+
+### Error Exposure Integration
+- **Immediate Error Detection**: Detect errors immediately during test execution
+- **No Silent Failures**: Expose all test failures and quality issues
+- **Error Tracking**: Track error resolution and prevention
+- **Systematic Problem-Solving**: Use systematic approach for test failure resolution
+
+### Continuous Validation Integration
+- **Test Validation**: Validate test quality and coverage continuously
+- **Code Validation**: Validate code quality and maintainability
+- **Process Validation**: Validate XP process adherence
+- **Quality Validation**: Validate refactoring effectiveness
+
+### Framework Integration
+- **LangChain/LangGraph**: Use for automated test generation and refactoring
+- **Pytest**: Use for comprehensive test execution and reporting
+- **Streamlit**: Use for test results visualization and quality metrics
+- **Mermaid**: Use for test flow diagrams and refactoring visualization
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- New feature development
+- Bug fixes and enhancements
+- Code refactoring and optimization
+- Legacy code modification
+- Performance improvements
+- Quality improvements
+
+**Violations require immediate test creation and refactoring.**
+
+## Benefits
+
+- **Enhanced Quality**: XP practices that enhance existing TDD approach
+- **Systematic Improvement**: Continuous refactoring with quality metrics
+- **Team Collaboration**: Pair programming for better code quality
+- **Business Value**: Clear connection between tests and business value
+- **Maintainability**: Continuous improvement of code maintainability
+- **Risk Reduction**: Early detection of quality issues through testing
+- **Knowledge Sharing**: Improved team knowledge through pair programming
+description:
+globs:
+alwaysApply: true
+---

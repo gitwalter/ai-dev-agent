@@ -3,38 +3,77 @@
 ## 🎯 **TIER 1: CORE DEVELOPMENT PRINCIPLES** ⭐
 **These rules are ALWAYS applied first - they form the foundation of everything we do**
 
-### 1. Test-Driven Development Rule ⭐
-**CRITICAL**: Always write tests first, then implement functionality.
+### 1. Test-Driven Development Excellence ⭐
+**CRITICAL**: Always write tests first, then implement functionality with Red-Green-Refactor cycle.
 
 **Core Requirements**:
 - Write comprehensive tests before implementing any feature
-- Test both success and failure scenarios
+- Follow Red-Green-Refactor cycle: Red (failing test), Green (passing test), Refactor (improve)
 - Achieve 90%+ test coverage for core components
-- Validate all results before considering work complete
+- Test both success and failure scenarios
 - Use isolated testing for problematic components
 
-**Application**:
-- Every new feature starts with test creation
-- Every bug fix includes regression tests
-- Every refactoring is validated with existing tests
+**Implementation**:
+```python
+# ✅ CORRECT: TDD Cycle Implementation
+class TDDCycle:
+    def red_phase(self, requirement):
+        """Write failing test first"""
+        test = self.create_test(requirement)
+        assert not test.passes(), "Test should fail in red phase"
+        return test
+    
+    def green_phase(self, test):
+        """Write minimal code to pass test"""
+        implementation = self.minimal_implementation(test)
+        assert test.passes(), "Test must pass in green phase"
+        return implementation
+    
+    def refactor_phase(self, code, test):
+        """Improve code while keeping tests green"""
+        improved_code = self.refactor(code)
+        assert test.passes(), "Tests must remain green after refactoring"
+        return improved_code
+```
 
-### 2. Systematic Problem-Solving Rule ⭐
-**CRITICAL**: Always follow a systematic approach to problem-solving with clear steps and validation.
+### 2. Systematic Problem-Solving ⭐
+**CRITICAL**: Always follow systematic approach to problem-solving with clear steps and validation.
 
 **Core Requirements**:
-- **Define the problem clearly** - What exactly is wrong?
-- **Analyze root cause** - Why is it happening?
-- **Create isolated test** - Test the problem in isolation
-- **Apply systematic fixes** - Try solutions methodically
-- **Validate the solution** - Confirm the fix works
-- **Document the solution** - Record what worked and why
+- Define the problem clearly - What exactly is wrong?
+- Analyze root cause - Why is it happening?
+- Create isolated test - Test the problem in isolation
+- Apply systematic fixes - Try solutions methodically
+- Validate the solution - Confirm the fix works
+- Document the solution - Record what worked and why
 
-**Application**:
-- Never use trial-and-error approaches
-- Always test fixes in isolation first
-- Document successful solutions for future reference
+**Implementation**:
+```python
+# ✅ CORRECT: Systematic Problem-Solving
+class ProblemSolver:
+    def solve_problem(self, issue):
+        # 1. Define problem clearly
+        problem_definition = self.define_problem(issue)
+        
+        # 2. Analyze root cause
+        root_cause = self.analyze_root_cause(problem_definition)
+        
+        # 3. Create isolated test
+        test = self.create_isolated_test(root_cause)
+        
+        # 4. Apply systematic fixes
+        solution = self.apply_systematic_fixes(test)
+        
+        # 5. Validate solution
+        validation = self.validate_solution(solution, test)
+        
+        # 6. Document solution
+        self.document_solution(problem_definition, solution, validation)
+        
+        return solution
+```
 
-### 3. Framework-First Rule ⭐
+### 3. Framework-First Development ⭐
 **CRITICAL**: Always use established frameworks over custom implementations.
 
 **Core Requirements**:
@@ -42,16 +81,28 @@
 - **Pydantic** for data validation and structured outputs
 - **Pytest** for comprehensive testing
 - **Streamlit** for web interfaces
-- **Mermaid** for all diagrams (GitHub-compatible, modern standard)
+- **Mermaid** for all diagrams (GitHub-compatible)
 - **Standard libraries** over custom implementations
 
-**Application**:
-- 80% reduction in custom code
-- Battle-tested, reliable solutions
-- Comprehensive features and documentation
-- GitHub-native diagram rendering
+**Implementation**:
+```python
+# ✅ CORRECT: Framework-First Approach
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.prompts import ChatPromptTemplate
+from pydantic import BaseModel, Field
+import streamlit as st
 
-### 4. Error Exposure Rule ⭐
+# Use established frameworks
+class AgentConfig(BaseModel):
+    model_name: str = Field(default="gemini-2.5-flash-lite")
+    temperature: float = Field(default=0.1)
+    max_tokens: int = Field(default=8192)
+
+# Use Streamlit secrets
+api_key = st.secrets["GEMINI_API_KEY"]
+```
+
+### 4. Error Exposure and Handling ⭐
 **CRITICAL**: Never use silent error handling or fallbacks - expose all errors immediately.
 
 **Core Requirements**:
@@ -61,12 +112,27 @@
 - Proper exception types and hierarchies
 - Immediate error propagation
 
-**Application**:
-- Improved reliability and debugging
-- Forces proper error handling
-- Clear visibility into all failures
+**Implementation**:
+```python
+# ✅ CORRECT: Error Exposure
+class ErrorHandler:
+    def handle_error(self, error, context):
+        # Log comprehensive error information
+        logger.error(f"Error in {context}: {error}")
+        logger.error(f"Stack trace: {traceback.format_exc()}")
+        logger.error(f"Context: {context}")
+        
+        # Re-raise with context
+        raise SpecificException(f"Failed in {context}: {error}")
 
-### 5. Continuous Validation Rule ⭐
+# ❌ FORBIDDEN: Silent error handling
+try:
+    result = risky_operation()
+except Exception:
+    pass  # Never do this
+```
+
+### 5. Continuous Validation ⭐
 **CRITICAL**: Validate every step and decision continuously.
 
 **Core Requirements**:
@@ -76,511 +142,774 @@
 - Validate performance metrics
 - Validate quality metrics
 
-**Application**:
-- Prevents cascading failures
-- Ensures data integrity
-- Maintains system reliability
+**Implementation**:
+```python
+# ✅ CORRECT: Continuous Validation
+class Validator:
+    def validate_input(self, data):
+        """Validate input data before processing"""
+        if not data:
+            raise ValueError("Input data cannot be empty")
+        return data
+    
+    def validate_output(self, result):
+        """Validate output after processing"""
+        if not result:
+            raise ValueError("Output cannot be empty")
+        return result
+    
+    def validate_state_change(self, old_state, new_state):
+        """Validate state transitions"""
+        if not self.is_valid_transition(old_state, new_state):
+            raise ValueError("Invalid state transition")
+        return new_state
+```
 
-### 6. Continuous Learning Rule ⭐
-**CRITICAL**: Learn from every interaction and continuously improve.
-
-**Core Requirements**:
-- **Document every insight** - record learnings immediately
-- **Share knowledge systematically** - make insights available to all agents
-- **Recognize patterns** - identify successful and failure patterns
-- **Evolve rules** - update rules based on new learnings
-- **Apply learnings** - use insights in future interactions
-
-**Application**:
-- System gets better with every interaction
-- Builds comprehensive knowledge base
-- Continuously optimizes processes and approaches
-
-### 7. Code Quality and Architecture Rule ⭐
-**CRITICAL**: Follow proven software engineering principles for high-quality, maintainable code.
-
-**Core Requirements**:
-- **SOLID Principles** - Apply Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
-- **Clean Code** - Write readable, self-documenting code with clear naming and structure
-- **Design Patterns** - Apply appropriate GoF and enterprise patterns when beneficial
-- **Code Reviews** - Review all code for quality, security, and maintainability
-- **Refactoring** - Continuously improve code structure and eliminate technical debt
-- **Documentation** - Document all public APIs, complex logic, and architectural decisions
-- **Error Handling** - Implement proper exception handling and error recovery
-- **Performance** - Consider performance implications in design decisions
-
-**Application**:
-- Maintainable and extensible codebase
-- Reduced bugs and technical debt
-- Faster development and debugging
-- Better team collaboration and knowledge sharing
-
-### 8. Strict Naming Conventions Rule ⭐
-**CRITICAL**: Enforce strict naming conventions for readability, maintainability, and testability.
+### 6. Agile and XP Integration ⭐
+**CRITICAL**: Follow Agile sprint methodology and XP practices with TDD integration.
 
 **Core Requirements**:
-- **File naming** - Use snake_case for Python files, test_ prefix for tests
-- **Class naming** - Use PascalCase, avoid abbreviations, indicate purpose
-- **Function naming** - Use snake_case, verb-based actions, clear purpose
-- **Variable naming** - Use snake_case, descriptive names, avoid single letters
-- **Module naming** - Use snake_case, descriptive, avoid hyphens
-- **Database naming** - Use snake_case for tables and columns
-- **API naming** - Use kebab-case for endpoints, snake_case for parameters
-- **Test naming** - Use descriptive names, clear test data names
-- **Constants** - Use UPPER_SNAKE_CASE for constants
+- 2-week sprint iterations with daily standups
+- User stories with INVEST criteria and story point estimation
+- Enhanced Red-Green-Refactor cycle with continuous refactoring
+- Sprint planning, execution, and retrospective
+- Velocity tracking and capacity planning
 
-**Application**:
-- Clear intent and easy navigation
-- Consistent structure across codebase
-- Professional appearance and quality
-- Easy refactoring and maintenance
-- Clear test names and data
+**Implementation**:
+```python
+# ✅ CORRECT: Agile/XP Integration
+class AgileWorkflow:
+    def plan_sprint(self, user_stories, team_capacity):
+        """Plan sprint with capacity-based story selection"""
+        selected_stories = []
+        total_points = 0
+        
+        for story in user_stories:
+            if total_points + story.points <= team_capacity:
+                selected_stories.append(story)
+                total_points += story.points
+        
+        return Sprint(selected_stories, total_points)
+    
+    def execute_tdd_cycle(self, user_story):
+        """Execute TDD cycle for user story"""
+        # Red phase: Write failing tests
+        tests = self.write_acceptance_tests(user_story)
+        
+        # Green phase: Implement minimal code
+        implementation = self.implement_minimal_code(tests)
+        
+        # Refactor phase: Improve code quality
+        improved_code = self.refactor_code(implementation)
+        
+        return improved_code
+```
 
-### 9. Comprehensive Test Pattern Rule ⭐
-**CRITICAL**: Follow systematic test patterns for all development scenarios.
-
-**Core Requirements**:
-- **Unit-First Approach** - Write unit tests before implementation for new features
-- **Integration-First Approach** - Start with integration tests for system validation
-- **Isolation Strategy** - Isolate failures with focused unit tests
-- **Documentation & Cataloging** - Document all test changes and maintain test catalog
-- **Pattern Compliance** - Validate adherence to testing patterns
-
-**Application**:
-- Reliable implementation with unit tests first
-- System integration validation with integration tests
-- Rapid debugging through isolated testing
-- Comprehensive test documentation and cataloging
-- Systematic approach to all testing scenarios
-
-### 10. System Architecture Integration Rule ⭐
-**CRITICAL**: Design components that integrate seamlessly into the overall system architecture.
-
-**Core Requirements**:
-- **System Awareness** - Each component understands its role in the overall system
-- **Integration Points** - Clearly define and document component interfaces and dependencies
-- **Architectural Consistency** - Follow established architectural patterns and conventions
-- **Big Picture Validation** - Validate component design against system architecture goals
-- **Scalability** - Design components to scale with system growth
-- **Maintainability** - Ensure components can be maintained and evolved independently
-- **Performance Impact** - Consider how components affect overall system performance
-- **Error Propagation** - Design proper error handling and propagation across components
-
-**Application**:
-- Cohesive system architecture with well-integrated components
-- Reduced integration issues and architectural debt
-- Easier system evolution and maintenance
-- Better performance and reliability across the system
-
-### 11. Expert Design Patterns Application Rule ⭐
-**CRITICAL**: Apply design patterns from GoF, Fowler, and other influential architects with expert care.
+### 7. Code Quality and Architecture ⭐
+**CRITICAL**: Follow SOLID principles and clean code practices.
 
 **Core Requirements**:
-- **GoF Patterns Mastery** - Expert application of Gang of Four patterns
-- **Fowler Patterns Expertise** - Expert application of enterprise patterns
-- **Pattern Decision Framework** - Systematic approach to pattern selection
-- **Implementation Excellence** - High-quality pattern implementation
-- **Knowledge Documentation** - Comprehensive pattern documentation and sharing
+- Single Responsibility Principle (SRP)
+- Open/Closed Principle (OCP)
+- Liskov Substitution Principle (LSP)
+- Interface Segregation Principle (ISP)
+- Dependency Inversion Principle (DIP)
+- Clean code practices and naming conventions
 
-**Application**:
-- Understandable code through purposeful pattern application
-- Robust implementation using proven patterns
-- Informed decision making for pattern selection
-- Consistent architecture through standardized patterns
-- Knowledge sharing through documented pattern applications
+**Implementation**:
+```python
+# ✅ CORRECT: SOLID Principles
+class UserService:
+    """Single responsibility: User management only"""
+    
+    def __init__(self, user_repository: UserRepository):
+        # Dependency inversion: depend on abstraction
+        self.user_repository = user_repository
+    
+    def create_user(self, user_data: UserData) -> User:
+        """Create user with validation"""
+        # Validate input
+        validated_data = self.validate_user_data(user_data)
+        
+        # Create user
+        user = User(validated_data)
+        
+        # Save to repository
+        return self.user_repository.save(user)
+```
 
-### 12. Automated Research Rule ⭐
-**CRITICAL**: Automate research processes when development is blocked or when seeking optimal solutions.
-
-**Core Requirements**:
-- **Research Triggers** - Automatic detection of research needs (blockage >5 min, unknown errors, performance issues)
-- **Rapid Research** - 5-minute time-boxed research process with systematic methodology
-- **Source Management** - Prioritized research sources by reliability and speed
-- **Solution Validation** - Comprehensive validation of research solutions before application
-- **Knowledge Management** - Continuous knowledge base expansion and pattern recognition
-
-**Application**:
-- Rapid problem resolution within 5 minutes
-- Systematic research methodology for consistent results
-- Reliable solution validation and risk assessment
-- Continuous learning and knowledge accumulation
-- Pattern recognition for future problem-solving
-
-### 13. Daily Start Automation Rule ⭐
-**CRITICAL**: Automate daily development start workflow for consistent, efficient project initialization.
-
-**Core Requirements**:
-- **Repository Synchronization** - Pull latest changes, validate working directory, clean temporary files
-- **Tasklist Analysis** - Read current tasklist, analyze priorities, plan daily objectives
-- **System Health Check** - Validate environment, verify dependencies, establish performance baseline
-- **Initial Test Run** - Execute smoke tests, core functionality tests, integration tests
-- **Environment Preparation** - Activate development environment, initialize tools, configure settings
-
-**Application**:
-- Consistent development session start (15-minute automated workflow)
-- Clean, synchronized repository state
-- Analyzed tasklist with daily plan
-- Verified system health and functionality
-- Ready-to-develop environment
-
-### 14. Daily End Automation Rule ⭐
-**CRITICAL**: Automate daily development end workflow for consistent, efficient project closure.
-
-**Core Requirements**:
-- **Tasklist Update** - Record completed tasks, update progress, plan next day priorities
-- **Documentation Synchronization** - Update code docs, README files, API docs, architecture docs
-- **Comprehensive Cleanup** - Remove temporary files, organize structure, clean artifacts
-- **Final Test Run** - Execute full test suites, performance tests, quality assessment
-- **Repository Synchronization** - Stage changes, create comprehensive commit, push to remote
-
-**Application**:
-- Consistent development session closure (26-minute automated workflow)
-- Updated tasklist with progress and next day plan
-- Synchronized documentation with current state
-- Clean, organized repository structure
-- All changes committed and pushed
-
-## 🚀 **TIER 2: DEVELOPMENT STANDARDS** 🔧
+## 🎯 **TIER 2: DEVELOPMENT STANDARDS** ⭐
 **These rules ensure consistent, high-quality development practices**
 
-### 6. AI Model Selection Rule 🔧
-**HIGH PRIORITY**: Use standardized model selection for optimal performance and cost.
+### 8. AI Model Selection and Configuration ⭐
+**CRITICAL**: Use standardized Gemini model selection for optimal performance and cost.
 
 **Core Requirements**:
-- **Simple tasks**: Use `gemini-2.5-flash-lite` (faster, lower cost)
-- **Complex tasks**: Use `gemini-2.5-flash` (higher quality, more capable)
-- **API Key**: Always use `st.secrets["GEMINI_API_KEY"]`
-- **Temperature**: 0.1 for consistent, deterministic outputs
-- **Max Tokens**: 8192 for comprehensive responses
+- Use `gemini-2.5-flash-lite` for simple tasks
+- Use `gemini-2.5-flash` for complex tasks
+- Always use `st.secrets["GEMINI_API_KEY"]` for API key
+- Set temperature to 0.1 for consistent outputs
+- Configure max_tokens to 8192
 
-**Application**:
-- Cost optimization through appropriate model selection
-- Consistent performance across all agents
-- Standardized configuration management
+**Implementation**:
+```python
+# ✅ CORRECT: Standardized Model Selection
+def get_llm_model(task_complexity="simple"):
+    """Get appropriate LLM model based on task complexity"""
+    api_key = st.secrets["GEMINI_API_KEY"]
+    
+    if task_complexity == "complex":
+        model_name = "gemini-2.5-flash"
+    else:
+        model_name = "gemini-2.5-flash-lite"
+    
+    return ChatGoogleGenerativeAI(
+        model=model_name,
+        google_api_key=api_key,
+        temperature=0.1,
+        max_tokens=8192
+    )
+```
 
-### 7. File Organization Rule 🔧
-**HIGH PRIORITY**: Maintain clear, logical file organization and structure.
-
-**Core Requirements**:
-- **Consistent naming**: Use descriptive, consistent file names
-- **Logical grouping**: Group related files in appropriate directories
-- **Clear hierarchy**: Maintain clear directory structure
-- **Documentation**: Keep documentation synchronized with structure
-- **Diagram standards**: Use Mermaid diagrams (GitHub-compatible) over PlantUML
-- **Standards**: Follow established project conventions
-
-**Application**:
-- Easy navigation and maintenance
-- Clear separation of concerns
-- Scalable project structure
-- GitHub-native diagram rendering
-
-### 8. Documentation Maintenance Rule 🔧
-**HIGH PRIORITY**: Keep all documentation synchronized with code changes.
+### 9. Testing Organization and Patterns ⭐
+**CRITICAL**: Follow systematic testing patterns with clear organization.
 
 **Core Requirements**:
-- Update documentation with every code change
-- Test all documentation examples
-- Verify all file paths and references
-- Maintain comprehensive coverage
-- Use Mermaid diagrams for all visual documentation (GitHub-compatible)
-- Include documentation in code reviews
+- Unit tests for individual components
+- Integration tests for component interactions
+- System tests for end-to-end workflows
+- Performance tests for critical paths
+- Security tests for vulnerabilities
 
-**Application**:
-- Accurate, reliable documentation
-- Better user experience
-- Easier maintenance and onboarding
-- GitHub-native diagram rendering
+**Implementation**:
+```python
+# ✅ CORRECT: Test Organization
+# tests/unit/agents/test_requirements_analyst.py
+class TestRequirementsAnalyst:
+    def test_analyze_requirements(self):
+        """Test requirements analysis functionality"""
+        analyst = RequirementsAnalyst()
+        result = analyst.analyze("Create a REST API")
+        assert result.has_endpoints()
+        assert result.has_authentication()
 
-### 9. Security Best Practices Rule 🔧
-**HIGH PRIORITY**: Use secure practices for all sensitive data and operations.
+# tests/integration/test_agent_workflow.py
+class TestAgentWorkflow:
+    def test_complete_workflow(self):
+        """Test complete agent workflow"""
+        workflow = AgentWorkflow()
+        result = workflow.execute(project_description)
+        assert result.is_complete()
+        assert result.has_all_artifacts()
+```
 
-**Core Requirements**:
-- **API Keys**: Use Streamlit secrets management
-- **Configuration**: Never hardcode sensitive data
-- **Validation**: Validate all inputs and outputs
-- **Error Handling**: Don't expose sensitive information in errors
-- **Dependencies**: Use trusted, maintained libraries
-
-**Application**:
-- Secure handling of sensitive data
-- Protection against common vulnerabilities
-- Compliance with security best practices
-
-### 10. Performance-First Rule 🔧
-**HIGH PRIORITY**: Consider performance implications proactively.
-
-**Core Requirements**:
-- **Optimize prompts** for faster responses
-- **Use appropriate models** for task complexity
-- **Implement caching** for repeated operations
-- **Monitor performance** continuously
-- **Optimize resource usage** efficiently
-
-**Application**:
-- Faster execution times
-- Lower costs
-- Better user experience
-
-## 📋 **TIER 3: TESTING & QUALITY ASSURANCE** 🧪
-**These rules ensure comprehensive testing and quality standards**
-
-### 11. Test Organization Rule 🧪
-**HIGH PRIORITY**: Organize tests in clear, logical structure.
+### 10. Security and Configuration Management ⭐
+**CRITICAL**: Use secure configuration management and follow security best practices.
 
 **Core Requirements**:
-- **Unit Tests** (`tests/unit/`): Individual component testing
-- **Integration Tests** (`tests/integration/`): Component interaction testing
-- **System Tests** (`tests/system/`): End-to-end workflow testing
-- **LangGraph Tests** (`tests/langgraph/`): LangGraph-specific functionality
-- **Isolated Tests** (`tests/isolated/`): Problem-specific testing
+- Use Streamlit secrets for all sensitive data
+- Never hardcode API keys or credentials
+- Validate all inputs and outputs
+- Implement proper authentication and authorization
+- Follow OWASP security guidelines
 
-**Application**:
-- Clear test organization and maintenance
-- Easy test discovery and execution
-- Comprehensive coverage tracking
+**Implementation**:
+```python
+# ✅ CORRECT: Secure Configuration
+import streamlit as st
 
-### 12. Agent Testing & Parsing Rule 🧪
-**HIGH PRIORITY**: Test agents systematically and fix parsing issues methodically.
+# Use Streamlit secrets
+api_key = st.secrets.get("GEMINI_API_KEY")
+if not api_key:
+    st.error("Missing API key in secrets")
+    st.stop()
 
-**Core Requirements**:
-- **Isolated testing** for problematic agents
-- **Systematic prompt-parser optimization** for optimal combinations
-- **Early termination** on first parsing error
-- **Comprehensive error analysis** with context
-- **Documentation** of successful combinations
+# Validate configuration
+if api_key == "your-api-key-here":
+    st.error("Please set a valid API key")
+    st.stop()
+```
 
-**Application**:
-- Faster problem resolution
-- Optimal agent performance
-- Reliable parsing solutions
-
-### 13. Test Monitoring Rule 🧪
-**MEDIUM PRIORITY**: Monitor tests continuously with immediate error detection.
+### 11. Documentation and Maintenance ⭐
+**CRITICAL**: Maintain comprehensive, synchronized documentation.
 
 **Core Requirements**:
-- **Automated monitoring** of all test executions
-- **Immediate error detection** and interruption
-- **Comprehensive error analysis** with context
-- **Automatic fix suggestions** where possible
-- **Performance tracking** and optimization
+- Document all public interfaces and APIs
+- Keep documentation synchronized with code changes
+- Use clear, concise language
+- Include usage examples and code snippets
+- Maintain README files for all major components
 
-**Application**:
-- Faster bug detection and resolution
-- Improved test reliability
-- Better development efficiency
+**Implementation**:
+```python
+# ✅ CORRECT: Documentation
+class UserService:
+    """
+    User management service for authentication and user operations.
+    
+    This service provides comprehensive user management functionality
+    including creation, authentication, and profile management.
+    
+    Example:
+        >>> service = UserService()
+        >>> user = service.create_user({"name": "John", "email": "john@example.com"})
+        >>> print(user.id)
+        'user_123'
+    """
+    
+    def create_user(self, user_data: dict) -> User:
+        """
+        Create a new user with the provided data.
+        
+        Args:
+            user_data: Dictionary containing user information
+                - name: User's full name (required)
+                - email: User's email address (required)
+                - role: User's role (optional, defaults to 'user')
+        
+        Returns:
+            User: Created user object with assigned ID
+        
+        Raises:
+            ValueError: If required fields are missing
+            DuplicateUserError: If user with email already exists
+        """
+        # Implementation here
+        pass
+```
 
-### 14. No Failing Tests Rule 🧪
-**MEDIUM PRIORITY**: Maintain zero failing tests policy.
+## 🎯 **TIER 3: PROJECT MANAGEMENT** ⭐
+**These rules ensure effective project organization and management**
 
-**Core Requirements**:
-- **All tests must pass** before any code changes
-- **Immediate fix** of any test failures
-- **Regression testing** for all changes
-- **Comprehensive coverage** for all components
-- **Quality gates** for test requirements
-
-**Application**:
-- Maintains code quality and reliability
-- Prevents regression issues
-- Ensures consistent functionality
-
-## 📁 **TIER 4: PROJECT MANAGEMENT** 📊
-**These rules ensure effective project management and organization**
-
-### 15. Tasklist Management Rule 📊
-**HIGH PRIORITY**: Maintain current, accurate task tracking and progress.
-
-**Core Requirements**:
-- **Update tasklists** with every change
-- **Track progress** accurately and continuously
-- **Document blockers** and dependencies
-- **Maintain alignment** across all roadmap documents
-- **Provide handoff context** for continuity
-
-**Application**:
-- Clear project visibility and progress tracking
-- Effective handoffs between team members
-- Accurate planning and resource allocation
-
-### 16. Implementation Roadmap Rule 📊
-**HIGH PRIORITY**: Follow comprehensive development plans and roadmaps.
-
-**Core Requirements**:
-- **Adhere to roadmap** phases and milestones
-- **Update progress** continuously
-- **Document deviations** with rationale
-- **Maintain alignment** with overall goals
-- **Validate success metrics** regularly
-
-**Application**:
-- Systematic project development
-- Clear progress tracking
-- Successful milestone achievement
-
-### 17. Requirements Management Rule 📊
-**MEDIUM PRIORITY**: Track and validate requirements throughout development.
+### 12. File Organization and Structure ⭐
+**CRITICAL**: Maintain clear, logical file organization and structure.
 
 **Core Requirements**:
-- **Document requirements** clearly and comprehensively
-- **Validate requirements** against implementation
-- **Track requirement changes** and impacts
-- **Ensure traceability** from requirements to code
-- **Maintain requirement quality** and clarity
+- Follow established directory structure
+- Use consistent naming conventions
+- Separate concerns into appropriate modules
+- Maintain clear import hierarchies
+- Use __init__.py files for package organization
 
-**Application**:
-- Clear project scope and goals
-- Successful requirement implementation
-- Effective change management
+**Implementation**:
+```
+ai-dev-agent/
+├── agents/                 # Agent implementations
+│   ├── __init__.py
+│   ├── base_agent.py
+│   ├── requirements_analyst.py
+│   └── ...
+├── tests/                  # Test suite
+│   ├── unit/
+│   ├── integration/
+│   └── system/
+├── utils/                  # Utility functions
+├── models/                 # Data models
+├── workflow/               # Workflow management
+└── docs/                   # Documentation
+```
 
-### 18. Prompt Database Management Rule 📊
-**MEDIUM PRIORITY**: Use database-first prompt management system.
-
-**Core Requirements**:
-- **Store all prompts** in database (no hardcoded prompts)
-- **Version control** prompt changes
-- **Performance tracking** for prompt effectiveness
-- **Web editor** for prompt management
-- **Fallback mechanisms** for database unavailability
-
-**Application**:
-- Centralized prompt management
-- Easy prompt optimization and updates
-- Performance tracking and improvement
-
-### 19. Automation & Environment Rule 📊
-**MEDIUM PRIORITY**: Maintain comprehensive automation environment.
+### 12.5. Documentation Cleanliness and Organization ⭐
+**CRITICAL**: Maintain pristine documentation folder with no temporary, messy, or redundant files.
 
 **Core Requirements**:
-- **Automated testing** for all components
-- **Automated deployment** and configuration
-- **Automated monitoring** and alerting
-- **Automated documentation** updates
-- **Automated quality checks** and validation
+- **NO TEMPORARY FILES**: Never leave temporary documentation files in docs/
+- **NO SUMMARY FILES**: Remove summary files after they've served their purpose
+- **PROPER CATEGORIZATION**: All files must be in appropriate subdirectories
+- **CURRENT INDEX**: Documentation index must always reflect actual content
+- **NO DUPLICATES**: Eliminate duplicate or redundant documentation
+- **CLEAN STRUCTURE**: Maintain clean, logical folder hierarchy
 
-**Application**:
-- Reduced manual effort and errors
-- Consistent development environment
-- Faster development cycles
+**Documentation Folder Structure**:
+```
+docs/
+├── DOCUMENTATION_INDEX.md     # Master index (ALWAYS CURRENT)
+├── README.md                  # Main docs overview
+├── concepts/                  # Concept papers and strategic documents
+│   ├── agile_xp_ai_agent_integration_concept.md
+│   ├── agent_system_implementation_concept.md
+│   ├── integration/           # Integration strategies
+│   └── migration/             # Migration strategies
+├── guides/                    # Implementation and how-to guides
+│   ├── development/           # Development guides
+│   ├── implementation/        # Implementation guides
+│   ├── database/              # Database guides
+│   ├── deployment/            # Deployment guides
+│   ├── testing/               # Testing guides
+│   ├── observability/         # Monitoring guides
+│   ├── langgraph/             # LangGraph guides
+│   └── architecture/          # Architecture guides
+├── analysis/                  # Research and analysis documents
+│   ├── agent_analysis/        # Agent analysis
+│   └── summaries/             # Analysis summaries
+└── architecture/              # Architecture documentation
+    ├── overview/              # High-level architecture
+    ├── components/            # Component architecture
+    └── diagrams/              # Architecture diagrams
+```
 
-### 20. Diagram Standards Rule 📊
-**MEDIUM PRIORITY**: Use Mermaid diagrams for all visual documentation.
+**Forbidden File Patterns**:
+```python
+# ❌ FORBIDDEN: Temporary files
+forbidden_patterns = [
+    "DOCUMENTATION_*_SUMMARY.md",    # Temporary summary files
+    "*_TEMP.md",                     # Temporary files
+    "*_DRAFT.md",                    # Draft files
+    "*_BACKUP.md",                   # Backup files
+    "*_OLD.md",                      # Old versions
+    "*_COPY.md",                     # Copy files
+    "temp_*",                        # Temporary files
+    "draft_*",                       # Draft files
+    "*_notes.md",                    # Personal notes
+    "*_TODO.md",                     # TODO files
+    "*_CHANGES.md",                  # Change logs (use git)
+    "*_UPDATES.md",                  # Update logs (use git)
+    "*_INTEGRATION_SUMMARY.md",      # Integration summaries
+    "*_UPDATE_SUMMARY.md",           # Update summaries
+    "*_RULE_INTEGRATION_SUMMARY.md", # Rule integration summaries
+]
+
+# ❌ FORBIDDEN: Files in wrong locations
+forbidden_locations = [
+    "docs/*.md",                     # No .md files directly in docs/ (except index and README)
+    "docs/concepts/*.txt",           # No .txt files in concepts/
+    "docs/guides/*.tmp",             # No .tmp files anywhere
+    "docs/analysis/*.bak",           # No .bak files anywhere
+]
+```
+
+**Documentation Cleanup Process**:
+```python
+# ✅ CORRECT: Documentation Cleanup
+class DocumentationCleaner:
+    def __init__(self):
+        self.docs_root = "docs/"
+        self.forbidden_patterns = forbidden_patterns
+        self.required_structure = required_structure
+    
+    def cleanup_documentation(self):
+        """Clean up documentation folder"""
+        # 1. Remove temporary files
+        self.remove_temporary_files()
+        
+        # 2. Move files to correct locations
+        self.organize_files()
+        
+        # 3. Update documentation index
+        self.update_documentation_index()
+        
+        # 4. Validate structure
+        self.validate_structure()
+        
+        # 5. Remove duplicates
+        self.remove_duplicates()
+    
+    def remove_temporary_files(self):
+        """Remove all temporary and summary files"""
+        for pattern in self.forbidden_patterns:
+            files = glob.glob(f"{self.docs_root}/{pattern}")
+            for file in files:
+                logger.info(f"Removing temporary file: {file}")
+                os.remove(file)
+    
+    def organize_files(self):
+        """Move files to appropriate subdirectories"""
+        # Move concept papers to concepts/
+        concept_files = glob.glob(f"{self.docs_root}/*_concept.md")
+        for file in concept_files:
+            if not file.startswith(f"{self.docs_root}concepts/"):
+                new_path = f"{self.docs_root}concepts/{os.path.basename(file)}"
+                shutil.move(file, new_path)
+                logger.info(f"Moved concept file: {file} -> {new_path}")
+    
+    def update_documentation_index(self):
+        """Update DOCUMENTATION_INDEX.md to reflect current state"""
+        # Scan all documentation files
+        all_files = self.scan_documentation_files()
+        
+        # Update index with current files
+        self.regenerate_index(all_files)
+        
+        logger.info("Updated documentation index")
+    
+    def validate_structure(self):
+        """Validate documentation structure"""
+        # Check required directories exist
+        for directory in self.required_structure:
+            if not os.path.exists(f"{self.docs_root}/{directory}"):
+                os.makedirs(f"{self.docs_root}/{directory}")
+                logger.info(f"Created missing directory: {directory}")
+        
+        # Check no files in wrong locations
+        self.check_file_locations()
+    
+    def remove_duplicates(self):
+        """Remove duplicate documentation files"""
+        # Find files with similar names
+        similar_files = self.find_similar_files()
+        
+        # Keep the most recent/complete version
+        for file_group in similar_files:
+            self.keep_best_version(file_group)
+```
+
+**Pre-Commit Documentation Check**:
+```python
+# ✅ CORRECT: Pre-commit documentation validation
+def validate_documentation_cleanliness():
+    """Validate documentation cleanliness before commit"""
+    cleaner = DocumentationCleaner()
+    
+    # Check for temporary files
+    temp_files = cleaner.find_temporary_files()
+    if temp_files:
+        raise DocumentationCleanlinessError(f"Temporary files found: {temp_files}")
+    
+    # Check file organization
+    misplaced_files = cleaner.find_misplaced_files()
+    if misplaced_files:
+        raise DocumentationOrganizationError(f"Misplaced files: {misplaced_files}")
+    
+    # Check index currency
+    if not cleaner.is_index_current():
+        raise DocumentationIndexError("Documentation index is not current")
+    
+    # Check for duplicates
+    duplicates = cleaner.find_duplicates()
+    if duplicates:
+        raise DocumentationDuplicateError(f"Duplicate files: {duplicates}")
+    
+    logger.info("Documentation cleanliness validation passed")
+```
+
+**Documentation Maintenance Schedule**:
+```python
+# ✅ CORRECT: Regular documentation maintenance
+class DocumentationMaintenance:
+    def __init__(self):
+        self.cleaner = DocumentationCleaner()
+    
+    def daily_cleanup(self):
+        """Daily documentation cleanup"""
+        # Quick cleanup of obvious temporary files
+        self.cleaner.remove_temporary_files()
+        
+        # Update index if files changed
+        if self.files_changed_today():
+            self.cleaner.update_documentation_index()
+    
+    def weekly_cleanup(self):
+        """Weekly comprehensive documentation cleanup"""
+        # Full cleanup process
+        self.cleaner.cleanup_documentation()
+        
+        # Validate structure
+        self.cleaner.validate_structure()
+        
+        # Generate cleanup report
+        self.generate_cleanup_report()
+    
+    def monthly_audit(self):
+        """Monthly documentation audit"""
+        # Comprehensive audit
+        audit_results = self.audit_documentation()
+        
+        # Remove outdated documentation
+        self.remove_outdated_docs(audit_results.outdated)
+        
+        # Update documentation standards
+        self.update_documentation_standards()
+```
+
+**Documentation Quality Gates**:
+```python
+# ✅ CORRECT: Documentation quality gates
+def documentation_quality_gates():
+    """Quality gates for documentation"""
+    gates = [
+        "no_temporary_files",
+        "proper_organization", 
+        "current_index",
+        "no_duplicates",
+        "valid_structure",
+        "clean_navigation"
+    ]
+    
+    for gate in gates:
+        if not check_gate(gate):
+            raise DocumentationQualityGateError(f"Failed quality gate: {gate}")
+    
+    logger.info("All documentation quality gates passed")
+```
+
+**Implementation Examples**:
+```python
+# ✅ CORRECT: Documentation file creation
+def create_documentation_file(file_type: str, title: str, content: str):
+    """Create documentation file in correct location"""
+    # Determine correct location
+    if file_type == "concept":
+        location = "docs/concepts/"
+    elif file_type == "guide":
+        location = "docs/guides/"
+    elif file_type == "analysis":
+        location = "docs/analysis/"
+    elif file_type == "architecture":
+        location = "docs/architecture/"
+    else:
+        raise ValueError(f"Unknown documentation type: {file_type}")
+    
+    # Create file in correct location
+    filename = f"{location}{title.lower().replace(' ', '_')}.md"
+    
+    with open(filename, 'w') as f:
+        f.write(content)
+    
+    # Update documentation index
+    update_documentation_index(filename)
+    
+    logger.info(f"Created documentation file: {filename}")
+
+# ❌ INCORRECT: Creating files in wrong location
+def create_documentation_file_wrong(title: str, content: str):
+    """WRONG: Creating files directly in docs/"""
+    filename = f"docs/{title}.md"  # WRONG: Should be in subdirectory
+    with open(filename, 'w') as f:
+        f.write(content)
+    # WRONG: No index update
+```
+
+**Documentation Cleanup Checklist**:
+- [ ] **No temporary files** in docs/ directory
+- [ ] **No summary files** left after use
+- [ ] **All files categorized** in appropriate subdirectories
+- [ ] **Documentation index current** and accurate
+- [ ] **No duplicate files** or redundant content
+- [ ] **Clean folder structure** maintained
+- [ ] **No forbidden file patterns** present
+- [ ] **All links valid** and working
+- [ ] **Navigation logical** and intuitive
+- [ ] **Content quality** meets standards
+
+### 13. Task Management and Progress Tracking ⭐
+**CRITICAL**: Maintain accurate task tracking and progress management.
 
 **Core Requirements**:
-- **Mermaid diagrams** for all architecture, flow, and system diagrams
-- **GitHub compatibility** - diagrams render directly in GitHub repositories
-- **Modern standard** - Mermaid is the current industry standard
-- **No PlantUML** - avoid PlantUML in favor of Mermaid
-- **Clear syntax** - use readable, well-structured Mermaid syntax
-- **Version control friendly** - diagrams are text-based and diff-friendly
+- Keep task lists current and accurate
+- Track progress with clear metrics
+- Update task status regularly
+- Document blockers and impediments
+- Maintain sprint backlogs and velocity
 
-**Application**:
-- GitHub-native diagram rendering
-- Better collaboration and visibility
-- Modern, maintainable documentation
-- Text-based version control for diagrams
+**Implementation**:
+```python
+# ✅ CORRECT: Task Management
+class TaskManager:
+    def update_task_status(self, task_id: str, status: str, progress: float):
+        """Update task status and progress"""
+        task = self.get_task(task_id)
+        task.status = status
+        task.progress = progress
+        task.last_updated = datetime.now()
+        
+        # Log progress
+        logger.info(f"Task {task_id}: {status} - {progress}% complete")
+        
+        # Update sprint metrics
+        self.update_sprint_metrics(task.sprint_id)
+```
 
-## 🎯 **RULE APPLICATION PRIORITIES**
+### 14. Requirements Management ⭐
+**CRITICAL**: Track and validate requirements throughout development.
 
-### **CRITICAL RULES (Always Applied)**
-1. Test-Driven Development Rule
-2. Systematic Problem-Solving Rule
-3. Framework-First Rule
-4. Error Exposure Rule
-5. Continuous Validation Rule
-6. Continuous Learning Rule
+**Core Requirements**:
+- Document all requirements clearly
+- Validate requirements against implementation
+- Track requirement changes and updates
+- Ensure requirements are testable
+- Maintain requirement traceability
 
-### **HIGH PRIORITY RULES (Applied to Relevant Contexts)**
-6. AI Model Selection Rule
-7. File Organization Rule
-8. Documentation Maintenance Rule
-9. Security Best Practices Rule
-10. Performance-First Rule
-11. Test Organization Rule
-12. Agent Testing & Parsing Rule
-15. Tasklist Management Rule
-16. Implementation Roadmap Rule
+**Implementation**:
+```python
+# ✅ CORRECT: Requirements Management
+class RequirementsManager:
+    def validate_requirement(self, requirement: Requirement, implementation: Implementation):
+        """Validate that implementation meets requirement"""
+        # Check if requirement is implemented
+        if not self.is_requirement_implemented(requirement, implementation):
+            raise RequirementNotMetError(f"Requirement {requirement.id} not implemented")
+        
+        # Check if requirement is testable
+        if not self.is_requirement_testable(requirement):
+            raise RequirementNotTestableError(f"Requirement {requirement.id} not testable")
+        
+        return True
+```
 
-### **MEDIUM PRIORITY RULES (Applied When Context is Relevant)**
-13. Test Monitoring Rule
-14. No Failing Tests Rule
-17. Requirements Management Rule
-18. Prompt Database Management Rule
-19. Automation & Environment Rule
-20. Diagram Standards Rule
+## 🎯 **TIER 4: AUTOMATION AND OPTIMIZATION** ⭐
+**These rules ensure efficient, automated development processes**
 
-## 🚀 **RULE BENEFITS**
+### 15. Automation and Environment ⭐
+**CRITICAL**: Implement comprehensive automation for development processes.
 
-### **Efficiency Improvements**
-- **50% faster** problem resolution with systematic approach
-- **80% reduction** in custom code with framework-first approach
-- **90% faster** debugging with error exposure
-- **100% test coverage** with TDD approach
+**Core Requirements**:
+- Automate repetitive development tasks
+- Implement continuous integration and deployment
+- Automate testing and quality checks
+- Automate documentation updates
+- Implement automated error detection and recovery
 
-### **Quality Improvements**
-- **Zero silent errors** with error exposure rule
-- **Consistent performance** with model selection rule
-- **Maintainable code** with file organization rule
-- **Reliable systems** with continuous validation
+**Implementation**:
+```python
+# ✅ CORRECT: Automation
+class DevelopmentAutomation:
+    def run_daily_startup(self):
+        """Automated daily development session startup"""
+        # Run tests
+        test_results = self.run_test_suite()
+        
+        # Check for errors
+        if test_results.has_failures():
+            self.fix_failing_tests(test_results)
+        
+        # Update documentation
+        self.update_documentation()
+        
+        # Generate status report
+        return self.generate_status_report()
+    
+    def run_daily_cleanup(self):
+        """Automated daily development session cleanup"""
+        # Clean temporary files
+        self.clean_temp_files()
+        
+        # Update task status
+        self.update_task_status()
+        
+        # Generate progress report
+        return self.generate_progress_report()
+```
 
-### **Development Speed**
-- **3x faster** feature delivery with established patterns
-- **90% reduction** in debugging time with proper error handling
-- **Immediate feedback** with test monitoring
-- **Systematic progress** with roadmap adherence
-- **GitHub-native diagrams** with Mermaid for better collaboration
+### 16. Performance and Quality Optimization ⭐
+**CRITICAL**: Continuously optimize performance and quality.
 
-## 📋 **IMPLEMENTATION CHECKLIST**
+**Core Requirements**:
+- Monitor performance metrics continuously
+- Optimize critical code paths
+- Maintain code quality standards
+- Implement performance testing
+- Track and improve quality metrics
 
-### **For Every Development Session**
-- [ ] Apply Tier 1 rules (Core Development Principles)
-- [ ] Follow systematic problem-solving approach
-- [ ] Write tests before implementing functionality
-- [ ] Use established frameworks over custom code
-- [ ] Expose all errors immediately
-- [ ] Validate every step continuously
-- [ ] Document learnings and insights
-- [ ] Share knowledge with other agents
+**Implementation**:
+```python
+# ✅ CORRECT: Performance Optimization
+class PerformanceOptimizer:
+    def optimize_critical_path(self, code_path: str):
+        """Optimize critical code path for performance"""
+        # Profile the code path
+        profile = self.profile_code(code_path)
+        
+        # Identify bottlenecks
+        bottlenecks = self.identify_bottlenecks(profile)
+        
+        # Apply optimizations
+        optimized_code = self.apply_optimizations(code_path, bottlenecks)
+        
+        # Validate optimization
+        self.validate_optimization(code_path, optimized_code)
+        
+        return optimized_code
+```
 
-### **For Every Code Change**
-- [ ] Update documentation synchronously
-- [ ] Maintain file organization standards
-- [ ] Follow security best practices
-- [ ] Consider performance implications
-- [ ] Update tasklists and progress tracking
-- [ ] Use Mermaid diagrams for visual documentation
+## 🎯 **TIER 5: CONTINUOUS IMPROVEMENT** ⭐
+**These rules ensure continuous learning and improvement**
 
-### **For Every Test Execution**
-- [ ] Monitor tests continuously
-- [ ] Fix any failing tests immediately
-- [ ] Maintain comprehensive coverage
-- [ ] Use isolated testing for problems
-- [ ] Document successful solutions
+### 17. Learning and Knowledge Management ⭐
+**CRITICAL**: Continuously learn and improve from all interactions.
 
-## 🎉 **SUCCESS METRICS**
+**Core Requirements**:
+- Document every insight and learning
+- Share knowledge systematically across agents
+- Recognize patterns in successes and failures
+- Evolve rules based on new learnings
+- Apply learnings to future interactions
 
-### **Technical Metrics**
-- **Test Coverage**: >90% for all components
-- **Error Rate**: <1% with proper error handling
-- **Performance**: <30s for complete workflows
-- **Code Quality**: >95% with automated standards
+**Implementation**:
+```python
+# ✅ CORRECT: Learning Management
+class LearningManager:
+    def record_insight(self, context: str, insight: str, outcome: str):
+        """Record learning insight for future use"""
+        learning = {
+            "context": context,
+            "insight": insight,
+            "outcome": outcome,
+            "timestamp": datetime.now(),
+            "applied": False
+        }
+        
+        self.insights_database.add(learning)
+        logger.info(f"Learning recorded: {insight}")
+    
+    def apply_learnings(self, current_context: str):
+        """Apply relevant learnings to current context"""
+        relevant_learnings = self.get_relevant_learnings(current_context)
+        
+        for learning in relevant_learnings:
+            if self.is_applicable(learning, current_context):
+                self.apply_learning(learning, current_context)
+                learning["applied"] = True
+```
 
-### **Development Metrics**
-- **Problem Resolution**: <30 minutes average
-- **Feature Delivery**: 3x faster with established patterns
-- **Bug Detection**: <5 minutes with automated monitoring
-- **Documentation Accuracy**: 100% synchronized
+## 📋 **RULE APPLICATION GUIDELINES**
 
-### **Project Metrics**
-- **Milestone Achievement**: 100% on-time delivery
-- **Team Efficiency**: 50% improvement in development speed
-- **Code Maintainability**: 80% reduction in technical debt
-- **System Reliability**: 99.9% uptime with proper validation
+### Priority Levels
+- **⭐ Critical (Tier 1)**: Always applied, form the foundation
+- **⭐ High (Tier 2)**: Applied to relevant development activities
+- **⭐ Medium (Tier 3)**: Applied when context is relevant
+- **⭐ Low (Tier 4-5)**: Applied on demand or for specific scenarios
 
----
+### Application Criteria
+1. **Critical Rules**: Always enforced across entire project
+2. **High Priority Rules**: Applied to relevant file patterns and scenarios
+3. **Medium Priority Rules**: Applied when context is relevant
+4. **Low Priority Rules**: Applied on demand or for specific scenarios
 
-**This optimized rule structure provides a comprehensive, efficient framework for high-quality, fast development while maintaining consistency and reliability across all development activities.**
-description:
-globs:
-alwaysApply: true
----
+### Validation Checklist
+- [ ] All critical rules are being followed
+- [ ] No redundant or conflicting rules
+- [ ] Rules are clear and actionable
+- [ ] Rules are effectively enforced
+- [ ] Rules contribute to project success
+
+## 🎯 **BENEFITS OF OPTIMIZED RULES**
+
+### Consistency
+- Uniform standards across all development activities
+- Clear, actionable guidelines for all team members
+- Consistent application of best practices
+
+### Quality
+- Automated enforcement of quality standards
+- Comprehensive testing and validation
+- Continuous improvement and optimization
+
+### Efficiency
+- Reduced manual review and standardization efforts
+- Automated processes and workflows
+- Optimized development practices
+
+### Reliability
+- Consistent error handling and testing practices
+- Robust validation and quality assurance
+- Reliable development processes
+
+### Maintainability
+- Clear standards for code organization and structure
+- Comprehensive documentation and knowledge management
+- Systematic approach to problem-solving
+
+### Scalability
+- Standardized patterns for team collaboration
+- Automated processes that scale with project size
+- Clear guidelines for growth and expansion

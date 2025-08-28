@@ -217,6 +217,96 @@ def configure_model_selection():
     return selected_model
 
 
+def show_performance_dashboard():
+    """Display performance monitoring dashboard."""
+    st.subheader("📊 Performance Dashboard")
+    
+    try:
+        from utils.performance_optimizer import performance_optimizer, analyze_and_optimize_performance
+        
+        # Add performance analysis button
+        if st.button("🔍 Analyze Performance", type="primary"):
+            with st.spinner("Analyzing performance metrics..."):
+                analysis_results = analyze_and_optimize_performance()
+                
+                if "error" in analysis_results:
+                    st.error(f"Performance analysis failed: {analysis_results['error']}")
+                    return
+                
+                # Display workflow analysis
+                workflow_analysis = analysis_results["workflow_analysis"]
+                
+                # Overall metrics
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Total Executions", workflow_analysis["total_executions"])
+                with col2:
+                    st.metric("Success Rate", f"{workflow_analysis['average_success_rate']:.1%}")
+                with col3:
+                    st.metric("Total Cost", f"${workflow_analysis['total_cost']:.4f}")
+                with col4:
+                    st.metric("Performance Score", f"{workflow_analysis['performance_score']:.1f}/100")
+                
+                # Agent performance table
+                st.subheader("Agent Performance Analysis")
+                agent_data = []
+                for agent_name, analysis in workflow_analysis["agent_analyses"].items():
+                    agent_data.append({
+                        "Agent": agent_name,
+                        "Performance Score": f"{analysis.performance_score:.1f}/100",
+                        "Success Rate": f"{analysis.success_rate:.1%}",
+                        "Avg Time": f"{analysis.average_execution_time:.2f}s",
+                        "Cost/Exec": f"${analysis.cost_per_execution:.4f}",
+                        "Total Execs": analysis.total_executions
+                    })
+                
+                if agent_data:
+                    st.dataframe(agent_data, use_container_width=True)
+                
+                # Optimization results
+                if analysis_results["optimization_results"]:
+                    st.subheader("🚀 Optimization Results")
+                    for agent_name, results in analysis_results["optimization_results"].items():
+                        with st.expander(f"Optimizations for {agent_name}"):
+                            st.write(f"**Implemented Optimizations:** {', '.join(results['implemented_optimizations'])}")
+                            st.write(f"**Expected Improvements:**")
+                            for opt_type, improvement in results["expected_improvements"].items():
+                                st.write(f"- {opt_type}: {improvement['expected_impact']}")
+                
+                # Performance report
+                st.subheader("📋 Detailed Performance Report")
+                st.text_area("Performance Report", analysis_results["performance_report"], height=400)
+        
+        # Quick metrics display
+        if performance_optimizer.metrics:
+            st.subheader("📈 Recent Performance Metrics")
+            
+            # Get recent metrics (last 10)
+            recent_metrics = performance_optimizer.metrics[-10:]
+            
+            # Create metrics display
+            metric_data = []
+            for metric in recent_metrics:
+                metric_data.append({
+                    "Agent": metric.agent_name,
+                    "Time": f"{metric.execution_time:.2f}s",
+                    "Success": "✅" if metric.success else "❌",
+                    "Model": metric.model_used,
+                    "Cost": f"${metric.cost_estimate:.4f}",
+                    "Timestamp": metric.timestamp.strftime("%H:%M:%S")
+                })
+            
+            if metric_data:
+                st.dataframe(metric_data, use_container_width=True)
+        else:
+            st.info("No performance metrics available yet. Run some agent operations to see metrics.")
+    
+    except ImportError:
+        st.error("Performance optimization module not available")
+    except Exception as e:
+        st.error(f"Error loading performance dashboard: {e}")
+
+
 def create_agent():
     """Create and initialize the AI Development Agent."""
     if st.session_state.agent is None:

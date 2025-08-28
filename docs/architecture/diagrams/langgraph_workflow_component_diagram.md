@@ -4,38 +4,31 @@ This diagram shows the component architecture and interfaces of the LangGraph wo
 
 ```mermaid
 graph TB
-    subgraph "LangGraph Workflow System"
-        subgraph "Core Components"
-            WFM[LangGraphWorkflowManager<br/>execute_workflow()<br/>create_workflow()<br/>validate_state()]
-            SG[StateGraph<br/>add_node()<br/>add_edge()<br/>compile()<br/>invoke()]
-            MM[MemoryManager<br/>save_recall_memory()<br/>search_recall_memories()<br/>save_knowledge_triple()<br/>extract_knowledge_triples()<br/>get_memory_stats()]
-            HM[HandoffManager<br/>validate_handoff_request()<br/>suggest_alternative_agents()<br/>create_handoff_request()<br/>process_handoff_queue()]
-        end
-        
-        subgraph "Agent System"
-            ANF[AgentNodeFactory<br/>create_requirements_node()<br/>create_architecture_node()<br/>create_code_generator_node()<br/>create_test_generator_node()<br/>create_code_reviewer_node()<br/>create_security_analyst_node()<br/>create_documentation_generator_node()]
-            WN[WorkflowNode<br/>execute()<br/>create_chain()<br/>validate_output()<br/>update_state()]
-            MEA[MemoryEnhancedAgent<br/>execute()<br/>load_memories()<br/>create_memory_context()<br/>extract_and_save_triples()]
-        end
-        
-        subgraph "Support Components"
-            EH[ErrorHandler<br/>handle_error()<br/>should_retry()<br/>create_error_state()<br/>log_error()]
-            QG[QualityGate<br/>validate_agent_output()<br/>validate_workflow_state()<br/>calculate_quality_score()<br/>generate_validation_report()]
-        end
-    end
+    %% Core Components
+    WFM[LangGraphWorkflowManager]
+    SG[StateGraph]
+    MM[MemoryManager]
+    HM[HandoffManager]
     
-    subgraph "External Dependencies"
-        LLM[ChatGoogleGenerativeAI<br/>invoke()<br/>ainvoke()]
-        CVS[Chroma Vector Store<br/>add_documents()<br/>similarity_search()<br/>persist()]
-        POP[PydanticOutputParser<br/>parse()<br/>get_format_instructions()]
-        PT[PromptTemplate<br/>format()<br/>partial()]
-    end
+    %% Agent System
+    ANF[AgentNodeFactory]
+    WN[WorkflowNode]
+    MEA[MemoryEnhancedAgent]
     
-    subgraph "Data Models"
-        AS[AgentState<br/>update()<br/>validate()]
-        HR[HandoffRequest<br/>validate()<br/>model_dump()]
-        KT[KnowledgeTriple<br/>validate()<br/>to_dict()]
-    end
+    %% Support Components
+    EH[ErrorHandler]
+    QG[QualityGate]
+    
+    %% External Dependencies
+    LLM[ChatGoogleGenerativeAI]
+    CVS[Chroma Vector Store]
+    POP[PydanticOutputParser]
+    PT[PromptTemplate]
+    
+    %% Data Models
+    AS[AgentState]
+    HR[HandoffRequest]
+    KT[KnowledgeTriple]
     
     %% Component Relationships
     WFM --> SG
@@ -92,19 +85,6 @@ graph TB
     
     KT --> MM
     KT --> AS
-    
-    %% Styling
-    classDef coreComponent fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef agentComponent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef supportComponent fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
-    classDef externalComponent fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef dataModel fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    
-    class WFM,SG,MM,HM coreComponent
-    class ANF,WN,MEA agentComponent
-    class EH,QG supportComponent
-    class LLM,CVS,POP,PT externalComponent
-    class AS,HR,KT dataModel
 ```
 
 ## Component Descriptions

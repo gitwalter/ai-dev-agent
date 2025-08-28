@@ -1,0 +1,522 @@
+# Agile User Story Management Rule
+
+**CRITICAL**: Always create, manage, and track user stories with clear acceptance criteria, story point estimation, and TDD integration. This rule ensures systematic user story management aligned with existing development philosophy.
+
+## Core User Story Requirements
+
+### 1. User Story Structure with INVEST Criteria
+**MANDATORY**: Follow INVEST criteria for all user stories with TDD integration.
+
+```python
+# User Story Template - Integrated with TDD and Systematic Problem-Solving
+class UserStory:
+    def __init__(self, title: str, user_type: str, goal: str, benefit: str):
+        self.title = title
+        self.user_type = user_type
+        self.goal = goal
+        self.benefit = benefit
+        self.acceptance_criteria = []
+        self.story_points = None
+        self.status = "backlog"
+        self.definition_of_ready = []
+        self.definition_of_done = []
+        self.test_scenarios = []  # TDD integration
+        self.business_value = 0
+        self.priority = 0
+        self.dependencies = []
+        self.validation_checks = []  # Continuous Validation Rule integration
+    
+    def add_acceptance_criterion(self, criterion: str, test_scenario: str = None):
+        """Add acceptance criterion with corresponding test scenario"""
+        criterion_obj = {
+            "criterion": criterion,
+            "test_scenario": test_scenario,
+            "test_written": False,
+            "test_passed": False,
+            "validation_passed": False
+        }
+        self.acceptance_criteria.append(criterion_obj)
+        
+        # Generate test scenario if not provided
+        if not test_scenario:
+            test_scenario = self._generate_test_scenario(criterion)
+            criterion_obj["test_scenario"] = test_scenario
+        
+        self.test_scenarios.append(test_scenario)
+    
+    def estimate_story_points(self, points: int, estimation_confidence: str = "medium"):
+        """Estimate story using Fibonacci sequence with confidence level"""
+        valid_points = [1, 2, 3, 5, 8, 13, 21]
+        valid_confidence = ["low", "medium", "high"]
+        
+        if points not in valid_points:
+            raise ValueError(f"Story points must be in Fibonacci sequence: {valid_points}")
+        
+        if estimation_confidence not in valid_confidence:
+            raise ValueError(f"Confidence must be one of: {valid_confidence}")
+        
+        self.story_points = points
+        self.estimation_confidence = estimation_confidence
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "story_point_estimation",
+            "points": points,
+            "confidence": estimation_confidence,
+            "timestamp": datetime.now(),
+            "validation_passed": True
+        })
+    
+    def set_definition_of_ready(self, criteria: List[str]):
+        """Set criteria for story readiness with TDD requirements"""
+        default_ready_criteria = [
+            "user_story_has_clear_acceptance_criteria",
+            "user_story_is_estimable",
+            "user_story_has_test_scenarios_defined",  # TDD integration
+            "user_story_fits_sprint_capacity",
+            "user_story_has_clear_definition_of_done",
+            "user_story_has_no_blocking_dependencies",
+            "user_story_has_business_value_defined"
+        ]
+        
+        # Merge with provided criteria
+        self.definition_of_ready = list(set(default_ready_criteria + criteria))
+    
+    def set_definition_of_done(self, criteria: List[str]):
+        """Set criteria for story completion with quality standards"""
+        default_done_criteria = [
+            "code_is_written_and_tested",  # TDD integration
+            "all_tests_pass",  # TDD integration
+            "test_coverage_meets_target",  # TDD integration
+            "code_review_is_completed",
+            "documentation_is_updated",
+            "acceptance_criteria_are_met",
+            "performance_requirements_are_met",
+            "security_requirements_are_met",
+            "refactoring_is_completed"  # XP integration
+        ]
+        
+        # Merge with provided criteria
+        self.definition_of_done = list(set(default_done_criteria + criteria))
+    
+    def validate_invest_criteria(self) -> Dict[str, bool]:
+        """Validate INVEST criteria for user story quality"""
+        invest_validation = {
+            "independent": self._validate_independence(),
+            "negotiable": self._validate_negotiability(),
+            "valuable": self._validate_value(),
+            "estimable": self._validate_estimability(),
+            "small": self._validate_size(),
+            "testable": self._validate_testability()
+        }
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "invest_validation",
+            "results": invest_validation,
+            "timestamp": datetime.now(),
+            "validation_passed": all(invest_validation.values())
+        })
+        
+        return invest_validation
+    
+    def is_ready(self) -> bool:
+        """Check if story meets definition of ready with validation"""
+        ready_checks = {}
+        
+        for criterion in self.definition_of_ready:
+            ready_checks[criterion] = self._validate_ready_criterion(criterion)
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "ready_validation",
+            "results": ready_checks,
+            "timestamp": datetime.now(),
+            "validation_passed": all(ready_checks.values())
+        })
+        
+        return all(ready_checks.values())
+    
+    def is_done(self) -> bool:
+        """Check if story meets definition of done with validation"""
+        done_checks = {}
+        
+        for criterion in self.definition_of_done:
+            done_checks[criterion] = self._validate_done_criterion(criterion)
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "done_validation",
+            "results": done_checks,
+            "timestamp": datetime.now(),
+            "validation_passed": all(done_checks.values())
+        })
+        
+        return all(done_checks.values())
+    
+    def _generate_test_scenario(self, criterion: str) -> str:
+        """Generate test scenario from acceptance criterion"""
+        # Extract Given-When-Then from criterion
+        given_part = self._extract_given_from_criterion(criterion)
+        when_part = self._extract_when_from_criterion(criterion)
+        then_part = self._extract_then_from_criterion(criterion)
+        
+        return f"""
+        Scenario: {criterion}
+        Given {given_part}
+        When {when_part}
+        Then {then_part}
+        """
+```
+
+### 2. Product Backlog Management
+**MANDATORY**: Maintain prioritized product backlog with continuous validation.
+
+```python
+# Product Backlog Management - Integrated with Continuous Validation Rule
+class ProductBacklog:
+    def __init__(self):
+        self.user_stories = []
+        self.epics = []
+        self.themes = []
+        self.validation_checks = []  # Continuous Validation Rule integration
+        self.priority_criteria = [
+            "business_value",
+            "urgency",
+            "dependencies",
+            "effort",
+            "risk"
+        ]
+    
+    def add_user_story(self, story: UserStory, priority: int, 
+                       business_value: int = 0, urgency: str = "medium"):
+        """Add user story to product backlog with priority and validation"""
+        # Validate story quality
+        if not story.validate_invest_criteria():
+            raise ValueError(f"Story '{story.title}' does not meet INVEST criteria")
+        
+        # Validate priority
+        if priority < 1 or priority > 100:
+            raise ValueError("Priority must be between 1 and 100")
+        
+        story_with_metadata = {
+            "story": story,
+            "priority": priority,
+            "business_value": business_value,
+            "urgency": urgency,
+            "added_date": datetime.now(),
+            "last_updated": datetime.now()
+        }
+        
+        self.user_stories.append(story_with_metadata)
+        self.sort_by_priority()
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "story_added",
+            "story_title": story.title,
+            "priority": priority,
+            "business_value": business_value,
+            "timestamp": datetime.now(),
+            "validation_passed": True
+        })
+    
+    def get_top_priority_stories(self, count: int, sprint_capacity: int = None) -> List[UserStory]:
+        """Get top priority stories for sprint planning with capacity consideration"""
+        ready_stories = [item for item in self.user_stories if item["story"].is_ready()]
+        
+        if sprint_capacity:
+            # Filter by capacity
+            selected_stories = []
+            total_points = 0
+            
+            for item in ready_stories:
+                if total_points + item["story"].story_points <= sprint_capacity:
+                    selected_stories.append(item["story"])
+                    total_points += item["story"].story_points
+                else:
+                    break
+            
+            return selected_stories[:count]
+        else:
+            return [item["story"] for item in ready_stories[:count]]
+    
+    def estimate_velocity(self, completed_stories: List[UserStory], 
+                         sprint_count: int = 3) -> Dict[str, Any]:
+        """Calculate team velocity with comprehensive metrics"""
+        if not completed_stories:
+            return {
+                "average_velocity": 0,
+                "velocity_trend": "stable",
+                "confidence_level": "low",
+                "recommended_capacity": 0
+            }
+        
+        # Calculate velocity metrics
+        story_points = [story.story_points for story in completed_stories]
+        average_velocity = sum(story_points) / len(story_points)
+        
+        # Calculate velocity trend
+        if len(story_points) >= 3:
+            recent_velocity = sum(story_points[-3:]) / 3
+            if recent_velocity > average_velocity * 1.1:
+                velocity_trend = "increasing"
+            elif recent_velocity < average_velocity * 0.9:
+                velocity_trend = "decreasing"
+            else:
+                velocity_trend = "stable"
+        else:
+            velocity_trend = "insufficient_data"
+        
+        # Calculate confidence level
+        if len(story_points) >= 6:
+            confidence_level = "high"
+        elif len(story_points) >= 3:
+            confidence_level = "medium"
+        else:
+            confidence_level = "low"
+        
+        # Recommend capacity (80% of average velocity for safety)
+        recommended_capacity = int(average_velocity * 0.8)
+        
+        return {
+            "average_velocity": average_velocity,
+            "velocity_trend": velocity_trend,
+            "confidence_level": confidence_level,
+            "recommended_capacity": recommended_capacity,
+            "total_stories_completed": len(completed_stories),
+            "total_story_points": sum(story_points)
+        }
+    
+    def sort_by_priority(self):
+        """Sort user stories by priority with business value consideration"""
+        def priority_key(item):
+            story = item["story"]
+            priority_score = item["priority"]
+            business_value = item.get("business_value", 0)
+            urgency_multiplier = {"low": 0.8, "medium": 1.0, "high": 1.2}
+            
+            # Calculate weighted priority
+            weighted_priority = (
+                priority_score * 0.4 +
+                business_value * 0.3 +
+                (priority_score * urgency_multiplier.get(item.get("urgency", "medium"), 1.0)) * 0.3
+            )
+            
+            return weighted_priority
+        
+        self.user_stories.sort(key=priority_key, reverse=True)
+```
+
+### 3. Sprint Backlog Integration
+**MANDATORY**: Integrate user stories into sprint execution with TDD workflow.
+
+```python
+# Sprint Backlog Integration - Enhanced with TDD Workflow
+class SprintBacklog:
+    def __init__(self, sprint_number: int):
+        self.sprint_number = sprint_number
+        self.user_stories = []
+        self.sprint_goal = ""
+        self.velocity_target = 0
+        self.daily_progress = []
+        self.tdd_workflow_status = {}  # TDD integration
+        self.validation_checks = []  # Continuous Validation Rule integration
+    
+    def add_story_to_sprint(self, story: UserStory) -> bool:
+        """Add user story to current sprint with TDD validation"""
+        # Validate story readiness
+        if not story.is_ready():
+            raise ValueError(f"Story '{story.title}' does not meet definition of ready")
+        
+        # Validate sprint capacity
+        if not self._validate_sprint_capacity(story):
+            raise ValueError(f"Story '{story.title}' exceeds sprint capacity")
+        
+        # Initialize TDD workflow for story
+        self.tdd_workflow_status[story.title] = {
+            "red_phase_completed": False,
+            "green_phase_completed": False,
+            "refactor_phase_completed": False,
+            "test_coverage": 0,
+            "acceptance_tests_passed": 0,
+            "total_acceptance_tests": len(story.acceptance_criteria)
+        }
+        
+        story.status = "in_sprint"
+        self.user_stories.append(story)
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "story_added_to_sprint",
+            "story_title": story.title,
+            "story_points": story.story_points,
+            "timestamp": datetime.now(),
+            "validation_passed": True
+        })
+        
+        return True
+    
+    def update_story_status(self, story_title: str, new_status: str, 
+                           tdd_phase: str = None, validation_data: Dict[str, Any] = None):
+        """Update story status with TDD phase tracking"""
+        for story in self.user_stories:
+            if story.title == story_title:
+                old_status = story.status
+                story.status = new_status
+                
+                # Update TDD workflow status
+                if tdd_phase and story_title in self.tdd_workflow_status:
+                    if tdd_phase == "red":
+                        self.tdd_workflow_status[story_title]["red_phase_completed"] = True
+                    elif tdd_phase == "green":
+                        self.tdd_workflow_status[story_title]["green_phase_completed"] = True
+                    elif tdd_phase == "refactor":
+                        self.tdd_workflow_status[story_title]["refactor_phase_completed"] = True
+                
+                # Validate status transition
+                if not self._validate_status_transition(old_status, new_status):
+                    raise ValueError(f"Invalid status transition: {old_status} -> {new_status}")
+                
+                # Add validation check
+                self.validation_checks.append({
+                    "type": "status_update",
+                    "story_title": story_title,
+                    "old_status": old_status,
+                    "new_status": new_status,
+                    "tdd_phase": tdd_phase,
+                    "validation_data": validation_data,
+                    "timestamp": datetime.now()
+                })
+                break
+    
+    def calculate_sprint_progress(self) -> Dict[str, Any]:
+        """Calculate sprint completion with TDD workflow metrics"""
+        completed_stories = [s for s in self.user_stories if s.status == "done"]
+        in_progress_stories = [s for s in self.user_stories if s.status == "in_progress"]
+        
+        total_story_points = sum(s.story_points for s in self.user_stories)
+        completed_story_points = sum(s.story_points for s in completed_stories)
+        
+        # Calculate TDD workflow progress
+        tdd_progress = self._calculate_tdd_progress()
+        
+        progress_data = {
+            "completion_percentage": len(completed_stories) / len(self.user_stories) * 100,
+            "story_points_completed": completed_story_points,
+            "story_points_total": total_story_points,
+            "velocity_current": completed_story_points / max(1, len(self.daily_progress)),
+            "velocity_target": self.velocity_target,
+            "stories_completed": len(completed_stories),
+            "stories_in_progress": len(in_progress_stories),
+            "stories_remaining": len(self.user_stories) - len(completed_stories),
+            "tdd_progress": tdd_progress,
+            "validation_checks_passed": len([c for c in self.validation_checks if c.get("validation_passed", False)]),
+            "validation_checks_total": len(self.validation_checks)
+        }
+        
+        return progress_data
+    
+    def _calculate_tdd_progress(self) -> Dict[str, Any]:
+        """Calculate TDD workflow progress across all stories"""
+        total_stories = len(self.user_stories)
+        if total_stories == 0:
+            return {
+                "red_phase_completed": 0,
+                "green_phase_completed": 0,
+                "refactor_phase_completed": 0,
+                "overall_tdd_progress": 0
+            }
+        
+        red_completed = sum(1 for status in self.tdd_workflow_status.values() if status["red_phase_completed"])
+        green_completed = sum(1 for status in self.tdd_workflow_status.values() if status["green_phase_completed"])
+        refactor_completed = sum(1 for status in self.tdd_workflow_status.values() if status["refactor_phase_completed"])
+        
+        return {
+            "red_phase_completed": red_completed,
+            "green_phase_completed": green_completed,
+            "refactor_phase_completed": refactor_completed,
+            "overall_tdd_progress": (red_completed + green_completed + refactor_completed) / (total_stories * 3) * 100
+        }
+```
+
+## Implementation Guidelines
+
+### 1. User Story Creation Process
+- **INVEST Criteria**: Independent, Negotiable, Valuable, Estimable, Small, Testable
+- **User-Centric**: Focus on user value and business outcomes
+- **Acceptance Criteria**: Clear, testable acceptance criteria with TDD integration
+- **Story Point Estimation**: Use team consensus and Fibonacci sequence
+- **Test Scenarios**: Define test scenarios for each acceptance criterion
+
+### 2. Backlog Management Process
+- **Regular Refinement**: Weekly backlog grooming sessions with TDD validation
+- **Priority Management**: Continuous priority adjustment based on business value
+- **Dependency Management**: Identify and manage story dependencies
+- **Capacity Planning**: Match story points to team capacity with velocity tracking
+- **Quality Gates**: Ensure stories meet INVEST criteria before sprint planning
+
+### 3. Sprint Integration Process
+- **Sprint Planning**: Select stories based on priority, capacity, and readiness
+- **TDD Workflow**: Track Red-Green-Refactor progress for each story
+- **Daily Tracking**: Update story status and TDD phase during daily standups
+- **Definition of Done**: Ensure all completion criteria are met including TDD requirements
+- **Sprint Review**: Validate completed stories with stakeholders and TDD compliance
+
+### 4. Quality Assurance Process
+- **Story Validation**: Validate story quality using INVEST criteria
+- **Test Coverage**: Ensure adequate test coverage for all acceptance criteria
+- **Business Value**: Track and validate business value delivery
+- **Continuous Validation**: Validate story progress and quality continuously
+
+## Integration with Existing Rules
+
+### TDD Integration
+- **Test-First Development**: All user stories must include test scenarios
+- **Test Coverage**: Maintain 90%+ test coverage for all completed work
+- **Red-Green-Refactor**: Track TDD workflow progress for each story
+- **Test Automation**: Automated test execution in CI/CD pipeline
+
+### Error Exposure Integration
+- **Immediate Error Reporting**: Report all story-related errors immediately
+- **No Silent Failures**: Expose all story validation failures
+- **Error Tracking**: Track error resolution and prevention
+- **Systematic Problem-Solving**: Use systematic approach for story issues
+
+### Continuous Validation Integration
+- **Story Validation**: Validate story quality and readiness continuously
+- **Process Validation**: Validate backlog management processes
+- **Quality Validation**: Validate story completion and quality
+- **Progress Validation**: Validate story progress and velocity
+
+### Framework Integration
+- **LangChain/LangGraph**: Use for automated story management and validation
+- **Streamlit**: Use for story dashboard and metrics visualization
+- **Pytest**: Use for automated acceptance test execution
+- **Mermaid**: Use for story flow diagrams and backlog visualization
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- User story creation and refinement
+- Backlog management and prioritization
+- Sprint planning and execution
+- Story status tracking and updates
+- Quality validation and acceptance testing
+- Velocity tracking and capacity planning
+
+**Violations require immediate story refinement and process correction.**
+
+## Benefits
+
+- **Structured Story Management**: Formal user story processes that complement TDD approach
+- **Quality Assurance**: INVEST criteria ensure high-quality user stories
+- **TDD Integration**: Seamless integration with existing TDD workflow
+- **Business Value Focus**: Clear connection between stories and business value
+- **Predictable Delivery**: Story point estimation and velocity tracking
+- **Continuous Improvement**: Regular backlog refinement and process optimization
+- **Stakeholder Satisfaction**: Clear acceptance criteria and validation processes
+description:
+globs:
+alwaysApply: true
+---

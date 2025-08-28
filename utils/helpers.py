@@ -13,12 +13,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 logger = logging.getLogger(__name__)
 
 
-def get_llm_model(task_complexity: str = "simple"):
+def get_llm_model(task_complexity: str = "simple", task_type: str = None):
     """
-    Get appropriate LLM model based on task complexity.
+    Get appropriate LLM model based on task complexity and type.
     
     Args:
         task_complexity (str): "simple" or "complex"
+        task_type (str): Type of task (requirements_analysis, architecture_design, etc.)
         
     Returns:
         ChatGoogleGenerativeAI: Configured LLM instance
@@ -29,11 +30,39 @@ def get_llm_model(task_complexity: str = "simple"):
         if not api_key:
             raise ValueError("GEMINI_API_KEY not found in Streamlit secrets")
         
-        # Select model based on complexity
+        # Task complexity mapping based on AI Model Selection Rule
+        complex_tasks = {
+            "requirements_analysis": True,
+            "architecture_design": True,
+            "code_review": True,
+            "security_analysis": True,
+            "system_design": True,
+            "integration": True
+        }
+        
+        simple_tasks = {
+            "code_generation": False,  # Can be simple or complex
+            "test_generation": False,  # Can be simple or complex
+            "documentation": False,    # Can be simple or complex
+            "basic_processing": False
+        }
+        
+        # Determine if task is inherently complex
+        is_complex_task = complex_tasks.get(task_type, False)
+        
+        # Override with complexity hint if provided
         if task_complexity == "complex":
+            is_complex_task = True
+        elif task_complexity == "simple":
+            is_complex_task = False
+        
+        # Select model based on complexity
+        if is_complex_task:
             model_name = "gemini-2.5-flash"
+            logger.info(f"Using complex model (gemini-2.5-flash) for {task_type}")
         else:
             model_name = "gemini-2.5-flash-lite"
+            logger.info(f"Using simple model (gemini-2.5-flash-lite) for {task_type}")
         
         return ChatGoogleGenerativeAI(
             model=model_name,

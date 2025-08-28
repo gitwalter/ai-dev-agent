@@ -1,0 +1,685 @@
+# Test Monitoring Rule
+
+---
+description: "Automated test monitoring with immediate error detection and bug fixing workflow"
+category: "testing"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*.py", "tests/**/*.py", "**/test_*.py"]
+tags: ["testing", "monitoring", "automation", "error-detection", "bug-fixing"]
+---
+
+# Test Monitoring Rule
+
+**CRITICAL**: Implement automated test monitoring with immediate error detection and systematic bug fixing workflow to maintain zero failing tests policy.
+
+## Core Requirements
+
+### 1. Automated Test Monitoring
+**MANDATORY**: Monitor all test executions automatically with immediate error detection.
+
+**Monitoring Requirements**:
+- **Real-time Monitoring**: Monitor test execution in real-time
+- **Immediate Error Detection**: Detect and report errors immediately
+- **Comprehensive Logging**: Log all test execution details
+- **Performance Tracking**: Track test execution time and performance
+- **Failure Analysis**: Analyze test failures for root causes
+
+**Implementation**:
+```python
+# ✅ CORRECT: Automated Test Monitoring
+import pytest
+import time
+import logging
+from typing import Dict, List, Optional
+from datetime import datetime
+import subprocess
+import sys
+
+class TestMonitor:
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self.test_results = {}
+        self.failure_analysis = FailureAnalyzer()
+        self.alert_system = AlertSystem()
+        self.performance_tracker = PerformanceTracker()
+    
+    def monitor_test_execution(self, test_path: str = None) -> TestExecutionReport:
+        """Monitor test execution with comprehensive tracking"""
+        start_time = time.time()
+        execution_report = TestExecutionReport()
+        
+        try:
+            # Run tests with monitoring
+            test_results = self.run_tests_with_monitoring(test_path)
+            
+            # Analyze results
+            execution_report = self.analyze_test_results(test_results)
+            
+            # Check for failures
+            if execution_report.has_failures():
+                self.handle_test_failures(execution_report)
+            
+            # Track performance
+            execution_time = time.time() - start_time
+            self.performance_tracker.record_execution(test_path, execution_time, execution_report)
+            
+            return execution_report
+            
+        except Exception as e:
+            self.logger.error(f"Test monitoring failed: {e}")
+            execution_report.add_error(f"Monitoring error: {e}")
+            return execution_report
+    
+    def run_tests_with_monitoring(self, test_path: str = None) -> Dict:
+        """Run tests with comprehensive monitoring"""
+        cmd = ["python", "-m", "pytest"]
+        
+        if test_path:
+            cmd.append(test_path)
+        
+        # Add monitoring options
+        cmd.extend([
+            "--tb=short",  # Short traceback format
+            "--strict-markers",  # Strict marker validation
+            "--disable-warnings",  # Disable warnings for cleaner output
+            "--durations=10",  # Show 10 slowest tests
+            "--maxfail=1",  # Stop on first failure
+            "-v"  # Verbose output
+        ])
+        
+        try:
+            # Run tests with real-time output capture
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+                universal_newlines=True
+            )
+            
+            # Monitor output in real-time
+            test_output = []
+            while True:
+                output = process.stdout.readline()
+                if output == '' and process.poll() is not None:
+                    break
+                if output:
+                    test_output.append(output.strip())
+                    # Check for immediate failures
+                    if self.detect_immediate_failure(output):
+                        self.alert_system.send_immediate_alert(f"Test failure detected: {output}")
+            
+            # Get return code
+            return_code = process.poll()
+            
+            return {
+                "return_code": return_code,
+                "output": test_output,
+                "success": return_code == 0
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Test execution failed: {e}")
+            return {
+                "return_code": -1,
+                "output": [f"Test execution error: {e}"],
+                "success": False
+            }
+    
+    def detect_immediate_failure(self, output_line: str) -> bool:
+        """Detect immediate test failures in output"""
+        failure_indicators = [
+            "FAILED",
+            "ERROR",
+            "AssertionError",
+            "Exception:",
+            "Traceback (most recent call last):"
+        ]
+        
+        return any(indicator in output_line for indicator in failure_indicators)
+    
+    def analyze_test_results(self, test_results: Dict) -> TestExecutionReport:
+        """Analyze test execution results"""
+        report = TestExecutionReport()
+        
+        if not test_results["success"]:
+            # Parse failures from output
+            failures = self.parse_failures_from_output(test_results["output"])
+            report.add_failures(failures)
+            
+            # Analyze failure patterns
+            failure_analysis = self.failure_analysis.analyze_failures(failures)
+            report.add_failure_analysis(failure_analysis)
+        
+        # Parse test statistics
+        stats = self.parse_test_statistics(test_results["output"])
+        report.add_statistics(stats)
+        
+        return report
+    
+    def parse_failures_from_output(self, output: List[str]) -> List[TestFailure]:
+        """Parse test failures from pytest output"""
+        failures = []
+        current_failure = None
+        
+        for line in output:
+            if "FAILED" in line or "ERROR" in line:
+                # Start of new failure
+                if current_failure:
+                    failures.append(current_failure)
+                
+                current_failure = TestFailure(
+                    test_name=self.extract_test_name(line),
+                    failure_type="FAILED" if "FAILED" in line else "ERROR",
+                    error_message=line
+                )
+            elif current_failure and line.strip():
+                # Add to current failure details
+                current_failure.add_detail(line)
+        
+        # Add last failure
+        if current_failure:
+            failures.append(current_failure)
+        
+        return failures
+    
+    def extract_test_name(self, line: str) -> str:
+        """Extract test name from failure line"""
+        # Look for test file and function name
+        import re
+        
+        # Pattern: test_file.py::test_function
+        pattern = r'([^:]+)::([^:]+)'
+        match = re.search(pattern, line)
+        
+        if match:
+            return f"{match.group(1)}::{match.group(2)}"
+        
+        return "unknown_test"
+```
+
+### 2. Immediate Error Detection and Alerting
+**MANDATORY**: Implement immediate error detection with instant alerting and response.
+
+**Error Detection Requirements**:
+- **Instant Detection**: Detect errors as they occur
+- **Immediate Alerting**: Send alerts immediately upon error detection
+- **Error Classification**: Classify errors by severity and type
+- **Context Preservation**: Preserve error context for analysis
+- **Escalation Procedures**: Escalate critical errors automatically
+
+**Implementation**:
+```python
+# ✅ CORRECT: Immediate Error Detection
+class ErrorDetector:
+    def __init__(self):
+        self.alert_system = AlertSystem()
+        self.error_classifier = ErrorClassifier()
+        self.context_preserver = ContextPreserver()
+        self.escalation_manager = EscalationManager()
+    
+    def detect_and_alert(self, error: Exception, context: Dict = None) -> None:
+        """Detect error and send immediate alert"""
+        # Classify error
+        error_classification = self.error_classifier.classify_error(error)
+        
+        # Preserve context
+        error_context = self.context_preserver.preserve_context(error, context)
+        
+        # Create alert
+        alert = Alert(
+            type="test_failure",
+            severity=error_classification.severity,
+            message=str(error),
+            context=error_context,
+            timestamp=datetime.now()
+        )
+        
+        # Send immediate alert
+        self.alert_system.send_alert(alert)
+        
+        # Check for escalation
+        if error_classification.severity == "critical":
+            self.escalation_manager.escalate_error(alert)
+
+class AlertSystem:
+    def __init__(self):
+        self.alert_channels = {
+            "console": ConsoleAlertChannel(),
+            "log": LogAlertChannel(),
+            "email": EmailAlertChannel(),
+            "slack": SlackAlertChannel()
+        }
+    
+    def send_alert(self, alert: Alert) -> bool:
+        """Send alert through all configured channels"""
+        success = True
+        
+        for channel_name, channel in self.alert_channels.items():
+            try:
+                channel.send(alert)
+            except Exception as e:
+                logging.error(f"Failed to send alert through {channel_name}: {e}")
+                success = False
+        
+        return success
+    
+    def send_immediate_alert(self, message: str) -> None:
+        """Send immediate alert for critical issues"""
+        alert = Alert(
+            type="immediate",
+            severity="high",
+            message=message,
+            timestamp=datetime.now()
+        )
+        
+        # Send to console immediately
+        self.alert_channels["console"].send(alert)
+        
+        # Send to other channels
+        self.send_alert(alert)
+
+class ErrorClassifier:
+    def classify_error(self, error: Exception) -> ErrorClassification:
+        """Classify error by severity and type"""
+        error_type = type(error).__name__
+        error_message = str(error)
+        
+        # Determine severity
+        severity = self.determine_severity(error_type, error_message)
+        
+        # Determine category
+        category = self.determine_category(error_type, error_message)
+        
+        return ErrorClassification(
+            severity=severity,
+            category=category,
+            error_type=error_type,
+            error_message=error_message
+        )
+    
+    def determine_severity(self, error_type: str, error_message: str) -> str:
+        """Determine error severity"""
+        critical_errors = [
+            "AssertionError",
+            "ImportError",
+            "ModuleNotFoundError",
+            "SyntaxError",
+            "IndentationError"
+        ]
+        
+        high_errors = [
+            "ValueError",
+            "TypeError",
+            "AttributeError",
+            "KeyError",
+            "IndexError"
+        ]
+        
+        if error_type in critical_errors:
+            return "critical"
+        elif error_type in high_errors:
+            return "high"
+        else:
+            return "medium"
+    
+    def determine_category(self, error_type: str, error_message: str) -> str:
+        """Determine error category"""
+        if "test" in error_message.lower():
+            return "test_failure"
+        elif "import" in error_message.lower():
+            return "import_error"
+        elif "syntax" in error_message.lower():
+            return "syntax_error"
+        elif "assertion" in error_message.lower():
+            return "assertion_failure"
+        else:
+            return "general_error"
+```
+
+### 3. Systematic Bug Fixing Workflow
+**MANDATORY**: Implement systematic bug fixing workflow for immediate error resolution.
+
+**Bug Fixing Requirements**:
+- **Root Cause Analysis**: Analyze failures for root causes
+- **Automated Fixes**: Apply automated fixes where possible
+- **Manual Intervention**: Escalate to manual intervention when needed
+- **Fix Validation**: Validate fixes before deployment
+- **Prevention Measures**: Implement measures to prevent recurrence
+
+**Implementation**:
+```python
+# ✅ CORRECT: Systematic Bug Fixing
+class BugFixer:
+    def __init__(self):
+        self.root_cause_analyzer = RootCauseAnalyzer()
+        self.automated_fixer = AutomatedFixer()
+        self.fix_validator = FixValidator()
+        self.prevention_manager = PreventionManager()
+    
+    def fix_test_failures(self, failures: List[TestFailure]) -> FixReport:
+        """Systematically fix test failures"""
+        fix_report = FixReport()
+        
+        for failure in failures:
+            try:
+                # Analyze root cause
+                root_cause = self.root_cause_analyzer.analyze_failure(failure)
+                
+                # Attempt automated fix
+                if root_cause.is_automatically_fixable():
+                    fix_result = self.automated_fixer.apply_fix(failure, root_cause)
+                    
+                    if fix_result.success:
+                        # Validate fix
+                        validation_result = self.fix_validator.validate_fix(failure)
+                        
+                        if validation_result.success:
+                            fix_report.add_successful_fix(failure, fix_result)
+                        else:
+                            fix_report.add_failed_validation(failure, validation_result)
+                    else:
+                        fix_report.add_failed_fix(failure, fix_result)
+                else:
+                    # Escalate to manual intervention
+                    fix_report.add_manual_intervention_needed(failure, root_cause)
+                
+                # Implement prevention measures
+                prevention_measures = self.prevention_manager.create_prevention_measures(failure, root_cause)
+                fix_report.add_prevention_measures(failure, prevention_measures)
+                
+            except Exception as e:
+                fix_report.add_error(failure, f"Bug fixing error: {e}")
+        
+        return fix_report
+
+class RootCauseAnalyzer:
+    def analyze_failure(self, failure: TestFailure) -> RootCause:
+        """Analyze test failure for root cause"""
+        # Analyze error message
+        error_patterns = self.analyze_error_patterns(failure.error_message)
+        
+        # Analyze test context
+        context_analysis = self.analyze_test_context(failure)
+        
+        # Analyze recent changes
+        change_analysis = self.analyze_recent_changes(failure)
+        
+        # Determine root cause
+        root_cause = self.determine_root_cause(error_patterns, context_analysis, change_analysis)
+        
+        return root_cause
+    
+    def analyze_error_patterns(self, error_message: str) -> List[ErrorPattern]:
+        """Analyze error message for patterns"""
+        patterns = []
+        
+        # Check for common error patterns
+        if "AssertionError" in error_message:
+            patterns.append(ErrorPattern("assertion_failure", "Test assertion failed"))
+        
+        if "ImportError" in error_message:
+            patterns.append(ErrorPattern("import_error", "Module import failed"))
+        
+        if "AttributeError" in error_message:
+            patterns.append(ErrorPattern("attribute_error", "Object attribute access failed"))
+        
+        if "TypeError" in error_message:
+            patterns.append(ErrorPattern("type_error", "Type mismatch or incorrect usage"))
+        
+        return patterns
+    
+    def determine_root_cause(self, error_patterns: List[ErrorPattern], 
+                           context_analysis: Dict, change_analysis: Dict) -> RootCause:
+        """Determine root cause from analysis"""
+        # Prioritize by pattern severity
+        if any(p.pattern_type == "import_error" for p in error_patterns):
+            return RootCause("dependency_issue", "Missing or incorrect dependency")
+        
+        if any(p.pattern_type == "assertion_failure" for p in error_patterns):
+            return RootCause("test_logic_error", "Test logic or expectation error")
+        
+        if any(p.pattern_type == "attribute_error" for p in error_patterns):
+            return RootCause("api_change", "API or interface change")
+        
+        # Check for recent changes
+        if change_analysis.get("recent_changes"):
+            return RootCause("recent_change", "Recent code change caused regression")
+        
+        return RootCause("unknown", "Unknown root cause")
+
+class AutomatedFixer:
+    def apply_fix(self, failure: TestFailure, root_cause: RootCause) -> FixResult:
+        """Apply automated fix for test failure"""
+        try:
+            if root_cause.cause_type == "dependency_issue":
+                return self.fix_dependency_issue(failure)
+            
+            elif root_cause.cause_type == "test_logic_error":
+                return self.fix_test_logic(failure)
+            
+            elif root_cause.cause_type == "api_change":
+                return self.fix_api_change(failure)
+            
+            else:
+                return FixResult(success=False, message="No automated fix available")
+                
+        except Exception as e:
+            return FixResult(success=False, message=f"Fix application failed: {e}")
+    
+    def fix_dependency_issue(self, failure: TestFailure) -> FixResult:
+        """Fix dependency-related issues"""
+        # Check if it's a missing import
+        if "ImportError" in failure.error_message:
+            # Try to add missing import
+            missing_module = self.extract_missing_module(failure.error_message)
+            if missing_module:
+                return self.add_missing_import(failure.test_file, missing_module)
+        
+        return FixResult(success=False, message="Dependency fix not implemented")
+    
+    def fix_test_logic(self, failure: TestFailure) -> FixResult:
+        """Fix test logic issues"""
+        # This would require more sophisticated analysis
+        # For now, return manual intervention needed
+        return FixResult(success=False, message="Test logic fix requires manual intervention")
+```
+
+### 4. Performance Tracking and Optimization
+**MANDATORY**: Track test performance and optimize for faster execution.
+
+**Performance Requirements**:
+- **Execution Time Tracking**: Track test execution times
+- **Performance Regression Detection**: Detect performance regressions
+- **Test Parallelization**: Optimize test execution with parallelization
+- **Resource Usage Monitoring**: Monitor resource usage during tests
+- **Performance Optimization**: Optimize slow tests
+
+**Implementation**:
+```python
+# ✅ CORRECT: Performance Tracking
+class PerformanceTracker:
+    def __init__(self):
+        self.performance_database = PerformanceDatabase()
+        self.regression_detector = RegressionDetector()
+        self.optimizer = TestOptimizer()
+    
+    def record_execution(self, test_path: str, execution_time: float, 
+                        report: TestExecutionReport) -> None:
+        """Record test execution performance"""
+        performance_record = PerformanceRecord(
+            test_path=test_path,
+            execution_time=execution_time,
+            test_count=report.get_test_count(),
+            failure_count=report.get_failure_count(),
+            timestamp=datetime.now()
+        )
+        
+        # Store performance record
+        self.performance_database.store_record(performance_record)
+        
+        # Check for performance regressions
+        regression = self.regression_detector.check_regression(performance_record)
+        if regression:
+            self.alert_system.send_alert(Alert(
+                type="performance_regression",
+                severity="medium",
+                message=f"Performance regression detected: {regression.description}"
+            ))
+    
+    def optimize_test_execution(self, test_path: str) -> OptimizationResult:
+        """Optimize test execution performance"""
+        # Analyze current performance
+        performance_data = self.performance_database.get_performance_data(test_path)
+        
+        # Identify optimization opportunities
+        opportunities = self.optimizer.identify_opportunities(performance_data)
+        
+        # Apply optimizations
+        optimization_result = self.optimizer.apply_optimizations(test_path, opportunities)
+        
+        return optimization_result
+
+class RegressionDetector:
+    def check_regression(self, performance_record: PerformanceRecord) -> Optional[Regression]:
+        """Check for performance regression"""
+        # Get historical performance data
+        historical_data = self.performance_database.get_historical_data(
+            performance_record.test_path, 
+            days=7
+        )
+        
+        if not historical_data:
+            return None
+        
+        # Calculate baseline
+        baseline_execution_time = self.calculate_baseline(historical_data)
+        
+        # Check for regression
+        if performance_record.execution_time > baseline_execution_time * 1.5:
+            return Regression(
+                test_path=performance_record.test_path,
+                current_time=performance_record.execution_time,
+                baseline_time=baseline_execution_time,
+                degradation_percentage=(
+                    (performance_record.execution_time - baseline_execution_time) / 
+                    baseline_execution_time * 100
+                )
+            )
+        
+        return None
+    
+    def calculate_baseline(self, historical_data: List[PerformanceRecord]) -> float:
+        """Calculate performance baseline"""
+        if not historical_data:
+            return 0.0
+        
+        # Use median for baseline to avoid outliers
+        execution_times = [record.execution_time for record in historical_data]
+        execution_times.sort()
+        
+        n = len(execution_times)
+        if n % 2 == 0:
+            median = (execution_times[n//2 - 1] + execution_times[n//2]) / 2
+        else:
+            median = execution_times[n//2]
+        
+        return median
+```
+
+## Integration with Development Workflow
+
+### Pre-Commit Test Monitoring
+```python
+# ✅ CORRECT: Pre-Commit Integration
+class PreCommitTestMonitor:
+    def __init__(self):
+        self.test_monitor = TestMonitor()
+        self.bug_fixer = BugFixer()
+    
+    def run_pre_commit_tests(self) -> bool:
+        """Run tests before commit with monitoring"""
+        # Run tests with monitoring
+        execution_report = self.test_monitor.monitor_test_execution()
+        
+        # Check for failures
+        if execution_report.has_failures():
+            # Attempt to fix failures
+            fix_report = self.bug_fixer.fix_test_failures(execution_report.get_failures())
+            
+            # If fixes were successful, run tests again
+            if fix_report.has_successful_fixes():
+                execution_report = self.test_monitor.monitor_test_execution()
+        
+        # Return success only if no failures
+        return not execution_report.has_failures()
+```
+
+### Continuous Test Monitoring
+```python
+# ✅ CORRECT: Continuous Monitoring
+class ContinuousTestMonitor:
+    def __init__(self):
+        self.test_monitor = TestMonitor()
+        self.scheduler = TestScheduler()
+    
+    def start_continuous_monitoring(self) -> None:
+        """Start continuous test monitoring"""
+        while True:
+            try:
+                # Run scheduled tests
+                scheduled_tests = self.scheduler.get_scheduled_tests()
+                
+                for test_path in scheduled_tests:
+                    execution_report = self.test_monitor.monitor_test_execution(test_path)
+                    
+                    # Handle any failures
+                    if execution_report.has_failures():
+                        self.handle_continuous_failures(execution_report)
+                
+                # Wait for next cycle
+                time.sleep(300)  # Check every 5 minutes
+                
+            except Exception as e:
+                logging.error(f"Continuous monitoring error: {e}")
+                time.sleep(60)  # Wait 1 minute before retrying
+```
+
+## Benefits
+
+### Immediate Error Detection
+- **Real-time Monitoring**: Detect errors as they occur
+- **Instant Alerting**: Immediate notification of failures
+- **Rapid Response**: Quick identification and resolution of issues
+
+### Automated Bug Fixing
+- **Systematic Approach**: Systematic approach to bug fixing
+- **Automated Fixes**: Apply fixes automatically where possible
+- **Prevention Measures**: Implement measures to prevent recurrence
+
+### Performance Optimization
+- **Performance Tracking**: Track and optimize test performance
+- **Regression Detection**: Detect performance regressions early
+- **Continuous Improvement**: Continuously improve test efficiency
+
+### Quality Assurance
+- **Zero Failing Tests**: Maintain zero failing tests policy
+- **Quality Gates**: Ensure code quality through test monitoring
+- **Reliability**: Improve system reliability through comprehensive testing
+
+## Enforcement
+
+This rule is **CRITICAL** and must be followed for all:
+- Test execution and monitoring
+- Error detection and alerting
+- Bug fixing and resolution
+- Performance optimization
+- Quality assurance processes
+
+**Violations of this rule require immediate remediation and test monitoring restoration.**
+description:
+globs:
+alwaysApply: true
+---

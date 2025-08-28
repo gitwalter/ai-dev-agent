@@ -4,38 +4,7 @@ A multi-agent system for automated software development using LangGraph and Goog
 
 ## 🎯 **Development Philosophy**
 
-This project follows a **comprehensive rule system** with 29 rules organized in 5 tiers that ensure high-quality, efficient, and maintainable code:
-
-### **Tier 1: Core Development Principles** (14 rules - Always Applied)
-- **Test-Driven Development**: Write tests first, then implement functionality
-- **Systematic Problem-Solving**: Follow clear methodology for all challenges
-- **Framework-First**: Use established frameworks over custom implementations
-- **Error Exposure**: Never use silent error handling - expose all errors immediately
-- **Continuous Validation**: Validate every step and decision continuously
-- **Continuous Learning**: Learn from every interaction and continuously improve
-- **Code Quality and Architecture**: Follow SOLID principles and clean code practices
-- **Strict Naming Conventions**: Enforce consistent naming for readability and maintainability
-- **Comprehensive Test Patterns**: Systematic testing approach for all scenarios
-- **System Architecture Integration**: Design components that integrate seamlessly
-- **Expert Design Patterns**: Apply GoF and Fowler patterns with expert care
-- **Automated Research**: 5-minute rapid research for blocked development
-- **Daily Start Automation**: 15-minute automated development session start
-- **Daily End Automation**: 26-minute automated development session closure
-
-### **Tier 2-5: Development Standards, Testing, Project Management** (15 rules)
-- **AI Model Selection**: Optimized Gemini model selection for performance and cost
-- **File Organization**: Clear, logical file structure and organization
-- **Documentation Maintenance**: Synchronized documentation with code changes
-- **Security Best Practices**: Secure handling of sensitive data and operations
-- **Performance-First**: Proactive performance optimization
-- **Test Organization**: Clear test structure and organization
-- **Agent Testing & Parsing**: Systematic agent testing and parsing optimization
-- **Tasklist Management**: Current, accurate task tracking and progress
-- **Implementation Roadmap**: Follow comprehensive development plans
-- **Requirements Management**: Track and validate requirements throughout development
-- **Prompt Database Management**: Database-first prompt management system
-- **Automation & Environment**: Comprehensive automation environment
-- **Diagram Standards**: Mermaid diagrams for GitHub-compatible documentation
+This project follows a **comprehensive rule system** that ensures high-quality, efficient, and maintainable code through automated development standards and best practices.
 
 For complete rules and application guide, see [.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc](.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
 
@@ -329,13 +298,13 @@ LANGSMITH_PROJECT = "ai-dev-agent"
 
 📖 **For detailed LangSmith usage and debugging, see the [LangSmith Tracing Guide](docs/guides/observability/langsmith_tracing_guide.md)**
 
-## 📋 Cursor Rules System
+## 📋 Development Standards
 
-This project implements a comprehensive **Cursor Rules System** that enforces development standards, quality assurance, and best practices through automated rule enforcement. The rules are stored in `.cursor/rules/` and are automatically applied during development.
+This project implements comprehensive development standards that ensure consistency, quality, and best practices through automated rule enforcement. The rules are stored in `.cursor/rules/` and are automatically applied during development.
 
-### Rule Categories and Purposes
+### Key Development Standards
 
-#### 🔧 **Development Standards** (Critical Priority)
+#### 🔧 **Core Standards** (Critical Priority)
 - **AI Model Selection**: Standardized LLM model selection using Gemini 2.5 Flash/Flash-Lite
 - **Framework Standards**: LangChain + LangGraph + LangSmith implementation standards
 - **Error Handling**: Zero-tolerance policy for silent errors and fallbacks
@@ -655,6 +624,14 @@ The system is optimized for:
 - **Artifact Verification**: Automated verification of generated artifacts
 - **Error Scenario Testing**: Testing of edge cases and error conditions
 - **Automated Test Monitoring**: Immediate error detection and bug fixing workflow
+
+### Documentation Enhancement
+- **Comprehensive Documentation**: Complete documentation for all system components
+- **Structured Organization**: Clear organization and navigation of documentation
+- **Updated README Files**: Comprehensive README files for all major directories
+- **Usage Examples**: Detailed examples and usage patterns for all components
+- **Maintenance Guidelines**: Clear guidelines for documentation maintenance
+- **Automated Documentation Review**: Comprehensive documentation review rule integrated into daily end routine
 
 ## 🤝 Contributing
 

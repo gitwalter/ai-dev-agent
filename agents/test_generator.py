@@ -46,7 +46,41 @@ class TestGenerator(BaseAgent):
         Returns:
             Prompt template string from database
         """
-        return self.prompt_loader.get_system_prompt()
+        # Use a highly constrained prompt template that forces JSON output
+        return """You are an expert Test Engineer. Generate comprehensive tests based on the code and requirements.
+
+CRITICAL OUTPUT FORMAT REQUIREMENTS:
+Return ONLY a JSON object with this EXACT structure:
+{{
+    "test_files": {{
+        "test_filename.py": "complete test file content as string",
+        "test_another.py": "complete test file content as string"
+    }}
+}}
+
+CONSTRAINTS:
+- NO nested objects, arrays, or complex structures
+- NO metadata, descriptions, or test_cases arrays
+- NO test_type or other fields
+- Each value must be a complete, runnable Python test file as a string
+- Use descriptive filenames based on the code being tested
+- Include proper imports, test functions, and assertions
+
+PROJECT CONTEXT:
+{project_context}
+
+REQUIREMENTS:
+{requirements}
+
+CODE FILES:
+{code_files}
+
+TASK:
+Generate comprehensive tests that cover all functionality and edge cases.
+
+Return the exact JSON structure above with no additional fields or nested structures. Each test file should be a complete, runnable Python test file with proper imports, test functions, and assertions.
+
+CRITICAL: Respond with ONLY valid JSON - no explanations, no markdown, no additional text."""
     
     async def execute(self, state: AgentState) -> AgentState:
         """Execute test generation task using LangChain JsonOutputParser."""
@@ -166,14 +200,9 @@ class TestGenerator(BaseAgent):
             input_variables=["project_context", "code_files", "requirements"]
         )
         
-        # Create LangChain Gemini client
-        import streamlit as st
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash-lite",
-            google_api_key=st.secrets["GEMINI_API_KEY"],
-            temperature=0.1,
-            max_output_tokens=8192
-        )
+        # Create LangChain Gemini client with optimized model selection
+        from utils.helpers import get_llm_model
+        llm = get_llm_model(task_type="test_generation")
         
         # Create chain
         chain = prompt | llm | self.json_parser

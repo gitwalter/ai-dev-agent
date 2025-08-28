@@ -7,12 +7,30 @@
 
 #### **Application Priority: CRITICAL - Always Applied**
 
-1. **Test-Driven Development Rule** ⭐
+1. **No Failing Tests Rule** 🚨 **RULE #1**
+   - **When**: ALWAYS - before any other development work
+   - **How**: Zero tolerance for failing tests, fix all failures immediately
+   - **Validation**: 100% test success rate, no exceptions
+   - **Priority**: **ABSOLUTE - NO PROGRESS UNTIL ALL TESTS PASS**
+
+2. **Keep Things in Order Rule** 📋 **RULE #2**
+   - **When**: ALWAYS - maintain order in everything
+   - **How**: Keep tasklists, filenames, folder structure, commit messages, documentation organized
+   - **Validation**: Clean, organized, professional project structure
+   - **Priority**: **CRITICAL - MAINTAIN ORDER ALWAYS**
+
+3. **Maintain Focus and Big Picture Rule** 🎯 **RULE #3**
+   - **When**: ALWAYS - during every development task
+   - **How**: Stay focused on current task while maintaining awareness of all relationships (Zusammenhänge)
+   - **Validation**: Task completed successfully without losing sight of overall project goals
+   - **Priority**: **CRITICAL - BALANCE FOCUS WITH CONTEXT**
+
+4. **Test-Driven Development Rule** ⭐
    - **When**: Every new feature, bug fix, or refactoring
    - **How**: Write tests first, then implement functionality
    - **Validation**: 90%+ test coverage, all tests passing
 
-2. **Systematic Problem-Solving Rule** ⭐
+5. **Systematic Problem-Solving Rule** ⭐
    - **When**: Any problem or issue encountered
    - **How**: Define → Analyze → Test → Fix → Validate → Document
    - **Validation**: Clear problem definition and documented solution
@@ -74,8 +92,19 @@
 
 13. **AI Model Selection Rule** 🔧
     - **When**: All LLM operations and agent interactions
-    - **How**: Use gemini-2.5-flash-lite for simple tasks, gemini-2.5-flash for complex
+    - **How**: Use `utils.helpers.get_llm_model(task_type="agent_name")`
     - **Validation**: Optimal performance and cost efficiency
+
+**Model Selection Matrix**:
+- **Complex Tasks** (use `gemini-2.5-flash`):
+  - Requirements Analysis - Complex reasoning and synthesis
+  - Architecture Design - System design and pattern recognition  
+  - Code Review - Sophisticated analysis and pattern recognition
+  - Security Analysis - Advanced threat modeling and risk assessment
+- **Simple Tasks** (use `gemini-2.5-flash-lite`):
+  - Test Generation - Basic test case creation
+  - Documentation - Simple documentation generation
+  - Basic Code Generation - Straightforward code implementation
 
 14. **File Organization Rule** 🔧
     - **When**: All file and directory management

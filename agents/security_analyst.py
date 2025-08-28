@@ -1,6 +1,7 @@
 """
 Security Analyst Agent for AI Development Agent.
 Performs security analysis on generated code and architecture.
+Uses LangChain JsonOutputParser for stable JSON parsing.
 Implements quality gate functionality to ensure security standards are met.
 """
 
@@ -10,6 +11,14 @@ from models.state import AgentState
 from models.responses import SecurityAnalysisResponse
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
+
+try:
+    from langchain_core.output_parsers import JsonOutputParser
+    from langchain.prompts import PromptTemplate
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
 
 
 class SecurityAnalyst(BaseAgent):
@@ -22,6 +31,12 @@ class SecurityAnalyst(BaseAgent):
         """Initialize the SecurityAnalyst agent."""
         super().__init__(config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("security_analyst")
+        
+        # Setup LangChain parser if available
+        if LANGCHAIN_AVAILABLE:
+            self.json_parser = JsonOutputParser()
+        else:
+            self.json_parser = None
     
     def get_prompt_template(self) -> str:
         """
@@ -33,11 +48,11 @@ class SecurityAnalyst(BaseAgent):
         return self.prompt_loader.get_system_prompt()
     
     async def execute(self, state: AgentState) -> AgentState:
-        """Execute security analysis task with quality gate functionality."""
+        """Execute security analysis task using LangChain JsonOutputParser."""
         import time
         start_time = time.time()
         
-        self.add_log_entry("info", "Starting security analysis with quality gate")
+        self.add_log_entry("info", "Starting security analysis with LangChain JsonOutputParser")
         self.add_log_entry("info", f"Project context: {state.get('project_context', '')[:100]}...")
         
         try:
@@ -46,17 +61,11 @@ class SecurityAnalyst(BaseAgent):
             
             self.add_log_entry("info", "Input validation passed")
             
-            # Prepare prompt
-            prompt = self.prepare_prompt(state)
-            self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
-            
-            # Generate response
-            self.add_log_entry("info", "Generating security analysis response")
-            response_text = await self.generate_response(prompt)
-            
-            # Parse response
-            self.add_log_entry("info", "Parsing JSON response")
-            security_data = self.parse_json_response(response_text)
+            # Use LangChain approach if available
+            if LANGCHAIN_AVAILABLE and self.json_parser:
+                security_data = await self._execute_with_langchain(state)
+            else:
+                security_data = await self._execute_with_legacy_parsing(state)
             
             # Validate response structure
             self._validate_security_data(security_data)
@@ -109,6 +118,70 @@ class SecurityAnalyst(BaseAgent):
             execution_time = time.time() - start_time
             self.add_log_entry("error", f"Security analysis failed: {str(e)}")
             return self.handle_error(state, e, "security_analysis")
+    
+    async def _execute_with_langchain(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute security analysis using LangChain JsonOutputParser.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed security analysis data
+        """
+        # Get prompt template from database
+        prompt_template = self.get_prompt_template()
+        
+        # Create prompt
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["project_context", "code_files", "requirements", "architecture"]
+        )
+        
+        # Create LangChain Gemini client with optimized model selection
+        from utils.helpers import get_llm_model
+        llm = get_llm_model(task_type="security_analysis")
+        
+        # Create chain
+        chain = prompt | llm | self.json_parser
+        
+        # Execute the chain
+        self.add_log_entry("info", "Executing LangChain chain for security analysis")
+        result = await chain.ainvoke({
+            "project_context": state["project_context"],
+            "code_files": str(state.get("code_files", {})),
+            "requirements": str(state.get("requirements", [])),
+            "architecture": str(state.get("architecture", {}))
+        })
+        
+        self.add_log_entry("info", "Successfully parsed security analysis with JsonOutputParser")
+        return result
+    
+    async def _execute_with_legacy_parsing(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute security analysis using legacy parsing approach.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Parsed security analysis data
+        """
+        self.add_log_entry("info", "Using legacy parsing approach")
+        
+        # Prepare prompt
+        prompt = self.prepare_prompt(state)
+        self.add_log_entry("debug", f"Generated prompt length: {len(prompt)}")
+        
+        # Generate response
+        self.add_log_entry("info", "Generating security analysis response")
+        response_text = await self.generate_response(prompt)
+        
+        # Parse response
+        self.add_log_entry("info", "Parsing JSON response")
+        security_data = self.parse_json_response(response_text)
+        
+        return security_data
     
     def _perform_security_quality_gate(self, security_data: Dict[str, Any]) -> Dict[str, Any]:
         """

@@ -1,0 +1,297 @@
+# Agile Sprint Management Rule
+
+**CRITICAL**: Always follow Agile sprint methodology with 2-week iterations, daily standups, and continuous delivery principles. This rule integrates with the existing TDD philosophy and systematic problem-solving approach.
+
+## Core Sprint Requirements
+
+### 1. Sprint Planning Integration
+**MANDATORY**: Every development session starts with sprint planning and backlog refinement.
+
+```python
+# Sprint Planning Template - Integrated with TDD
+class SprintPlanning:
+    def __init__(self, sprint_number: int, duration_days: int = 14):
+        self.sprint_number = sprint_number
+        self.duration_days = duration_days
+        self.user_stories = []
+        self.sprint_goal = ""
+        self.velocity_target = 0
+        self.start_date = None
+        self.end_date = None
+        self.definition_of_ready = [
+            "user_story_has_clear_acceptance_criteria",
+            "user_story_is_estimable",
+            "user_story_has_test_scenarios_defined",
+            "user_story_fits_sprint_capacity",
+            "user_story_has_clear_definition_of_done"
+        ]
+        self.definition_of_done = [
+            "code_is_written_and_tested",
+            "all_tests_pass",
+            "code_review_is_completed",
+            "documentation_is_updated",
+            "acceptance_criteria_are_met",
+            "performance_requirements_are_met",
+            "security_requirements_are_met"
+        ]
+    
+    def add_user_story(self, title: str, description: str, story_points: int, 
+                      acceptance_criteria: List[str], test_scenarios: List[str]):
+        """Add user story to sprint backlog with TDD integration"""
+        story = {
+            "title": title,
+            "description": description,
+            "story_points": story_points,
+            "status": "planned",
+            "acceptance_criteria": acceptance_criteria,
+            "test_scenarios": test_scenarios,  # TDD integration
+            "tasks": [],
+            "test_coverage_target": 90,  # Aligns with TDD rule
+            "definition_of_ready_met": False,
+            "definition_of_done_met": False
+        }
+        self.user_stories.append(story)
+    
+    def set_sprint_goal(self, goal: str, success_metrics: List[str]):
+        """Define sprint goal and measurable success criteria"""
+        self.sprint_goal = goal
+        self.success_metrics = success_metrics
+    
+    def validate_sprint_readiness(self) -> Dict[str, bool]:
+        """Validate sprint readiness using systematic problem-solving approach"""
+        validation_results = {}
+        
+        # Check each definition of ready criterion
+        for criterion in self.definition_of_ready:
+            validation_results[criterion] = self._validate_criterion(criterion)
+        
+        # Check sprint capacity vs story points
+        total_story_points = sum(story["story_points"] for story in self.user_stories)
+        validation_results["capacity_appropriate"] = total_story_points <= self.velocity_target * 1.2
+        
+        return validation_results
+```
+
+### 2. Daily Standup Integration
+**MANDATORY**: Daily progress tracking and blocker identification with systematic problem-solving.
+
+```python
+# Daily Standup Template - Integrated with Error Exposure Rule
+class DailyStandup:
+    def __init__(self, sprint_number: int, day_number: int):
+        self.sprint_number = sprint_number
+        self.day_number = day_number
+        self.team_members = []
+        self.blockers = []
+        self.velocity_update = 0
+        self.sprint_goal_progress = 0.0
+        self.error_reports = []  # Aligns with Error Exposure Rule
+    
+    def conduct_standup(self) -> Dict[str, Any]:
+        """Conduct daily standup with three questions and error exposure"""
+        standup_data = {
+            "yesterday_completed": [],
+            "today_planned": [],
+            "blockers": [],
+            "velocity_update": 0,
+            "sprint_goal_progress": 0.0,
+            "errors_exposed": [],  # Error Exposure Rule integration
+            "tdd_status": {}  # TDD Rule integration
+        }
+        
+        # Collect team member updates
+        for member in self.team_members:
+            member_update = self._get_member_update(member)
+            standup_data["yesterday_completed"].extend(member_update["completed"])
+            standup_data["today_planned"].extend(member_update["planned"])
+            standup_data["blockers"].extend(member_update["blockers"])
+            standup_data["errors_exposed"].extend(member_update["errors"])
+            standup_data["tdd_status"][member] = member_update["tdd_status"]
+        
+        # Update velocity and progress
+        standup_data["velocity_update"] = self._calculate_velocity_update()
+        standup_data["sprint_goal_progress"] = self._calculate_sprint_progress()
+        
+        return standup_data
+    
+    def _get_member_update(self, member: str) -> Dict[str, Any]:
+        """Get individual team member update with TDD and error exposure"""
+        return {
+            "completed": [],  # Completed tasks with test coverage
+            "planned": [],    # Planned tasks with test scenarios
+            "blockers": [],   # Blockers that need systematic resolution
+            "errors": [],     # Errors exposed (Error Exposure Rule)
+            "tdd_status": {   # TDD compliance status
+                "tests_written_first": True,
+                "test_coverage_met": True,
+                "refactoring_completed": True
+            }
+        }
+```
+
+### 3. Sprint Backlog Management
+**MANDATORY**: Maintain prioritized sprint backlog with continuous validation.
+
+```python
+# Sprint Backlog Management - Integrated with Continuous Validation Rule
+class SprintBacklog:
+    def __init__(self, sprint_number: int):
+        self.sprint_number = sprint_number
+        self.user_stories = []
+        self.sprint_goal = ""
+        self.velocity_target = 0
+        self.daily_progress = []
+        self.validation_checks = []  # Continuous Validation Rule integration
+    
+    def add_story_to_sprint(self, story: Dict[str, Any]) -> bool:
+        """Add user story to current sprint with validation"""
+        # Validate story readiness (Continuous Validation Rule)
+        if not self._validate_story_readiness(story):
+            raise ValueError(f"Story '{story['title']}' does not meet definition of ready")
+        
+        # Validate sprint capacity
+        if not self._validate_sprint_capacity(story):
+            raise ValueError(f"Story '{story['title']}' exceeds sprint capacity")
+        
+        story["status"] = "in_sprint"
+        self.user_stories.append(story)
+        
+        # Add validation check
+        self.validation_checks.append({
+            "type": "story_added",
+            "story_title": story["title"],
+            "timestamp": datetime.now(),
+            "validation_passed": True
+        })
+        
+        return True
+    
+    def update_story_status(self, story_title: str, new_status: str, 
+                           validation_data: Dict[str, Any] = None):
+        """Update story status with continuous validation"""
+        for story in self.user_stories:
+            if story["title"] == story_title:
+                old_status = story["status"]
+                story["status"] = new_status
+                
+                # Validate status transition
+                if not self._validate_status_transition(old_status, new_status):
+                    raise ValueError(f"Invalid status transition: {old_status} -> {new_status}")
+                
+                # Add validation check
+                self.validation_checks.append({
+                    "type": "status_update",
+                    "story_title": story_title,
+                    "old_status": old_status,
+                    "new_status": new_status,
+                    "validation_data": validation_data,
+                    "timestamp": datetime.now()
+                })
+                break
+    
+    def calculate_sprint_progress(self) -> Dict[str, Any]:
+        """Calculate sprint completion with comprehensive metrics"""
+        completed_stories = [s for s in self.user_stories if s["status"] == "done"]
+        in_progress_stories = [s for s in self.user_stories if s["status"] == "in_progress"]
+        
+        total_story_points = sum(s["story_points"] for s in self.user_stories)
+        completed_story_points = sum(s["story_points"] for s in completed_stories)
+        
+        progress_data = {
+            "completion_percentage": len(completed_stories) / len(self.user_stories) * 100,
+            "story_points_completed": completed_story_points,
+            "story_points_total": total_story_points,
+            "velocity_current": completed_story_points / max(1, len(self.daily_progress)),
+            "velocity_target": self.velocity_target,
+            "stories_completed": len(completed_stories),
+            "stories_in_progress": len(in_progress_stories),
+            "stories_remaining": len(self.user_stories) - len(completed_stories),
+            "validation_checks_passed": len([c for c in self.validation_checks if c.get("validation_passed", False)]),
+            "validation_checks_total": len(self.validation_checks)
+        }
+        
+        return progress_data
+```
+
+## Implementation Guidelines
+
+### 1. Sprint Planning Process
+- **Story Point Estimation**: Use Fibonacci sequence (1, 2, 3, 5, 8, 13, 21) with team consensus
+- **Velocity Calculation**: Track completed story points per sprint with historical data
+- **Capacity Planning**: Consider team availability, technical debt allocation (20%), and learning time
+- **Definition of Ready**: Clear criteria for story readiness with TDD integration
+- **Sprint Goal Setting**: Measurable, achievable goals with success metrics
+
+### 2. Daily Standup Process
+- **Time Limit**: Maximum 15 minutes with focused discussion
+- **Three Questions**: What did you complete? What will you do? Any blockers?
+- **Blocker Resolution**: Immediate escalation using systematic problem-solving approach
+- **Progress Tracking**: Update burndown chart and velocity metrics daily
+- **Error Exposure**: Report all errors and issues immediately (Error Exposure Rule)
+- **TDD Status**: Track test-first development compliance
+
+### 3. Sprint Execution
+- **Continuous Integration**: Commit and test frequently with automated CI/CD
+- **Definition of Done**: Clear completion criteria aligned with quality standards
+- **Technical Debt Management**: Allocate 20% capacity for refactoring and maintenance
+- **Quality Gates**: Automated testing, code review, and performance validation
+- **Continuous Validation**: Validate every step and decision continuously
+
+### 4. Sprint Review and Retrospective
+- **Sprint Review**: Demonstrate completed work to stakeholders
+- **Sprint Retrospective**: Identify improvements and action items
+- **Velocity Analysis**: Track and analyze velocity trends
+- **Process Improvement**: Implement improvements in next sprint
+- **Knowledge Sharing**: Document learnings and best practices
+
+## Integration with Existing Rules
+
+### TDD Integration
+- **Test-First Development**: All user stories must include test scenarios
+- **Test Coverage**: Maintain 90%+ test coverage for all completed work
+- **Refactoring**: Continuous refactoring with test validation
+- **Test Automation**: Automated test execution in CI/CD pipeline
+
+### Error Exposure Integration
+- **Immediate Error Reporting**: Report all errors in daily standups
+- **No Silent Failures**: Expose all issues immediately
+- **Error Tracking**: Track error resolution and prevention
+- **Systematic Problem-Solving**: Use systematic approach for blocker resolution
+
+### Continuous Validation Integration
+- **Story Validation**: Validate story readiness and completion
+- **Process Validation**: Validate sprint processes and metrics
+- **Quality Validation**: Validate code quality and performance
+- **Progress Validation**: Validate sprint progress and velocity
+
+### Framework Integration
+- **LangChain/LangGraph**: Use for automated sprint management
+- **Streamlit**: Use for sprint dashboard and metrics visualization
+- **Pytest**: Use for automated testing and validation
+- **Mermaid**: Use for sprint burndown charts and process diagrams
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Sprint planning and execution
+- Daily development activities
+- Story management and tracking
+- Velocity and capacity planning
+- Blocker resolution and escalation
+- Sprint review and retrospective
+
+**Violations require immediate sprint adjustment and process improvement.**
+
+## Benefits
+
+- **Structured Agility**: Formal Agile processes that complement TDD approach
+- **Quality Assurance**: XP practices that enhance existing quality standards
+- **Team Collaboration**: Improved communication and coordination
+- **Continuous Improvement**: Regular retrospectives and process optimization
+- **Predictable Delivery**: Velocity-based planning and capacity management
+- **Risk Mitigation**: Early blocker identification and resolution
+- **Stakeholder Satisfaction**: Regular demonstrations and feedback cycles
+description:
+globs:
+alwaysApply: true
+---

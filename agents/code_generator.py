@@ -239,14 +239,9 @@ class CodeGenerator(BaseAgent):
             technology_stack=str(state.get("technology_stack", {}))
         )
         
-        # Create LangChain Gemini client
-        import streamlit as st
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash-lite",
-            google_api_key=st.secrets["GEMINI_API_KEY"],
-            temperature=0.1,
-            max_output_tokens=8192
-        )
+        # Create LangChain Gemini client with optimized model selection
+        from utils.helpers import get_llm_model
+        llm = get_llm_model(task_type="code_generation")
         
         # Execute the chain
         self.add_log_entry("info", "Executing LangChain chain for code generation")

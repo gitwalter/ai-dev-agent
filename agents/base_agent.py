@@ -18,6 +18,7 @@ from models.state import AgentState
 from models.responses import AgentResponse, TaskStatus
 from models.config import AgentConfig
 from utils.prompt_manager import store_agent_prompt, record_prompt_execution
+from utils.quality_assurance import quality_assurance, QualityGateResult, ValidationResult
 
 
 class BaseAgent(ABC):
@@ -77,6 +78,41 @@ class BaseAgent(ABC):
         """Get the agent description."""
         return self.config.description if hasattr(self.config, 'description') else 'No description available'
         
+    async def execute_with_quality_assurance(self, state: AgentState) -> AgentState:
+        """
+        Execute the agent's main task with quality assurance.
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Updated state with agent results and quality validation
+        """
+        start_time = time.time()
+        
+        try:
+            # Execute the agent's specific task
+            result = await self._execute_task(state)
+            
+            # Perform quality validation
+            quality_result = self._validate_output_quality(result)
+            
+            # Add quality metrics to state
+            state = self._add_quality_metrics_to_state(state, quality_result)
+            
+            # Log quality results
+            self._log_quality_results(quality_result)
+            
+            # If quality gate failed, handle appropriately
+            if not quality_result.passed:
+                state = self._handle_quality_gate_failure(state, quality_result)
+            
+            return state
+            
+        except Exception as e:
+            self.logger.error(f"Agent execution failed: {e}")
+            raise
+    
     @abstractmethod
     async def execute(self, state: AgentState) -> AgentState:
         """
@@ -89,6 +125,187 @@ class BaseAgent(ABC):
             Updated state with agent results
         """
         pass
+    
+    def _validate_output_quality(self, output: Dict[str, Any]) -> QualityGateResult:
+        """
+        Validate agent output using the quality assurance system.
+        
+        Args:
+            output: Agent output to validate
+            
+        Returns:
+            QualityGateResult with validation results
+        """
+        # Determine output type based on agent name
+        output_type = self._get_output_type()
+        
+        # Validate using quality assurance system
+        quality_result = quality_assurance.validate_agent_output(
+            agent_name=self.name,
+            output=output,
+            output_type=output_type
+        )
+        
+        return quality_result
+    
+    def _get_output_type(self) -> str:
+        """Get the output type for this agent."""
+        agent_type_mappings = {
+            "requirements_analyst": "requirements",
+            "architecture_designer": "architecture", 
+            "code_generator": "code",
+            "test_generator": "tests",
+            "code_reviewer": "review",
+            "security_analyst": "security",
+            "documentation_generator": "documentation",
+            "project_manager": "project"
+        }
+        
+        return agent_type_mappings.get(self.name, "general")
+    
+    def _add_quality_metrics_to_state(self, state: AgentState, quality_result: QualityGateResult) -> AgentState:
+        """
+        Add quality metrics to the agent state.
+        
+        Args:
+            state: Current agent state
+            quality_result: Quality gate result
+            
+        Returns:
+            Updated state with quality metrics
+        """
+        # Add quality gate result to state
+        state["quality_gate_result"] = {
+            "gate_name": quality_result.gate_name,
+            "passed": quality_result.passed,
+            "score": quality_result.score,
+            "threshold": quality_result.threshold,
+            "timestamp": quality_result.timestamp.isoformat(),
+            "validations": [
+                {
+                    "type": v.validation_type.value,
+                    "passed": v.passed,
+                    "score": v.score,
+                    "issues": v.issues,
+                    "recommendations": v.recommendations
+                }
+                for v in quality_result.validations
+            ]
+        }
+        
+        # Add quality metrics summary
+        state["quality_metrics"] = {
+            "agent_name": self.name,
+            "overall_score": quality_result.score,
+            "quality_gate_passed": quality_result.passed,
+            "validation_count": len(quality_result.validations),
+            "passed_validations": len([v for v in quality_result.validations if v.passed]),
+            "failed_validations": len([v for v in quality_result.validations if not v.passed]),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        return state
+    
+    def _log_quality_results(self, quality_result: QualityGateResult):
+        """Log quality validation results."""
+        if quality_result.passed:
+            self.logger.info(f"Quality gate PASSED: {quality_result.score:.2f}/{quality_result.threshold}")
+        else:
+            self.logger.warning(f"Quality gate FAILED: {quality_result.score:.2f}/{quality_result.threshold}")
+            
+            # Log failed validations
+            for validation in quality_result.validations:
+                if not validation.passed:
+                    self.logger.warning(f"  Failed validation: {validation.validation_type.value}")
+                    for issue in validation.issues:
+                        self.logger.warning(f"    - {issue}")
+    
+    def _handle_quality_gate_failure(self, state: AgentState, quality_result: QualityGateResult) -> AgentState:
+        """
+        Handle quality gate failure by adding failure information to state.
+        
+        Args:
+            state: Current agent state
+            quality_result: Quality gate result
+            
+        Returns:
+            Updated state with failure handling
+        """
+        # Add quality gate failure information
+        state["quality_gate_failed"] = True
+        state["quality_gate_failure_reason"] = "Quality standards not met"
+        
+        # Collect all issues from failed validations
+        all_issues = []
+        all_recommendations = []
+        
+        for validation in quality_result.validations:
+            if not validation.passed:
+                all_issues.extend(validation.issues)
+                all_recommendations.extend(validation.recommendations)
+        
+        state["quality_issues"] = all_issues
+        state["quality_recommendations"] = all_recommendations
+        
+        # Add retry information
+        state["quality_retry_count"] = state.get("quality_retry_count", 0) + 1
+        state["quality_max_retries"] = 3
+        
+        # Check if we should retry
+        if state["quality_retry_count"] < state["quality_max_retries"]:
+            state["should_retry"] = True
+            state["retry_reason"] = "Quality gate failure"
+            self.logger.info(f"Quality gate failed, will retry (attempt {state['quality_retry_count']}/{state['quality_max_retries']})")
+        else:
+            state["should_retry"] = False
+            state["retry_reason"] = "Max retries exceeded"
+            self.logger.error("Quality gate failed, max retries exceeded")
+        
+        return state
+    
+    async def _execute_task(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Execute the agent's specific task (to be implemented by subclasses).
+        
+        Args:
+            state: Current workflow state
+            
+        Returns:
+            Agent output as dictionary
+        """
+        # Call the abstract execute method and convert result to dict
+        result_state = await self.execute(state)
+        
+        # Extract the agent's output from the state
+        # This will be implemented by subclasses to return their specific output
+        return self._extract_output_from_state(result_state)
+    
+    def _extract_output_from_state(self, state: AgentState) -> Dict[str, Any]:
+        """
+        Extract agent output from state (to be implemented by subclasses).
+        
+        Args:
+            state: Agent state with results
+            
+        Returns:
+            Agent output as dictionary
+        """
+        # Default implementation - subclasses should override
+        # Extract common output fields
+        output = {}
+        
+        # Common output fields that might be present
+        common_fields = [
+            "requirements", "architecture", "code_files", "test_files",
+            "overall_score", "issues", "recommendations", "vulnerabilities",
+            "documentation_files", "project_structure"
+        ]
+        
+        for field in common_fields:
+            if field in state:
+                output[field] = state[field]
+        
+        return output
     
     @abstractmethod
     def get_prompt_template(self) -> str:
@@ -124,6 +341,9 @@ class BaseAgent(ABC):
             
             start_time = time.time()
             
+            # Import performance tracking
+            from utils.performance_optimizer import record_agent_performance
+            
             # Sanitize the prompt to prevent API errors
             sanitized_prompt = self.sanitize_prompt(prompt)
             
@@ -156,6 +376,28 @@ class BaseAgent(ABC):
             
             execution_time = time.time() - start_time
             self.execution_times.append(execution_time)
+            
+            # Record performance metrics for optimization
+            try:
+                # Estimate cost based on model and tokens
+                model_name = getattr(self.gemini_client, 'model_name', 'unknown')
+                estimated_cost = self._estimate_cost(len(prompt), len(response.text if hasattr(response, 'text') else str(response)), model_name)
+                
+                record_agent_performance(
+                    agent_name=self.name,
+                    execution_time=execution_time,
+                    success=True,
+                    model_used=model_name,
+                    tokens_used=len(prompt) + len(response.text if hasattr(response, 'text') else str(response)),
+                    cost_estimate=estimated_cost,
+                    additional_data={
+                        "prompt_length": len(prompt),
+                        "response_length": len(response.text if hasattr(response, 'text') else str(response)),
+                        "model_name": model_name
+                    }
+                )
+            except Exception as e:
+                self.logger.warning(f"Failed to record performance metrics: {str(e)}")
             
             # Record the execution in the database
             if hasattr(self, 'prompt_id') and self.prompt_id:
@@ -226,6 +468,25 @@ class BaseAgent(ABC):
             self.error_count += 1
             error_msg = str(e)
             execution_time = time.time() - start_time if 'start_time' in locals() else None
+            
+            # Record performance metrics for failed execution
+            try:
+                model_name = getattr(self.gemini_client, 'model_name', 'unknown')
+                record_agent_performance(
+                    agent_name=self.name,
+                    execution_time=execution_time or 0.0,
+                    success=False,
+                    model_used=model_name,
+                    tokens_used=len(prompt),
+                    cost_estimate=0.0,  # No cost for failed requests
+                    error_message=error_msg,
+                    additional_data={
+                        "prompt_length": len(prompt),
+                        "error_type": type(e).__name__
+                    }
+                )
+            except Exception as perf_error:
+                self.logger.warning(f"Failed to record performance metrics for error: {str(perf_error)}")
             
             self.add_log_entry("error", "Gemini API request failed", {
                 "error_message": error_msg,
@@ -1091,6 +1352,43 @@ class BaseAgent(ABC):
             self.logger.error(f"Error sanitizing prompt: {str(e)}")
             # Return original prompt if sanitization fails
             return prompt
+    
+    def _estimate_cost(self, input_tokens: int, output_tokens: int, model_name: str) -> float:
+        """
+        Estimate the cost of an API call based on tokens and model.
+        
+        Args:
+            input_tokens: Number of input tokens
+            output_tokens: Number of output tokens
+            model_name: Name of the model used
+            
+        Returns:
+            Estimated cost in dollars
+        """
+        # Approximate token costs (as of 2024)
+        # These are rough estimates - actual costs may vary
+        cost_per_1k_input = {
+            "gemini-2.5-flash": 0.000075,  # $0.075 per 1K input tokens
+            "gemini-2.5-flash-lite": 0.000025,  # $0.025 per 1K input tokens
+            "gemini-1.5-flash": 0.000075,
+            "gemini-1.5-pro": 0.000125
+        }
+        
+        cost_per_1k_output = {
+            "gemini-2.5-flash": 0.0003,  # $0.30 per 1K output tokens
+            "gemini-2.5-flash-lite": 0.0001,  # $0.10 per 1K output tokens
+            "gemini-1.5-flash": 0.0003,
+            "gemini-1.5-pro": 0.0005
+        }
+        
+        # Get costs for the model, default to flash-lite if unknown
+        input_cost = cost_per_1k_input.get(model_name, cost_per_1k_input["gemini-2.5-flash-lite"])
+        output_cost = cost_per_1k_output.get(model_name, cost_per_1k_output["gemini-2.5-flash-lite"])
+        
+        # Calculate total cost
+        total_cost = (input_tokens / 1000) * input_cost + (output_tokens / 1000) * output_cost
+        
+        return total_cost
     
     def validate_generation_config(self, config: dict) -> dict:
         """

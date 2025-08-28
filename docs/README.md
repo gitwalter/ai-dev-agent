@@ -2,6 +2,8 @@
 
 This directory contains comprehensive documentation for the AI Development Agent system, organized by category for easy navigation and maintenance.
 
+**📚 For a complete documentation overview and navigation guide, see [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)**
+
 ## 📁 Directory Structure
 
 ```
