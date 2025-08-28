@@ -231,6 +231,16 @@ prompts/prompt_templates.db
 !prompts/prompt_templates_clean.db
 
 # Other database files
+chroma.sqlite3
+
+
+# Database files - exclude development database with user data
+prompts/prompt_templates.db
+
+# Include clean database for GitHub distribution
+!prompts/prompt_templates_clean.db
+
+# Other database files
 *.sqlite
 *.sqlite3
 chroma.sqlite3
