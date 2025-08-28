@@ -19,7 +19,7 @@ try:
 except ImportError:
     LANGGRAPH_AVAILABLE = False
 
-from langgraph_workflow_manager import AgentNodeFactory, AgentState
+from tests.mocks.workflow.langgraph_workflow_manager import AgentNodeFactory, AgentState
 
 
 class TestCodeReviewerNode:

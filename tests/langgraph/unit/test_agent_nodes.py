@@ -48,7 +48,7 @@ def _has_valid_api_key():
     except Exception:
         return False
 
-from langgraph_workflow_manager import LangGraphWorkflowManager, AgentNodeFactory, AgentState
+from tests.mocks.workflow.langgraph_workflow_manager import LangGraphWorkflowManager, AgentNodeFactory, AgentState
 from utils.structured_outputs import (
     RequirementsAnalysisOutput, 
     ArchitectureDesignOutput, 

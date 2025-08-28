@@ -18,7 +18,7 @@ import pytest
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from langgraph_workflow import LangGraphWorkflowManager
+from tests.mocks.workflow.langgraph_workflow import LangGraphWorkflowManager
 
 
 class TestLangGraphWorkflowIntegration:
