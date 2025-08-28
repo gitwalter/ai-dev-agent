@@ -1,0 +1,586 @@
+# Optimized Development Rules for AI Development Agent
+
+## 🎯 **TIER 1: CORE DEVELOPMENT PRINCIPLES** ⭐
+**These rules are ALWAYS applied first - they form the foundation of everything we do**
+
+### 1. Test-Driven Development Rule ⭐
+**CRITICAL**: Always write tests first, then implement functionality.
+
+**Core Requirements**:
+- Write comprehensive tests before implementing any feature
+- Test both success and failure scenarios
+- Achieve 90%+ test coverage for core components
+- Validate all results before considering work complete
+- Use isolated testing for problematic components
+
+**Application**:
+- Every new feature starts with test creation
+- Every bug fix includes regression tests
+- Every refactoring is validated with existing tests
+
+### 2. Systematic Problem-Solving Rule ⭐
+**CRITICAL**: Always follow a systematic approach to problem-solving with clear steps and validation.
+
+**Core Requirements**:
+- **Define the problem clearly** - What exactly is wrong?
+- **Analyze root cause** - Why is it happening?
+- **Create isolated test** - Test the problem in isolation
+- **Apply systematic fixes** - Try solutions methodically
+- **Validate the solution** - Confirm the fix works
+- **Document the solution** - Record what worked and why
+
+**Application**:
+- Never use trial-and-error approaches
+- Always test fixes in isolation first
+- Document successful solutions for future reference
+
+### 3. Framework-First Rule ⭐
+**CRITICAL**: Always use established frameworks over custom implementations.
+
+**Core Requirements**:
+- **LangChain + LangGraph + LangSmith** for all agent development
+- **Pydantic** for data validation and structured outputs
+- **Pytest** for comprehensive testing
+- **Streamlit** for web interfaces
+- **Mermaid** for all diagrams (GitHub-compatible, modern standard)
+- **Standard libraries** over custom implementations
+
+**Application**:
+- 80% reduction in custom code
+- Battle-tested, reliable solutions
+- Comprehensive features and documentation
+- GitHub-native diagram rendering
+
+### 4. Error Exposure Rule ⭐
+**CRITICAL**: Never use silent error handling or fallbacks - expose all errors immediately.
+
+**Core Requirements**:
+- All errors must be exposed, never silenced
+- No mock fallbacks or placeholder data
+- Comprehensive error logging with context
+- Proper exception types and hierarchies
+- Immediate error propagation
+
+**Application**:
+- Improved reliability and debugging
+- Forces proper error handling
+- Clear visibility into all failures
+
+### 5. Continuous Validation Rule ⭐
+**CRITICAL**: Validate every step and decision continuously.
+
+**Core Requirements**:
+- Validate inputs before processing
+- Validate outputs after generation
+- Validate state changes at each step
+- Validate performance metrics
+- Validate quality metrics
+
+**Application**:
+- Prevents cascading failures
+- Ensures data integrity
+- Maintains system reliability
+
+### 6. Continuous Learning Rule ⭐
+**CRITICAL**: Learn from every interaction and continuously improve.
+
+**Core Requirements**:
+- **Document every insight** - record learnings immediately
+- **Share knowledge systematically** - make insights available to all agents
+- **Recognize patterns** - identify successful and failure patterns
+- **Evolve rules** - update rules based on new learnings
+- **Apply learnings** - use insights in future interactions
+
+**Application**:
+- System gets better with every interaction
+- Builds comprehensive knowledge base
+- Continuously optimizes processes and approaches
+
+### 7. Code Quality and Architecture Rule ⭐
+**CRITICAL**: Follow proven software engineering principles for high-quality, maintainable code.
+
+**Core Requirements**:
+- **SOLID Principles** - Apply Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+- **Clean Code** - Write readable, self-documenting code with clear naming and structure
+- **Design Patterns** - Apply appropriate GoF and enterprise patterns when beneficial
+- **Code Reviews** - Review all code for quality, security, and maintainability
+- **Refactoring** - Continuously improve code structure and eliminate technical debt
+- **Documentation** - Document all public APIs, complex logic, and architectural decisions
+- **Error Handling** - Implement proper exception handling and error recovery
+- **Performance** - Consider performance implications in design decisions
+
+**Application**:
+- Maintainable and extensible codebase
+- Reduced bugs and technical debt
+- Faster development and debugging
+- Better team collaboration and knowledge sharing
+
+### 8. Strict Naming Conventions Rule ⭐
+**CRITICAL**: Enforce strict naming conventions for readability, maintainability, and testability.
+
+**Core Requirements**:
+- **File naming** - Use snake_case for Python files, test_ prefix for tests
+- **Class naming** - Use PascalCase, avoid abbreviations, indicate purpose
+- **Function naming** - Use snake_case, verb-based actions, clear purpose
+- **Variable naming** - Use snake_case, descriptive names, avoid single letters
+- **Module naming** - Use snake_case, descriptive, avoid hyphens
+- **Database naming** - Use snake_case for tables and columns
+- **API naming** - Use kebab-case for endpoints, snake_case for parameters
+- **Test naming** - Use descriptive names, clear test data names
+- **Constants** - Use UPPER_SNAKE_CASE for constants
+
+**Application**:
+- Clear intent and easy navigation
+- Consistent structure across codebase
+- Professional appearance and quality
+- Easy refactoring and maintenance
+- Clear test names and data
+
+### 9. Comprehensive Test Pattern Rule ⭐
+**CRITICAL**: Follow systematic test patterns for all development scenarios.
+
+**Core Requirements**:
+- **Unit-First Approach** - Write unit tests before implementation for new features
+- **Integration-First Approach** - Start with integration tests for system validation
+- **Isolation Strategy** - Isolate failures with focused unit tests
+- **Documentation & Cataloging** - Document all test changes and maintain test catalog
+- **Pattern Compliance** - Validate adherence to testing patterns
+
+**Application**:
+- Reliable implementation with unit tests first
+- System integration validation with integration tests
+- Rapid debugging through isolated testing
+- Comprehensive test documentation and cataloging
+- Systematic approach to all testing scenarios
+
+### 10. System Architecture Integration Rule ⭐
+**CRITICAL**: Design components that integrate seamlessly into the overall system architecture.
+
+**Core Requirements**:
+- **System Awareness** - Each component understands its role in the overall system
+- **Integration Points** - Clearly define and document component interfaces and dependencies
+- **Architectural Consistency** - Follow established architectural patterns and conventions
+- **Big Picture Validation** - Validate component design against system architecture goals
+- **Scalability** - Design components to scale with system growth
+- **Maintainability** - Ensure components can be maintained and evolved independently
+- **Performance Impact** - Consider how components affect overall system performance
+- **Error Propagation** - Design proper error handling and propagation across components
+
+**Application**:
+- Cohesive system architecture with well-integrated components
+- Reduced integration issues and architectural debt
+- Easier system evolution and maintenance
+- Better performance and reliability across the system
+
+### 11. Expert Design Patterns Application Rule ⭐
+**CRITICAL**: Apply design patterns from GoF, Fowler, and other influential architects with expert care.
+
+**Core Requirements**:
+- **GoF Patterns Mastery** - Expert application of Gang of Four patterns
+- **Fowler Patterns Expertise** - Expert application of enterprise patterns
+- **Pattern Decision Framework** - Systematic approach to pattern selection
+- **Implementation Excellence** - High-quality pattern implementation
+- **Knowledge Documentation** - Comprehensive pattern documentation and sharing
+
+**Application**:
+- Understandable code through purposeful pattern application
+- Robust implementation using proven patterns
+- Informed decision making for pattern selection
+- Consistent architecture through standardized patterns
+- Knowledge sharing through documented pattern applications
+
+### 12. Automated Research Rule ⭐
+**CRITICAL**: Automate research processes when development is blocked or when seeking optimal solutions.
+
+**Core Requirements**:
+- **Research Triggers** - Automatic detection of research needs (blockage >5 min, unknown errors, performance issues)
+- **Rapid Research** - 5-minute time-boxed research process with systematic methodology
+- **Source Management** - Prioritized research sources by reliability and speed
+- **Solution Validation** - Comprehensive validation of research solutions before application
+- **Knowledge Management** - Continuous knowledge base expansion and pattern recognition
+
+**Application**:
+- Rapid problem resolution within 5 minutes
+- Systematic research methodology for consistent results
+- Reliable solution validation and risk assessment
+- Continuous learning and knowledge accumulation
+- Pattern recognition for future problem-solving
+
+### 13. Daily Start Automation Rule ⭐
+**CRITICAL**: Automate daily development start workflow for consistent, efficient project initialization.
+
+**Core Requirements**:
+- **Repository Synchronization** - Pull latest changes, validate working directory, clean temporary files
+- **Tasklist Analysis** - Read current tasklist, analyze priorities, plan daily objectives
+- **System Health Check** - Validate environment, verify dependencies, establish performance baseline
+- **Initial Test Run** - Execute smoke tests, core functionality tests, integration tests
+- **Environment Preparation** - Activate development environment, initialize tools, configure settings
+
+**Application**:
+- Consistent development session start (15-minute automated workflow)
+- Clean, synchronized repository state
+- Analyzed tasklist with daily plan
+- Verified system health and functionality
+- Ready-to-develop environment
+
+### 14. Daily End Automation Rule ⭐
+**CRITICAL**: Automate daily development end workflow for consistent, efficient project closure.
+
+**Core Requirements**:
+- **Tasklist Update** - Record completed tasks, update progress, plan next day priorities
+- **Documentation Synchronization** - Update code docs, README files, API docs, architecture docs
+- **Comprehensive Cleanup** - Remove temporary files, organize structure, clean artifacts
+- **Final Test Run** - Execute full test suites, performance tests, quality assessment
+- **Repository Synchronization** - Stage changes, create comprehensive commit, push to remote
+
+**Application**:
+- Consistent development session closure (26-minute automated workflow)
+- Updated tasklist with progress and next day plan
+- Synchronized documentation with current state
+- Clean, organized repository structure
+- All changes committed and pushed
+
+## 🚀 **TIER 2: DEVELOPMENT STANDARDS** 🔧
+**These rules ensure consistent, high-quality development practices**
+
+### 6. AI Model Selection Rule 🔧
+**HIGH PRIORITY**: Use standardized model selection for optimal performance and cost.
+
+**Core Requirements**:
+- **Simple tasks**: Use `gemini-2.5-flash-lite` (faster, lower cost)
+- **Complex tasks**: Use `gemini-2.5-flash` (higher quality, more capable)
+- **API Key**: Always use `st.secrets["GEMINI_API_KEY"]`
+- **Temperature**: 0.1 for consistent, deterministic outputs
+- **Max Tokens**: 8192 for comprehensive responses
+
+**Application**:
+- Cost optimization through appropriate model selection
+- Consistent performance across all agents
+- Standardized configuration management
+
+### 7. File Organization Rule 🔧
+**HIGH PRIORITY**: Maintain clear, logical file organization and structure.
+
+**Core Requirements**:
+- **Consistent naming**: Use descriptive, consistent file names
+- **Logical grouping**: Group related files in appropriate directories
+- **Clear hierarchy**: Maintain clear directory structure
+- **Documentation**: Keep documentation synchronized with structure
+- **Diagram standards**: Use Mermaid diagrams (GitHub-compatible) over PlantUML
+- **Standards**: Follow established project conventions
+
+**Application**:
+- Easy navigation and maintenance
+- Clear separation of concerns
+- Scalable project structure
+- GitHub-native diagram rendering
+
+### 8. Documentation Maintenance Rule 🔧
+**HIGH PRIORITY**: Keep all documentation synchronized with code changes.
+
+**Core Requirements**:
+- Update documentation with every code change
+- Test all documentation examples
+- Verify all file paths and references
+- Maintain comprehensive coverage
+- Use Mermaid diagrams for all visual documentation (GitHub-compatible)
+- Include documentation in code reviews
+
+**Application**:
+- Accurate, reliable documentation
+- Better user experience
+- Easier maintenance and onboarding
+- GitHub-native diagram rendering
+
+### 9. Security Best Practices Rule 🔧
+**HIGH PRIORITY**: Use secure practices for all sensitive data and operations.
+
+**Core Requirements**:
+- **API Keys**: Use Streamlit secrets management
+- **Configuration**: Never hardcode sensitive data
+- **Validation**: Validate all inputs and outputs
+- **Error Handling**: Don't expose sensitive information in errors
+- **Dependencies**: Use trusted, maintained libraries
+
+**Application**:
+- Secure handling of sensitive data
+- Protection against common vulnerabilities
+- Compliance with security best practices
+
+### 10. Performance-First Rule 🔧
+**HIGH PRIORITY**: Consider performance implications proactively.
+
+**Core Requirements**:
+- **Optimize prompts** for faster responses
+- **Use appropriate models** for task complexity
+- **Implement caching** for repeated operations
+- **Monitor performance** continuously
+- **Optimize resource usage** efficiently
+
+**Application**:
+- Faster execution times
+- Lower costs
+- Better user experience
+
+## 📋 **TIER 3: TESTING & QUALITY ASSURANCE** 🧪
+**These rules ensure comprehensive testing and quality standards**
+
+### 11. Test Organization Rule 🧪
+**HIGH PRIORITY**: Organize tests in clear, logical structure.
+
+**Core Requirements**:
+- **Unit Tests** (`tests/unit/`): Individual component testing
+- **Integration Tests** (`tests/integration/`): Component interaction testing
+- **System Tests** (`tests/system/`): End-to-end workflow testing
+- **LangGraph Tests** (`tests/langgraph/`): LangGraph-specific functionality
+- **Isolated Tests** (`tests/isolated/`): Problem-specific testing
+
+**Application**:
+- Clear test organization and maintenance
+- Easy test discovery and execution
+- Comprehensive coverage tracking
+
+### 12. Agent Testing & Parsing Rule 🧪
+**HIGH PRIORITY**: Test agents systematically and fix parsing issues methodically.
+
+**Core Requirements**:
+- **Isolated testing** for problematic agents
+- **Systematic prompt-parser optimization** for optimal combinations
+- **Early termination** on first parsing error
+- **Comprehensive error analysis** with context
+- **Documentation** of successful combinations
+
+**Application**:
+- Faster problem resolution
+- Optimal agent performance
+- Reliable parsing solutions
+
+### 13. Test Monitoring Rule 🧪
+**MEDIUM PRIORITY**: Monitor tests continuously with immediate error detection.
+
+**Core Requirements**:
+- **Automated monitoring** of all test executions
+- **Immediate error detection** and interruption
+- **Comprehensive error analysis** with context
+- **Automatic fix suggestions** where possible
+- **Performance tracking** and optimization
+
+**Application**:
+- Faster bug detection and resolution
+- Improved test reliability
+- Better development efficiency
+
+### 14. No Failing Tests Rule 🧪
+**MEDIUM PRIORITY**: Maintain zero failing tests policy.
+
+**Core Requirements**:
+- **All tests must pass** before any code changes
+- **Immediate fix** of any test failures
+- **Regression testing** for all changes
+- **Comprehensive coverage** for all components
+- **Quality gates** for test requirements
+
+**Application**:
+- Maintains code quality and reliability
+- Prevents regression issues
+- Ensures consistent functionality
+
+## 📁 **TIER 4: PROJECT MANAGEMENT** 📊
+**These rules ensure effective project management and organization**
+
+### 15. Tasklist Management Rule 📊
+**HIGH PRIORITY**: Maintain current, accurate task tracking and progress.
+
+**Core Requirements**:
+- **Update tasklists** with every change
+- **Track progress** accurately and continuously
+- **Document blockers** and dependencies
+- **Maintain alignment** across all roadmap documents
+- **Provide handoff context** for continuity
+
+**Application**:
+- Clear project visibility and progress tracking
+- Effective handoffs between team members
+- Accurate planning and resource allocation
+
+### 16. Implementation Roadmap Rule 📊
+**HIGH PRIORITY**: Follow comprehensive development plans and roadmaps.
+
+**Core Requirements**:
+- **Adhere to roadmap** phases and milestones
+- **Update progress** continuously
+- **Document deviations** with rationale
+- **Maintain alignment** with overall goals
+- **Validate success metrics** regularly
+
+**Application**:
+- Systematic project development
+- Clear progress tracking
+- Successful milestone achievement
+
+### 17. Requirements Management Rule 📊
+**MEDIUM PRIORITY**: Track and validate requirements throughout development.
+
+**Core Requirements**:
+- **Document requirements** clearly and comprehensively
+- **Validate requirements** against implementation
+- **Track requirement changes** and impacts
+- **Ensure traceability** from requirements to code
+- **Maintain requirement quality** and clarity
+
+**Application**:
+- Clear project scope and goals
+- Successful requirement implementation
+- Effective change management
+
+### 18. Prompt Database Management Rule 📊
+**MEDIUM PRIORITY**: Use database-first prompt management system.
+
+**Core Requirements**:
+- **Store all prompts** in database (no hardcoded prompts)
+- **Version control** prompt changes
+- **Performance tracking** for prompt effectiveness
+- **Web editor** for prompt management
+- **Fallback mechanisms** for database unavailability
+
+**Application**:
+- Centralized prompt management
+- Easy prompt optimization and updates
+- Performance tracking and improvement
+
+### 19. Automation & Environment Rule 📊
+**MEDIUM PRIORITY**: Maintain comprehensive automation environment.
+
+**Core Requirements**:
+- **Automated testing** for all components
+- **Automated deployment** and configuration
+- **Automated monitoring** and alerting
+- **Automated documentation** updates
+- **Automated quality checks** and validation
+
+**Application**:
+- Reduced manual effort and errors
+- Consistent development environment
+- Faster development cycles
+
+### 20. Diagram Standards Rule 📊
+**MEDIUM PRIORITY**: Use Mermaid diagrams for all visual documentation.
+
+**Core Requirements**:
+- **Mermaid diagrams** for all architecture, flow, and system diagrams
+- **GitHub compatibility** - diagrams render directly in GitHub repositories
+- **Modern standard** - Mermaid is the current industry standard
+- **No PlantUML** - avoid PlantUML in favor of Mermaid
+- **Clear syntax** - use readable, well-structured Mermaid syntax
+- **Version control friendly** - diagrams are text-based and diff-friendly
+
+**Application**:
+- GitHub-native diagram rendering
+- Better collaboration and visibility
+- Modern, maintainable documentation
+- Text-based version control for diagrams
+
+## 🎯 **RULE APPLICATION PRIORITIES**
+
+### **CRITICAL RULES (Always Applied)**
+1. Test-Driven Development Rule
+2. Systematic Problem-Solving Rule
+3. Framework-First Rule
+4. Error Exposure Rule
+5. Continuous Validation Rule
+6. Continuous Learning Rule
+
+### **HIGH PRIORITY RULES (Applied to Relevant Contexts)**
+6. AI Model Selection Rule
+7. File Organization Rule
+8. Documentation Maintenance Rule
+9. Security Best Practices Rule
+10. Performance-First Rule
+11. Test Organization Rule
+12. Agent Testing & Parsing Rule
+15. Tasklist Management Rule
+16. Implementation Roadmap Rule
+
+### **MEDIUM PRIORITY RULES (Applied When Context is Relevant)**
+13. Test Monitoring Rule
+14. No Failing Tests Rule
+17. Requirements Management Rule
+18. Prompt Database Management Rule
+19. Automation & Environment Rule
+20. Diagram Standards Rule
+
+## 🚀 **RULE BENEFITS**
+
+### **Efficiency Improvements**
+- **50% faster** problem resolution with systematic approach
+- **80% reduction** in custom code with framework-first approach
+- **90% faster** debugging with error exposure
+- **100% test coverage** with TDD approach
+
+### **Quality Improvements**
+- **Zero silent errors** with error exposure rule
+- **Consistent performance** with model selection rule
+- **Maintainable code** with file organization rule
+- **Reliable systems** with continuous validation
+
+### **Development Speed**
+- **3x faster** feature delivery with established patterns
+- **90% reduction** in debugging time with proper error handling
+- **Immediate feedback** with test monitoring
+- **Systematic progress** with roadmap adherence
+- **GitHub-native diagrams** with Mermaid for better collaboration
+
+## 📋 **IMPLEMENTATION CHECKLIST**
+
+### **For Every Development Session**
+- [ ] Apply Tier 1 rules (Core Development Principles)
+- [ ] Follow systematic problem-solving approach
+- [ ] Write tests before implementing functionality
+- [ ] Use established frameworks over custom code
+- [ ] Expose all errors immediately
+- [ ] Validate every step continuously
+- [ ] Document learnings and insights
+- [ ] Share knowledge with other agents
+
+### **For Every Code Change**
+- [ ] Update documentation synchronously
+- [ ] Maintain file organization standards
+- [ ] Follow security best practices
+- [ ] Consider performance implications
+- [ ] Update tasklists and progress tracking
+- [ ] Use Mermaid diagrams for visual documentation
+
+### **For Every Test Execution**
+- [ ] Monitor tests continuously
+- [ ] Fix any failing tests immediately
+- [ ] Maintain comprehensive coverage
+- [ ] Use isolated testing for problems
+- [ ] Document successful solutions
+
+## 🎉 **SUCCESS METRICS**
+
+### **Technical Metrics**
+- **Test Coverage**: >90% for all components
+- **Error Rate**: <1% with proper error handling
+- **Performance**: <30s for complete workflows
+- **Code Quality**: >95% with automated standards
+
+### **Development Metrics**
+- **Problem Resolution**: <30 minutes average
+- **Feature Delivery**: 3x faster with established patterns
+- **Bug Detection**: <5 minutes with automated monitoring
+- **Documentation Accuracy**: 100% synchronized
+
+### **Project Metrics**
+- **Milestone Achievement**: 100% on-time delivery
+- **Team Efficiency**: 50% improvement in development speed
+- **Code Maintainability**: 80% reduction in technical debt
+- **System Reliability**: 99.9% uptime with proper validation
+
+---
+
+**This optimized rule structure provides a comprehensive, efficient framework for high-quality, fast development while maintaining consistency and reliability across all development activities.**
+description:
+globs:
+alwaysApply: true
+---

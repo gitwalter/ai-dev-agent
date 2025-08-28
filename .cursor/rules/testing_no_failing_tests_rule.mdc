@@ -1,187 +1,146 @@
 # No Failing Tests Rule
 
-**CRITICAL**: Never accept or commit failing tests. All tests must pass before considering any work complete.
+## Description
+Maintain zero failing tests policy - all tests must pass before any code changes.
 
 ## Core Requirements
 
-### 1. Test Quality Standards
-- **ALL TESTS MUST PASS**: No exceptions - if a test fails, fix it immediately or remove it
-- **NO BROKEN TESTS**: Never leave tests in a failing state
-- **REAL LLM TESTING**: Include tests with real LLM usage to catch production issues
-- **COMPREHENSIVE COVERAGE**: Test both success and failure scenarios properly
+### 1. Zero Failing Tests Policy
+- **All tests must pass** before any code changes
+- **Immediate fix** of any test failures
+- **No exceptions** - even minor test failures must be fixed
+- **Regression testing** for all changes
+- **Quality gates** for test requirements
 
-### 2. Test Development Workflow
-- **WRITE TESTS FIRST**: Follow TDD principles - write tests before implementation
-- **FIX IMMEDIATELY**: When a test fails, fix it before continuing with other work
-- **REMOVE IF UNFIXABLE**: If a test cannot be fixed within reasonable time, remove it
-- **DOCUMENT REMOVALS**: When removing tests, document why and plan for replacement
+### 2. Test Quality Standards
+- **Comprehensive coverage** for all components
+- **Meaningful tests** - test actual functionality, not just syntax
+- **Fast execution** - tests should run quickly
+- **Reliable results** - tests should be deterministic
+- **Clear failure messages** - easy to understand what failed
 
-### 3. Test Categories
+### 3. Test Maintenance
+- **Regular test updates** - keep tests current with code changes
+- **Test refactoring** - improve test quality and maintainability
+- **Test documentation** - clear test purpose and requirements
+- **Test organization** - logical test structure and naming
+- **Test performance** - monitor and optimize test execution
 
-#### Unit Tests
-- Test individual functions and methods
-- Use proper mocking for external dependencies
-- Ensure fast execution (< 1 second per test)
-- Test edge cases and error conditions
+### 4. Test Monitoring
+- **Automated test execution** - run tests automatically
+- **Immediate failure detection** - stop on first failure
+- **Comprehensive reporting** - detailed failure information
+- **Performance tracking** - monitor test execution times
+- **Coverage reporting** - track test coverage metrics
 
-#### Integration Tests
-- Test component interactions
-- Use real LLMs for critical paths
-- Test complete workflows
-- Validate end-to-end functionality
+### 5. Test-Driven Development
+- **Write tests first** - before implementing functionality
+- **Test-driven design** - let tests guide implementation
+- **Continuous testing** - test throughout development
+- **Test validation** - ensure tests are meaningful
+- **Test improvement** - continuously improve test quality
 
-#### Real LLM Tests
-- **MANDATORY**: Include tests with actual LLM calls
-- Test with real API keys and responses
-- Validate structured output parsing
-- Test error handling with real API responses
-- Catch production issues before deployment
+## Implementation Guidelines
 
-### 4. Test Fixing Process
+### Test Execution Process
+```bash
+# Run all tests and stop on first failure
+python -m pytest tests/ -x --tb=short
 
-#### When Tests Fail
-1. **STOP IMMEDIATELY**: Do not continue with other work
-2. **ANALYZE FAILURE**: Understand the root cause
-3. **FIX OR REMOVE**: Either fix the test or remove it
-4. **VERIFY FIX**: Ensure all tests pass after changes
-5. **DOCUMENT CHANGES**: Update documentation if needed
+# Run specific test types
+python -m pytest tests/unit/ -x
+python -m pytest tests/integration/ -x
+python -m pytest tests/system/ -x
 
-#### Fixing Strategies
-- **Mock Issues**: Fix mock configurations and return values
-- **Import Errors**: Resolve missing imports and dependencies
-- **Logic Errors**: Fix test logic and assertions
-- **API Changes**: Update tests for API changes
-- **Environment Issues**: Fix test environment setup
+# Run with coverage
+python -m pytest tests/ --cov=. --cov-report=html
+```
 
-### 5. Test Removal Guidelines
+### Test Quality Checklist
+- [ ] **All tests pass** - no failing tests
+- [ ] **Comprehensive coverage** - 90%+ coverage for core components
+- [ ] **Fast execution** - tests complete in reasonable time
+- [ ] **Reliable results** - tests are deterministic
+- [ ] **Clear failures** - easy to understand what failed
+- [ ] **Meaningful tests** - test actual functionality
+- [ ] **Well organized** - logical test structure
+- [ ] **Documented** - clear test purpose and requirements
 
-#### When to Remove Tests
-- **UNFIXABLE**: Test cannot be fixed within reasonable time
-- **OBSOLETE**: Test is no longer relevant to current code
-- **REDUNDANT**: Test duplicates functionality of other tests
-- **UNRELIABLE**: Test is flaky or non-deterministic
-- **TOO COMPLEX**: Test is overly complex and hard to maintain
-
-#### Removal Process
-1. **DOCUMENT REASON**: Explain why test is being removed
-2. **PLAN REPLACEMENT**: Plan for better test if needed
-3. **UPDATE COVERAGE**: Ensure coverage is maintained
-4. **COMMUNICATE**: Inform team of test removal
-5. **MONITOR**: Watch for regressions after removal
-
-### 6. Real LLM Testing Requirements
-
-#### Critical Path Testing
-- **AGENT NODES**: Test all agent nodes with real LLMs
-- **WORKFLOW EXECUTION**: Test complete workflows end-to-end
-- **OUTPUT PARSING**: Test structured output parsing with real responses
-- **ERROR HANDLING**: Test error scenarios with real API responses
-
-#### Test Configuration
-- **API KEYS**: Use real API keys in test environment
-- **RATE LIMITING**: Handle API rate limits in tests
-- **TIMEOUTS**: Set appropriate timeouts for LLM calls
-- **RETRY LOGIC**: Implement retry logic for transient failures
-
-#### Test Data Management
-- **REAL PROMPTS**: Use real prompts from prompt database
-- **REAL CONTEXT**: Test with realistic project contexts
-- **REAL REQUIREMENTS**: Use realistic project requirements
-- **REAL OUTPUTS**: Validate against real LLM outputs
-
-### 7. Test Execution Standards
-
-#### Pre-Commit Requirements
-- **ALL TESTS PASS**: No commits with failing tests
-- **COVERAGE MAINTAINED**: Maintain or improve test coverage
-- **PERFORMANCE**: Tests complete within reasonable time
-- **RELIABILITY**: Tests are deterministic and repeatable
-
-#### CI/CD Integration
-- **AUTOMATED TESTING**: All tests run in CI/CD pipeline
-- **FAILURE BLOCKING**: Pipeline fails on test failures
-- **REAL LLM TESTS**: Include real LLM tests in pipeline
-- **ENVIRONMENT SETUP**: Proper test environment configuration
-
-### 8. Test Quality Metrics
-
-#### Success Criteria
-- **100% PASS RATE**: All tests must pass
-- **FAST EXECUTION**: Tests complete quickly
-- **REAL COVERAGE**: Meaningful coverage of critical paths
-- **RELIABLE**: Tests are deterministic and stable
-
-#### Monitoring
-- **REGULAR EXECUTION**: Run tests regularly
-- **FAILURE TRACKING**: Track and analyze test failures
-- **PERFORMANCE MONITORING**: Monitor test execution time
-- **COVERAGE TRACKING**: Track test coverage metrics
-
-### 9. Implementation Checklist
-
-#### For Every Test
-- [ ] Test passes consistently
-- [ ] Test is meaningful and valuable
-- [ ] Test covers real scenarios
-- [ ] Test is maintainable and clear
-- [ ] Test handles errors properly
-
-#### For Test Suites
-- [ ] All tests pass
-- [ ] Real LLM tests included
-- [ ] Coverage is adequate
-- [ ] Performance is acceptable
-- [ ] Documentation is complete
-
-#### For Test Failures
-- [ ] Failure is analyzed
-- [ ] Fix is implemented
-- [ ] All tests pass after fix
-- [ ] No regressions introduced
-- [ ] Changes are documented
-
-### 10. Enforcement
-
-#### Code Review Requirements
-- **NO FAILING TESTS**: Reject PRs with failing tests
-- **REAL LLM VALIDATION**: Ensure real LLM tests are included
-- **COVERAGE REVIEW**: Review test coverage adequacy
-- **QUALITY ASSESSMENT**: Assess test quality and value
-
-#### Development Workflow
-- **TEST FIRST**: Write tests before implementation
-- **FIX IMMEDIATELY**: Fix test failures immediately
-- **REMOVE IF NEEDED**: Remove unfixable tests
-- **DOCUMENT CHANGES**: Document test changes and removals
-
-#### Team Standards
-- **SHARED RESPONSIBILITY**: All team members responsible for test quality
-- **REGULAR REVIEW**: Regular review of test suite health
-- **CONTINUOUS IMPROVEMENT**: Continuously improve test quality
-- **KNOWLEDGE SHARING**: Share test best practices and lessons learned
+### Test Failure Response
+1. **Stop immediately** - don't continue with failing tests
+2. **Analyze failure** - understand what went wrong
+3. **Fix the issue** - address the root cause
+4. **Re-run tests** - confirm the fix works
+5. **Update tests** - improve test quality if needed
+6. **Document changes** - record what was fixed
 
 ## Benefits
 
-- **RELIABILITY**: Ensures system reliability and stability
-- **CONFIDENCE**: Builds confidence in code changes
-- **PRODUCTION SAFETY**: Catches issues before production deployment
-- **MAINTAINABILITY**: Maintains high code quality standards
-- **TEAM EFFICIENCY**: Prevents time wasted on debugging test issues
+### Quality Improvements
+- **Maintains code quality** - forces attention to detail
+- **Prevents regressions** - catches issues early
+- **Ensures reliability** - consistent functionality
+- **Improves maintainability** - well-tested code is easier to maintain
 
-## Consequences of Violation
+### Development Efficiency
+- **Faster debugging** - immediate feedback on issues
+- **Confident changes** - know changes don't break existing functionality
+- **Better design** - test-driven development improves design
+- **Reduced technical debt** - prevents accumulation of issues
 
-- **IMMEDIATE FIX REQUIRED**: All failing tests must be fixed immediately
-- **NO EXCEPTIONS**: No work continues with failing tests
-- **QUALITY IMPACT**: Failing tests indicate quality issues
-- **TEAM BLOCKING**: Failing tests block team progress
-- **PRODUCTION RISK**: Failing tests increase production risk
+### Team Productivity
+- **Clear standards** - everyone knows what's expected
+- **Reduced conflicts** - fewer integration issues
+- **Faster onboarding** - tests serve as documentation
+- **Better collaboration** - shared understanding of requirements
 
-**This rule is ALWAYS APPLIED and must be followed for all development work.**
-description:
-globs:
-alwaysApply: true
+## Application
+
+### When to Apply
+- **Before any code changes** - ensure tests pass first
+- **During development** - continuous testing
+- **Before commits** - validate changes don't break tests
+- **Before deployments** - ensure production readiness
+- **During refactoring** - maintain functionality during changes
+
+### How to Apply
+1. **Run tests first** - before making any changes
+2. **Fix any failures** - address issues immediately
+3. **Write tests for new features** - test-driven development
+4. **Update existing tests** - keep tests current
+5. **Monitor test performance** - optimize execution times
+
+### Success Criteria
+- **Zero failing tests** - all tests pass consistently
+- **High test coverage** - 90%+ coverage for core components
+- **Fast test execution** - tests complete quickly
+- **Reliable results** - tests are deterministic
+- **Clear failure messages** - easy to understand what failed
+- **Meaningful tests** - test actual functionality
+- **Well organized** - logical test structure and naming
+
+## Enforcement
+
+### Automated Enforcement
+- **CI/CD integration** - automated test execution
+- **Pre-commit hooks** - run tests before commits
+- **Quality gates** - block changes with failing tests
+- **Monitoring** - track test status continuously
+
+### Manual Enforcement
+- **Code reviews** - verify tests are included
+- **Team standards** - shared commitment to test quality
+- **Documentation** - clear test requirements and standards
+- **Training** - ensure team understands test importance
+
 ---
 
+**This rule ensures that code quality is maintained through comprehensive testing and zero tolerance for test failures.**
+description: Zero failing tests policy
+globs: ["tests/*.py", "**/*test*.py"]
+alwaysApply: true
+--- 
+description:
 globs:
 alwaysApply: true
 ---

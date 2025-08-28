@@ -2,6 +2,43 @@
 
 A multi-agent system for automated software development using LangGraph and Google's Gemini API. This system implements a workflow-based approach to streamline software development tasks.
 
+## 🎯 **Development Philosophy**
+
+This project follows a **comprehensive rule system** with 29 rules organized in 5 tiers that ensure high-quality, efficient, and maintainable code:
+
+### **Tier 1: Core Development Principles** (14 rules - Always Applied)
+- **Test-Driven Development**: Write tests first, then implement functionality
+- **Systematic Problem-Solving**: Follow clear methodology for all challenges
+- **Framework-First**: Use established frameworks over custom implementations
+- **Error Exposure**: Never use silent error handling - expose all errors immediately
+- **Continuous Validation**: Validate every step and decision continuously
+- **Continuous Learning**: Learn from every interaction and continuously improve
+- **Code Quality and Architecture**: Follow SOLID principles and clean code practices
+- **Strict Naming Conventions**: Enforce consistent naming for readability and maintainability
+- **Comprehensive Test Patterns**: Systematic testing approach for all scenarios
+- **System Architecture Integration**: Design components that integrate seamlessly
+- **Expert Design Patterns**: Apply GoF and Fowler patterns with expert care
+- **Automated Research**: 5-minute rapid research for blocked development
+- **Daily Start Automation**: 15-minute automated development session start
+- **Daily End Automation**: 26-minute automated development session closure
+
+### **Tier 2-5: Development Standards, Testing, Project Management** (15 rules)
+- **AI Model Selection**: Optimized Gemini model selection for performance and cost
+- **File Organization**: Clear, logical file structure and organization
+- **Documentation Maintenance**: Synchronized documentation with code changes
+- **Security Best Practices**: Secure handling of sensitive data and operations
+- **Performance-First**: Proactive performance optimization
+- **Test Organization**: Clear test structure and organization
+- **Agent Testing & Parsing**: Systematic agent testing and parsing optimization
+- **Tasklist Management**: Current, accurate task tracking and progress
+- **Implementation Roadmap**: Follow comprehensive development plans
+- **Requirements Management**: Track and validate requirements throughout development
+- **Prompt Database Management**: Database-first prompt management system
+- **Automation & Environment**: Comprehensive automation environment
+- **Diagram Standards**: Mermaid diagrams for GitHub-compatible documentation
+
+For complete rules and application guide, see [.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc](.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
+
 ## 🚀 Quick Start
 
 ### Prerequisites

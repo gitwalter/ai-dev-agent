@@ -4,6 +4,21 @@
 
 This document outlines our test-driven approach to building a robust LangGraph-based agent system using established libraries and best practices.
 
+## 🎯 **Comprehensive Rule System Integration**
+
+This test development plan follows our **comprehensive rule system**:
+
+- **Test-Driven Development Rule**: Write comprehensive tests before implementing functionality
+- **Systematic Problem-Solving Rule**: Follow systematic approach to problem-solving with clear steps
+- **Continuous Validation Rule**: Validate every step and decision continuously
+- **Agent Testing & Parsing Rule**: Test agents systematically and fix parsing issues methodically
+- **Performance-First Rule**: Consider performance implications proactively
+- **Daily Workflow Automation**: Automated test execution in daily start/end workflows
+- **Automated Research**: 5-minute research for testing challenges
+- **Comprehensive Test Patterns**: Unit-first for new features, integration-first for system validation
+
+For complete development rules, see [.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc](../../../.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc).
+
 ## Research Findings
 
 ### Established Libraries for Agent Development

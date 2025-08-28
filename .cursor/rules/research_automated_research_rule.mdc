@@ -1,0 +1,449 @@
+# Automated Research Rule
+
+## Description
+Automate research processes when development is blocked or when seeking optimal solutions. Use systematic research methodologies to find solutions, best practices, and relevant information quickly and efficiently. Research should be targeted, time-boxed, and result in actionable insights that can be immediately applied to development tasks.
+
+## Core Requirements
+
+### 1. Research Trigger Conditions
+**MANDATORY**: Automatically trigger research when specific conditions are met:
+
+#### **Automatic Research Triggers**
+```python
+class ResearchTriggerManager:
+    """Manages automatic research triggers based on development conditions."""
+    
+    def __init__(self):
+        self.blockage_detector = BlockageDetector()
+        self.solution_finder = SolutionFinder()
+        self.research_coordinator = ResearchCoordinator()
+    
+    def check_research_triggers(self, development_state: dict) -> dict:
+        """
+        Check if research should be triggered based on current development state.
+        
+        Research triggers:
+        - Development blocked for >5 minutes
+        - Error patterns not in knowledge base
+        - Performance issues without known solutions
+        - New technology requirements
+        - Best practice questions
+        """
+        triggers = {
+            "development_blocked": self._check_development_blockage(development_state),
+            "unknown_error_pattern": self._check_unknown_errors(development_state),
+            "performance_issues": self._check_performance_problems(development_state),
+            "new_technology": self._check_new_technology_needs(development_state),
+            "best_practice_gaps": self._check_best_practice_gaps(development_state)
+        }
+        
+        return {
+            "research_needed": any(triggers.values()),
+            "triggers": triggers,
+            "priority": self._calculate_research_priority(triggers),
+            "research_plan": self._generate_research_plan(triggers)
+        }
+    
+    def _check_development_blockage(self, state: dict) -> bool:
+        """Check if development is blocked for more than 5 minutes."""
+        current_time = time.time()
+        blockage_start = state.get("blockage_start_time", 0)
+        blockage_threshold = 300  # 5 minutes
+        
+        return (current_time - blockage_start) > blockage_threshold
+    
+    def _check_unknown_errors(self, state: dict) -> bool:
+        """Check if error patterns are not in knowledge base."""
+        recent_errors = state.get("recent_errors", [])
+        knowledge_base = self._get_error_knowledge_base()
+        
+        unknown_errors = []
+        for error in recent_errors:
+            if not self._error_in_knowledge_base(error, knowledge_base):
+                unknown_errors.append(error)
+        
+        return len(unknown_errors) > 0
+    
+    def _check_performance_problems(self, state: dict) -> bool:
+        """Check if performance issues exist without known solutions."""
+        performance_metrics = state.get("performance_metrics", {})
+        performance_thresholds = {
+            "response_time": 30,  # seconds
+            "memory_usage": 80,   # percentage
+            "cpu_usage": 90,      # percentage
+            "error_rate": 5       # percentage
+        }
+        
+        for metric, threshold in performance_thresholds.items():
+            if performance_metrics.get(metric, 0) > threshold:
+                return True
+        
+        return False
+```
+
+### 2. Rapid Research Methodology
+**MANDATORY**: Execute research using systematic, time-boxed methodology:
+
+#### **Rapid Research Engine**
+```python
+class RapidResearchEngine:
+    """Executes rapid, systematic research for development solutions."""
+    
+    def __init__(self):
+        self.research_sources = ResearchSources()
+        self.information_processor = InformationProcessor()
+        self.solution_synthesizer = SolutionSynthesizer()
+    
+    async def execute_rapid_research(self, research_plan: dict) -> dict:
+        """
+        Execute rapid research within 5-minute time limit.
+        
+        Research phases:
+        - Phase 1: Quick source identification (30 seconds)
+        - Phase 2: Targeted information gathering (3 minutes)
+        - Phase 3: Solution synthesis (1 minute)
+        - Phase 4: Action plan generation (30 seconds)
+        """
+        print("🔍 Starting rapid research...")
+        
+        # Phase 1: Quick source identification (30 seconds)
+        sources = await self._identify_research_sources(research_plan)
+        print("📚 Research sources identified")
+        
+        # Phase 2: Targeted information gathering (3 minutes)
+        information = await self._gather_targeted_information(sources, research_plan)
+        print("📖 Information gathered")
+        
+        # Phase 3: Solution synthesis (1 minute)
+        solutions = await self._synthesize_solutions(information, research_plan)
+        print("💡 Solutions synthesized")
+        
+        # Phase 4: Action plan generation (30 seconds)
+        action_plan = self._generate_action_plan(solutions, research_plan)
+        print("✅ Action plan generated")
+        
+        return {
+            "research_completed": True,
+            "sources_consulted": sources,
+            "information_gathered": information,
+            "solutions_found": solutions,
+            "action_plan": action_plan,
+            "research_time": "5 minutes",
+            "confidence_level": self._calculate_confidence_level(solutions)
+        }
+    
+    async def _identify_research_sources(self, plan: dict) -> list:
+        """Identify relevant research sources - 30 second process."""
+        source_categories = {
+            "documentation": ["official_docs", "api_reference", "tutorials"],
+            "community": ["stack_overflow", "github_issues", "discussions"],
+            "best_practices": ["blog_posts", "case_studies", "expert_opinions"],
+            "code_examples": ["github_repos", "code_samples", "demos"]
+        }
+        
+        relevant_sources = []
+        for category, sources in source_categories.items():
+            if plan.get(f"need_{category}", False):
+                relevant_sources.extend(sources)
+        
+        return relevant_sources[:5]  # Limit to top 5 sources
+    
+    async def _gather_targeted_information(self, sources: list, plan: dict) -> dict:
+        """Gather targeted information from sources - 3 minute process."""
+        information = {
+            "solutions": [],
+            "best_practices": [],
+            "code_examples": [],
+            "warnings": [],
+            "alternatives": []
+        }
+        
+        for source in sources:
+            try:
+                source_info = await self._query_source(source, plan["research_query"])
+                self._categorize_information(source_info, information)
+            except Exception as e:
+                print(f"Warning: Could not query source {source}: {e}")
+        
+        return information
+    
+    async def _synthesize_solutions(self, information: dict, plan: dict) -> list:
+        """Synthesize solutions from gathered information - 1 minute process."""
+        solutions = []
+        
+        # Synthesize from multiple sources
+        if information["solutions"]:
+            solutions.extend(self._rank_solutions(information["solutions"]))
+        
+        # Add best practices
+        if information["best_practices"]:
+            solutions.extend(self._apply_best_practices(information["best_practices"]))
+        
+        # Consider alternatives
+        if information["alternatives"]:
+            solutions.extend(self._evaluate_alternatives(information["alternatives"]))
+        
+        return solutions[:3]  # Return top 3 solutions
+```
+
+### 3. Research Source Management
+**MANDATORY**: Maintain and utilize comprehensive research sources:
+
+#### **Research Source Manager**
+```python
+class ResearchSourceManager:
+    """Manages research sources and their reliability ratings."""
+    
+    def __init__(self):
+        self.source_database = SourceDatabase()
+        self.reliability_analyzer = ReliabilityAnalyzer()
+        self.source_updater = SourceUpdater()
+    
+    def get_optimal_sources(self, research_type: str) -> list:
+        """Get optimal sources for specific research types."""
+        source_rankings = {
+            "error_solutions": [
+                {"source": "stack_overflow", "reliability": 0.9, "speed": 0.8},
+                {"source": "github_issues", "reliability": 0.85, "speed": 0.7},
+                {"source": "official_docs", "reliability": 0.95, "speed": 0.6},
+                {"source": "community_forums", "reliability": 0.7, "speed": 0.9}
+            ],
+            "best_practices": [
+                {"source": "official_docs", "reliability": 0.95, "speed": 0.6},
+                {"source": "expert_blogs", "reliability": 0.85, "speed": 0.7},
+                {"source": "conference_talks", "reliability": 0.8, "speed": 0.5},
+                {"source": "academic_papers", "reliability": 0.9, "speed": 0.4}
+            ],
+            "performance_optimization": [
+                {"source": "benchmark_reports", "reliability": 0.9, "speed": 0.7},
+                {"source": "performance_blogs", "reliability": 0.8, "speed": 0.8},
+                {"source": "github_repos", "reliability": 0.75, "speed": 0.9},
+                {"source": "official_docs", "reliability": 0.95, "speed": 0.6}
+            ],
+            "new_technologies": [
+                {"source": "official_docs", "reliability": 0.95, "speed": 0.6},
+                {"source": "github_repos", "reliability": 0.8, "speed": 0.9},
+                {"source": "community_discussions", "reliability": 0.7, "speed": 0.8},
+                {"source": "tutorial_sites", "reliability": 0.75, "speed": 0.7}
+            ]
+        }
+        
+        return source_rankings.get(research_type, source_rankings["error_solutions"])
+    
+    def update_source_reliability(self, source: str, success_rate: float):
+        """Update source reliability based on research success."""
+        current_reliability = self.source_database.get_reliability(source)
+        new_reliability = (current_reliability + success_rate) / 2
+        self.source_database.update_reliability(source, new_reliability)
+```
+
+### 4. Solution Validation and Application
+**MANDATORY**: Validate research solutions before application:
+
+#### **Solution Validator**
+```python
+class SolutionValidator:
+    """Validates research solutions before application."""
+    
+    def __init__(self):
+        self.compatibility_checker = CompatibilityChecker()
+        self.risk_assessor = RiskAssessor()
+        self.implementation_planner = ImplementationPlanner()
+    
+    def validate_solution(self, solution: dict, current_context: dict) -> dict:
+        """
+        Validate solution before application.
+        
+        Validation checks:
+        - Compatibility with current system
+        - Risk assessment
+        - Implementation complexity
+        - Performance impact
+        """
+        validation_results = {
+            "compatibility": self._check_compatibility(solution, current_context),
+            "risk_assessment": self._assess_risks(solution, current_context),
+            "implementation_complexity": self._assess_complexity(solution),
+            "performance_impact": self._assess_performance_impact(solution),
+            "recommendation": self._generate_recommendation(solution, validation_results)
+        }
+        
+        return validation_results
+    
+    def _check_compatibility(self, solution: dict, context: dict) -> dict:
+        """Check solution compatibility with current system."""
+        compatibility_checks = {
+            "technology_stack": self._check_tech_stack_compatibility(solution, context),
+            "version_compatibility": self._check_version_compatibility(solution, context),
+            "dependency_conflicts": self._check_dependency_conflicts(solution, context),
+            "architecture_fit": self._check_architecture_fit(solution, context)
+        }
+        
+        return {
+            "compatible": all(compatibility_checks.values()),
+            "checks": compatibility_checks,
+            "issues": [k for k, v in compatibility_checks.items() if not v]
+        }
+    
+    def _assess_risks(self, solution: dict, context: dict) -> dict:
+        """Assess risks of implementing the solution."""
+        risk_factors = {
+            "breaking_changes": self._assess_breaking_changes(solution),
+            "security_implications": self._assess_security_implications(solution),
+            "performance_degradation": self._assess_performance_risks(solution),
+            "maintenance_overhead": self._assess_maintenance_risks(solution)
+        }
+        
+        overall_risk = sum(risk_factors.values()) / len(risk_factors)
+        
+        return {
+            "overall_risk": overall_risk,
+            "risk_level": "high" if overall_risk > 0.7 else "medium" if overall_risk > 0.4 else "low",
+            "risk_factors": risk_factors,
+            "mitigation_strategies": self._generate_risk_mitigation(risk_factors)
+        }
+```
+
+### 5. Research Knowledge Management
+**MANDATORY**: Maintain and utilize research knowledge base:
+
+#### **Research Knowledge Manager**
+```python
+class ResearchKnowledgeManager:
+    """Manages research knowledge base and learning."""
+    
+    def __init__(self):
+        self.knowledge_base = KnowledgeBase()
+        self.pattern_recognizer = PatternRecognizer()
+        self.learning_engine = LearningEngine()
+    
+    def store_research_results(self, research_results: dict):
+        """Store research results in knowledge base."""
+        knowledge_entry = {
+            "timestamp": time.time(),
+            "research_query": research_results["research_query"],
+            "solutions_found": research_results["solutions_found"],
+            "successful_solutions": research_results["successful_solutions"],
+            "failed_solutions": research_results["failed_solutions"],
+            "patterns_identified": self._identify_patterns(research_results),
+            "learning_insights": self._extract_learning_insights(research_results)
+        }
+        
+        self.knowledge_base.store(knowledge_entry)
+        self._update_pattern_database(knowledge_entry)
+    
+    def query_knowledge_base(self, query: str) -> list:
+        """Query knowledge base for relevant solutions."""
+        relevant_entries = self.knowledge_base.search(query)
+        
+        # Rank by relevance and success rate
+        ranked_entries = self._rank_by_relevance_and_success(relevant_entries, query)
+        
+        return ranked_entries[:5]  # Return top 5 relevant entries
+    
+    def _identify_patterns(self, results: dict) -> list:
+        """Identify patterns in research results."""
+        patterns = []
+        
+        # Identify common error patterns
+        if results.get("error_patterns"):
+            patterns.extend(self._extract_error_patterns(results["error_patterns"]))
+        
+        # Identify successful solution patterns
+        if results.get("successful_solutions"):
+            patterns.extend(self._extract_success_patterns(results["successful_solutions"]))
+        
+        # Identify technology patterns
+        if results.get("technology_patterns"):
+            patterns.extend(self._extract_technology_patterns(results["technology_patterns"]))
+        
+        return patterns
+```
+
+## Practical Implementation Guidelines
+
+### 1. Research Trigger Conditions
+- **Development Blockage**: Trigger research after 5 minutes of being stuck
+- **Unknown Errors**: Research when error patterns are not in knowledge base
+- **Performance Issues**: Research when performance metrics exceed thresholds
+- **New Technologies**: Research when implementing new technologies
+- **Best Practice Gaps**: Research when best practices are unclear
+
+### 2. Rapid Research Process
+- **5-Minute Time Limit**: Complete research within 5 minutes
+- **Targeted Approach**: Focus on specific, actionable information
+- **Multiple Sources**: Consult multiple reliable sources
+- **Solution Synthesis**: Synthesize solutions from gathered information
+- **Action Plan**: Generate immediate action plan
+
+### 3. Research Source Priority
+- **Official Documentation**: Highest reliability, moderate speed
+- **Community Sources**: High speed, variable reliability
+- **Expert Opinions**: High reliability, moderate speed
+- **Code Examples**: High speed, moderate reliability
+
+### 4. Solution Validation
+- **Compatibility Check**: Ensure solution works with current system
+- **Risk Assessment**: Evaluate implementation risks
+- **Performance Impact**: Assess performance implications
+- **Implementation Plan**: Create detailed implementation plan
+
+### 5. Knowledge Management
+- **Store Results**: Store all research results in knowledge base
+- **Pattern Recognition**: Identify and store solution patterns
+- **Learning Integration**: Integrate learnings into development process
+- **Continuous Improvement**: Update source reliability ratings
+
+## Benefits
+
+### Speed Benefits
+- **Rapid Problem Resolution**: Solve problems within 5 minutes
+- **Automated Research**: No manual research required
+- **Targeted Information**: Focus on relevant, actionable information
+- **Immediate Application**: Apply solutions immediately
+
+### Quality Benefits
+- **Reliable Sources**: Use validated, reliable research sources
+- **Solution Validation**: Validate solutions before application
+- **Risk Assessment**: Assess risks before implementation
+- **Knowledge Accumulation**: Build comprehensive knowledge base
+
+### Efficiency Benefits
+- **Reduced Blockage Time**: Minimize time spent stuck on problems
+- **Systematic Approach**: Consistent research methodology
+- **Learning Integration**: Integrate learnings into development process
+- **Pattern Recognition**: Recognize and reuse successful patterns
+
+## Application
+
+### When to Apply
+- **Development Blockage**: When stuck for more than 5 minutes
+- **Unknown Problems**: When encountering unfamiliar issues
+- **Performance Issues**: When performance problems arise
+- **New Technologies**: When implementing new technologies
+- **Best Practice Questions**: When best practices are unclear
+
+### How to Apply
+1. **Automatic Trigger**: System automatically detects research needs
+2. **Rapid Research**: Execute 5-minute research process
+3. **Solution Validation**: Validate solutions before application
+4. **Knowledge Storage**: Store results in knowledge base
+5. **Pattern Recognition**: Identify and store solution patterns
+
+### Success Criteria
+- **Problem Resolution**: Solve problems within 5 minutes
+- **Solution Quality**: High-quality, validated solutions
+- **Knowledge Growth**: Continuous knowledge base expansion
+- **Pattern Recognition**: Identify and reuse successful patterns
+- **Risk Mitigation**: Minimize implementation risks
+
+---
+
+**This rule ensures rapid, systematic research when development is blocked, leading to quick problem resolution and continuous knowledge accumulation.**
+description: Automated research system for rapid problem resolution
+globs: ["**/*.py", "**/*.md", "**/research/**", "**/development/**"]
+alwaysApply: true
+description:
+globs:
+alwaysApply: true
+---

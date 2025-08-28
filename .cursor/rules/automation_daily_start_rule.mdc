@@ -1,0 +1,596 @@
+# Daily Start Automation Rule
+
+## Description
+Automate the daily development start workflow to ensure consistent, efficient project initialization. Execute systematic startup procedures including repository synchronization, tasklist analysis, system health checks, and development environment preparation. This rule ensures every development session begins with a clean, organized, and ready state.
+
+## Core Requirements
+
+### 1. Repository Synchronization
+**MANDATORY**: Synchronize with remote repository and ensure clean working state:
+
+#### **Repository Manager**
+```python
+class DailyStartRepositoryManager:
+    """Manages repository synchronization and state preparation."""
+    
+    def __init__(self):
+        self.git_manager = GitManager()
+        self.state_validator = StateValidator()
+        self.cleanup_manager = CleanupManager()
+    
+    async def synchronize_repository(self) -> dict:
+        """
+        Synchronize repository and prepare clean working state.
+        
+        Synchronization steps:
+        - Check repository status
+        - Pull latest changes
+        - Validate working directory
+        - Clean up temporary files
+        - Verify repository health
+        """
+        print("🔄 Starting repository synchronization...")
+        
+        # Step 1: Check repository status (30 seconds)
+        status = await self._check_repository_status()
+        print("📊 Repository status checked")
+        
+        # Step 2: Pull latest changes (1 minute)
+        pull_result = await self._pull_latest_changes()
+        print("⬇️ Latest changes pulled")
+        
+        # Step 3: Validate working directory (30 seconds)
+        validation = await self._validate_working_directory()
+        print("✅ Working directory validated")
+        
+        # Step 4: Clean up temporary files (30 seconds)
+        cleanup = await self._cleanup_temporary_files()
+        print("🧹 Temporary files cleaned")
+        
+        # Step 5: Verify repository health (30 seconds)
+        health_check = await self._verify_repository_health()
+        print("💚 Repository health verified")
+        
+        return {
+            "synchronization_completed": True,
+            "status": status,
+            "pull_result": pull_result,
+            "validation": validation,
+            "cleanup": cleanup,
+            "health_check": health_check,
+            "total_time": "3 minutes"
+        }
+    
+    async def _check_repository_status(self) -> dict:
+        """Check current repository status - 30 second process."""
+        status_checks = {
+            "current_branch": self.git_manager.get_current_branch(),
+            "uncommitted_changes": self.git_manager.get_uncommitted_changes(),
+            "untracked_files": self.git_manager.get_untracked_files(),
+            "remote_status": self.git_manager.get_remote_status(),
+            "last_commit": self.git_manager.get_last_commit_info()
+        }
+        
+        return {
+            "clean_state": not (status_checks["uncommitted_changes"] or status_checks["untracked_files"]),
+            "status_details": status_checks,
+            "recommendations": self._generate_status_recommendations(status_checks)
+        }
+    
+    async def _pull_latest_changes(self) -> dict:
+        """Pull latest changes from remote - 1 minute process."""
+        try:
+            pull_result = await self.git_manager.pull_latest()
+            
+            return {
+                "success": True,
+                "changes_pulled": pull_result.get("changes_count", 0),
+                "conflicts": pull_result.get("conflicts", []),
+                "new_files": pull_result.get("new_files", []),
+                "updated_files": pull_result.get("updated_files", [])
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "recommendation": "Manual intervention required"
+            }
+    
+    async def _validate_working_directory(self) -> dict:
+        """Validate working directory structure - 30 second process."""
+        validation_checks = {
+            "file_structure": self._validate_file_structure(),
+            "dependencies": self._validate_dependencies(),
+            "configuration": self._validate_configuration(),
+            "permissions": self._validate_permissions()
+        }
+        
+        return {
+            "valid": all(validation_checks.values()),
+            "checks": validation_checks,
+            "issues": [k for k, v in validation_checks.items() if not v],
+            "fixes": self._generate_validation_fixes(validation_checks)
+        }
+    
+    async def _cleanup_temporary_files(self) -> dict:
+        """Clean up temporary files and artifacts - 30 second process."""
+        cleanup_targets = [
+            "*.pyc", "__pycache__", "*.tmp", "*.temp", "*.log",
+            ".pytest_cache", ".coverage", "*.swp", "*.swo"
+        ]
+        
+        cleaned_files = []
+        for pattern in cleanup_targets:
+            files = self.cleanup_manager.find_and_remove(pattern)
+            cleaned_files.extend(files)
+        
+        return {
+            "files_cleaned": len(cleaned_files),
+            "patterns_processed": len(cleanup_targets),
+            "space_freed": self._calculate_space_freed(cleaned_files),
+            "cleanup_success": len(cleaned_files) > 0
+        }
+```
+
+### 2. Tasklist Analysis and Planning
+**MANDATORY**: Analyze current tasklist and plan daily development priorities:
+
+#### **Tasklist Manager**
+```python
+class DailyStartTasklistManager:
+    """Manages tasklist analysis and daily planning."""
+    
+    def __init__(self):
+        self.tasklist_reader = TasklistReader()
+        self.priority_analyzer = PriorityAnalyzer()
+        self.planning_engine = PlanningEngine()
+    
+    async def analyze_tasklist(self) -> dict:
+        """
+        Analyze current tasklist and create daily development plan.
+        
+        Analysis steps:
+        - Read current tasklist
+        - Analyze priorities and dependencies
+        - Identify blocked tasks
+        - Plan daily objectives
+        - Set development milestones
+        """
+        print("📋 Analyzing tasklist...")
+        
+        # Step 1: Read current tasklist (30 seconds)
+        tasklist = await self._read_current_tasklist()
+        print("📖 Current tasklist read")
+        
+        # Step 2: Analyze priorities (30 seconds)
+        priorities = await self._analyze_priorities(tasklist)
+        print("🎯 Priorities analyzed")
+        
+        # Step 3: Identify blocked tasks (30 seconds)
+        blocked_tasks = await self._identify_blocked_tasks(tasklist)
+        print("🚫 Blocked tasks identified")
+        
+        # Step 4: Plan daily objectives (1 minute)
+        daily_plan = await self._plan_daily_objectives(tasklist, priorities, blocked_tasks)
+        print("📅 Daily objectives planned")
+        
+        # Step 5: Set milestones (30 seconds)
+        milestones = await self._set_daily_milestones(daily_plan)
+        print("🎯 Daily milestones set")
+        
+        return {
+            "tasklist_analysis_completed": True,
+            "current_tasklist": tasklist,
+            "priorities": priorities,
+            "blocked_tasks": blocked_tasks,
+            "daily_plan": daily_plan,
+            "milestones": milestones,
+            "analysis_time": "3 minutes"
+        }
+    
+    async def _read_current_tasklist(self) -> dict:
+        """Read and parse current tasklist - 30 second process."""
+        tasklist_files = [
+            "docs/guides/implementation/roadmap.md",
+            "tests/langgraph/TEST_DEVELOPMENT_PLAN.md",
+            "logs/agent.log"
+        ]
+        
+        tasklist_data = {}
+        for file_path in tasklist_files:
+            try:
+                content = await self.tasklist_reader.read_tasklist_file(file_path)
+                tasklist_data[file_path] = content
+            except Exception as e:
+                tasklist_data[file_path] = {"error": str(e)}
+        
+        return {
+            "files_processed": len(tasklist_files),
+            "successful_reads": len([v for v in tasklist_data.values() if "error" not in v]),
+            "tasklist_content": tasklist_data,
+            "total_tasks": self._count_total_tasks(tasklist_data)
+        }
+    
+    async def _analyze_priorities(self, tasklist: dict) -> dict:
+        """Analyze task priorities and dependencies - 30 second process."""
+        priority_analysis = {
+            "high_priority": [],
+            "medium_priority": [],
+            "low_priority": [],
+            "dependencies": {},
+            "critical_path": [],
+            "estimated_effort": {}
+        }
+        
+        for file_path, content in tasklist["tasklist_content"].items():
+            if "error" not in content:
+                tasks = self._extract_tasks_from_content(content)
+                for task in tasks:
+                    priority = self.priority_analyzer.analyze_task_priority(task)
+                    priority_analysis[f"{priority}_priority"].append(task)
+                    
+                    # Analyze dependencies
+                    deps = self.priority_analyzer.analyze_dependencies(task)
+                    if deps:
+                        priority_analysis["dependencies"][task["id"]] = deps
+        
+        return priority_analysis
+    
+    async def _plan_daily_objectives(self, tasklist: dict, priorities: dict, blocked_tasks: list) -> dict:
+        """Plan daily development objectives - 1 minute process."""
+        daily_objectives = {
+            "primary_goals": [],
+            "secondary_goals": [],
+            "blocked_resolutions": [],
+            "time_allocations": {},
+            "success_criteria": {}
+        }
+        
+        # Plan primary goals (high priority, unblocked tasks)
+        high_priority_tasks = priorities["high_priority"]
+        unblocked_high_priority = [task for task in high_priority_tasks if task["id"] not in blocked_tasks]
+        
+        daily_objectives["primary_goals"] = unblocked_high_priority[:3]  # Top 3 high priority tasks
+        
+        # Plan secondary goals (medium priority tasks)
+        medium_priority_tasks = priorities["medium_priority"]
+        daily_objectives["secondary_goals"] = medium_priority_tasks[:2]  # Top 2 medium priority tasks
+        
+        # Plan blocked task resolutions
+        daily_objectives["blocked_resolutions"] = self._plan_blocked_resolutions(blocked_tasks)
+        
+        # Allocate time
+        daily_objectives["time_allocations"] = self._allocate_daily_time(daily_objectives)
+        
+        # Define success criteria
+        daily_objectives["success_criteria"] = self._define_success_criteria(daily_objectives)
+        
+        return daily_objectives
+```
+
+### 3. System Health Check
+**MANDATORY**: Perform comprehensive system health check and environment validation:
+
+#### **System Health Manager**
+```python
+class DailyStartSystemHealthManager:
+    """Manages system health checks and environment validation."""
+    
+    def __init__(self):
+        self.health_checker = HealthChecker()
+        self.environment_validator = EnvironmentValidator()
+        self.performance_monitor = PerformanceMonitor()
+    
+    async def perform_health_check(self) -> dict:
+        """
+        Perform comprehensive system health check.
+        
+        Health check steps:
+        - Environment validation
+        - Dependency verification
+        - Performance baseline
+        - Security check
+        - Configuration validation
+        """
+        print("🏥 Performing system health check...")
+        
+        # Step 1: Environment validation (30 seconds)
+        environment = await self._validate_environment()
+        print("🌍 Environment validated")
+        
+        # Step 2: Dependency verification (30 seconds)
+        dependencies = await self._verify_dependencies()
+        print("📦 Dependencies verified")
+        
+        # Step 3: Performance baseline (30 seconds)
+        performance = await self._establish_performance_baseline()
+        print("⚡ Performance baseline established")
+        
+        # Step 4: Security check (30 seconds)
+        security = await self._perform_security_check()
+        print("🔒 Security check completed")
+        
+        # Step 5: Configuration validation (30 seconds)
+        configuration = await self._validate_configuration()
+        print("⚙️ Configuration validated")
+        
+        return {
+            "health_check_completed": True,
+            "environment": environment,
+            "dependencies": dependencies,
+            "performance": performance,
+            "security": security,
+            "configuration": configuration,
+            "overall_health": self._calculate_overall_health(environment, dependencies, performance, security, configuration),
+            "health_check_time": "2.5 minutes"
+        }
+    
+    async def _validate_environment(self) -> dict:
+        """Validate development environment - 30 second process."""
+        env_checks = {
+            "python_version": self._check_python_version(),
+            "conda_environment": self._check_conda_environment(),
+            "working_directory": self._check_working_directory(),
+            "file_permissions": self._check_file_permissions(),
+            "network_connectivity": self._check_network_connectivity()
+        }
+        
+        return {
+            "valid": all(env_checks.values()),
+            "checks": env_checks,
+            "issues": [k for k, v in env_checks.items() if not v],
+            "recommendations": self._generate_environment_recommendations(env_checks)
+        }
+    
+    async def _verify_dependencies(self) -> dict:
+        """Verify all project dependencies - 30 second process."""
+        dependency_checks = {
+            "required_packages": self._check_required_packages(),
+            "package_versions": self._check_package_versions(),
+            "api_keys": self._check_api_keys(),
+            "database_connectivity": self._check_database_connectivity(),
+            "external_services": self._check_external_services()
+        }
+        
+        return {
+            "all_dependencies_met": all(dependency_checks.values()),
+            "checks": dependency_checks,
+            "missing_dependencies": [k for k, v in dependency_checks.items() if not v],
+            "installation_commands": self._generate_installation_commands(dependency_checks)
+        }
+```
+
+### 4. Initial Test Run
+**MANDATORY**: Execute initial test run to verify system functionality:
+
+#### **Initial Test Manager**
+```python
+class DailyStartTestManager:
+    """Manages initial test run and system verification."""
+    
+    def __init__(self):
+        self.test_runner = TestRunner()
+        self.test_analyzer = TestAnalyzer()
+        self.issue_detector = IssueDetector()
+    
+    async def run_initial_tests(self) -> dict:
+        """
+        Run initial test suite to verify system functionality.
+        
+        Test phases:
+        - Quick smoke tests
+        - Core functionality tests
+        - Integration tests
+        - Performance tests
+        - Issue analysis
+        """
+        print("🧪 Running initial tests...")
+        
+        # Phase 1: Quick smoke tests (1 minute)
+        smoke_tests = await self._run_smoke_tests()
+        print("💨 Smoke tests completed")
+        
+        # Phase 2: Core functionality tests (2 minutes)
+        core_tests = await self._run_core_tests()
+        print("🔧 Core functionality tests completed")
+        
+        # Phase 3: Integration tests (2 minutes)
+        integration_tests = await self._run_integration_tests()
+        print("🔗 Integration tests completed")
+        
+        # Phase 4: Performance tests (1 minute)
+        performance_tests = await self._run_performance_tests()
+        print("⚡ Performance tests completed")
+        
+        # Phase 5: Issue analysis (30 seconds)
+        issue_analysis = await self._analyze_test_issues(smoke_tests, core_tests, integration_tests, performance_tests)
+        print("🔍 Issue analysis completed")
+        
+        return {
+            "initial_tests_completed": True,
+            "smoke_tests": smoke_tests,
+            "core_tests": core_tests,
+            "integration_tests": integration_tests,
+            "performance_tests": performance_tests,
+            "issue_analysis": issue_analysis,
+            "overall_test_status": self._calculate_overall_test_status(smoke_tests, core_tests, integration_tests, performance_tests),
+            "test_time": "6.5 minutes"
+        }
+    
+    async def _run_smoke_tests(self) -> dict:
+        """Run quick smoke tests - 1 minute process."""
+        smoke_test_commands = [
+            "pytest tests/unit/ -v --tb=short",
+            "python -c 'import streamlit; print(\"Streamlit OK\")'",
+            "python -c 'from langchain_google_genai import ChatGoogleGenerativeAI; print(\"LangChain OK\")'"
+        ]
+        
+        results = []
+        for command in smoke_test_commands:
+            try:
+                result = await self.test_runner.run_command(command, timeout=20)
+                results.append({
+                    "command": command,
+                    "success": result["exit_code"] == 0,
+                    "output": result["output"],
+                    "error": result.get("error", "")
+                })
+            except Exception as e:
+                results.append({
+                    "command": command,
+                    "success": False,
+                    "output": "",
+                    "error": str(e)
+                })
+        
+        return {
+            "tests_run": len(smoke_test_commands),
+            "tests_passed": len([r for r in results if r["success"]]),
+            "tests_failed": len([r for r in results if not r["success"]]),
+            "results": results,
+            "overall_success": all(r["success"] for r in results)
+        }
+```
+
+### 5. Development Environment Preparation
+**MANDATORY**: Prepare development environment for optimal productivity:
+
+#### **Environment Preparation Manager**
+```python
+class DailyStartEnvironmentManager:
+    """Manages development environment preparation."""
+    
+    def __init__(self):
+        self.env_preparer = EnvironmentPreparer()
+        self.tool_manager = ToolManager()
+        self.workspace_manager = WorkspaceManager()
+    
+    async def prepare_environment(self) -> dict:
+        """
+        Prepare development environment for optimal productivity.
+        
+        Preparation steps:
+        - Activate development environment
+        - Initialize development tools
+        - Prepare workspace
+        - Set up monitoring
+        - Configure development settings
+        """
+        print("🛠️ Preparing development environment...")
+        
+        # Step 1: Activate development environment (30 seconds)
+        environment = await self._activate_development_environment()
+        print("🌍 Development environment activated")
+        
+        # Step 2: Initialize development tools (30 seconds)
+        tools = await self._initialize_development_tools()
+        print("🔧 Development tools initialized")
+        
+        # Step 3: Prepare workspace (30 seconds)
+        workspace = await self._prepare_workspace()
+        print("📁 Workspace prepared")
+        
+        # Step 4: Set up monitoring (30 seconds)
+        monitoring = await self._setup_monitoring()
+        print("📊 Monitoring setup completed")
+        
+        # Step 5: Configure development settings (30 seconds)
+        settings = await self._configure_development_settings()
+        print("⚙️ Development settings configured")
+        
+        return {
+            "environment_preparation_completed": True,
+            "environment": environment,
+            "tools": tools,
+            "workspace": workspace,
+            "monitoring": monitoring,
+            "settings": settings,
+            "preparation_time": "2.5 minutes"
+        }
+```
+
+## Practical Implementation Guidelines
+
+### 1. Daily Start Workflow
+- **Repository Sync**: 3-minute repository synchronization
+- **Tasklist Analysis**: 3-minute tasklist analysis and planning
+- **System Health Check**: 2.5-minute comprehensive health check
+- **Initial Test Run**: 6.5-minute initial test execution
+- **Environment Prep**: 2.5-minute environment preparation
+
+### 2. Automation Triggers
+- **Automatic Start**: Trigger on development session start
+- **Manual Trigger**: Allow manual execution when needed
+- **Scheduled Start**: Optional scheduled daily start
+- **Conditional Start**: Trigger based on specific conditions
+
+### 3. Success Criteria
+- **Repository Clean**: Clean, synchronized repository state
+- **Tasklist Ready**: Analyzed tasklist with daily plan
+- **System Healthy**: All health checks passing
+- **Tests Passing**: All initial tests successful
+- **Environment Ready**: Fully prepared development environment
+
+### 4. Error Handling
+- **Graceful Degradation**: Continue with partial success
+- **Issue Reporting**: Comprehensive issue reporting
+- **Recovery Procedures**: Automatic recovery procedures
+- **Manual Intervention**: Clear manual intervention guidance
+
+### 5. Performance Optimization
+- **Parallel Execution**: Execute independent steps in parallel
+- **Caching**: Cache results for faster subsequent runs
+- **Incremental Updates**: Only update what has changed
+- **Resource Management**: Efficient resource utilization
+
+## Benefits
+
+### Efficiency Benefits
+- **Consistent Start**: Every development session starts consistently
+- **Time Savings**: Automated workflow saves 15+ minutes daily
+- **Error Prevention**: Systematic checks prevent common issues
+- **Productivity Boost**: Ready-to-develop state immediately
+
+### Quality Benefits
+- **System Health**: Ensures system is healthy before development
+- **Test Verification**: Verifies system functionality with tests
+- **Dependency Management**: Ensures all dependencies are available
+- **Configuration Validation**: Validates all configurations
+
+### Reliability Benefits
+- **Reproducible Process**: Consistent, reproducible startup process
+- **Issue Detection**: Early detection of potential issues
+- **Recovery Capability**: Automatic recovery from common issues
+- **Monitoring Integration**: Integrated monitoring and alerting
+
+## Application
+
+### When to Apply
+- **Daily Development Start**: Every development session
+- **New Environment Setup**: When setting up new development environment
+- **After System Changes**: After significant system changes
+- **Manual Trigger**: When manual startup is needed
+
+### How to Apply
+1. **Automatic Trigger**: System automatically executes on development start
+2. **Manual Execution**: Allow manual execution when needed
+3. **Scheduled Execution**: Optional scheduled daily execution
+4. **Conditional Execution**: Execute based on specific conditions
+
+### Success Criteria
+- **Complete Workflow**: All startup steps completed successfully
+- **System Ready**: Development environment ready for use
+- **Tests Passing**: All initial tests passing
+- **Tasklist Updated**: Current tasklist with daily plan
+- **Repository Clean**: Clean, synchronized repository state
+
+---
+
+**This rule ensures consistent, efficient daily development startup with comprehensive system preparation and validation.**
+description: Automated daily development startup workflow
+globs: ["**/*.py", "**/*.md", "**/automation/**", "**/daily/**"]
+alwaysApply: true
+description:
+globs:
+alwaysApply: true
+---

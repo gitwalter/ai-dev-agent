@@ -1,0 +1,278 @@
+# Comprehensive Project Management Rule
+
+## Description
+Maintain comprehensive project management with clear documentation, progress tracking, and systematic development processes.
+
+## Core Requirements
+
+### 1. Clear Project Structure and Documentation
+- **Comprehensive README** - Always maintain up-to-date project documentation
+- **Clear project structure** - Logical file organization and naming conventions
+- **Architecture documentation** - Mermaid diagrams for all system components
+- **API documentation** - Complete API specifications and examples
+- **User guides** - Comprehensive user documentation and tutorials
+- **Technical specifications** - Detailed technical requirements and design docs
+
+### 2. Systematic Progress Tracking
+- **Real-time tasklist updates** - Update tasklists with every change
+- **Progress percentage tracking** - Clear progress indicators
+- **Milestone management** - Track and achieve project milestones
+- **Blocker identification** - Identify and resolve blockers immediately
+- **Dependency management** - Track and manage project dependencies
+- **Timeline management** - Maintain realistic project timelines
+
+### 3. Development Process Management
+- **Test-driven development** - Write tests before implementing features
+- **Iterative development** - Build, test, improve, repeat
+- **Quality gates** - Ensure quality at every development stage
+- **Code review process** - Systematic code review and improvement
+- **Version control** - Proper git workflow and commit management
+- **Release management** - Systematic release planning and execution
+
+### 4. Communication and Collaboration
+- **Clear status reporting** - Regular progress reports and updates
+- **Issue tracking** - Systematic issue identification and resolution
+- **Decision documentation** - Document all important decisions and rationale
+- **Knowledge sharing** - Share insights and learnings across the team
+- **Stakeholder communication** - Clear communication with all stakeholders
+
+### 5. Quality Assurance and Standards
+- **Code quality standards** - Maintain high code quality standards
+- **Testing standards** - Comprehensive testing requirements
+- **Documentation standards** - Consistent documentation quality
+- **Performance standards** - Maintain performance benchmarks
+- **Security standards** - Ensure security best practices
+
+## Implementation Guidelines
+
+### Project Documentation Structure
+```markdown
+# Project Name
+
+## 🎯 Project Overview
+Brief description of the project and its goals.
+
+## 🚀 Quick Start
+Installation and setup instructions.
+
+## 📋 Current Status
+- **Progress**: X% complete
+- **Current Phase**: [Phase Name]
+- **Next Milestone**: [Milestone Name]
+- **Blockers**: [Any current blockers]
+
+## 🏗️ Architecture
+```mermaid
+graph TB
+    %% System architecture diagram
+    A[Component A] --> B[Component B]
+    B --> C[Component C]
+```
+
+## 📚 Documentation
+- [API Documentation](docs/api.md)
+- [User Guide](docs/user_guide.md)
+- [Technical Specs](docs/technical_specs.md)
+- [Development Guide](docs/development.md)
+
+## 🧪 Testing
+- [Test Coverage](docs/testing.md)
+- [Test Results](docs/test_results.md)
+
+## 📊 Progress Tracking
+- [Tasklist](docs/tasklist.md)
+- [Milestones](docs/milestones.md)
+- [Timeline](docs/timeline.md)
+```
+
+### Tasklist Management System
+```python
+class TasklistManager:
+    """Comprehensive tasklist management system."""
+    
+    def __init__(self):
+        self.tasklist_file = "docs/tasklist.md"
+        self.milestones_file = "docs/milestones.md"
+        self.progress_tracker = ProgressTracker()
+    
+    async def update_tasklist(self, completed_tasks: list, new_tasks: list, blockers: list):
+        """Update tasklist with current progress."""
+        current_tasklist = await self.load_current_tasklist()
+        
+        # Update completed tasks
+        for task in completed_tasks:
+            current_tasklist['completed'].append({
+                'task': task,
+                'completed_at': datetime.now(),
+                'effort': task.get('effort', 0)
+            })
+        
+        # Add new tasks
+        for task in new_tasks:
+            current_tasklist['pending'].append({
+                'task': task,
+                'priority': task.get('priority', 'medium'),
+                'estimated_effort': task.get('effort', 1),
+                'dependencies': task.get('dependencies', [])
+            })
+        
+        # Update blockers
+        current_tasklist['blockers'] = blockers
+        
+        # Calculate progress
+        progress = self.calculate_progress(current_tasklist)
+        current_tasklist['progress_percentage'] = progress
+        
+        # Save updated tasklist
+        await self.save_tasklist(current_tasklist)
+        
+        # Update documentation
+        await self.update_documentation(current_tasklist)
+    
+    def calculate_progress(self, tasklist):
+        """Calculate overall project progress."""
+        total_tasks = len(tasklist['completed']) + len(tasklist['pending'])
+        if total_tasks == 0:
+            return 0
+        
+        completed_effort = sum(task['effort'] for task in tasklist['completed'])
+        total_effort = completed_effort + sum(task['estimated_effort'] for task in tasklist['pending'])
+        
+        return (completed_effort / total_effort) * 100 if total_effort > 0 else 0
+```
+
+### Progress Tracking System
+```python
+class ProgressTracker:
+    """Comprehensive progress tracking system."""
+    
+    async def track_development_progress(self, project_state):
+        """Track development progress in real-time."""
+        progress_data = {
+            'timestamp': datetime.now(),
+            'phase': project_state['current_phase'],
+            'milestone': project_state['current_milestone'],
+            'tasks_completed': len(project_state['completed_tasks']),
+            'tasks_pending': len(project_state['pending_tasks']),
+            'blockers': project_state['blockers'],
+            'quality_metrics': await self.calculate_quality_metrics(project_state),
+            'performance_metrics': await self.calculate_performance_metrics(project_state)
+        }
+        
+        await self.save_progress_data(progress_data)
+        await self.update_progress_dashboard(progress_data)
+        await self.check_milestone_achievement(progress_data)
+    
+    async def generate_progress_report(self):
+        """Generate comprehensive progress report."""
+        report = {
+            'summary': await self.generate_summary(),
+            'detailed_progress': await self.get_detailed_progress(),
+            'milestones': await self.get_milestone_status(),
+            'blockers': await self.get_current_blockers(),
+            'next_steps': await self.get_next_steps(),
+            'quality_metrics': await self.get_quality_metrics(),
+            'performance_metrics': await self.get_performance_metrics()
+        }
+        
+        return report
+```
+
+### Documentation Management System
+```python
+class DocumentationManager:
+    """Comprehensive documentation management system."""
+    
+    async def update_project_documentation(self, project_state):
+        """Update all project documentation based on current state."""
+        # Update README
+        await self.update_readme(project_state)
+        
+        # Update architecture documentation
+        await self.update_architecture_docs(project_state)
+        
+        # Update API documentation
+        await self.update_api_docs(project_state)
+        
+        # Update user guides
+        await self.update_user_guides(project_state)
+        
+        # Update technical specifications
+        await self.update_tech_specs(project_state)
+        
+        # Update development guides
+        await self.update_dev_guides(project_state)
+    
+    async def generate_architecture_diagram(self, system_components):
+        """Generate Mermaid architecture diagram."""
+        mermaid_code = """
+        graph TB
+        """
+        
+        for component in system_components:
+            mermaid_code += f"    {component['id']}[{component['name']}]\n"
+        
+        for connection in system_components['connections']:
+            mermaid_code += f"    {connection['from']} --> {connection['to']}\n"
+        
+        return mermaid_code
+```
+
+## Benefits
+
+### Project Management Benefits
+- **Clear visibility** - Always know project status and progress
+- **Systematic tracking** - Track all aspects of project development
+- **Quality assurance** - Maintain high quality throughout development
+- **Risk management** - Identify and address issues early
+- **Stakeholder communication** - Clear communication with all stakeholders
+
+### Development Benefits
+- **Faster development** - Clear processes and documentation
+- **Better collaboration** - Shared understanding of project status
+- **Quality improvement** - Systematic quality assurance processes
+- **Risk reduction** - Early identification and resolution of issues
+- **Knowledge preservation** - Comprehensive documentation of decisions and processes
+
+### Team Benefits
+- **Clear direction** - Everyone knows what needs to be done
+- **Efficient communication** - Clear status reporting and updates
+- **Quality standards** - Consistent quality across all work
+- **Knowledge sharing** - Shared understanding of project goals and progress
+- **Continuous improvement** - Systematic improvement of processes
+
+## Application
+
+### When to Apply
+- **Project initialization** - Set up comprehensive project management from start
+- **Development phases** - Maintain management throughout development
+- **Milestone tracking** - Track and achieve project milestones
+- **Issue resolution** - Systematic issue identification and resolution
+- **Documentation updates** - Keep all documentation current and comprehensive
+
+### How to Apply
+1. **Set up project structure** - Create comprehensive project documentation
+2. **Initialize tracking systems** - Set up progress tracking and tasklist management
+3. **Establish processes** - Define development and quality assurance processes
+4. **Monitor progress** - Continuously track progress and update documentation
+5. **Maintain quality** - Ensure quality standards are maintained throughout
+
+### Success Criteria
+- **Comprehensive documentation** - All project aspects are well documented
+- **Clear progress tracking** - Always know project status and progress
+- **Quality standards** - Maintain high quality throughout development
+- **Efficient communication** - Clear communication with all stakeholders
+- **Systematic processes** - All development processes are systematic and repeatable
+- **Risk management** - Issues are identified and resolved early
+
+---
+
+**This rule ensures comprehensive project management with clear documentation, systematic progress tracking, and quality assurance throughout the development process.**
+description: Comprehensive project management and documentation
+globs: ["**/*.md", "**/*.py", "docs/**/*"]
+alwaysApply: true
+---
+description:
+globs:
+alwaysApply: true
+---

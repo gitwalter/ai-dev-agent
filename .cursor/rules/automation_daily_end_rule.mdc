@@ -1,0 +1,700 @@
+# Daily End Automation Rule
+
+## Description
+Automate the daily development end workflow to ensure consistent, efficient project closure. Execute systematic end-of-day procedures including tasklist updates, documentation synchronization, comprehensive cleanup, final testing, and repository synchronization. This rule ensures every development session ends with a clean, documented, and committed state.
+
+## Core Requirements
+
+### 1. Tasklist Update and Progress Tracking
+**MANDATORY**: Update tasklist with progress and plan next steps:
+
+#### **Tasklist Update Manager**
+```python
+class DailyEndTasklistManager:
+    """Manages tasklist updates and progress tracking."""
+    
+    def __init__(self):
+        self.tasklist_updater = TasklistUpdater()
+        self.progress_tracker = ProgressTracker()
+        self.planning_engine = PlanningEngine()
+    
+    async def update_tasklist(self, daily_activities: dict) -> dict:
+        """
+        Update tasklist with daily progress and plan next steps.
+        
+        Update steps:
+        - Record completed tasks
+        - Update task progress
+        - Identify new tasks
+        - Plan next day priorities
+        - Generate progress report
+        """
+        print("📋 Updating tasklist...")
+        
+        # Step 1: Record completed tasks (1 minute)
+        completed_tasks = await self._record_completed_tasks(daily_activities)
+        print("✅ Completed tasks recorded")
+        
+        # Step 2: Update task progress (1 minute)
+        progress_updates = await self._update_task_progress(daily_activities)
+        print("📊 Task progress updated")
+        
+        # Step 3: Identify new tasks (30 seconds)
+        new_tasks = await self._identify_new_tasks(daily_activities)
+        print("🆕 New tasks identified")
+        
+        # Step 4: Plan next day priorities (1 minute)
+        next_day_plan = await self._plan_next_day_priorities(completed_tasks, progress_updates, new_tasks)
+        print("📅 Next day priorities planned")
+        
+        # Step 5: Generate progress report (30 seconds)
+        progress_report = await self._generate_progress_report(completed_tasks, progress_updates, new_tasks)
+        print("📈 Progress report generated")
+        
+        return {
+            "tasklist_update_completed": True,
+            "completed_tasks": completed_tasks,
+            "progress_updates": progress_updates,
+            "new_tasks": new_tasks,
+            "next_day_plan": next_day_plan,
+            "progress_report": progress_report,
+            "update_time": "4 minutes"
+        }
+    
+    async def _record_completed_tasks(self, activities: dict) -> list:
+        """Record completed tasks - 1 minute process."""
+        completed_tasks = []
+        
+        # Extract completed tasks from daily activities
+        for activity in activities.get("completed_activities", []):
+            if activity.get("status") == "completed":
+                task_info = {
+                    "task_id": activity.get("task_id"),
+                    "task_name": activity.get("task_name"),
+                    "completion_time": activity.get("completion_time"),
+                    "effort_spent": activity.get("effort_spent"),
+                    "quality_score": activity.get("quality_score"),
+                    "notes": activity.get("notes", "")
+                }
+                completed_tasks.append(task_info)
+        
+        # Update tasklist files
+        await self._update_tasklist_files(completed_tasks)
+        
+        return completed_tasks
+    
+    async def _update_task_progress(self, activities: dict) -> dict:
+        """Update task progress - 1 minute process."""
+        progress_updates = {}
+        
+        # Update progress for ongoing tasks
+        for activity in activities.get("ongoing_activities", []):
+            task_id = activity.get("task_id")
+            progress = activity.get("progress", 0)
+            
+            progress_updates[task_id] = {
+                "current_progress": progress,
+                "estimated_remaining": activity.get("estimated_remaining"),
+                "blockers": activity.get("blockers", []),
+                "next_steps": activity.get("next_steps", [])
+            }
+        
+        # Update tasklist files with progress
+        await self._update_progress_in_files(progress_updates)
+        
+        return progress_updates
+    
+    async def _plan_next_day_priorities(self, completed: list, progress: dict, new_tasks: list) -> dict:
+        """Plan next day priorities - 1 minute process."""
+        next_day_plan = {
+            "high_priority": [],
+            "medium_priority": [],
+            "low_priority": [],
+            "blocked_tasks": [],
+            "estimated_effort": {},
+            "time_allocations": {}
+        }
+        
+        # Analyze current state and plan priorities
+        all_tasks = self._get_all_active_tasks(completed, progress, new_tasks)
+        
+        for task in all_tasks:
+            priority = self._calculate_task_priority(task, completed, progress)
+            next_day_plan[f"{priority}_priority"].append(task)
+            
+            # Estimate effort
+            effort = self._estimate_task_effort(task)
+            next_day_plan["estimated_effort"][task["id"]] = effort
+        
+        # Allocate time for next day
+        next_day_plan["time_allocations"] = self._allocate_next_day_time(next_day_plan)
+        
+        return next_day_plan
+```
+
+### 2. Documentation Synchronization
+**MANDATORY**: Update all documentation to reflect current state:
+
+#### **Documentation Sync Manager**
+```python
+class DailyEndDocumentationManager:
+    """Manages documentation synchronization and updates."""
+    
+    def __init__(self):
+        self.doc_updater = DocumentationUpdater()
+        self.doc_validator = DocumentationValidator()
+        self.doc_generator = DocumentationGenerator()
+    
+    async def synchronize_documentation(self, daily_changes: dict) -> dict:
+        """
+        Synchronize all documentation with current state.
+        
+        Sync steps:
+        - Update code documentation
+        - Update README files
+        - Update API documentation
+        - Update architecture docs
+        - Validate documentation consistency
+        """
+        print("📚 Synchronizing documentation...")
+        
+        # Step 1: Update code documentation (2 minutes)
+        code_docs = await self._update_code_documentation(daily_changes)
+        print("📝 Code documentation updated")
+        
+        # Step 2: Update README files (1 minute)
+        readme_updates = await self._update_readme_files(daily_changes)
+        print("📖 README files updated")
+        
+        # Step 3: Update API documentation (1 minute)
+        api_docs = await self._update_api_documentation(daily_changes)
+        print("🔌 API documentation updated")
+        
+        # Step 4: Update architecture docs (1 minute)
+        arch_docs = await self._update_architecture_docs(daily_changes)
+        print("🏗️ Architecture docs updated")
+        
+        # Step 5: Validate documentation consistency (30 seconds)
+        validation = await self._validate_documentation_consistency()
+        print("✅ Documentation consistency validated")
+        
+        return {
+            "documentation_sync_completed": True,
+            "code_documentation": code_docs,
+            "readme_updates": readme_updates,
+            "api_documentation": api_docs,
+            "architecture_docs": arch_docs,
+            "validation": validation,
+            "sync_time": "5.5 minutes"
+        }
+    
+    async def _update_code_documentation(self, changes: dict) -> dict:
+        """Update code documentation - 2 minute process."""
+        doc_updates = {
+            "files_updated": [],
+            "docstrings_added": 0,
+            "docstrings_updated": 0,
+            "type_hints_added": 0,
+            "comments_added": 0
+        }
+        
+        # Update docstrings for modified files
+        for file_path in changes.get("modified_files", []):
+            if file_path.endswith(".py"):
+                file_updates = await self._update_file_documentation(file_path)
+                doc_updates["files_updated"].append(file_path)
+                doc_updates["docstrings_added"] += file_updates.get("docstrings_added", 0)
+                doc_updates["docstrings_updated"] += file_updates.get("docstrings_updated", 0)
+                doc_updates["type_hints_added"] += file_updates.get("type_hints_added", 0)
+                doc_updates["comments_added"] += file_updates.get("comments_added", 0)
+        
+        return doc_updates
+    
+    async def _update_readme_files(self, changes: dict) -> dict:
+        """Update README files - 1 minute process."""
+        readme_updates = {
+            "files_updated": [],
+            "sections_updated": [],
+            "new_sections_added": []
+        }
+        
+        # Update main README
+        main_readme_updates = await self._update_main_readme(changes)
+        readme_updates["files_updated"].append("README.md")
+        readme_updates["sections_updated"].extend(main_readme_updates.get("sections_updated", []))
+        readme_updates["new_sections_added"].extend(main_readme_updates.get("new_sections_added", []))
+        
+        # Update other README files
+        for readme_file in ["docs/README.md", "tests/README.md"]:
+            if os.path.exists(readme_file):
+                file_updates = await self._update_readme_file(readme_file, changes)
+                readme_updates["files_updated"].append(readme_file)
+                readme_updates["sections_updated"].extend(file_updates.get("sections_updated", []))
+        
+        return readme_updates
+```
+
+### 3. Comprehensive Cleanup
+**MANDATORY**: Perform comprehensive cleanup and file organization:
+
+#### **Cleanup Manager**
+```python
+class DailyEndCleanupManager:
+    """Manages comprehensive cleanup and file organization."""
+    
+    def __init__(self):
+        self.file_cleaner = FileCleaner()
+        self.structure_organizer = StructureOrganizer()
+        self.artifact_manager = ArtifactManager()
+    
+    async def perform_comprehensive_cleanup(self) -> dict:
+        """
+        Perform comprehensive cleanup and file organization.
+        
+        Cleanup steps:
+        - Remove temporary files
+        - Organize file structure
+        - Clean up artifacts
+        - Validate file organization
+        - Optimize repository size
+        """
+        print("🧹 Performing comprehensive cleanup...")
+        
+        # Step 1: Remove temporary files (1 minute)
+        temp_cleanup = await self._remove_temporary_files()
+        print("🗑️ Temporary files removed")
+        
+        # Step 2: Organize file structure (2 minutes)
+        structure_org = await self._organize_file_structure()
+        print("📁 File structure organized")
+        
+        # Step 3: Clean up artifacts (1 minute)
+        artifact_cleanup = await self._cleanup_artifacts()
+        print("🎨 Artifacts cleaned up")
+        
+        # Step 4: Validate file organization (30 seconds)
+        validation = await self._validate_file_organization()
+        print("✅ File organization validated")
+        
+        # Step 5: Optimize repository size (30 seconds)
+        optimization = await self._optimize_repository_size()
+        print("⚡ Repository size optimized")
+        
+        return {
+            "cleanup_completed": True,
+            "temporary_cleanup": temp_cleanup,
+            "structure_organization": structure_org,
+            "artifact_cleanup": artifact_cleanup,
+            "validation": validation,
+            "optimization": optimization,
+            "cleanup_time": "5 minutes"
+        }
+    
+    async def _remove_temporary_files(self) -> dict:
+        """Remove temporary files - 1 minute process."""
+        temp_patterns = [
+            "*.pyc", "__pycache__", "*.tmp", "*.temp", "*.log",
+            ".pytest_cache", ".coverage", "*.swp", "*.swo",
+            "*.bak", "*.backup", "*.pid", "*.lock"
+        ]
+        
+        cleanup_results = {}
+        total_files_removed = 0
+        total_space_freed = 0
+        
+        for pattern in temp_patterns:
+            files_removed = await self.file_cleaner.remove_files_by_pattern(pattern)
+            space_freed = await self.file_cleaner.calculate_space_freed(files_removed)
+            
+            cleanup_results[pattern] = {
+                "files_removed": len(files_removed),
+                "space_freed": space_freed,
+                "file_list": files_removed
+            }
+            
+            total_files_removed += len(files_removed)
+            total_space_freed += space_freed
+        
+        return {
+            "patterns_processed": len(temp_patterns),
+            "total_files_removed": total_files_removed,
+            "total_space_freed": total_space_freed,
+            "pattern_results": cleanup_results
+        }
+    
+    async def _organize_file_structure(self) -> dict:
+        """Organize file structure - 2 minute process."""
+        organization_tasks = [
+            "move_misplaced_files",
+            "create_missing_directories",
+            "rename_inconsistent_files",
+            "update_import_statements",
+            "validate_file_permissions"
+        ]
+        
+        organization_results = {}
+        
+        for task in organization_tasks:
+            result = await self.structure_organizer.execute_task(task)
+            organization_results[task] = result
+        
+        return {
+            "tasks_completed": len(organization_tasks),
+            "files_moved": organization_results.get("move_misplaced_files", {}).get("files_moved", 0),
+            "directories_created": organization_results.get("create_missing_directories", {}).get("directories_created", 0),
+            "files_renamed": organization_results.get("rename_inconsistent_files", {}).get("files_renamed", 0),
+            "imports_updated": organization_results.get("update_import_statements", {}).get("imports_updated", 0),
+            "permissions_validated": organization_results.get("validate_file_permissions", {}).get("validated", False)
+        }
+```
+
+### 4. Final Test Run
+**MANDATORY**: Execute comprehensive final test run:
+
+#### **Final Test Manager**
+```python
+class DailyEndTestManager:
+    """Manages comprehensive final test run."""
+    
+    def __init__(self):
+        self.test_runner = TestRunner()
+        self.test_analyzer = TestAnalyzer()
+        self.quality_assessor = QualityAssessor()
+    
+    async def run_final_tests(self) -> dict:
+        """
+        Run comprehensive final test suite.
+        
+        Test phases:
+        - Full unit test suite
+        - Integration test suite
+        - System test suite
+        - Performance tests
+        - Quality assessment
+        """
+        print("🧪 Running final tests...")
+        
+        # Phase 1: Full unit test suite (3 minutes)
+        unit_tests = await self._run_unit_test_suite()
+        print("🔧 Unit tests completed")
+        
+        # Phase 2: Integration test suite (2 minutes)
+        integration_tests = await self._run_integration_test_suite()
+        print("🔗 Integration tests completed")
+        
+        # Phase 3: System test suite (2 minutes)
+        system_tests = await self._run_system_test_suite()
+        print("🖥️ System tests completed")
+        
+        # Phase 4: Performance tests (1 minute)
+        performance_tests = await self._run_performance_tests()
+        print("⚡ Performance tests completed")
+        
+        # Phase 5: Quality assessment (30 seconds)
+        quality_assessment = await self._assess_quality(unit_tests, integration_tests, system_tests, performance_tests)
+        print("📊 Quality assessment completed")
+        
+        return {
+            "final_tests_completed": True,
+            "unit_tests": unit_tests,
+            "integration_tests": integration_tests,
+            "system_tests": system_tests,
+            "performance_tests": performance_tests,
+            "quality_assessment": quality_assessment,
+            "overall_test_status": self._calculate_overall_test_status(unit_tests, integration_tests, system_tests, performance_tests),
+            "test_time": "8.5 minutes"
+        }
+    
+    async def _run_unit_test_suite(self) -> dict:
+        """Run full unit test suite - 3 minute process."""
+        unit_test_commands = [
+            "pytest tests/unit/ -v --tb=short --cov=.",
+            "pytest tests/isolated/ -v --tb=short",
+            "python -m pytest tests/unit/ --cov-report=html"
+        ]
+        
+        results = []
+        for command in unit_test_commands:
+            try:
+                result = await self.test_runner.run_command(command, timeout=60)
+                results.append({
+                    "command": command,
+                    "success": result["exit_code"] == 0,
+                    "output": result["output"],
+                    "coverage": self._extract_coverage_info(result["output"]),
+                    "error": result.get("error", "")
+                })
+            except Exception as e:
+                results.append({
+                    "command": command,
+                    "success": False,
+                    "output": "",
+                    "coverage": 0,
+                    "error": str(e)
+                })
+        
+        return {
+            "tests_run": len(unit_test_commands),
+            "tests_passed": len([r for r in results if r["success"]]),
+            "tests_failed": len([r for r in results if not r["success"]]),
+            "average_coverage": sum(r["coverage"] for r in results) / len(results) if results else 0,
+            "results": results,
+            "overall_success": all(r["success"] for r in results)
+        }
+    
+    async def _run_integration_test_suite(self) -> dict:
+        """Run integration test suite - 2 minute process."""
+        integration_test_commands = [
+            "pytest tests/integration/ -v --tb=short",
+            "pytest tests/langgraph/ -v --tb=short",
+            "pytest tests/system/ -v --tb=short"
+        ]
+        
+        results = []
+        for command in integration_test_commands:
+            try:
+                result = await self.test_runner.run_command(command, timeout=40)
+                results.append({
+                    "command": command,
+                    "success": result["exit_code"] == 0,
+                    "output": result["output"],
+                    "error": result.get("error", "")
+                })
+            except Exception as e:
+                results.append({
+                    "command": command,
+                    "success": False,
+                    "output": "",
+                    "error": str(e)
+                })
+        
+        return {
+            "tests_run": len(integration_test_commands),
+            "tests_passed": len([r for r in results if r["success"]]),
+            "tests_failed": len([r for r in results if not r["success"]]),
+            "results": results,
+            "overall_success": all(r["success"] for r in results)
+        }
+```
+
+### 5. Repository Synchronization
+**MANDATORY**: Commit changes and synchronize with remote repository:
+
+#### **Repository Sync Manager**
+```python
+class DailyEndRepositoryManager:
+    """Manages repository synchronization and commits."""
+    
+    def __init__(self):
+        self.git_manager = GitManager()
+        self.commit_manager = CommitManager()
+        self.push_manager = PushManager()
+    
+    async def synchronize_repository(self, changes: dict) -> dict:
+        """
+        Commit changes and synchronize with remote repository.
+        
+        Sync steps:
+        - Stage all changes
+        - Create comprehensive commit
+        - Push to remote
+        - Verify synchronization
+        - Update branch status
+        """
+        print("🔄 Synchronizing repository...")
+        
+        # Step 1: Stage all changes (30 seconds)
+        staging = await self._stage_all_changes(changes)
+        print("📦 Changes staged")
+        
+        # Step 2: Create comprehensive commit (30 seconds)
+        commit = await self._create_comprehensive_commit(changes)
+        print("💾 Commit created")
+        
+        # Step 3: Push to remote (1 minute)
+        push = await self._push_to_remote()
+        print("⬆️ Changes pushed")
+        
+        # Step 4: Verify synchronization (30 seconds)
+        verification = await self._verify_synchronization()
+        print("✅ Synchronization verified")
+        
+        # Step 5: Update branch status (30 seconds)
+        branch_status = await self._update_branch_status()
+        print("🌿 Branch status updated")
+        
+        return {
+            "repository_sync_completed": True,
+            "staging": staging,
+            "commit": commit,
+            "push": push,
+            "verification": verification,
+            "branch_status": branch_status,
+            "sync_time": "3 minutes"
+        }
+    
+    async def _stage_all_changes(self, changes: dict) -> dict:
+        """Stage all changes - 30 second process."""
+        staging_results = {
+            "files_staged": [],
+            "files_skipped": [],
+            "conflicts": [],
+            "total_changes": 0
+        }
+        
+        # Stage modified files
+        for file_path in changes.get("modified_files", []):
+            try:
+                result = await self.git_manager.stage_file(file_path)
+                if result["success"]:
+                    staging_results["files_staged"].append(file_path)
+                    staging_results["total_changes"] += 1
+                else:
+                    staging_results["files_skipped"].append(file_path)
+            except Exception as e:
+                staging_results["conflicts"].append({"file": file_path, "error": str(e)})
+        
+        # Stage new files
+        for file_path in changes.get("new_files", []):
+            try:
+                result = await self.git_manager.stage_file(file_path)
+                if result["success"]:
+                    staging_results["files_staged"].append(file_path)
+                    staging_results["total_changes"] += 1
+                else:
+                    staging_results["files_skipped"].append(file_path)
+            except Exception as e:
+                staging_results["conflicts"].append({"file": file_path, "error": str(e)})
+        
+        return staging_results
+    
+    async def _create_comprehensive_commit(self, changes: dict) -> dict:
+        """Create comprehensive commit - 30 second process."""
+        commit_message = self._generate_commit_message(changes)
+        
+        try:
+            commit_result = await self.git_manager.create_commit(commit_message)
+            
+            return {
+                "success": True,
+                "commit_hash": commit_result.get("commit_hash"),
+                "commit_message": commit_message,
+                "files_committed": commit_result.get("files_committed", 0),
+                "timestamp": commit_result.get("timestamp")
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "commit_message": commit_message,
+                "recommendation": "Manual commit required"
+            }
+    
+    def _generate_commit_message(self, changes: dict) -> str:
+        """Generate comprehensive commit message."""
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Count changes by type
+        modified_count = len(changes.get("modified_files", []))
+        new_count = len(changes.get("new_files", []))
+        deleted_count = len(changes.get("deleted_files", []))
+        
+        # Generate summary
+        summary_parts = []
+        if modified_count > 0:
+            summary_parts.append(f"Update {modified_count} files")
+        if new_count > 0:
+            summary_parts.append(f"Add {new_count} new files")
+        if deleted_count > 0:
+            summary_parts.append(f"Remove {deleted_count} files")
+        
+        summary = ", ".join(summary_parts) if summary_parts else "Daily development updates"
+        
+        return f"Daily End: {summary} - {timestamp}"
+```
+
+## Practical Implementation Guidelines
+
+### 1. Daily End Workflow
+- **Tasklist Update**: 4-minute tasklist update and progress tracking
+- **Documentation Sync**: 5.5-minute documentation synchronization
+- **Comprehensive Cleanup**: 5-minute cleanup and file organization
+- **Final Test Run**: 8.5-minute comprehensive test execution
+- **Repository Sync**: 3-minute repository synchronization
+
+### 2. Automation Triggers
+- **Automatic End**: Trigger on development session end
+- **Manual Trigger**: Allow manual execution when needed
+- **Scheduled End**: Optional scheduled daily end
+- **Conditional End**: Trigger based on specific conditions
+
+### 3. Success Criteria
+- **Tasklist Updated**: Current tasklist with progress and next day plan
+- **Documentation Current**: All documentation synchronized with code
+- **Clean Repository**: Clean, organized file structure
+- **Tests Passing**: All final tests successful
+- **Changes Committed**: All changes committed and pushed
+
+### 4. Error Handling
+- **Graceful Degradation**: Continue with partial success
+- **Issue Reporting**: Comprehensive issue reporting
+- **Recovery Procedures**: Automatic recovery procedures
+- **Manual Intervention**: Clear manual intervention guidance
+
+### 5. Performance Optimization
+- **Parallel Execution**: Execute independent steps in parallel
+- **Incremental Updates**: Only update what has changed
+- **Caching**: Cache results for faster subsequent runs
+- **Resource Management**: Efficient resource utilization
+
+## Benefits
+
+### Efficiency Benefits
+- **Consistent End**: Every development session ends consistently
+- **Time Savings**: Automated workflow saves 20+ minutes daily
+- **Error Prevention**: Systematic checks prevent common issues
+- **Clean State**: Ready-to-start state for next session
+
+### Quality Benefits
+- **Documentation Sync**: Ensures documentation is always current
+- **Test Verification**: Verifies system functionality with comprehensive tests
+- **Clean Repository**: Maintains clean, organized repository state
+- **Progress Tracking**: Comprehensive progress tracking and planning
+
+### Reliability Benefits
+- **Reproducible Process**: Consistent, reproducible end-of-day process
+- **Issue Detection**: Detection of potential issues before next session
+- **Recovery Capability**: Automatic recovery from common issues
+- **Monitoring Integration**: Integrated monitoring and alerting
+
+## Application
+
+### When to Apply
+- **Daily Development End**: Every development session
+- **Before System Shutdown**: Before shutting down development environment
+- **Before Long Breaks**: Before taking extended breaks
+- **Manual Trigger**: When manual end-of-day is needed
+
+### How to Apply
+1. **Automatic Trigger**: System automatically executes on development end
+2. **Manual Execution**: Allow manual execution when needed
+3. **Scheduled Execution**: Optional scheduled daily end
+4. **Conditional Execution**: Execute based on specific conditions
+
+### Success Criteria
+- **Complete Workflow**: All end-of-day steps completed successfully
+- **Clean State**: Development environment in clean state
+- **Tests Passing**: All final tests passing
+- **Documentation Current**: All documentation up-to-date
+- **Changes Committed**: All changes committed and pushed
+
+---
+
+**This rule ensures consistent, efficient daily development closure with comprehensive cleanup, testing, and repository synchronization.**
+description: Automated daily development end workflow
+globs: ["**/*.py", "**/*.md", "**/automation/**", "**/daily/**"]
+alwaysApply: true
+description:
+globs:
+alwaysApply: true
+---

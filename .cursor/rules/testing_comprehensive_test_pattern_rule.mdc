@@ -1,0 +1,551 @@
+# Comprehensive Test Pattern Rule
+
+## Description
+Follow systematic test patterns for all development: unit tests first for new features, integration tests for system validation, isolation for failures, and comprehensive documentation and cataloging of all test changes.
+
+## Core Requirements
+
+### 1. New Development Pattern (Unit-First Approach)
+**MANDATORY**: For all new features, components, or functionality:
+
+#### **Step 1: Write Unit Tests First**
+```python
+# ✅ CORRECT: Write unit tests before implementation
+class TestUserAuthenticationService:
+    """Unit tests for UserAuthenticationService."""
+    
+    def test_authenticate_user_with_valid_credentials(self):
+        """Test successful authentication with valid credentials."""
+        # Arrange
+        service = UserAuthenticationService()
+        credentials = {"username": "test_user", "password": "valid_password"}
+        
+        # Act
+        result = service.authenticate(credentials)
+        
+        # Assert
+        assert result.is_authenticated is True
+        assert result.user_id is not None
+        assert result.session_token is not None
+    
+    def test_authenticate_user_with_invalid_credentials(self):
+        """Test authentication failure with invalid credentials."""
+        # Arrange
+        service = UserAuthenticationService()
+        credentials = {"username": "test_user", "password": "wrong_password"}
+        
+        # Act
+        result = service.authenticate(credentials)
+        
+        # Assert
+        assert result.is_authenticated is False
+        assert result.error_message == "Invalid credentials"
+    
+    def test_authenticate_user_with_missing_credentials(self):
+        """Test authentication failure with missing credentials."""
+        # Arrange
+        service = UserAuthenticationService()
+        credentials = {"username": "test_user"}  # Missing password
+        
+        # Act & Assert
+        with pytest.raises(ValueError, match="Password is required"):
+            service.authenticate(credentials)
+```
+
+#### **Step 2: Implement to Pass Tests**
+```python
+# ✅ CORRECT: Implement minimal code to pass tests
+class UserAuthenticationService:
+    """User authentication service implementation."""
+    
+    def authenticate(self, credentials: dict) -> AuthenticationResult:
+        """
+        Authenticate user with provided credentials.
+        
+        Args:
+            credentials: Dictionary containing username and password
+            
+        Returns:
+            AuthenticationResult with authentication status
+            
+        Raises:
+            ValueError: If required credentials are missing
+        """
+        # Validate input
+        if "password" not in credentials:
+            raise ValueError("Password is required")
+        
+        # Simple authentication logic (replace with real implementation)
+        if credentials.get("password") == "valid_password":
+            return AuthenticationResult(
+                is_authenticated=True,
+                user_id="user_123",
+                session_token="token_456"
+            )
+        else:
+            return AuthenticationResult(
+                is_authenticated=False,
+                error_message="Invalid credentials"
+            )
+```
+
+#### **Step 3: Document and Catalog**
+```python
+# ✅ CORRECT: Document test changes and update catalog
+class TestCatalogManager:
+    """Manages test catalog and documentation."""
+    
+    def update_test_catalog(self, test_file: str, changes: dict):
+        """Update test catalog with new test information."""
+        catalog_entry = {
+            "test_file": test_file,
+            "test_class": "TestUserAuthenticationService",
+            "test_methods": [
+                "test_authenticate_user_with_valid_credentials",
+                "test_authenticate_user_with_invalid_credentials", 
+                "test_authenticate_user_with_missing_credentials"
+            ],
+            "coverage_areas": ["authentication", "input_validation", "error_handling"],
+            "date_added": datetime.now().isoformat(),
+            "implementation_status": "completed"
+        }
+        
+        self._save_to_catalog(catalog_entry)
+        self._update_documentation(test_file, catalog_entry)
+```
+
+### 2. Integration Testing Pattern (Integration-First Approach)
+**MANDATORY**: For testing integrated systems and workflows:
+
+#### **Step 1: Start with Integration Tests**
+```python
+# ✅ CORRECT: Start with integration tests for system validation
+class TestUserManagementWorkflow:
+    """Integration tests for complete user management workflow."""
+    
+    @pytest.mark.integration
+    async def test_complete_user_registration_workflow(self):
+        """Test complete user registration workflow."""
+        # Arrange
+        workflow = UserManagementWorkflow()
+        user_data = {
+            "username": "new_user",
+            "email": "new_user@example.com",
+            "password": "secure_password"
+        }
+        
+        # Act
+        result = await workflow.register_user(user_data)
+        
+        # Assert
+        assert result.success is True
+        assert result.user_id is not None
+        assert result.verification_email_sent is True
+        
+        # Verify database state
+        user = await workflow.get_user_by_id(result.user_id)
+        assert user.username == user_data["username"]
+        assert user.email == user_data["email"]
+        assert user.is_verified is False  # Email verification pending
+    
+    @pytest.mark.integration
+    async def test_user_login_after_registration(self):
+        """Test user login after successful registration."""
+        # Arrange
+        workflow = UserManagementWorkflow()
+        user_data = {
+            "username": "login_test_user",
+            "email": "login_test@example.com", 
+            "password": "test_password"
+        }
+        
+        # Register user first
+        registration = await workflow.register_user(user_data)
+        assert registration.success is True
+        
+        # Act - Login with registered credentials
+        login_result = await workflow.login_user({
+            "username": user_data["username"],
+            "password": user_data["password"]
+        })
+        
+        # Assert
+        assert login_result.success is True
+        assert login_result.session_token is not None
+        assert login_result.user_id == registration.user_id
+```
+
+#### **Step 2: Isolate Failures with Unit Tests**
+```python
+# ✅ CORRECT: When integration test fails, isolate and write unit tests
+class TestIsolatedAuthenticationComponent:
+    """Isolated unit tests for authentication component after integration failure."""
+    
+    def test_password_validation_in_isolation(self):
+        """Test password validation logic in isolation."""
+        # This test was created after integration test failure
+        # revealed password validation issues
+        
+        validator = PasswordValidator()
+        
+        # Test valid password
+        assert validator.validate("SecurePass123!") is True
+        
+        # Test invalid passwords
+        assert validator.validate("weak") is False  # Too short
+        assert validator.validate("nouppercase123!") is False  # No uppercase
+        assert validator.validate("NOLOWERCASE123!") is False  # No lowercase
+        assert validator.validate("NoNumbers!") is False  # No numbers
+        assert validator.validate("NoSpecialChars123") is False  # No special chars
+    
+    def test_email_validation_in_isolation(self):
+        """Test email validation logic in isolation."""
+        # This test was created after integration test failure
+        # revealed email validation issues
+        
+        validator = EmailValidator()
+        
+        # Test valid emails
+        assert validator.validate("user@example.com") is True
+        assert validator.validate("user.name@domain.co.uk") is True
+        
+        # Test invalid emails
+        assert validator.validate("invalid-email") is False
+        assert validator.validate("@domain.com") is False
+        assert validator.validate("user@") is False
+        assert validator.validate("user@.com") is False
+```
+
+#### **Step 3: Re-test Integration After Fixes**
+```python
+# ✅ CORRECT: Re-run integration tests after unit test fixes
+class TestUserManagementWorkflowAfterFixes:
+    """Integration tests after fixing isolated issues."""
+    
+    @pytest.mark.integration
+    async def test_complete_user_registration_workflow_after_fixes(self):
+        """Re-test complete workflow after fixing validation issues."""
+        # This test re-validates the integration after fixing
+        # password and email validation issues discovered in isolation
+        
+        workflow = UserManagementWorkflow()
+        user_data = {
+            "username": "fixed_user",
+            "email": "fixed_user@example.com",
+            "password": "SecurePass123!"  # Now using valid password
+        }
+        
+        # Act
+        result = await workflow.register_user(user_data)
+        
+        # Assert - Should now pass after validation fixes
+        assert result.success is True
+        assert result.user_id is not None
+        assert result.verification_email_sent is True
+```
+
+### 3. Test Documentation and Cataloging Pattern
+**MANDATORY**: Comprehensive documentation and cataloging of all test changes:
+
+#### **Test Catalog Structure**
+```python
+class TestCatalog:
+    """Comprehensive test catalog for tracking all test changes."""
+    
+    def __init__(self):
+        self.catalog_file = "tests/test_catalog.json"
+        self.documentation_dir = "docs/testing/"
+        self.test_reports_dir = "tests/reports/"
+    
+    def add_test_entry(self, entry: dict):
+        """Add new test entry to catalog."""
+        catalog = self._load_catalog()
+        
+        entry.update({
+            "id": self._generate_test_id(),
+            "date_added": datetime.now().isoformat(),
+            "test_type": entry.get("test_type", "unit"),
+            "status": "active"
+        })
+        
+        catalog["tests"].append(entry)
+        self._save_catalog(catalog)
+        self._update_documentation(entry)
+    
+    def update_test_status(self, test_id: str, status: str, notes: str = ""):
+        """Update test status and add notes."""
+        catalog = self._load_catalog()
+        
+        for test in catalog["tests"]:
+            if test["id"] == test_id:
+                test["status"] = status
+                test["last_updated"] = datetime.now().isoformat()
+                if notes:
+                    test["notes"] = notes
+                break
+        
+        self._save_catalog(catalog)
+    
+    def generate_test_report(self):
+        """Generate comprehensive test report."""
+        catalog = self._load_catalog()
+        
+        report = {
+            "generated_at": datetime.now().isoformat(),
+            "total_tests": len(catalog["tests"]),
+            "test_types": self._count_test_types(catalog),
+            "coverage_areas": self._analyze_coverage(catalog),
+            "recent_changes": self._get_recent_changes(catalog),
+            "failing_tests": self._get_failing_tests(catalog)
+        }
+        
+        self._save_report(report)
+        return report
+```
+
+#### **Test Documentation Template**
+```python
+class TestDocumentationGenerator:
+    """Generate comprehensive test documentation."""
+    
+    def generate_test_documentation(self, test_file: str):
+        """Generate documentation for a test file."""
+        test_info = self._analyze_test_file(test_file)
+        
+        documentation = f"""
+# Test Documentation: {test_info['class_name']}
+
+## Overview
+{test_info['description']}
+
+## Test Coverage
+- **Total Tests**: {len(test_info['test_methods'])}
+- **Test Type**: {test_info['test_type']}
+- **Coverage Areas**: {', '.join(test_info['coverage_areas'])}
+
+## Test Methods
+
+{self._generate_test_method_docs(test_info['test_methods'])}
+
+## Dependencies
+{self._generate_dependency_docs(test_info['dependencies'])}
+
+## Test Data
+{self._generate_test_data_docs(test_info['test_data'])}
+
+## Recent Changes
+{self._generate_changes_docs(test_info['recent_changes'])}
+
+## Related Tests
+{self._generate_related_tests_docs(test_info['related_tests'])}
+"""
+        
+        self._save_documentation(test_file, documentation)
+```
+
+### 4. Test Strategy Implementation
+
+#### **Test Strategy Manager**
+```python
+class TestStrategyManager:
+    """Manages test strategy and execution patterns."""
+    
+    def __init__(self):
+        self.catalog = TestCatalog()
+        self.documentation = TestDocumentationGenerator()
+        self.test_runner = TestRunner()
+    
+    async def execute_new_development_pattern(self, feature_name: str, test_spec: dict):
+        """Execute unit-first pattern for new development."""
+        print(f"🚀 Starting new development pattern for: {feature_name}")
+        
+        # Step 1: Create unit tests
+        test_file = await self._create_unit_tests(feature_name, test_spec)
+        print(f"✅ Created unit tests: {test_file}")
+        
+        # Step 2: Run unit tests (should fail initially)
+        unit_results = await self.test_runner.run_unit_tests(test_file)
+        print(f"📊 Unit test results: {unit_results}")
+        
+        # Step 3: Implement feature
+        implementation_file = await self._implement_feature(feature_name, test_spec)
+        print(f"🔧 Implemented feature: {implementation_file}")
+        
+        # Step 4: Re-run unit tests (should pass)
+        final_results = await self.test_runner.run_unit_tests(test_file)
+        print(f"📊 Final unit test results: {final_results}")
+        
+        # Step 5: Document and catalog
+        await self._document_and_catalog(test_file, feature_name, "unit")
+        print(f"📚 Documented and cataloged: {feature_name}")
+        
+        return {
+            "test_file": test_file,
+            "implementation_file": implementation_file,
+            "unit_results": final_results
+        }
+    
+    async def execute_integration_testing_pattern(self, workflow_name: str, integration_spec: dict):
+        """Execute integration-first pattern for system testing."""
+        print(f"🔄 Starting integration testing pattern for: {workflow_name}")
+        
+        # Step 1: Run integration tests
+        integration_file = await self._create_integration_tests(workflow_name, integration_spec)
+        print(f"✅ Created integration tests: {integration_file}")
+        
+        integration_results = await self.test_runner.run_integration_tests(integration_file)
+        print(f"📊 Integration test results: {integration_results}")
+        
+        # Step 2: If failures, isolate and create unit tests
+        if integration_results["failed"]:
+            print(f"⚠️ Integration tests failed, isolating issues...")
+            
+            isolated_tests = await self._isolate_failures(integration_results["failures"])
+            print(f"🔍 Created isolated unit tests: {len(isolated_tests)}")
+            
+            # Step 3: Fix issues and re-test
+            fixes_applied = await self._apply_fixes(isolated_tests)
+            print(f"🔧 Applied fixes: {fixes_applied}")
+            
+            # Step 4: Re-run integration tests
+            final_integration_results = await self.test_runner.run_integration_tests(integration_file)
+            print(f"📊 Final integration test results: {final_integration_results}")
+            
+            # Step 5: Document and catalog
+            await self._document_and_catalog(integration_file, workflow_name, "integration")
+            print(f"📚 Documented and cataloged: {workflow_name}")
+            
+            return {
+                "integration_file": integration_file,
+                "isolated_tests": isolated_tests,
+                "fixes_applied": fixes_applied,
+                "final_results": final_integration_results
+            }
+        else:
+            print(f"✅ Integration tests passed!")
+            await self._document_and_catalog(integration_file, workflow_name, "integration")
+            return {"integration_file": integration_file, "results": integration_results}
+    
+    async def _isolate_failures(self, failures: list) -> list:
+        """Isolate integration failures into unit tests."""
+        isolated_tests = []
+        
+        for failure in failures:
+            # Analyze failure to identify root cause
+            root_cause = await self._analyze_failure(failure)
+            
+            # Create focused unit test for the isolated issue
+            unit_test = await self._create_isolated_unit_test(root_cause)
+            isolated_tests.append(unit_test)
+        
+        return isolated_tests
+```
+
+### 5. Test Pattern Validation
+
+#### **Pattern Compliance Checker**
+```python
+class TestPatternComplianceChecker:
+    """Validates compliance with test patterns."""
+    
+    def validate_new_development_pattern(self, test_file: str, implementation_file: str):
+        """Validate unit-first pattern compliance."""
+        violations = []
+        
+        # Check if unit tests exist
+        if not self._has_unit_tests(test_file):
+            violations.append("Missing unit tests for new development")
+        
+        # Check if tests were written before implementation
+        if not self._tests_written_before_implementation(test_file, implementation_file):
+            violations.append("Tests must be written before implementation")
+        
+        # Check test documentation
+        if not self._has_test_documentation(test_file):
+            violations.append("Missing test documentation")
+        
+        # Check catalog entry
+        if not self._has_catalog_entry(test_file):
+            violations.append("Missing test catalog entry")
+        
+        return {
+            "compliant": len(violations) == 0,
+            "violations": violations
+        }
+    
+    def validate_integration_testing_pattern(self, integration_file: str, isolated_tests: list):
+        """Validate integration-first pattern compliance."""
+        violations = []
+        
+        # Check if integration tests exist
+        if not self._has_integration_tests(integration_file):
+            violations.append("Missing integration tests")
+        
+        # Check if failures were properly isolated
+        if self._has_failures(integration_file) and not isolated_tests:
+            violations.append("Failures must be isolated with unit tests")
+        
+        # Check if fixes were applied
+        if isolated_tests and not self._fixes_applied(isolated_tests):
+            violations.append("Isolated issues must be fixed")
+        
+        return {
+            "compliant": len(violations) == 0,
+            "violations": violations
+        }
+```
+
+## Benefits
+
+### Development Quality Benefits
+- **Reliable Implementation** - Unit tests ensure correct functionality
+- **System Integration** - Integration tests validate complete workflows
+- **Rapid Debugging** - Isolated tests quickly identify root causes
+- **Regression Prevention** - Comprehensive test coverage prevents regressions
+
+### Process Benefits
+- **Systematic Approach** - Clear patterns for different testing scenarios
+- **Documentation** - Comprehensive test documentation and cataloging
+- **Traceability** - Full traceability from tests to implementation
+- **Continuous Improvement** - Learn from test failures and improve
+
+### Team Benefits
+- **Clear Expectations** - Everyone knows the testing patterns
+- **Consistent Quality** - Standardized approach ensures quality
+- **Knowledge Sharing** - Test documentation shares knowledge
+- **Efficient Debugging** - Isolated tests make debugging faster
+
+## Application
+
+### When to Apply
+- **New Features** - Always use unit-first pattern
+- **System Integration** - Always use integration-first pattern
+- **Bug Fixes** - Isolate issues with unit tests
+- **Refactoring** - Update tests before refactoring
+- **Documentation** - Document all test changes
+
+### How to Apply
+1. **Follow Patterns** - Use appropriate pattern for the scenario
+2. **Document Everything** - Document all test changes and decisions
+3. **Update Catalog** - Keep test catalog current and accurate
+4. **Validate Compliance** - Check pattern compliance regularly
+5. **Learn and Improve** - Use test results to improve processes
+
+### Success Criteria
+- **All New Features** - Have unit tests written first
+- **All Integration** - Validated with integration tests
+- **All Failures** - Isolated and fixed with unit tests
+- **All Changes** - Documented and cataloged
+- **Zero Regressions** - Comprehensive test coverage prevents regressions
+
+---
+
+**This rule ensures systematic, documented, and effective testing patterns for all development scenarios.**
+description: Comprehensive test patterns for systematic testing approach
+globs: ["**/*test*.py", "**/tests/**", "**/test_*.py"]
+alwaysApply: true
+---
+description:
+globs:
+alwaysApply: true
+---
