@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 try:
     from langchain.output_parsers import PydanticOutputParser, ResponseSchema, StructuredOutputParser
     from langchain.schema import OutputParserException
-    from pydantic import BaseModel, Field, ValidationError
+    from pydantic import BaseModel, Field, ValidationError, ConfigDict
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False
@@ -32,49 +32,53 @@ from models.responses import BaseModel as BaseResponseModel
 
 # Pydantic models for structured output parsing
 class CodeGenerationOutput(BaseModel):
-    """Structured output model for code generation responses."""
+    """Structured output model for code generation responses - LangChain compatible."""
+    model_config = ConfigDict(
+        extra="forbid",
+        validate_assignment=True
+    )
     
     source_files: Dict[str, str] = Field(
         description="Dictionary of source code files with their content",
-        example={
+        json_schema_extra={"example": {
             "main.py": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/')\ndef read_root():\n    return {'message': 'Hello World'}"
-        }
+        }}
     )
     
     configuration_files: Dict[str, str] = Field(
         description="Dictionary of configuration files with their content",
-        example={
+        json_schema_extra={"example": {
             "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0",
             "Dockerfile": "FROM python:3.9\nWORKDIR /app\nCOPY requirements.txt ."
-        }
+        }}
     )
     
     project_structure: List[str] = Field(
         description="List of project structure directories and files",
-        example=["src/", "tests/", "docs/", "config/"]
+        json_schema_extra={"example": ["src/", "tests/", "docs/", "config/"]}
     )
     
     implementation_notes: List[str] = Field(
         description="List of implementation notes and architectural decisions",
-        example=["RESTful API design with FastAPI", "Proper error handling and validation"]
+        json_schema_extra={"example": ["RESTful API design with FastAPI", "Proper error handling and validation"]}
     )
     
     testing_strategy: Dict[str, str] = Field(
         description="Testing strategy and approach",
-        example={
+        json_schema_extra={"example": {
             "unit_tests": "pytest for unit testing",
             "integration_tests": "API endpoint testing",
             "test_data": "Sample test fixtures and data"
-        }
+        }}
     )
     
     deployment_instructions: List[str] = Field(
         description="List of deployment and setup instructions",
-        example=[
+        json_schema_extra={"example": [
             "1. Install dependencies: pip install -r requirements.txt",
             "2. Set environment variables",
             "3. Run with: uvicorn main:app --reload"
-        ]
+        ]}
     )
 
 

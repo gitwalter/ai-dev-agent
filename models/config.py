@@ -5,7 +5,7 @@ Defines configuration classes for agents, workflow, and system settings.
 
 import os
 from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from pathlib import Path
 
 
@@ -199,8 +199,7 @@ class SystemConfig(BaseModel):
             raise ValueError(f"Environment must be one of {valid_environments}")
         return v
     
-    class Config:
-        env_prefix = "AGENT_"
+    model_config = ConfigDict(env_prefix="AGENT_")
 
 
 def load_config_from_env() -> SystemConfig:

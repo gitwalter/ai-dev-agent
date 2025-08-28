@@ -5,7 +5,7 @@ Defines the state structure used throughout the LangGraph workflow.
 
 from typing import TypedDict, Dict, List, Optional, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class AgentState(TypedDict):
@@ -65,7 +65,8 @@ class AgentState(TypedDict):
 
 
 class TaskResult(BaseModel):
-    """Result of a single agent task."""
+    """Result of a single agent task - LangChain compatible."""
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
     
     task_name: str
     agent_name: str
@@ -78,7 +79,8 @@ class TaskResult(BaseModel):
 
 
 class WorkflowStep(BaseModel):
-    """Represents a single step in the workflow."""
+    """Represents a single step in the workflow - LangChain compatible."""
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
     
     step_id: str
     step_name: str
@@ -92,7 +94,8 @@ class WorkflowStep(BaseModel):
 
 
 class ApprovalRequest(BaseModel):
-    """Represents a request for human approval."""
+    """Represents a request for human approval - LangChain compatible."""
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
     
     request_id: str
     task_name: str
@@ -109,7 +112,8 @@ class ApprovalRequest(BaseModel):
 
 
 class ErrorInfo(BaseModel):
-    """Detailed error information."""
+    """Detailed error information - LangChain compatible."""
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
     
     error_id: str
     error_type: str

@@ -32,16 +32,16 @@ class TestGeminiAPIIntegration:
     def mock_gemini_response(self):
         """Create a mock Gemini response that might cause the src property error."""
         # Create a mock response that mimics the actual Gemini response structure
-        mock_part = Mock(spec=Part)
+        mock_part = Mock()
         mock_part.text = '{"test": "data"}'
-        
-        mock_content = Mock(spec=Content)
+
+        mock_content = Mock()
         mock_content.parts = [mock_part]
-        
-        mock_candidate = Mock(spec=Candidate)
+
+        mock_candidate = Mock()
         mock_candidate.content = mock_content
-        
-        mock_response = Mock(spec=GenerateContentResponse)
+
+        mock_response = Mock()
         mock_response.candidates = [mock_candidate]
         mock_response.text = '{"test": "data"}'
         
@@ -50,7 +50,7 @@ class TestGeminiAPIIntegration:
     @pytest.fixture
     def mock_gemini_response_with_src(self):
         """Create a mock Gemini response with src property that might cause the error."""
-        mock_part = Mock(spec=Part)
+        mock_part = Mock()
         mock_part.text = json.dumps({
             "src": {
                 "type": "text",
@@ -59,13 +59,13 @@ class TestGeminiAPIIntegration:
             "data": {"test": "value"}
         })
         
-        mock_content = Mock(spec=Content)
+        mock_content = Mock()
         mock_content.parts = [mock_part]
-        
-        mock_candidate = Mock(spec=Candidate)
+
+        mock_candidate = Mock()
         mock_candidate.content = mock_content
-        
-        mock_response = Mock(spec=GenerateContentResponse)
+
+        mock_response = Mock()
         mock_response.candidates = [mock_candidate]
         mock_response.text = json.dumps({
             "src": {

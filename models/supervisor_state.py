@@ -3,9 +3,10 @@
 Enhanced state management for supervisor-swarm hybrid system.
 """
 
-from typing import TypedDict, Dict, List, Optional, Any
+from typing import TypedDict, Dict, List, Optional, Any, Union
 from datetime import datetime
 from pydantic import BaseModel, Field
+from enum import Enum
 
 
 class SupervisorSwarmState(TypedDict):
@@ -246,3 +247,199 @@ class SupervisorSwarmStateManager:
     def update_state(self, updates: Dict[str, Any]) -> None:
         """Update the state with new values."""
         self.state.update(updates)
+
+
+# Missing classes and functions needed by tests
+
+class TaskStatus(str, Enum):
+    """Task status enumeration."""
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+
+class TaskPriority(str, Enum):
+    """Task priority enumeration."""
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class Task(BaseModel):
+    """Task model for supervisor tasks."""
+    task_id: str
+    task_name: str
+    description: str
+    priority: TaskPriority = TaskPriority.NORMAL
+    status: TaskStatus = TaskStatus.PENDING
+    assigned_agent: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
+    deadline: Optional[datetime] = None
+    dependencies: List[str] = []
+    retry_count: int = 0
+    max_retries: int = 3
+    metadata: Dict[str, Any] = {}
+
+
+class TaskResult(BaseModel):
+    """Result of a completed task."""
+    task_id: str
+    success: bool
+    result_data: Dict[str, Any] = {}
+    error_message: Optional[str] = None
+    execution_time: float = 0.0
+    timestamp: datetime = Field(default_factory=datetime.now)
+    quality_score: float = 0.0
+
+
+class EscalationLevel(str, Enum):
+    """Escalation level enumeration."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class Escalation(BaseModel):
+    """Escalation for failed tasks."""
+    escalation_id: str
+    task_id: str
+    level: EscalationLevel = EscalationLevel.MEDIUM
+    reason: str
+    suggested_actions: List[str] = []
+    escalated_to: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.now)
+    resolved_at: Optional[datetime] = None
+    status: str = "pending"
+
+
+class ValidationResult(BaseModel):
+    """Result of validation."""
+    validation_id: str
+    task_id: str
+    validator: str
+    score: float
+    passed: bool
+    feedback: str = ""
+    details: Dict[str, Any] = {}
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class SupervisorDecision(BaseModel):
+    """Decision made by supervisor."""
+    decision_id: str
+    task_id: str
+    decision_type: str  # 'assign', 'escalate', 'retry', 'cancel'
+    decision: str
+    reasoning: str
+    confidence: float = 0.0
+    timestamp: datetime = Field(default_factory=datetime.now)
+    metadata: Dict[str, Any] = {}
+
+
+class HandoffRecord(BaseModel):
+    """Record of agent handoff."""
+    handoff_id: str
+    from_agent: str
+    to_agent: str
+    task_id: str
+    reason: str
+    data_transferred: Dict[str, Any] = {}
+    timestamp: datetime = Field(default_factory=datetime.now)
+    status: str = "completed"
+
+
+class PerformanceMetrics(BaseModel):
+    """Performance metrics for agents/tasks."""
+    entity_id: str
+    entity_type: str  # 'agent', 'task', 'supervisor'
+    metrics: Dict[str, float] = {}
+    timestamp: datetime = Field(default_factory=datetime.now)
+    period: str = "hourly"  # 'hourly', 'daily', 'weekly'
+
+
+# Utility functions
+
+def create_initial_supervisor_swarm_state(project_context: str, project_name: str, session_id: str) -> SupervisorSwarmState:
+    """Create initial supervisor swarm state."""
+    manager = SupervisorSwarmStateManager()
+    return manager.initialize_state(project_context, project_name, session_id)
+
+
+def update_supervisor_swarm_state(state: SupervisorSwarmState, updates: Dict[str, Any]) -> SupervisorSwarmState:
+    """Update supervisor swarm state."""
+    state.update(updates)
+    return state
+
+
+def add_supervisor_decision(state: SupervisorSwarmState, decision: SupervisorDecision) -> SupervisorSwarmState:
+    """Add supervisor decision to state."""
+    if "supervisor_decisions" not in state:
+        state["supervisor_decisions"] = []
+    state["supervisor_decisions"].append(decision.dict())
+    return state
+
+
+def add_quality_validation(state: SupervisorSwarmState, validation: ValidationResult) -> SupervisorSwarmState:
+    """Add quality validation to state."""
+    if "quality_validations" not in state:
+        state["quality_validations"] = []
+    state["quality_validations"].append(validation.dict())
+    return state
+
+
+def add_handoff_record(state: SupervisorSwarmState, handoff: HandoffRecord) -> SupervisorSwarmState:
+    """Add handoff record to state."""
+    if "handoff_records" not in state:
+        state["handoff_records"] = []
+    state["handoff_records"].append(handoff.dict())
+    return state
+
+
+def add_error(state: SupervisorSwarmState, error: Dict[str, Any]) -> SupervisorSwarmState:
+    """Add error to state."""
+    if "errors" not in state:
+        state["errors"] = []
+    error["timestamp"] = datetime.now().isoformat()
+    state["errors"].append(error)
+    return state
+
+
+def add_warning(state: SupervisorSwarmState, warning: Dict[str, Any]) -> SupervisorSwarmState:
+    """Add warning to state."""
+    if "warnings" not in state:
+        state["warnings"] = []
+    warning["timestamp"] = datetime.now().isoformat()
+    state["warnings"].append(warning)
+    return state
+
+
+def increment_retry_count(state: SupervisorSwarmState, task_id: str) -> SupervisorSwarmState:
+    """Increment retry count for a task."""
+    if "retry_counts" not in state:
+        state["retry_counts"] = {}
+    if task_id not in state["retry_counts"]:
+        state["retry_counts"][task_id] = 0
+    state["retry_counts"][task_id] += 1
+    return state
+
+
+def add_execution_history_entry(state: SupervisorSwarmState, entry: Dict[str, Any]) -> SupervisorSwarmState:
+    """Add execution history entry."""
+    if "execution_history" not in state:
+        state["execution_history"] = []
+    entry["timestamp"] = datetime.now().isoformat()
+    state["execution_history"].append(entry)
+    return state
+
+
+def add_performance_metric(state: SupervisorSwarmState, metric: PerformanceMetrics) -> SupervisorSwarmState:
+    """Add performance metric."""
+    if "performance_metrics" not in state:
+        state["performance_metrics"] = []
+    state["performance_metrics"].append(metric.dict())
+    return state

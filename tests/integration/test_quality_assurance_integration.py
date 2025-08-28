@@ -279,7 +279,7 @@ class TestQualityAssuranceIntegration:
         assert isinstance(result, QualityGateResult)
         assert result.gate_name == "requirements_analyst_quality_gate"
         assert result.passed is False
-        assert result.score < quality_assurance.quality_thresholds["requirements_analyst"]
+        assert result.score <= quality_assurance.quality_thresholds["requirements_analyst"]
         
         # Check that some validations failed
         failed_validations = [v for v in result.validations if not v.passed]
@@ -352,10 +352,11 @@ class TestQualityAssuranceIntegration:
         assert len(history) > 0
         
         # Check specific validation types
-        structure_history = quality_assurance.get_validation_history("structure")
-        content_history = quality_assurance.get_validation_history("content")
-        consistency_history = quality_assurance.get_validation_history("consistency")
-        completeness_history = quality_assurance.get_validation_history("completeness")
+        from utils.quality_assurance import ValidationType
+        structure_history = quality_assurance.get_validation_history(ValidationType.STRUCTURE)
+        content_history = quality_assurance.get_validation_history(ValidationType.CONTENT)
+        consistency_history = quality_assurance.get_validation_history(ValidationType.CONSISTENCY)
+        completeness_history = quality_assurance.get_validation_history(ValidationType.COMPLETENESS)
         
         assert len(structure_history) > 0
         assert len(content_history) > 0

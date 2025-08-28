@@ -589,6 +589,212 @@ class RegressionDetector:
         return median
 ```
 
+# Bottom-Up Testing Rule
+
+**CRITICAL**: Always follow the Bottom-Up Testing methodology when running larger test suites. Test individual components in isolation first, fix issues at the lowest level, and only then run the complete test suite.
+
+## Core Bottom-Up Testing Requirements
+
+### 1. Test Isolation First
+**MANDATORY**: Always test individual components in isolation before running complete test suites.
+
+**Isolation Testing Process**:
+- **Individual Test Execution**: Run each test method/function in isolation
+- **Component-Level Testing**: Test individual classes, modules, or functions separately
+- **Dependency Isolation**: Mock external dependencies to isolate the component under test
+- **Single Responsibility Testing**: Test one specific functionality at a time
+- **Clear Test Boundaries**: Define clear boundaries for what each test covers
+
+**Implementation**:
+```python
+# ✅ CORRECT: Bottom-Up Testing Approach
+class BottomUpTestRunner:
+    def __init__(self):
+        self.test_monitor = TestMonitor()
+        self.isolation_results = {}
+        self.integration_results = {}
+    
+    def run_bottom_up_tests(self, test_suite_path: str) -> TestExecutionReport:
+        """Execute tests using bottom-up methodology"""
+        execution_report = TestExecutionReport()
+        
+        # Step 1: Identify individual test components
+        test_components = self.identify_test_components(test_suite_path)
+        
+        # Step 2: Test each component in isolation
+        for component in test_components:
+            isolation_result = self.test_component_in_isolation(component)
+            self.isolation_results[component] = isolation_result
+            
+            # Fix issues at component level
+            if isolation_result.has_failures():
+                self.fix_component_issues(component, isolation_result)
+                # Re-test after fixes
+                isolation_result = self.test_component_in_isolation(component)
+                self.isolation_results[component] = isolation_result
+        
+        # Step 3: Only run complete suite after all components pass
+        if self.all_components_passing():
+            integration_result = self.run_complete_test_suite(test_suite_path)
+            self.integration_results[test_suite_path] = integration_result
+            execution_report.add_integration_result(integration_result)
+        else:
+            execution_report.add_error("Cannot run integration tests - component failures exist")
+        
+        return execution_report
+    
+    def test_component_in_isolation(self, component: str) -> TestResult:
+        """Test a single component in complete isolation"""
+        # Mock all external dependencies
+        with patch_all_dependencies(component):
+            # Run only this component's tests
+            result = self.run_isolated_tests(component)
+            return result
+    
+    def fix_component_issues(self, component: str, test_result: TestResult) -> None:
+        """Fix issues found in component testing"""
+        for failure in test_result.get_failures():
+            # Apply targeted fixes for this specific component
+            fix = self.analyze_and_fix_failure(component, failure)
+            if fix:
+                self.apply_fix(component, fix)
+```
+
+### 2. Component-Level Testing Strategy
+
+**Individual Component Testing**:
+```python
+# ✅ CORRECT: Component Isolation Testing
+def test_individual_component():
+    """Test a single component in isolation"""
+    # 1. Mock all external dependencies
+    with patch('external.dependency') as mock_dep:
+        with patch('another.dependency') as mock_dep2:
+            
+            # 2. Set up isolated test environment
+            isolated_config = create_isolated_config()
+            
+            # 3. Test the component
+            component = Component(isolated_config)
+            result = component.execute(test_input)
+            
+            # 4. Verify results
+            assert result.is_valid()
+            assert result.contains_expected_data()
+            
+            # 5. Verify no external calls were made
+            mock_dep.assert_not_called()
+            mock_dep2.assert_not_called()
+```
+
+### 3. Progressive Integration Testing
+
+**Integration Testing Process**:
+```python
+# ✅ CORRECT: Progressive Integration
+class ProgressiveIntegrationTester:
+    def run_progressive_integration(self, components: List[str]) -> TestResult:
+        """Run integration tests progressively"""
+        result = TestResult()
+        
+        # Start with smallest integration
+        for i in range(1, len(components) + 1):
+            component_group = components[:i]
+            
+            # Test this group of components
+            group_result = self.test_component_group(component_group)
+            
+            if group_result.has_failures():
+                # Fix issues at this integration level
+                self.fix_integration_issues(component_group, group_result)
+                # Re-test after fixes
+                group_result = self.test_component_group(component_group)
+            
+            result.add_group_result(component_group, group_result)
+            
+            # Only continue if this group passes
+            if group_result.has_failures():
+                break
+        
+        return result
+```
+
+### 4. Error Handling and Fixing
+
+**Component-Level Error Handling**:
+```python
+# ✅ CORRECT: Component Error Handling
+def handle_component_error(component: str, error: Exception) -> FixResult:
+    """Handle errors at component level"""
+    # 1. Analyze the error
+    error_analysis = analyze_error(component, error)
+    
+    # 2. Identify the root cause
+    root_cause = identify_root_cause(error_analysis)
+    
+    # 3. Apply targeted fix
+    fix = create_targeted_fix(component, root_cause)
+    
+    # 4. Apply the fix
+    fix_result = apply_fix(component, fix)
+    
+    # 5. Verify the fix
+    verification_result = verify_fix(component, fix)
+    
+    return FixResult(
+        component=component,
+        error=error,
+        fix_applied=fix,
+        fix_successful=verification_result.is_successful()
+    )
+```
+
+### 5. Test Execution Workflow
+
+**Bottom-Up Test Execution**:
+```python
+# ✅ CORRECT: Bottom-Up Workflow
+def execute_bottom_up_testing(test_suite: str) -> TestExecutionReport:
+    """Execute tests using bottom-up methodology"""
+    
+    # Phase 1: Component Isolation Testing
+    print("Phase 1: Testing individual components in isolation...")
+    component_results = {}
+    
+    for component in get_test_components(test_suite):
+        print(f"  Testing component: {component}")
+        result = test_component_in_isolation(component)
+        component_results[component] = result
+        
+        if result.has_failures():
+            print(f"  ❌ Component {component} has failures - fixing...")
+            fix_result = fix_component_issues(component, result)
+            if fix_result.is_successful():
+                print(f"  ✅ Component {component} fixed successfully")
+                # Re-test after fix
+                result = test_component_in_isolation(component)
+                component_results[component] = result
+            else:
+                print(f"  ❌ Failed to fix component {component}")
+                return TestExecutionReport(error=f"Component {component} cannot be fixed")
+        else:
+            print(f"  ✅ Component {component} passed")
+    
+    # Phase 2: Integration Testing
+    print("Phase 2: Running integration tests...")
+    if all_components_passing(component_results):
+        integration_result = run_integration_tests(test_suite)
+        return TestExecutionReport(
+            component_results=component_results,
+            integration_result=integration_result
+        )
+    else:
+        return TestExecutionReport(
+            error="Cannot run integration tests - component failures exist",
+            component_results=component_results
+        )
+```
+
 ## Integration with Development Workflow
 
 ### Pre-Commit Test Monitoring

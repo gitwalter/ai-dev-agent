@@ -352,7 +352,7 @@ def get_llm_model(task_complexity="simple"):
 
 # ❌ FORBIDDEN: Direct model selection without standards
 def get_llm():
-    return ChatGoogleGenerativeAI(model="gemini-pro")  # No standardization
+    return ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")  # No standardization
 ```
 
 **Test Organization**:
