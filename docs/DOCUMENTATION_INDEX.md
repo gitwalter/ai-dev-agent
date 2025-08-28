@@ -12,8 +12,18 @@
 - [Component Architecture](architecture/components/component_architecture.md) - Detailed component descriptions
 - [Architecture Diagrams](architecture/diagrams/) - Collection of system diagrams
 
+### **Agile Project Management**
+- [Agile Overview](agile/README.md) - Complete agile project management system
+- [Product Backlog](agile/product_backlog.md) - Prioritized user stories and business value
+- [Epic Breakdown](agile/epic_breakdown.md) - High-level feature planning and ROI
+- [Updated Roadmap](agile/updated_roadmap.md) - Agile-driven development roadmap
+- [Release Planning](agile/release_planning.md) - Comprehensive release planning
+- [Agile Workflow](agile/agile_workflow.md) - Sprint-based development process
+- [Agile Cursor Rules](agile/agile_cursor_rules.md) - Agile automation rules
+- [Definition of Done](agile/definition_of_done.md) - Quality criteria and standards
+
 ### **Implementation Guides**
-- [Development Roadmap](guides/implementation/roadmap.md) - Phase-by-phase implementation plan
+- [Development Roadmap](guides/implementation/roadmap.md) - Historical technical roadmap (see Agile section above for current)
 - [Database Setup](guides/database/database_setup.md) - Database configuration and management
 - [Testing Strategy](guides/testing/testing_strategy.md) - Testing approach and methodologies
 
@@ -97,10 +107,11 @@
 - **Testing Framework**: Complete test coverage ✅
 
 ### **Next Phase**
-- **Phase 3**: Dual-Mode Workflow System Implementation
-- **Critical Priority**: Prompt Design and Optimization
-- **High Priority**: Team Pattern Implementation (Swarm vs Supervisor)
-- **Medium Priority**: Enhanced Agent Integration
+- **Release 1.0**: Foundation Automation (Sprints 1-2, 4 weeks)
+- **Critical Priority**: Automated System Health Monitoring and Testing Pipeline
+- **High Priority**: Git Workflow Automation and Database Cleanup
+- **Current Sprint**: Sprint 1 - Core System Stability and Automation
+- **Agile Transformation**: Complete agile project management system implemented
 
 ## 🔗 **Related Resources**
 
