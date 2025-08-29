@@ -164,7 +164,7 @@ class CodeReviewer(BaseAgent):
         )
         
         # Create LangChain Gemini client with optimized model selection
-        from utils.helpers import get_llm_model
+        from utils.core.helpers import get_llm_model
         llm = get_llm_model(task_type="code_review")
         
         # Create chain
@@ -276,7 +276,7 @@ class CodeReviewer(BaseAgent):
             print(f"DEBUG: create_simplified_output - result type: {type(result)}")
             print(f"DEBUG: create_simplified_output - result content: {result}")
             # Convert to dictionary to avoid validation issues
-            return result.dict() if hasattr(result, 'dict') else result
+            return result.model_dump() if hasattr(result, 'model_dump') else result
             
         except Exception as e:
             self.add_log_entry("warning", f"Failed to create simplified review response: {e}")
@@ -286,7 +286,7 @@ class CodeReviewer(BaseAgent):
                 issues=[],
                 quality_gate_passed=False
             )
-            return default_response.dict() if hasattr(default_response, 'dict') else default_response
+            return default_response.model_dump() if hasattr(default_response, 'model_dump') else default_response
     
     async def _cross_check_requirements(self, state: AgentState) -> Dict[str, Any]:
         """

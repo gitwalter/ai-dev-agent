@@ -17,8 +17,8 @@ from pydantic import BaseModel
 from models.state import AgentState
 from models.responses import AgentResponse, TaskStatus
 from models.config import AgentConfig
-from utils.prompt_manager import store_agent_prompt, record_prompt_execution
-from utils.quality_assurance import quality_assurance, QualityGateResult, ValidationResult
+from utils.prompt_management.prompt_manager import store_agent_prompt, record_prompt_execution
+from utils.quality.quality_assurance import quality_assurance, QualityGateResult, ValidationResult
 
 
 class BaseAgent(ABC):
@@ -45,7 +45,7 @@ class BaseAgent(ABC):
         self.gemini_client = gemini_client
         
         # Enhanced logging setup
-        from utils.logging_config import setup_agent_logging
+        from utils.core.logging_config import setup_agent_logging
         self.logger = setup_agent_logging(config.name)
         
         # Log agent initialization
@@ -342,7 +342,7 @@ class BaseAgent(ABC):
             start_time = time.time()
             
             # Import performance tracking
-            from utils.performance_optimizer import record_agent_performance
+            from utils.quality.performance_optimizer import record_agent_performance
             
             # Sanitize the prompt to prevent API errors
             sanitized_prompt = self.sanitize_prompt(prompt)
@@ -569,7 +569,7 @@ class BaseAgent(ABC):
         """
         try:
             # Import the enhanced output parser factory
-            from utils.enhanced_output_parsers import EnhancedOutputParserFactory
+            from utils.parsing.enhanced_output_parsers import EnhancedOutputParserFactory
             
             # Get the appropriate enhanced parser for this agent type
             agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
@@ -606,7 +606,7 @@ class BaseAgent(ABC):
         """Enhanced fallback parsing with better error handling and validation."""
         try:
             # Import the enhanced parser utilities
-            from utils.enhanced_output_parsers import parse_with_enhanced_parser
+            from utils.parsing.enhanced_output_parsers import parse_with_enhanced_parser
             
             # Get agent type
             agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
@@ -1103,7 +1103,7 @@ class BaseAgent(ABC):
         }
         
         # Update state with agent outputs and workflow history
-        state["agent_outputs"][self.config.name] = agent_response.dict()
+        state["agent_outputs"][self.config.name] = agent_response.model_dump()
         state["current_agent"] = self.config.name
         
         # Add to workflow history
@@ -1155,7 +1155,7 @@ class BaseAgent(ABC):
         )
         
         # Update state
-        state["agent_outputs"][self.config.name] = agent_response.dict()
+        state["agent_outputs"][self.config.name] = agent_response.model_dump()
         
         # Add error to state
         from models.state import add_error
@@ -1447,7 +1447,7 @@ class BaseAgent(ABC):
         
         # Get enhanced format instructions for structured output
         try:
-            from utils.enhanced_output_parsers import get_enhanced_format_instructions
+            from utils.parsing.enhanced_output_parsers import get_enhanced_format_instructions
             agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
             
             # Use simpler format instructions for architecture designer to avoid large prompts
@@ -1662,7 +1662,7 @@ IMPORTANT:
             status=TaskStatus.COMPLETED,
             output=output,
             metadata={
-                "config": self.config.dict(),
+                                 "config": self.config.model_dump(),
                 "performance_metrics": {
                     "execution_time": execution_time,
                     "success_count": self.success_count,

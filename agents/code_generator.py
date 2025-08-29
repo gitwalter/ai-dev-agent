@@ -14,7 +14,7 @@ from models.simplified_responses import SimplifiedCodeFile, SimplifiedCodeRespon
 from .base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
 import google.generativeai as genai
-from utils.output_parsers import OutputParserFactory
+from utils.parsing.output_parsers import OutputParserFactory
 import re
 
 try:
@@ -240,7 +240,7 @@ class CodeGenerator(BaseAgent):
         )
         
         # Create LangChain Gemini client with optimized model selection
-        from utils.helpers import get_llm_model
+        from utils.core.helpers import get_llm_model
         llm = get_llm_model(task_type="code_generation")
         
         # Execute the chain
@@ -328,7 +328,7 @@ class CodeGenerator(BaseAgent):
         # Create simplified response
         try:
             simplified_response = self.create_code_response(code_data)
-            code_data = simplified_response.dict()
+            code_data = simplified_response.model_dump()
             self.add_log_entry("info", "Successfully created simplified response")
         except Exception as e:
             self.add_log_entry("warning", f"Failed to create simplified response: {e}")
@@ -945,7 +945,7 @@ class CodeGenerator(BaseAgent):
                 
                 # Try enhanced parser as last resort
                 try:
-                    from utils.enhanced_output_parsers import CodeGenerationParser
+                    from utils.parsing.enhanced_output_parsers import CodeGenerationParser
                     parser = CodeGenerationParser()
                     data = parser.parse(response)
                     self.add_log_entry("info", "Enhanced parser successful")
@@ -1196,7 +1196,7 @@ class CodeGenerator(BaseAgent):
         """
         try:
             simplified_response = self.create_simplified_code_response(output)
-            return simplified_response.dict()
+            return simplified_response.model_dump()
         except Exception as e:
             self.logger.error(f"Failed to create simplified code output: {e}")
             return None

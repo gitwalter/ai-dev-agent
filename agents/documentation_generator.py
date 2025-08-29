@@ -148,7 +148,7 @@ class DocumentationGenerator(BaseAgent):
         )
         
         # Create LangChain Gemini client with optimized model selection
-        from utils.helpers import get_llm_model
+        from utils.core.helpers import get_llm_model
         llm = get_llm_model(task_type="documentation")
         
         # Create chain with JsonOutputParser
