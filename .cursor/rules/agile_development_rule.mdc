@@ -1,0 +1,822 @@
+# Agile Development Rule - Manifesto Aligned
+
+**CRITICAL**: All development work must follow the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html), maintain accurate agile artifacts, and ensure proper sprint management and user story tracking.
+
+## Description
+This rule enforces agile development practices based on the core Agile Manifesto principles, ensures proper agile artifact maintenance, and guarantees that all work is properly tracked and aligned with sprint goals and user stories.
+
+## 🏛️ **AGILE MANIFESTO FOUNDATION**
+
+### **Principle 1: Customer Satisfaction Priority**
+**"Our highest priority is to satisfy the customer through early and continuous delivery of valuable software."**
+- ✅ **Implemented**: All tasks must deliver customer value first
+- ✅ **Automated**: Continuous delivery pipelines and value validation
+
+### **Principle 2: Welcome Change**
+**"Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage."**
+- ✅ **Implemented**: Flexible sprint planning and adaptive processes
+- ✅ **Automated**: Change impact assessment and rapid adaptation
+
+### **Principle 3: Frequent Delivery**
+**"Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale."**
+- ✅ **Implemented**: Daily deployable builds and continuous integration
+- ✅ **Automated**: Automated deployment pipelines
+
+### **Principle 4: Daily Collaboration**
+**"Business people and developers must work together daily throughout the project."**
+- ✅ **Implemented**: Daily stakeholder communication and feedback loops
+- ✅ **Automated**: Progress reporting and stakeholder dashboards
+
+### **Principle 5: Motivated Individuals**
+**"Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done."**
+- ✅ **Implemented**: Self-organizing team principles and autonomous decision-making
+- ✅ **Automated**: Environment setup and tooling automation
+
+### **Principle 6: Face-to-Face Communication**
+**"The most efficient and effective method of conveying information to and within a development team is face-to-face conversation."**
+- ✅ **Implemented**: Daily standups and direct communication protocols
+- ✅ **Automated**: Meeting facilitation and communication tools
+
+### **Principle 7: Working Software Measure**
+**"Working software is the primary measure of progress."**
+- ✅ **Implemented**: Test-driven development and working software validation
+- ✅ **Automated**: Progress measurement based on working features
+
+### **Principle 8: Sustainable Development**
+**"Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely."**
+- ✅ **Implemented**: Sustainable velocity tracking and workload management
+- ✅ **Automated**: Burndown monitoring and pace adjustment
+
+### **Principle 9: Technical Excellence**
+**"Continuous attention to technical excellence and good design enhances agility."**
+- ✅ **Implemented**: Quality-first development and technical debt management
+- ✅ **Automated**: Code quality gates and design validation
+
+### **Principle 10: Simplicity**
+**"Simplicity--the art of maximizing the amount of work not done--is essential."**
+- ✅ **Implemented**: Minimum viable product focus and feature prioritization
+- ✅ **Automated**: Complexity detection and simplification recommendations
+
+### **Principle 11: Self-Organizing Teams**
+**"The best architectures, requirements, and designs emerge from self-organizing teams."**
+- ✅ **Implemented**: Team-driven architecture decisions and collaborative design
+- ✅ **Automated**: Architecture documentation and decision tracking
+
+### **Principle 12: Regular Reflection**
+**"At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly."**
+- ✅ **Implemented**: Sprint retrospectives and continuous improvement cycles
+- ✅ **Automated**: Metrics collection and improvement automation
+
+## Core Requirements
+
+### 1. Crystal Transparency Principle
+**CRITICAL**: All development work must be completely transparent and visible to all stakeholders
+```yaml
+# REQUIRED: Crystal transparency in all work
+crystal_transparency_requirements:
+  - "All work progress visible in real-time"
+  - "All decisions and rationale documented"
+  - "All blockers and impediments immediately visible"
+  - "All quality metrics and test results transparent"
+  - "All code changes and commits tracked"
+  - "All user story status updates immediate"
+  - "All sprint progress visible to entire team"
+  - "All technical debt and issues openly tracked"
+  - "All performance metrics and analytics shared"
+  - "All learning and improvement opportunities documented"
+```
+
+### 2. Agile Artifact Maintenance
+**MANDATORY**: All agile artifacts must be kept current and accurate
+```yaml
+# REQUIRED: Update agile artifacts immediately with any changes
+agile_artifacts_maintenance:
+  - "Product backlog updated with current status"
+  - "Sprint backlog reflects actual progress"
+  - "User story status tracked accurately"
+  - "Definition of done enforced for all work"
+  - "Velocity and burndown charts current"
+```
+
+### 3. Crystal Transparency Implementation
+**MANDATORY**: Implement crystal transparency in all development activities
+```python
+# CORRECT: Crystal transparent development
+def implement_crystal_transparency():
+    """Implement crystal transparency in all development work."""
+    
+    # Real-time progress visibility
+    update_progress_immediately = True
+    share_all_metrics = True
+    document_all_decisions = True
+    
+    # Immediate blocker visibility
+    def report_blocker_immediately(blocker: str, impact: str):
+        """Report blocker immediately with full transparency."""
+        update_agile_artifacts(blocker=blocker, impact=impact)
+        notify_all_stakeholders(blocker, impact)
+        document_blocker_rationale(blocker, impact)
+    
+    # Transparent decision making
+    def document_decision_rationale(decision: str, alternatives: list, rationale: str):
+        """Document decision with full transparency."""
+        update_decision_log(decision, alternatives, rationale)
+        share_with_team(decision, rationale)
+        update_agile_artifacts(decision=decision, rationale=rationale)
+    
+    # Quality transparency
+    def share_quality_metrics_immediately(metrics: dict):
+        """Share all quality metrics immediately."""
+        update_quality_dashboard(metrics)
+        notify_team_of_quality_status(metrics)
+        document_quality_trends(metrics)
+
+# INCORRECT: Non-transparent development
+def implement_without_transparency(feature: str):
+    """Implement feature without crystal transparency."""
+    # This violates crystal transparency principle
+    pass
+```
+
+### 4. User Story Tracking
+**MANDATORY**: All work must be tied to user stories with proper status tracking
+```python
+# CORRECT: Proper user story tracking
+def update_user_story_status(story_id: str, status: str, progress: dict):
+    """Update user story with current status and progress."""
+    # Update product backlog
+    update_product_backlog(story_id, status, progress)
+    
+    # Update sprint backlog if in current sprint
+    if is_in_current_sprint(story_id):
+        update_sprint_backlog(story_id, status, progress)
+    
+    # Update acceptance criteria completion
+    update_acceptance_criteria(story_id, progress["completed_criteria"])
+    
+    # Update definition of done validation
+    validate_definition_of_done(story_id)
+
+# INCORRECT: Work without user story tracking
+def implement_feature_without_tracking(feature: str):
+    """Implement feature without proper agile tracking."""
+    # This violates agile principles
+    pass
+```
+
+### 5. Sprint Goal Alignment
+**MANDATORY**: All work must align with current sprint goals
+```python
+# CORRECT: Sprint-aligned development
+def validate_sprint_alignment(task: str, sprint_goal: str) -> bool:
+    """Validate task aligns with current sprint goal."""
+    task_value = analyze_task_value(task)
+    sprint_value = analyze_sprint_goal_value(sprint_goal)
+    
+    return task_value.aligns_with(sprint_value)
+
+# INCORRECT: Sprint goal violation
+def implement_non_sprint_task(task: str):
+    """Implement task not aligned with sprint goal."""
+    # This violates sprint focus
+    pass
+```
+
+### 6. Definition of Done Enforcement
+**MANDATORY**: All work must meet definition of done criteria
+```python
+# CORRECT: Definition of done validation
+def validate_definition_of_done(work_item: WorkItem) -> bool:
+    """Validate work item meets definition of done."""
+    criteria = [
+        "All acceptance criteria met",
+        "Code reviewed and approved",
+        "Tests written and passing",
+        "Documentation updated",
+        "Deployment ready",
+        "User story status updated"
+    ]
+    
+    return all(validate_criterion(work_item, criterion) for criterion in criteria)
+
+# INCORRECT: Incomplete work completion
+def mark_incomplete_work_as_done(work_item: WorkItem):
+    """Mark work as done without meeting criteria."""
+    # This violates definition of done
+    pass
+```
+
+## Implementation Guidelines
+
+### 1. Transparent Agile Artifact Management
+```python
+# MANDATORY: Crystal transparent artifact management
+def manage_agile_artifacts_transparently():
+    """Manage all agile artifacts with crystal transparency."""
+    
+    # Product backlog transparency
+    def update_product_backlog_transparently(story_id: str, status: str, progress: dict):
+        """Update product backlog with full transparency."""
+        # Immediate visibility
+        update_backlog_immediately(story_id, status, progress)
+        
+        # Document all changes
+        document_backlog_change(story_id, status, progress, rationale="User story progress update")
+        
+        # Share with all stakeholders
+        notify_stakeholders_of_backlog_update(story_id, status, progress)
+        
+        # Update related metrics
+        update_velocity_metrics(story_id, progress)
+        update_burndown_charts(story_id, progress)
+    
+    # Sprint backlog transparency
+    def update_sprint_backlog_transparently(sprint_id: str, progress: dict):
+        """Update sprint backlog with full transparency."""
+        # Real-time sprint progress
+        update_sprint_progress_immediately(sprint_id, progress)
+        
+        # Visible sprint metrics
+        update_sprint_metrics(sprint_id, progress)
+        
+        # Transparent blocker tracking
+        if progress.get("blockers"):
+            report_blockers_immediately(sprint_id, progress["blockers"])
+    
+    # User story transparency
+    def track_user_story_transparently(story_id: str, activity: str, details: dict):
+        """Track user story with complete transparency."""
+        # Log all activities
+        log_user_story_activity(story_id, activity, details)
+        
+        # Update status immediately
+        update_story_status_immediately(story_id, activity, details)
+        
+        # Share progress with team
+        share_story_progress_with_team(story_id, activity, details)
+        
+        # Document decisions and rationale
+        if details.get("decision"):
+            document_story_decision(story_id, details["decision"], details.get("rationale"))
+
+# INCORRECT: Non-transparent artifact management
+def manage_artifacts_without_transparency():
+    """Manage artifacts without crystal transparency."""
+    # This violates crystal transparency principle
+    pass
+```
+
+### 2. Product Backlog Management
+```python
+# MANDATORY: Keep product backlog current
+def update_product_backlog(story_id: str, status: str, progress: dict):
+    """Update product backlog with current story status."""
+    
+    # Read current backlog
+    backlog = read_product_backlog()
+    
+    # Update story status
+    story = backlog.get_story(story_id)
+    story.status = status
+    story.progress = progress
+    story.last_updated = datetime.now()
+    
+    # Update acceptance criteria completion
+    story.completed_criteria = progress.get("completed_criteria", [])
+    
+    # Write updated backlog
+    write_product_backlog(backlog)
+    
+    # Validate backlog integrity
+    validate_backlog_integrity(backlog)
+```
+
+### 2. Sprint Backlog Maintenance
+```python
+# MANDATORY: Maintain current sprint backlog
+def update_sprint_backlog(story_id: str, status: str, progress: dict):
+    """Update sprint backlog with current progress."""
+    
+    # Read current sprint backlog
+    sprint_backlog = read_sprint_backlog()
+    
+    # Update story in sprint
+    story = sprint_backlog.get_story(story_id)
+    story.status = status
+    story.progress = progress
+    
+    # Update burndown chart
+    update_burndown_chart(sprint_backlog)
+    
+    # Check for blockers
+    check_for_blockers(sprint_backlog)
+    
+    # Write updated sprint backlog
+    write_sprint_backlog(sprint_backlog)
+```
+
+### 3. User Story Status Tracking
+```python
+# MANDATORY: Track user story status accurately
+class UserStoryStatus:
+    """Track user story status with proper agile states."""
+    
+    def __init__(self, story_id: str):
+        self.story_id = story_id
+        self.status = "To Do"
+        self.progress = {}
+        self.blockers = []
+        self.acceptance_criteria = []
+        self.completed_criteria = []
+    
+    def update_status(self, new_status: str, progress: dict = None):
+        """Update story status with validation."""
+        valid_statuses = ["To Do", "In Progress", "Review", "Done", "Blocked"]
+        
+        if new_status not in valid_statuses:
+            raise ValueError(f"Invalid status: {new_status}")
+        
+        self.status = new_status
+        if progress:
+            self.progress.update(progress)
+        
+        # Update agile artifacts
+        self._update_agile_artifacts()
+    
+    def _update_agile_artifacts(self):
+        """Update all agile artifacts with current status."""
+        update_product_backlog(self.story_id, self.status, self.progress)
+        update_sprint_backlog(self.story_id, self.status, self.progress)
+        update_velocity_tracking(self.story_id, self.status)
+```
+
+### 4. Sprint Goal Validation
+```python
+# MANDATORY: Validate sprint goal alignment
+def validate_sprint_alignment_for_task(task: str) -> bool:
+    """Validate task aligns with current sprint goal."""
+    
+    # Get current sprint goal
+    sprint_goal = get_current_sprint_goal()
+    
+    # Analyze task value and alignment
+    task_analysis = analyze_task_value(task)
+    goal_analysis = analyze_sprint_goal(sprint_goal)
+    
+    # Check alignment
+    alignment_score = calculate_alignment_score(task_analysis, goal_analysis)
+    
+    if alignment_score < 0.7:  # 70% alignment threshold
+        raise SprintAlignmentError(f"Task '{task}' does not align with sprint goal: {sprint_goal}")
+    
+    return True
+```
+
+## Sprint Document Organization Requirements
+
+### 1. Sprint Folder Structure
+**MANDATORY**: All sprint documents must be organized in standardized folder structure
+```
+docs/agile/sprints/
+├── README.md                    # Sprint documentation guide
+├── templates/                   # Templates for creating new sprint folders
+├── sprint_1/                    # Sprint 1 documentation
+│   ├── backlog.md              # Sprint 1 backlog
+│   ├── progress.md             # Sprint 1 progress tracking
+│   ├── planning.md             # Sprint 1 planning documents
+│   ├── review.md               # Sprint 1 review meeting notes
+│   ├── retrospective.md        # Sprint 1 retrospective
+│   └── daily_standups/         # Daily standup notes (optional)
+├── sprint_2/                    # Sprint 2 documentation
+│   └── (same structure as sprint_1)
+└── sprint_N/                    # Future sprints follow same pattern
+```
+
+### 2. Sprint Document Standards
+**MANDATORY**: Each sprint folder must contain standardized documents
+```yaml
+# REQUIRED: Core sprint documents
+core_documents:
+  - "backlog.md"              # Sprint backlog with user stories and tasks
+  - "progress.md"             # Real-time progress tracking and status updates
+  - "planning.md"             # Sprint planning meeting notes and decisions
+  - "review.md"               # Sprint review meeting outcomes and demonstrations
+  - "retrospective.md"        # Sprint retrospective insights and action items
+
+# OPTIONAL: Supporting documents
+supporting_documents:
+  - "daily_standups/"         # Daily standup meeting notes
+  - "metrics.md"              # Sprint metrics and velocity tracking
+  - "blockers.md"             # Active blockers and impediments tracking
+  - "definition_of_done.md"   # Sprint-specific DoD criteria
+```
+
+### 3. Document Naming Convention
+**MANDATORY**: Use consistent naming patterns for all sprint documents
+```yaml
+# REQUIRED: Naming standards
+naming_convention:
+  sprint_folders: "sprint_N"     # Where N is the sprint number
+  core_documents: "lowercase_with_underscores.md"
+  daily_standups: "YYYY-MM-DD.md"
+  
+# EXAMPLES:
+correct_examples:
+  - "docs/agile/sprints/sprint_1/backlog.md"
+  - "docs/agile/sprints/sprint_2/daily_standups/2024-08-29.md"
+  - "docs/agile/sprints/sprint_3/retrospective.md"
+
+incorrect_examples:
+  - "docs/agile/sprints/Sprint1/Backlog.md"        # Wrong case
+  - "docs/agile/sprints/sprint_2/Daily Standup.md" # Spaces in filename
+  - "docs/agile/sprints/sprint_3/retro.md"         # Non-standard name
+```
+
+## Agile Artifact Update Requirements
+
+### 1. Product Backlog Updates
+**MANDATORY**: Update product backlog immediately with any changes
+```markdown
+# REQUIRED: Product backlog update pattern
+## User Story Status Update
+- **Story ID**: US-XXX
+- **Status**: [To Do | In Progress | Review | Done | Blocked]
+- **Progress**: [0-100]%
+- **Completed Criteria**: [List of completed acceptance criteria]
+- **Blockers**: [List of current blockers]
+- **Last Updated**: [Timestamp]
+```
+
+### 2. Sprint Backlog Updates
+**MANDATORY**: Keep sprint backlog current with daily progress
+```markdown
+# REQUIRED: Sprint backlog update pattern
+## Sprint Progress Update
+- **Sprint**: [Sprint Number]
+- **Sprint Goal**: [Current sprint goal]
+- **Stories In Progress**: [List of active stories]
+- **Stories Completed**: [List of completed stories]
+- **Blockers**: [List of current blockers]
+- **Burndown Status**: [Current burndown position]
+```
+
+### 3. Definition of Done Validation
+**MANDATORY**: Validate definition of done for all completed work
+```python
+# REQUIRED: Definition of done checklist
+def validate_definition_of_done(work_item: WorkItem) -> bool:
+    """Validate work item meets definition of done."""
+    
+    checklist = [
+        "All acceptance criteria are met and tested",
+        "Code is reviewed and approved",
+        "All tests are written and passing",
+        "Documentation is updated and accurate",
+        "Code follows coding standards",
+        "No critical bugs or issues remain",
+        "Feature is deployable and tested in staging",
+        "User story status is updated in backlog",
+        "Sprint backlog reflects completion",
+        "Velocity tracking is updated"
+    ]
+    
+    for item in checklist:
+        if not validate_checklist_item(work_item, item):
+            return False
+    
+    return True
+```
+
+## Sprint Management Requirements
+
+### 1. Sprint Planning
+**MANDATORY**: Proper sprint planning with goal alignment
+```python
+# REQUIRED: Sprint planning validation
+def validate_sprint_planning(sprint_plan: dict) -> bool:
+    """Validate sprint planning meets agile standards."""
+    
+    # Validate sprint goal
+    if not sprint_plan.get("sprint_goal"):
+        raise SprintPlanningError("Sprint goal is required")
+    
+    # Validate story selection
+    stories = sprint_plan.get("stories", [])
+    for story in stories:
+        if not validate_story_sprint_alignment(story, sprint_plan["sprint_goal"]):
+            raise SprintPlanningError(f"Story {story.id} does not align with sprint goal")
+    
+    # Validate capacity planning
+    total_story_points = sum(story.story_points for story in stories)
+    if total_story_points > get_team_capacity():
+        raise SprintPlanningError("Sprint overcommitted")
+    
+    return True
+```
+
+### 2. Daily Standup Automation
+**MANDATORY**: Automated daily progress tracking
+```python
+# REQUIRED: Daily standup automation
+def conduct_daily_standup():
+    """Conduct automated daily standup."""
+    
+    # Collect progress from all agents
+    progress = collect_agent_progress()
+    
+    # Update sprint backlog
+    update_sprint_backlog_with_progress(progress)
+    
+    # Identify blockers
+    blockers = identify_blockers(progress)
+    
+    # Update burndown chart
+    update_burndown_chart()
+    
+    # Generate standup report
+    report = generate_standup_report(progress, blockers)
+    
+    # Communicate updates
+    communicate_standup_updates(report)
+```
+
+### 3. Sprint Review and Retrospective
+**MANDATORY**: Automated sprint review and retrospective
+```python
+# REQUIRED: Sprint review automation
+def conduct_sprint_review():
+    """Conduct automated sprint review."""
+    
+    # Collect sprint metrics
+    metrics = collect_sprint_metrics()
+    
+    # Generate sprint review report
+    review_report = generate_sprint_review_report(metrics)
+    
+    # Update product backlog based on feedback
+    update_product_backlog_from_review(review_report)
+    
+    # Plan next sprint
+    next_sprint_plan = plan_next_sprint(review_report)
+    
+    return review_report, next_sprint_plan
+
+# REQUIRED: Sprint retrospective automation
+def conduct_sprint_retrospective():
+    """Conduct automated sprint retrospective."""
+    
+    # Analyze sprint performance
+    performance_analysis = analyze_sprint_performance()
+    
+    # Identify improvement opportunities
+    improvements = identify_improvement_opportunities(performance_analysis)
+    
+    # Generate improvement actions
+    actions = generate_improvement_actions(improvements)
+    
+    # Implement improvements
+    implement_improvements(actions)
+    
+    return actions
+```
+
+## Quality Assurance
+
+### 1. Agile Compliance Validation
+```python
+# REQUIRED: Agile compliance validation
+def validate_agile_compliance() -> bool:
+    """Validate all agile practices are being followed."""
+    
+    checks = [
+        validate_product_backlog_current(),
+        validate_sprint_backlog_accurate(),
+        validate_user_stories_tracked(),
+        validate_definition_of_done_enforced(),
+        validate_sprint_goal_alignment(),
+        validate_velocity_tracking(),
+        validate_retrospective_actions_implemented()
+    ]
+    
+    return all(checks)
+```
+
+### 2. Agile Metrics Tracking
+```python
+# REQUIRED: Agile metrics tracking
+class AgileMetricsTracker:
+    """Track key agile metrics."""
+    
+    def __init__(self):
+        self.velocity_tracker = VelocityTracker()
+        self.burndown_tracker = BurndownTracker()
+        self.quality_tracker = QualityTracker()
+        self.satisfaction_tracker = SatisfactionTracker()
+    
+    def track_sprint_metrics(self, sprint_id: str):
+        """Track comprehensive sprint metrics."""
+        return {
+            "velocity": self.velocity_tracker.get_velocity(sprint_id),
+            "burndown": self.burndown_tracker.get_burndown(sprint_id),
+            "quality": self.quality_tracker.get_quality_metrics(sprint_id),
+            "satisfaction": self.satisfaction_tracker.get_satisfaction(sprint_id)
+        }
+```
+
+## Error Handling
+
+### 1. Agile Artifact Errors
+```python
+# REQUIRED: Handle agile artifact errors
+class AgileArtifactError(Exception):
+    """Raised when agile artifacts are invalid or missing."""
+    pass
+
+def handle_agile_artifact_error(error: AgileArtifactError):
+    """Handle agile artifact errors."""
+    logger.error(f"Agile artifact error: {error}")
+    
+    # Attempt to recover
+    try:
+        recover_agile_artifacts()
+    except Exception as recovery_error:
+        logger.error(f"Failed to recover agile artifacts: {recovery_error}")
+        raise
+```
+
+### 2. Sprint Alignment Errors
+```python
+# REQUIRED: Handle sprint alignment errors
+class SprintAlignmentError(Exception):
+    """Raised when work does not align with sprint goals."""
+    pass
+
+def handle_sprint_alignment_error(error: SprintAlignmentError):
+    """Handle sprint alignment errors."""
+    logger.error(f"Sprint alignment error: {error}")
+    
+    # Re-evaluate task alignment
+    task = extract_task_from_error(error)
+    realign_task_with_sprint_goal(task)
+```
+
+## Documentation Requirements
+
+### 1. Agile Process Documentation
+```markdown
+# REQUIRED: Document agile processes
+## Agile Development Process
+- **Sprint Planning**: [Process description]
+- **Daily Standups**: [Process description]
+- **Sprint Reviews**: [Process description]
+- **Retrospectives**: [Process description]
+- **Definition of Done**: [Criteria list]
+```
+
+### 2. Agile Artifact Documentation
+```markdown
+# REQUIRED: Document agile artifacts
+## Agile Artifacts
+- **Product Backlog**: [Location and format]
+- **Sprint Backlog**: [Location and format]
+- **Burndown Charts**: [Location and format]
+- **Velocity Tracking**: [Location and format]
+```
+
+## Benefits
+
+- **Improved Transparency**: All work is properly tracked and visible
+- **Better Planning**: Accurate backlog and sprint planning
+- **Quality Assurance**: Definition of done ensures quality
+- **Continuous Improvement**: Retrospectives drive process improvement
+- **Stakeholder Communication**: Clear status and progress reporting
+
+### 4. Sprint Document Validation
+**MANDATORY**: Validate sprint document compliance and completeness
+```python
+# REQUIRED: Sprint document validation
+def validate_sprint_documents(sprint_number: int) -> bool:
+    """Validate sprint documents meet organizational standards."""
+    
+    sprint_path = f"docs/agile/sprints/sprint_{sprint_number}"
+    
+    # Check core documents exist
+    core_documents = [
+        "backlog.md",
+        "progress.md", 
+        "planning.md",
+        "review.md",
+        "retrospective.md"
+    ]
+    
+    for doc in core_documents:
+        doc_path = f"{sprint_path}/{doc}"
+        if not os.path.exists(doc_path):
+            raise SprintDocumentError(f"Missing required document: {doc_path}")
+    
+    # Validate document content completeness
+    validate_document_content(sprint_path)
+    
+    # Check naming conventions
+    validate_naming_conventions(sprint_path)
+    
+    return True
+
+def validate_document_content(sprint_path: str):
+    """Validate that sprint documents contain required content."""
+    
+    # Validate backlog contains sprint goal and user stories
+    backlog_content = read_file(f"{sprint_path}/backlog.md")
+    if "Sprint Goal" not in backlog_content:
+        raise ContentValidationError("Sprint backlog missing sprint goal")
+    
+    # Validate progress contains burndown data
+    progress_content = read_file(f"{sprint_path}/progress.md")
+    if "Sprint Status Overview" not in progress_content:
+        raise ContentValidationError("Sprint progress missing status overview")
+    
+    # Additional content validations...
+```
+
+### 5. Sprint Document Automation
+**MANDATORY**: Automate sprint document creation and updates
+```python
+# REQUIRED: Sprint automation
+def create_new_sprint_documents(sprint_number: int, sprint_goal: str):
+    """Automatically create new sprint folder and documents from templates."""
+    
+    sprint_path = f"docs/agile/sprints/sprint_{sprint_number}"
+    template_path = "docs/agile/sprints/templates"
+    
+    # Create sprint folder
+    os.makedirs(sprint_path, exist_ok=True)
+    
+    # Copy and customize templates
+    templates = [
+        "sprint_backlog_template.md",
+        "sprint_progress_template.md",
+        "sprint_planning_template.md", 
+        "sprint_review_template.md",
+        "sprint_retrospective_template.md"
+    ]
+    
+    for template in templates:
+        source = f"{template_path}/{template}"
+        target_name = template.replace("_template", "").replace("sprint_", "")
+        target = f"{sprint_path}/{target_name}"
+        
+        # Copy and replace placeholders
+        customize_template(source, target, sprint_number, sprint_goal)
+    
+    # Create daily_standups folder
+    os.makedirs(f"{sprint_path}/daily_standups", exist_ok=True)
+
+def customize_template(source: str, target: str, sprint_number: int, sprint_goal: str):
+    """Customize template with sprint-specific information."""
+    
+    with open(source, 'r') as f:
+        content = f.read()
+    
+    # Replace common placeholders
+    replacements = {
+        "{SPRINT_NUMBER}": str(sprint_number),
+        "{SPRINT_GOAL}": sprint_goal,
+        "{START_DATE}": get_sprint_start_date(sprint_number),
+        "{END_DATE}": get_sprint_end_date(sprint_number),
+        "{CURRENT_DATE}": datetime.now().strftime("%Y-%m-%d")
+    }
+    
+    for placeholder, value in replacements.items():
+        content = content.replace(placeholder, value)
+    
+    with open(target, 'w') as f:
+        f.write(content)
+```
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Development work and task execution
+- User story implementation and tracking
+- Sprint planning and management
+- Agile artifact maintenance
+- Process improvement activities
+- **Sprint document organization and maintenance**
+- **Sprint document template usage and customization**
+- **Sprint document validation and quality assurance**
+
+**Violations of this rule require immediate correction and agile artifact updates.**
+
+### Sprint Document Compliance Checklist
+- [ ] Sprint folder follows naming convention (sprint_N)
+- [ ] All core documents present (backlog, progress, planning, review, retrospective)
+- [ ] Documents contain required content sections
+- [ ] Templates used for document creation
+- [ ] Naming conventions followed for all files
+- [ ] Progress tracking updated daily
+- [ ] Sprint artifacts linked to product backlog
+- [ ] Document quality meets project standards
+description:
+globs:
+alwaysApply: true
+---

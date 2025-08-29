@@ -192,7 +192,7 @@ class ArchitectureDesigner(BaseAgent):
         )
         
         # Create LangChain Gemini client with optimized model selection
-        from utils.helpers import get_llm_model
+        from utils.core.helpers import get_llm_model
         llm = get_llm_model(task_type="architecture_design")
         
         # Create chain
@@ -250,7 +250,7 @@ class ArchitectureDesigner(BaseAgent):
         # Create simplified response
         try:
             simplified_response = self.create_architecture_response(architecture_data)
-            architecture_data = simplified_response.dict()
+            architecture_data = simplified_response.model_dump()
             self.add_log_entry("info", "Successfully created simplified response")
         except Exception as e:
             self.add_log_entry("warning", f"Failed to create simplified response: {e}")
@@ -485,7 +485,7 @@ class ArchitectureDesigner(BaseAgent):
         """
         try:
             simplified_response = self.create_simplified_architecture_response(output)
-            return simplified_response.dict()
+            return simplified_response.model_dump()
         except Exception as e:
             self.logger.error(f"Failed to create simplified architecture output: {e}")
             return None

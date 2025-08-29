@@ -129,6 +129,8 @@ class TestBaseAgent:
             enabled=True,
             max_retries=3,
             timeout=300,
+            prompt_template="Test prompt template",
+            system_prompt="You are a test agent",
             parameters={}
         )
         agent = MockAgent(config, mock_gemini_client)
@@ -305,7 +307,7 @@ class TestBaseAgent:
         # The structure might be different, check for the agent name instead
         assert base_agent.config.name in result["agent_outputs"]
         agent_output = result["agent_outputs"][base_agent.config.name]
-        assert "output" in agent_output or "result" in agent_output
+        assert "content" in agent_output  # Updated to match AgentResponse structure
 
 
 class TestGeminiAPIErrorScenarios:

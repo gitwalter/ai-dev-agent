@@ -20,16 +20,16 @@ from typing import Optional, Dict, Any
 from dataclasses import dataclass
 
 
-class TestMode(Enum):
+class ConfigMode(Enum):
     """Test execution modes."""
     MOCK = "mock"
     REAL = "real"
 
 
 @dataclass
-class TestConfig:
+class Config:
     """Configuration for test execution."""
-    mode: TestMode
+    mode: ConfigMode
     api_key: Optional[str] = None
     timeout: int = 30
     max_retries: int = 3
@@ -42,7 +42,7 @@ class TestConfig:
     
     def validate(self) -> None:
         """Validate configuration settings."""
-        if self.mode == TestMode.REAL and not self.api_key:
+        if self.mode == ConfigMode.REAL and not self.api_key:
             raise ValueError("API key required for REAL test mode")
         
         if self.timeout <= 0:
@@ -52,43 +52,43 @@ class TestConfig:
             raise ValueError("Max retries cannot be negative")
 
 
-class TestConfigManager:
+class ConfigManager:
     """Manages test configuration from multiple sources."""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self._config: Optional[TestConfig] = None
+        self._config: Optional[Config] = None
     
-    def get_config(self) -> TestConfig:
+    def get_config(self) -> Config:
         """Get current test configuration, creating if necessary."""
         if self._config is None:
             self._config = self._load_config()
         return self._config
     
-    def set_config(self, config: TestConfig) -> None:
+    def set_config(self, config: Config) -> None:
         """Set test configuration programmatically."""
         config.validate()
         self._config = config
         self.logger.info(f"Test configuration set to {config.mode.value} mode")
     
-    def _load_config(self) -> TestConfig:
+    def _load_config(self) -> Config:
         """Load configuration from environment and defaults."""
         # Get test mode from environment
         mode_str = os.getenv("TEST_MODE", "mock").lower()
         
         try:
-            mode = TestMode(mode_str)
+            mode = ConfigMode(mode_str)
         except ValueError:
             self.logger.warning(f"Invalid TEST_MODE '{mode_str}', defaulting to MOCK")
-            mode = TestMode.MOCK
+            mode = ConfigMode.MOCK
         
         # Get API key if needed
         api_key = None
-        if mode == TestMode.REAL:
+        if mode == ConfigMode.REAL:
             api_key = self._get_api_key()
             if not api_key:
                 self.logger.warning("No API key found, falling back to MOCK mode")
-                mode = TestMode.MOCK
+                mode = ConfigMode.MOCK
         
         # Get other configuration
         timeout = int(os.getenv("TEST_TIMEOUT", "30"))
@@ -96,7 +96,7 @@ class TestConfigManager:
         log_level = os.getenv("TEST_LOG_LEVEL", "INFO")
         performance_tracking = os.getenv("TEST_PERFORMANCE_TRACKING", "true").lower() == "true"
         
-        config = TestConfig(
+        config = Config(
             mode=mode,
             api_key=api_key,
             timeout=timeout,
@@ -129,10 +129,10 @@ class TestConfigManager:
     def force_mock_mode(self) -> None:
         """Force test configuration to MOCK mode."""
         if self._config:
-            self._config.mode = TestMode.MOCK
+            self._config.mode = ConfigMode.MOCK
             self._config.api_key = None
         else:
-            self._config = TestConfig(mode=TestMode.MOCK)
+            self._config = Config(mode=ConfigMode.MOCK)
         
         self.logger.info("Forced test configuration to MOCK mode")
     
@@ -141,16 +141,16 @@ class TestConfigManager:
         if not api_key:
             raise ValueError("API key required for REAL mode")
         
-        self._config = TestConfig(mode=TestMode.REAL, api_key=api_key)
+        self._config = Config(mode=ConfigMode.REAL, api_key=api_key)
         self.logger.info("Forced test configuration to REAL mode")
     
     def is_mock_mode(self) -> bool:
         """Check if currently in MOCK mode."""
-        return self.get_config().mode == TestMode.MOCK
+        return self.get_config().mode == ConfigMode.MOCK
     
     def is_real_mode(self) -> bool:
         """Check if currently in REAL mode."""
-        return self.get_config().mode == TestMode.REAL
+        return self.get_config().mode == ConfigMode.REAL
     
     def get_mode_info(self) -> Dict[str, Any]:
         """Get information about current test mode."""
@@ -165,15 +165,15 @@ class TestConfigManager:
 
 
 # Global instance
-_test_config_manager = TestConfigManager()
+_test_config_manager = ConfigManager()
 
 
-def get_test_config() -> TestConfig:
+def get_test_config() -> Config:
     """Get current test configuration."""
     return _test_config_manager.get_config()
 
 
-def set_test_config(config: TestConfig) -> None:
+def set_test_config(config: Config) -> None:
     """Set test configuration."""
     _test_config_manager.set_config(config)
 
@@ -240,11 +240,11 @@ def pytest_collection_modifyitems(config, items):
     
     for item in items:
         # Skip real-mode-only tests in mock mode
-        if current_mode == TestMode.MOCK and item.get_closest_marker("real_mode"):
+        if current_mode == ConfigMode.MOCK and item.get_closest_marker("real_mode"):
             item.add_marker("skip(reason='Real mode test skipped in mock mode')")
         
         # Skip mock-mode-only tests in real mode  
-        if current_mode == TestMode.REAL and item.get_closest_marker("mock_mode"):
+        if current_mode == ConfigMode.REAL and item.get_closest_marker("mock_mode"):
             item.add_marker("skip(reason='Mock mode test skipped in real mode')")
 
 

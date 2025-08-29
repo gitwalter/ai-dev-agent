@@ -249,7 +249,7 @@ def add_workflow_step(
         completed_at=datetime.now() if status == "completed" else None
     )
     
-    state["workflow_history"].append(step.dict())
+    state["workflow_history"].append(step.model_dump())
     return update_state_timestamp(state)
 
 
@@ -271,9 +271,9 @@ def add_error(
     )
     
     if severity == "error":
-        state["errors"].append(error.dict())
+        state["errors"].append(error.model_dump())
     else:
-        state["warnings"].append(error.dict())
+        state["warnings"].append(error.model_dump())
     
     return update_state_timestamp(state)
 
@@ -299,7 +299,7 @@ def add_approval_request(
         required=required
     )
     
-    state["approval_requests"].append(request.dict())
+    state["approval_requests"].append(request.model_dump())
     state["human_approval_needed"] = True
     
     return update_state_timestamp(state)

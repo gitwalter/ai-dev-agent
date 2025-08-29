@@ -76,7 +76,7 @@ class TestProjectManagerSupervisor:
         assert len(tasks) == 7
         
         # Check task types
-        task_types = [task.type for task in tasks]
+        task_types = [task.task_name for task in tasks]
         expected_types = [
             "requirements_analysis", "architecture_design", "code_generation",
             "test_generation", "code_review", "security_analysis", "documentation_generation"
@@ -85,7 +85,7 @@ class TestProjectManagerSupervisor:
         
         # Check task properties
         for task in tasks:
-            assert task.id.startswith("task_")
+            assert task.task_id.startswith("task_")
             assert len(task.description) > 0
             assert task.priority in ["low", "medium", "high", "critical"]
             assert task.estimated_complexity in ["simple", "moderate", "complex"]
@@ -96,22 +96,22 @@ class TestProjectManagerSupervisor:
         """Test task prioritization."""
         tasks = [
             Task(
-                id="task_1",
-                type="requirements_analysis",
+                task_id="task_1",
+                task_name="requirements_analysis",
                 description="Test task 1",
                 priority="low",
                 dependencies=[]
             ),
             Task(
-                id="task_2",
-                type="architecture_design",
+                task_id="task_2",
+                task_name="architecture_design",
                 description="Test task 2",
                 priority="high",
-                dependencies=["task_1"]
+                dependencies=[]
             ),
             Task(
-                id="task_3",
-                type="code_generation",
+                task_id="task_3",
+                task_name="code_generation",
                 description="Test task 3",
                 priority="critical",
                 dependencies=[]
@@ -129,8 +129,8 @@ class TestProjectManagerSupervisor:
     async def test_select_worker_for_task(self, project_manager):
         """Test worker selection for tasks."""
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task"
         )
         
@@ -138,7 +138,7 @@ class TestProjectManagerSupervisor:
         assert worker == "requirements_analyst"
         
         # Test unknown task type
-        task.type = "unknown_task"
+        task.task_name = "unknown_task"
         worker = await project_manager._select_worker_for_task(task)
         assert worker == "general_worker"
     
@@ -146,8 +146,8 @@ class TestProjectManagerSupervisor:
     async def test_create_task_prompt(self, project_manager):
         """Test task prompt creation."""
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Analyze requirements",
             priority="high",
             estimated_complexity="moderate",
@@ -167,8 +167,8 @@ class TestProjectManagerSupervisor:
     async def test_execute_task(self, project_manager):
         """Test task execution."""
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task"
         )
         
@@ -184,8 +184,8 @@ class TestProjectManagerSupervisor:
     async def test_delegate_task_success(self, project_manager):
         """Test successful task delegation."""
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task"
         )
         
@@ -193,8 +193,8 @@ class TestProjectManagerSupervisor:
         
         assert isinstance(result, TaskResult)
         assert result.task_id == "task_1"
-        assert result.worker == "requirements_analyst"
-        assert result.status == "completed"
+        assert result.success == True
+        assert result.result_data != {}
         assert len(project_manager.decision_history) == 1
         assert project_manager.decision_history[0]["decision"]["action"] == "task_delegation"
     
@@ -202,8 +202,8 @@ class TestProjectManagerSupervisor:
     async def test_delegate_task_failure(self, project_manager):
         """Test task delegation failure."""
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task"
         )
         
@@ -211,25 +211,25 @@ class TestProjectManagerSupervisor:
         with patch.object(project_manager, '_execute_task', side_effect=Exception("Task failed")):
             result = await project_manager.delegate_task(task, "requirements_analyst")
         
-        assert result.status == "failed"
-        assert "error" in result.result
-        assert "Task failed" in result.result["error"]
+        assert result.success == False
+        assert result.error_message is not None
+        assert "Task failed" in result.error_message
     
     @pytest.mark.asyncio
     async def test_update_state_with_task_result(self, project_manager):
         """Test state update with task result."""
         from models.supervisor_state import create_initial_supervisor_swarm_state
         
-        state = create_initial_supervisor_swarm_state("Test project")
+        state = create_initial_supervisor_swarm_state("Test project", "test_project", "test_session")
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task"
         )
         result = TaskResult(
             task_id="task_1",
-            worker="requirements_analyst",
-            result={"requirements": [{"id": "req1", "description": "User authentication"}]},
+            success=True,
+            result_data={"requirements": [{"id": "req1", "description": "User authentication"}]},
             execution_time=5.2
         )
         
@@ -251,10 +251,10 @@ class TestProjectManagerSupervisor:
     async def test_analyze_escalation_success(self, project_manager, mock_llm):
         """Test successful escalation analysis."""
         escalation = Escalation(
-            id="esc_1",
-            from_agent="requirements_analyst",
-            issue="Unclear requirements",
-            severity="high"
+            escalation_id="esc_1",
+            task_id="task_1",
+            reason="Unclear requirements",
+            level="high"
         )
         
         mock_llm.ainvoke.return_value = "Analysis: Requirements are unclear"
@@ -270,10 +270,10 @@ class TestProjectManagerSupervisor:
     async def test_analyze_escalation_failure(self, project_manager, mock_llm):
         """Test escalation analysis failure."""
         escalation = Escalation(
-            id="esc_1",
-            from_agent="requirements_analyst",
-            issue="Unclear requirements",
-            severity="high"
+            escalation_id="esc_1",
+            task_id="task_1",
+            reason="Unclear requirements",
+            level="high"
         )
         
         mock_llm.ainvoke.side_effect = Exception("LLM failed")
@@ -335,10 +335,10 @@ class TestProjectManagerSupervisor:
     async def test_handle_escalation_success(self, project_manager, mock_llm):
         """Test successful escalation handling."""
         escalation = Escalation(
-            id="esc_1",
-            from_agent="requirements_analyst",
-            issue="Unclear requirements",
-            severity="high"
+            escalation_id="esc_1",
+            task_id="task_1",
+            reason="Unclear requirements",
+            level="high"
         )
         
         mock_llm.ainvoke.side_effect = [
@@ -357,10 +357,10 @@ class TestProjectManagerSupervisor:
     async def test_handle_escalation_failure(self, project_manager, mock_llm):
         """Test escalation handling failure."""
         escalation = Escalation(
-            id="esc_1",
-            from_agent="requirements_analyst",
-            issue="Unclear requirements",
-            severity="high"
+            escalation_id="esc_1",
+            task_id="task_1",
+            reason="Unclear requirements",
+            level="high"
         )
         
         mock_llm.ainvoke.side_effect = Exception("LLM failed")
@@ -403,21 +403,21 @@ class TestProjectManagerSupervisor:
         # Create test tasks
         tasks = [
             Task(
-                id="task_1",
-                type="requirements_analysis",
+                task_id="task_1",
+                task_name="requirements_analysis",
                 description="Test task 1",
                 priority="high"
             ),
             Task(
-                id="task_2",
-                type="architecture_design",
+                task_id="task_2",
+                task_name="architecture_design",
                 description="Test task 2",
                 priority="high"
             )
         ]
         project_manager.task_queue = tasks
         
-        initial_state = create_initial_supervisor_swarm_state("Test project")
+        initial_state = create_initial_supervisor_swarm_state("Test project", "test_project", "test_session")
         
         result = await project_manager._execute_workflow(initial_state)
         
@@ -433,8 +433,8 @@ class TestProjectManagerSupervisor:
         
         # Create test task that will fail
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task",
             priority="high"
         )
@@ -443,14 +443,14 @@ class TestProjectManagerSupervisor:
         # Mock delegate_task to return failed result
         failed_result = TaskResult(
             task_id="task_1",
-            worker="requirements_analyst",
-            result={"error": "Task failed"},
-            status="failed"
+            success=False,
+            result_data={"error": "Task failed"},
+            error_message="Task failed"
         )
         
         with patch.object(project_manager, 'delegate_task', return_value=failed_result):
             with patch.object(project_manager, 'handle_escalation') as mock_handle:
-                initial_state = create_initial_supervisor_swarm_state("Test project")
+                initial_state = create_initial_supervisor_swarm_state("Test project", "test_project", "test_session")
                 result = await project_manager._execute_workflow(initial_state)
         
         assert result["status"] == "completed"  # Workflow completes even with failures
@@ -463,14 +463,14 @@ class TestProjectManagerSupervisor:
         
         # Create test task so the workflow has something to execute
         task = Task(
-            id="task_1",
-            type="requirements_analysis",
+            task_id="task_1",
+            task_name="requirements_analysis",
             description="Test task",
             priority="high"
         )
         project_manager.task_queue = [task]
         
-        initial_state = create_initial_supervisor_swarm_state("Test project")
+        initial_state = create_initial_supervisor_swarm_state("Test project", "test_project", "test_session")
         
         # Mock delegate_task to raise exception
         with patch.object(project_manager, 'delegate_task', side_effect=Exception("Workflow failed")):
@@ -492,8 +492,8 @@ class TestProjectManagerSupervisor:
                     with patch.object(project_manager, '_execute_workflow') as mock_execute:
                         
                         mock_init.return_value = {"project_context": project_context}
-                        mock_breakdown.return_value = [Task(id="task_1", type="test", description="test")]
-                        mock_prioritize.return_value = [Task(id="task_1", type="test", description="test")]
+                        mock_breakdown.return_value = [Task(task_id="task_1", task_name="test", description="test")]
+                        mock_prioritize.return_value = [Task(task_id="task_1", task_name="test", description="test")]
                         mock_execute.return_value = {"status": "completed"}
                         
                         result = await project_manager.orchestrate_workflow(project_context)

@@ -201,7 +201,7 @@ CRITICAL: Respond with ONLY valid JSON - no explanations, no markdown, no additi
         )
         
         # Create LangChain Gemini client with optimized model selection
-        from utils.helpers import get_llm_model
+        from utils.core.helpers import get_llm_model
         llm = get_llm_model(task_type="test_generation")
         
         # Create chain
@@ -739,7 +739,7 @@ CRITICAL: Respond with ONLY valid JSON - no explanations, no markdown, no additi
         """
         try:
             simplified_response = self.create_simplified_test_response(output)
-            return simplified_response.dict()
+            return simplified_response.model_dump()
         except Exception as e:
             self.logger.error(f"Failed to create simplified test output: {e}")
             return None

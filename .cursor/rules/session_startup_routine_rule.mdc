@@ -1,0 +1,416 @@
+# Session Startup Routine Rule
+
+**CRITICAL**: This rule establishes the systematic workflow for starting every development session. When the user says "start our session", this routine must be executed completely and autonomously.
+
+## Description
+This rule defines a comprehensive 7-step session startup routine that ensures systematic, efficient, and rule-compliant development sessions. The routine prioritizes agile artifacts, applies all relevant rules, eliminates redundancy, works test-driven, and maintains clean repository state.
+
+## Core Session Startup Routine
+
+### **STEP 1: Agile Artifacts Analysis** 📊
+**MANDATORY**: Analyze highest priority tasks from agile artifacts
+```python
+def analyze_agile_artifacts() -> Dict[str, Any]:
+    """Analyze agile artifacts to identify highest priority tasks."""
+    
+    # 1. Read product backlog for current sprint priorities
+    backlog_analysis = read_product_backlog()
+    current_sprint = backlog_analysis.get("current_sprint", "Sprint 1")
+    sprint_goal = backlog_analysis.get("sprint_goal", "")
+    
+    # 2. Identify highest priority user stories
+    high_priority_stories = [
+        story for story in backlog_analysis.get("user_stories", [])
+        if story.get("priority") in ["CRITICAL", "HIGH"] and 
+        story.get("status") in ["To Do", "In Progress"]
+    ]
+    
+    # 3. Check for blocking issues or critical failures
+    blocking_issues = identify_blocking_issues(backlog_analysis)
+    
+    # 4. Determine immediate next action
+    next_action = determine_next_action(high_priority_stories, blocking_issues)
+    
+    return {
+        "current_sprint": current_sprint,
+        "sprint_goal": sprint_goal,
+        "high_priority_stories": high_priority_stories,
+        "blocking_issues": blocking_issues,
+        "next_action": next_action,
+        "priority_level": "CRITICAL" if blocking_issues else "HIGH"
+    }
+```
+
+### **STEP 2: Critical Rules Framework Integration** 📋
+**MANDATORY**: Load and apply critical rules framework with courage and no premature success rules
+```python
+def load_and_apply_critical_rules_framework() -> Dict[str, Any]:
+    """Load critical rules framework and apply courage and no premature success rules."""
+    
+    # 1. Initialize core rule application framework
+    framework = CoreRuleApplicationFramework()
+    
+    # 2. Apply courage rule - ALWAYS ACTIVE
+    courage_context = framework.apply_courage_rule({
+        "session_type": "development_startup",
+        "courage_required": True,
+        "complete_work_commitment": True
+    })
+    
+    # 3. Apply no premature success rule - ALWAYS ACTIVE
+    no_premature_context = framework.apply_no_premature_success_rule({
+        "validation_required": True,
+        "evidence_based_progress": True,
+        "no_assumptions_allowed": True
+    })
+    
+    # 4. Apply no failing tests rule - ALWAYS ACTIVE
+    test_context = framework.apply_no_failing_tests_rule({
+        "zero_tolerance": True,
+        "test_execution_required": True,
+        "failure_blocking": True
+    })
+    
+    # 5. Apply boy scout rule - ALWAYS ACTIVE
+    cleanup_context = framework.apply_boyscout_rule({
+        "leave_cleaner": True,
+        "proactive_improvements": True,
+        "codebase_enhancement": True
+    })
+    
+    # 6. Create comprehensive rule context
+    rule_context = {
+        "courage_rule": courage_context,
+        "no_premature_success_rule": no_premature_context,
+        "no_failing_tests_rule": test_context,
+        "boyscout_rule": cleanup_context,
+        "critical_rules_active": True,
+        "rule_application_status": "CRITICAL_RULES_ACTIVE"
+    }
+    
+    # 7. Apply automatic rule integration
+    integration = AutomaticRuleIntegration()
+    integrated_context = integration.integrate_into_session_startup(rule_context)
+    
+    return integrated_context
+```
+
+### **STEP 3: Rule Compliance Enforcement** ⚡
+**MANDATORY**: Apply all rules with zero exceptions
+```python
+def enforce_rule_compliance() -> Dict[str, Any]:
+    """Enforce all loaded rules with zero exceptions."""
+    
+    # 1. Apply No Failing Tests Rule (RULE #1) - ABSOLUTE PRIORITY
+    test_status = apply_no_failing_tests_rule()
+    if not test_status["all_tests_passing"]:
+        return {
+            "status": "BLOCKED",
+            "reason": "Failing tests detected - must fix before proceeding",
+            "failing_tests": test_status["failing_tests"]
+        }
+    
+    # 2. Apply Keep Things in Order Rule (RULE #2)
+    order_status = apply_keep_things_in_order_rule()
+    
+    # 3. Apply Maintain Focus and Big Picture Rule (RULE #3)
+    focus_status = apply_maintain_focus_rule()
+    
+    # 4. Apply all other Tier 1 rules
+    tier1_compliance = apply_all_tier1_rules()
+    
+    # 5. Apply situation and task specific rules
+    specific_compliance = apply_specific_rules()
+    
+    return {
+        "status": "COMPLIANT",
+        "test_status": test_status,
+        "order_status": order_status,
+        "focus_status": focus_status,
+        "tier1_compliance": tier1_compliance,
+        "specific_compliance": specific_compliance
+    }
+```
+
+### **STEP 4: Redundancy Cleanup Application** 🧹
+**MANDATORY**: Apply redundancy cleanup rule radically but safely
+```python
+def apply_redundancy_cleanup() -> Dict[str, Any]:
+    """Apply redundancy cleanup rule radically but safely with test-driven approach."""
+    
+    # 1. Scan for redundancy across all aspects
+    redundancy_scan = scan_for_redundancy()
+    
+    # 2. Categorize redundancy by type and impact
+    redundancy_categories = categorize_redundancy(redundancy_scan)
+    
+    # 3. Create test-driven elimination plan
+    elimination_plan = create_test_driven_elimination_plan(redundancy_categories)
+    
+    # 4. Execute elimination with safety checks
+    elimination_results = execute_safe_elimination(elimination_plan)
+    
+    # 5. Validate elimination success
+    validation_results = validate_elimination_success(elimination_results)
+    
+    return {
+        "redundancy_scan": redundancy_scan,
+        "elimination_plan": elimination_plan,
+        "elimination_results": elimination_results,
+        "validation_results": validation_results,
+        "cleanup_status": "COMPLETE" if validation_results["success"] else "PARTIAL"
+    }
+```
+
+### **STEP 5: Test-Driven Development Work** 🧪
+**MANDATORY**: Work test-driven on the identified open task
+```python
+def work_test_driven_on_open_task() -> Dict[str, Any]:
+    """Work test-driven on the highest priority open task."""
+    
+    # 1. Identify the specific open task from agile artifacts
+    open_task = identify_open_task(agile_analysis["next_action"])
+    
+    # 2. Create comprehensive test suite for the task
+    test_suite = create_comprehensive_test_suite(open_task)
+    
+    # 3. Write failing tests first (Red phase)
+    failing_tests = write_failing_tests(test_suite)
+    
+    # 4. Implement minimal functionality to pass tests (Green phase)
+    implementation = implement_minimal_functionality(failing_tests)
+    
+    # 5. Refactor while keeping tests green (Refactor phase)
+    refactored_code = refactor_while_maintaining_tests(implementation, failing_tests)
+    
+    # 6. Validate implementation meets acceptance criteria
+    validation = validate_acceptance_criteria(open_task, refactored_code)
+    
+    return {
+        "open_task": open_task,
+        "test_suite": test_suite,
+        "implementation": refactored_code,
+        "validation": validation,
+        "tdd_status": "COMPLETE" if validation["meets_criteria"] else "IN_PROGRESS"
+    }
+```
+
+### **STEP 6: Agile Artifacts Update** 📝
+**MANDATORY**: Update all agile artifacts and documentation
+```python
+def update_agile_artifacts() -> Dict[str, Any]:
+    """Update all agile artifacts and documentation."""
+    
+    # 1. Update product backlog with progress
+    backlog_update = update_product_backlog(work_results)
+    
+    # 2. Update sprint backlog with completed work
+    sprint_update = update_sprint_backlog(work_results)
+    
+    # 3. Update user story status and progress
+    story_updates = update_user_stories(work_results)
+    
+    # 4. Update documentation per Live Documentation Updates rule
+    doc_updates = update_documentation(work_results)
+    
+    # 5. Apply file organization and boyscout rules
+    organization_updates = apply_file_organization_and_boyscout_rules()
+    
+    return {
+        "backlog_update": backlog_update,
+        "sprint_update": sprint_update,
+        "story_updates": story_updates,
+        "doc_updates": doc_updates,
+        "organization_updates": organization_updates,
+        "update_status": "COMPLETE"
+    }
+```
+
+### **STEP 7: Autonomous Work Execution** 🤖
+**MANDATORY**: Work autonomously with minimal chat output
+```python
+def execute_autonomous_work() -> Dict[str, Any]:
+    """Execute work autonomously with minimal chat output."""
+    
+    # 1. Set autonomous mode with focused problem-solving
+    autonomous_config = {
+        "minimal_chat_output": True,
+        "focus_on_problem_solving": True,
+        "systematic_approach": True,
+        "rule_compliance": True
+    }
+    
+    # 2. Execute work with systematic approach
+    work_execution = execute_systematic_work(autonomous_config)
+    
+    # 3. Maintain focus on solving the problem
+    problem_solving = maintain_problem_focus(work_execution)
+    
+    # 4. Apply all rules throughout execution
+    rule_application = apply_rules_throughout_execution(problem_solving)
+    
+    return {
+        "autonomous_config": autonomous_config,
+        "work_execution": work_execution,
+        "problem_solving": problem_solving,
+        "rule_application": rule_application,
+        "execution_status": "COMPLETE"
+    }
+```
+
+## Complete Session Startup Workflow
+
+### **Main Session Startup Function**
+```python
+def start_development_session() -> Dict[str, Any]:
+    """Complete session startup routine - executed when user says 'start our session'."""
+    
+    print("🚀 **SESSION STARTUP ROUTINE INITIATED**")
+    
+    # STEP 1: Agile Artifacts Analysis
+    print("📊 Step 1: Analyzing agile artifacts for highest priority...")
+    agile_analysis = analyze_agile_artifacts()
+    
+    # STEP 2: Rule Application Guide Loading
+    print("📋 Step 2: Loading and applying cursor rules...")
+    rule_application = load_and_apply_cursor_rules()
+    
+    # STEP 3: Rule Compliance Enforcement
+    print("⚡ Step 3: Enforcing rule compliance...")
+    compliance_status = enforce_rule_compliance()
+    
+    if compliance_status["status"] == "BLOCKED":
+        print(f"❌ BLOCKED: {compliance_status['reason']}")
+        return compliance_status
+    
+    # STEP 4: Redundancy Cleanup Application
+    print("🧹 Step 4: Applying redundancy cleanup...")
+    cleanup_results = apply_redundancy_cleanup()
+    
+    # STEP 5: Test-Driven Development Work
+    print("🧪 Step 5: Working test-driven on open task...")
+    work_results = work_test_driven_on_open_task()
+    
+    # STEP 6: Agile Artifacts Update
+    print("📝 Step 6: Updating agile artifacts...")
+    artifact_updates = update_agile_artifacts()
+    
+    # STEP 7: Autonomous Work Execution
+    print("🤖 Step 7: Executing autonomous work...")
+    autonomous_results = execute_autonomous_work()
+    
+    # Final validation and commit
+    print("✅ Step 8: Final validation and commit...")
+    final_validation = perform_final_validation()
+    
+    if final_validation["success"]:
+        commit_and_push_results = commit_and_push_to_git()
+        session_summary = generate_session_summary()
+        
+        print("🎉 **SESSION STARTUP COMPLETE**")
+        print(f"📊 Summary: {session_summary}")
+        
+        return {
+            "status": "SUCCESS",
+            "agile_analysis": agile_analysis,
+            "rule_application": rule_application,
+            "compliance_status": compliance_status,
+            "cleanup_results": cleanup_results,
+            "work_results": work_results,
+            "artifact_updates": artifact_updates,
+            "autonomous_results": autonomous_results,
+            "final_validation": final_validation,
+            "commit_results": commit_and_push_results,
+            "session_summary": session_summary
+        }
+    else:
+        print(f"❌ Session startup failed: {final_validation['reason']}")
+        return {"status": "FAILED", "reason": final_validation["reason"]}
+```
+
+## Session Summary Generation
+
+### **Automatic Summary Creation**
+```python
+def generate_session_summary() -> str:
+    """Generate comprehensive session summary for user."""
+    
+    summary = f"""
+## 🎯 **SESSION SUMMARY**
+
+### **Agile Progress**
+- **Current Sprint**: {agile_analysis['current_sprint']}
+- **Sprint Goal**: {agile_analysis['sprint_goal']}
+- **High Priority Stories**: {len(agile_analysis['high_priority_stories'])} active
+- **Blocking Issues**: {len(agile_analysis['blocking_issues'])} resolved
+
+### **Rule Compliance**
+- **Tier 1 Rules**: {len(rule_application['tier1_rules'])} applied
+- **Situation Rules**: {len(rule_application['situation_rules'])} applied
+- **Task Rules**: {len(rule_application['task_rules'])} applied
+- **Compliance Status**: {compliance_status['status']}
+
+### **Work Completed**
+- **Redundancy Cleanup**: {cleanup_results['cleanup_status']}
+- **TDD Work**: {work_results['tdd_status']}
+- **Artifact Updates**: {artifact_updates['update_status']}
+- **Autonomous Execution**: {autonomous_results['execution_status']}
+
+### **Quality Assurance**
+- **Tests Passing**: {final_validation['tests_passing']}/{final_validation['total_tests']}
+- **Documentation Updated**: {final_validation['docs_updated']}
+- **Repository Clean**: {final_validation['repo_clean']}
+- **Git Status**: {commit_and_push_results['status']}
+
+### **Next Actions**
+{generate_next_actions()}
+"""
+    
+    return summary
+```
+
+## Trigger Mechanism
+
+### **Session Startup Trigger**
+```python
+# When user says "start our session", execute:
+if user_input.lower() in ["start our session", "start session", "begin session"]:
+    session_results = start_development_session()
+    return session_results["session_summary"]
+```
+
+## Benefits
+
+### **Systematic Approach**
+- **7-step systematic routine** ensures nothing is missed
+- **Rule compliance enforcement** with zero exceptions
+- **Test-driven development** maintains quality
+- **Autonomous execution** maximizes efficiency
+
+### **Agile Integration**
+- **Agile artifacts analysis** ensures sprint alignment
+- **Real-time updates** keep artifacts current
+- **Priority-driven work** focuses on highest value
+- **Progress tracking** maintains visibility
+
+### **Quality Assurance**
+- **Redundancy elimination** maintains clean codebase
+- **Test-driven approach** ensures working software
+- **Rule compliance** maintains standards
+- **Documentation updates** preserves knowledge
+
+### **Efficiency**
+- **Autonomous execution** reduces chat overhead
+- **Systematic approach** prevents rework
+- **Rule application** ensures consistency
+- **Clean repository** maintains productivity
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** when the user initiates a session startup. The complete 7-step routine must be executed systematically with zero exceptions.
+
+**Remember**: When the user says "start our session", this entire routine executes autonomously with minimal chat output, focusing on solving the highest priority problems efficiently and systematically.
+description:
+globs:
+alwaysApply: true
+---

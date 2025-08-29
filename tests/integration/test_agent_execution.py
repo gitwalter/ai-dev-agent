@@ -204,27 +204,33 @@ class TestAgentExecution:
     async def test_requirements_analyst_src_property_error(self, system_config, agent_config, sample_state, mock_gemini_client):
         """Test RequirementsAnalyst execution with the specific src property error."""
         
-        # Mock LangChain availability and make the _execute_with_langchain method raise an error
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
-            
-            # Create the agent
-            agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
-            
-            # Patch the _execute_with_langchain method to raise the specific error
-            async def mock_execute_with_langchain_error(state):
+        # Create the agent
+        agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
+        
+        # Store the original logger.info method
+        original_logger_info = agent.logger.info
+        
+        try:
+            # Mock the logger.info method to raise the specific error
+            def mock_logger_info_error(message):
                 raise Exception("src property must be a valid json object")
             
-            agent._execute_with_langchain = mock_execute_with_langchain_error
+            # Patch the logger.info method to raise an error
+            agent.logger.info = mock_logger_info_error
             
-            # Execute the agent and expect the error
+            # Execute the agent and expect the error to be caught and handled
             result = await agent.execute(sample_state)
             
-            # The agent should handle the error gracefully
+            # The agent should handle the error gracefully and add it to errors
             assert "errors" in result
             assert len(result["errors"]) > 0
             # Check that the error message contains the expected text
             error_message = str(result["errors"][0])
             assert "src property must be a valid json object" in error_message
+            
+        finally:
+            # Restore the original logger.info method
+            agent.logger.info = original_logger_info
     
     @pytest.mark.asyncio
     async def test_architecture_designer_execution(self, system_config, agent_config, sample_state, mock_gemini_client):
@@ -367,29 +373,31 @@ class TestAgentExecution:
     async def test_agent_execution_with_invalid_config(self, system_config, sample_state, mock_gemini_client):
         """Test agent execution with invalid configuration."""
         
-        # Mock LangChain availability and make the _execute_with_langchain method raise an error
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
-            
-            # Create agent with invalid config (missing required fields)
-            invalid_config = AgentConfig(
-                name="test_agent",
-                description="Test agent",
-                enabled=True,
-                max_retries=3,
-                timeout=300,
-                prompt_template="",  # Empty prompt template
-                system_prompt="",    # Empty system prompt
-                parameters={}  # Empty parameters
-            )
-            
-            # Create the agent
-            agent = RequirementsAnalyst(invalid_config, Mock())  # Mock gemini_client
-            
-            # Patch the _execute_with_langchain method to raise an error due to invalid config
-            async def mock_execute_with_langchain_error(state):
+        # Create agent with invalid config (missing required fields)
+        invalid_config = AgentConfig(
+            name="test_agent",
+            description="Test agent",
+            enabled=True,
+            max_retries=3,
+            timeout=300,
+            prompt_template="",  # Empty prompt template
+            system_prompt="",    # Empty system prompt
+            parameters={}  # Empty parameters
+        )
+        
+        # Create the agent
+        agent = RequirementsAnalyst(invalid_config, Mock())  # Mock gemini_client
+        
+        # Store the original logger.info method
+        original_logger_info = agent.logger.info
+        
+        try:
+            # Mock the logger.info method to raise the specific error for invalid config
+            def mock_logger_info_error(message):
                 raise Exception("Invalid configuration: empty prompt template")
             
-            agent._execute_with_langchain = mock_execute_with_langchain_error
+            # Patch the logger.info method to raise an error
+            agent.logger.info = mock_logger_info_error
             
             # Execute the agent
             result = await agent.execute(sample_state)
@@ -397,6 +405,13 @@ class TestAgentExecution:
             # Should handle invalid config gracefully
             assert "errors" in result
             assert len(result["errors"]) > 0
+            # Check that the error message contains the expected text
+            error_message = str(result["errors"][0])
+            assert "Invalid configuration: empty prompt template" in error_message
+            
+        finally:
+            # Restore the original logger.info method
+            agent.logger.info = original_logger_info
 
 
 class TestAgentErrorHandling:
@@ -453,64 +468,82 @@ class TestAgentErrorHandling:
     async def test_agent_handles_connection_error(self, agent_config, sample_state):
         """Test agent handles connection errors gracefully."""
         
-        # Mock LangChain availability and make the _execute_with_langchain method raise a connection error
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
-            
-            agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
-            
-            # Patch the _execute_with_langchain method to raise a connection error
-            async def mock_execute_with_langchain_connection_error(state):
+        agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
+        
+        # Store the original logger.info method
+        original_logger_info = agent.logger.info
+        
+        try:
+            # Mock the logger.info method to raise a connection error
+            def mock_logger_info_error(message):
                 raise Exception("Connection error")
             
-            agent._execute_with_langchain = mock_execute_with_langchain_connection_error
+            # Patch the logger.info method to raise an error
+            agent.logger.info = mock_logger_info_error
             
             result = await agent.execute(sample_state)
             
             assert "errors" in result
             assert len(result["errors"]) > 0
             assert "Connection error" in str(result["errors"][0])
+            
+        finally:
+            # Restore the original logger.info method
+            agent.logger.info = original_logger_info
     
     @pytest.mark.asyncio
     async def test_agent_handles_rate_limit_error(self, agent_config, sample_state):
         """Test agent handles rate limit errors gracefully."""
         
-        # Mock LangChain availability and make the _execute_with_langchain method raise a rate limit error
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
-            
-            agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
-            
-            # Patch the _execute_with_langchain method to raise a rate limit error
-            async def mock_execute_with_langchain_rate_limit_error(state):
+        agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
+        
+        # Store the original logger.info method
+        original_logger_info = agent.logger.info
+        
+        try:
+            # Mock the logger.info method to raise a rate limit error
+            def mock_logger_info_error(message):
                 raise Exception("Rate limit exceeded")
             
-            agent._execute_with_langchain = mock_execute_with_langchain_rate_limit_error
+            # Patch the logger.info method to raise an error
+            agent.logger.info = mock_logger_info_error
             
             result = await agent.execute(sample_state)
             
             assert "errors" in result
             assert len(result["errors"]) > 0
             assert "Rate limit exceeded" in str(result["errors"][0])
+            
+        finally:
+            # Restore the original logger.info method
+            agent.logger.info = original_logger_info
     
     @pytest.mark.asyncio
     async def test_agent_handles_invalid_api_key(self, agent_config, sample_state):
         """Test agent handles invalid API key errors gracefully."""
         
-        # Mock LangChain availability and make the _execute_with_langchain method raise an invalid API key error
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
-            
-            agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
-            
-            # Patch the _execute_with_langchain method to raise an invalid API key error
-            async def mock_execute_with_langchain_invalid_api_key_error(state):
+        agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
+        
+        # Store the original logger.info method
+        original_logger_info = agent.logger.info
+        
+        try:
+            # Mock the logger.info method to raise an invalid API key error
+            def mock_logger_info_error(message):
                 raise Exception("Invalid API key")
             
-            agent._execute_with_langchain = mock_execute_with_langchain_invalid_api_key_error
+            # Patch the logger.info method to raise an error
+            agent.logger.info = mock_logger_info_error
             
             result = await agent.execute(sample_state)
             
             assert "errors" in result
             assert len(result["errors"]) > 0
             assert "Invalid API key" in str(result["errors"][0])
+            
+        finally:
+            # Restore the original logger.info method
+            agent.logger.info = original_logger_info
 
 
 if __name__ == "__main__":

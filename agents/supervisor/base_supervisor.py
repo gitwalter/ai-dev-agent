@@ -34,14 +34,20 @@ class BaseSupervisor(ABC):
         """Make a supervisory decision based on context."""
         pass
     
-    def log_decision(self, decision: Dict[str, Any], context: Dict[str, Any]):
+    def log_decision(self, decision: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         """Log a supervisory decision."""
-        self.decision_history.append({
+        decision_record = {
             "timestamp": datetime.now().isoformat(),
             "decision": decision,
             "context": context
-        })
+        }
+        self.decision_history.append(decision_record)
         self.logger.info(f"Supervisor decision: {decision}")
+        return decision_record
+    
+    def get_recent_decisions(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Get recent decisions from history."""
+        return self.decision_history[-limit:] if self.decision_history else []
     
     async def validate_quality(self, output: Any, task_type: str) -> Dict[str, Any]:
         """Validate output quality against configured thresholds."""

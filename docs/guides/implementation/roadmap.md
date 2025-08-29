@@ -4,17 +4,17 @@
 
 **This roadmap has been superseded by our new agile-driven approach. For the most current and comprehensive roadmap, please see:**
 
-🎯 **[NEW AGILE-DRIVEN ROADMAP](../../agile/updated_roadmap.md)** - Complete agile transformation with sprint-based delivery
+🎯 **[NEW AGILE-DRIVEN ROADMAP](../../agile/planning/updated_roadmap.md)** - Complete agile transformation with sprint-based delivery
 
-📋 **[PRODUCT BACKLOG](../../agile/product_backlog.md)** - Prioritized user stories and business value focus
+📋 **[PRODUCT BACKLOG](../../agile/planning/product_backlog.md)** - Prioritized user stories and business value focus
 
-🏗️ **[EPIC BREAKDOWN](../../agile/epic_breakdown.md)** - High-level feature planning and ROI analysis
+🏗️ **[EPIC BREAKDOWN](../../agile/planning/epic_breakdown.md)** - High-level feature planning and ROI analysis
 
-📅 **[RELEASE PLANNING](../../agile/release_planning.md)** - Comprehensive release planning and success metrics
+📅 **[RELEASE PLANNING](../../agile/planning/release_planning.md)** - Comprehensive release planning and success metrics
 
-🔄 **[AGILE WORKFLOW](../../agile/agile_workflow.md)** - Sprint-based development process
+🔄 **[AGILE WORKFLOW](../../agile/core/agile_workflow.md)** - Sprint-based development process
 
-🎯 **[AGILE CURSOR RULES](../../agile/agile_cursor_rules.md)** - Agile-specific development automation rules
+🎯 **[AGILE CURSOR RULES](../../agile/core/agile_cursor_rules.md)** - Agile-specific development automation rules
 
 ---
 

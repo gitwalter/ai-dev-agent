@@ -14,13 +14,19 @@
 
 ### **Agile Project Management**
 - [Agile Overview](agile/README.md) - Complete agile project management system
-- [Product Backlog](agile/product_backlog.md) - Prioritized user stories and business value
-- [Epic Breakdown](agile/epic_breakdown.md) - High-level feature planning and ROI
-- [Updated Roadmap](agile/updated_roadmap.md) - Agile-driven development roadmap
-- [Release Planning](agile/release_planning.md) - Comprehensive release planning
-- [Agile Workflow](agile/agile_workflow.md) - Sprint-based development process
-- [Agile Cursor Rules](agile/agile_cursor_rules.md) - Agile automation rules
-- [Definition of Done](agile/definition_of_done.md) - Quality criteria and standards
+- **[Agile Meeting Rules](agile/core/agile_meeting_rules.md)** - **NEW** - Complete governance for all agile meetings
+- **[Agile Rules Index](agile/core/agile_rules_index.md)** - **NEW** - Central index of all agile rules and guidelines
+- **[Meeting Rule Implementation Guide](agile/core/meeting_rule_implementation_guide.md)** - **NEW** - Step-by-step implementation instructions
+- [Product Backlog](agile/planning/product_backlog.md) - Prioritized user stories and business value
+- [Epic Breakdown](agile/planning/epic_breakdown.md) - High-level feature planning and ROI
+- [Updated Roadmap](agile/planning/updated_roadmap.md) - Agile-driven development roadmap
+- [Release Planning](agile/planning/release_planning.md) - Comprehensive release planning
+- [Agile Workflow](agile/core/agile_workflow.md) - Sprint-based development process
+- [Agile Cursor Rules](agile/core/agile_cursor_rules.md) - Agile automation rules
+- [Definition of Done](agile/core/definition_of_done.md) - Quality criteria and standards
+
+### **Development Rules and Standards**
+- [Boy Scout Principle Rule](.cursor/rules/boyscout_principle_rule.mdc) - **UPDATED** - Proactive code quality and maintenance principles
 
 ### **Implementation Guides**
 - [Development Roadmap](guides/implementation/roadmap.md) - Historical technical roadmap (see Agile section above for current)
@@ -44,6 +50,8 @@
 ### **Development Guides**
 - [Development Setup](guides/development/development_setup.md) - Environment setup and configuration
 - [Development Workflow](guides/development/development_workflow.md) - Development processes and practices
+- [Automated Cursor Workflow Guide](guides/development/automated_cursor_workflow_guide.md) - Complete guide for human developers using the automated system
+- [Automated Workflow Quick Reference](guides/development/automated_workflow_quick_reference.md) - Quick reference card for essential commands
 - [LangGraph Integration](guides/langgraph/langgraph_integration.md) - LangGraph framework integration
 - [LangGraph Workflow](guides/langgraph/langgraph_workflow.md) - LangGraph workflow implementation
 
@@ -81,6 +89,13 @@
 - [Analysis Summaries](analysis/summaries/) - High-level analysis summaries
 
 ## 🎯 **Quick Reference**
+
+### **Session Management**
+1. **Start Session**: Say "start our session" to trigger the complete 7-step routine
+2. **Session Startup**: [Session Startup Routine](.cursor/rules/session_startup_routine_rule.mdc) - Systematic workflow
+3. **Session Script**: [Session Startup Script](scripts/session_startup.py) - Manual trigger
+4. **Session Shutdown**: [Session Shutdown Script](scripts/session_shutdown.py) - Manual shutdown trigger
+5. **Complete Guide**: [Automated Cursor Workflow Guide](guides/development/automated_cursor_workflow_guide.md) - Comprehensive guide for human developers
 
 ### **Getting Started**
 1. **System Overview**: Start with [System Architecture](architecture/overview/system_diagram.md)

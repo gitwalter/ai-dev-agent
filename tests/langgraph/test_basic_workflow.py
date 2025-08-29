@@ -26,7 +26,7 @@ from tests.mock_structured_outputs import RequirementsAnalysisOutput
 # Using mock from tests.mock_structured_outputs
 
 
-class TestState(TypedDict):
+class WorkflowState(TypedDict):
     """Test state for LangGraph workflows."""
     value: str
     errors: list
@@ -90,10 +90,10 @@ class TestBasicLangGraphWorkflow:
         from langgraph.graph import StateGraph, END, START
         
         # Create workflow with TypedDict state
-        workflow = StateGraph(TestState)
+        workflow = StateGraph(WorkflowState)
         
         # Add a simple node that returns a dictionary
-        def simple_node(state: TestState) -> TestState:
+        def simple_node(state: WorkflowState) -> WorkflowState:
             return {
                 "value": "processed",
                 "errors": state.get("errors", []),
@@ -163,10 +163,10 @@ class TestBasicLangGraphWorkflow:
         from langgraph.graph import StateGraph, END, START
         
         # Create workflow with TypedDict state
-        workflow = StateGraph(TestState)
+        workflow = StateGraph(WorkflowState)
         
         # Add processing node that returns a dictionary
-        def process_node(state: TestState) -> TestState:
+        def process_node(state: WorkflowState) -> WorkflowState:
             return {
                 "value": f"processed_{state['value']}",
                 "errors": state.get("errors", []),
@@ -181,7 +181,7 @@ class TestBasicLangGraphWorkflow:
         
         # Compile and execute
         app = workflow.compile()
-        initial_state = TestState(value="test", errors=[], step="start")
+        initial_state = WorkflowState(value="test", errors=[], step="start")
         
         result = await app.ainvoke(initial_state)
         
@@ -215,9 +215,9 @@ class TestBasicLangGraphWorkflow:
         from langgraph.graph import StateGraph, END, START
         
         # Create workflow with TypedDict state
-        workflow = StateGraph(TestState)
+        workflow = StateGraph(WorkflowState)
         
-        def error_node(state: TestState) -> TestState:
+        def error_node(state: WorkflowState) -> WorkflowState:
             try:
                 # Simulate an error
                 raise ValueError("Test error")
@@ -238,7 +238,7 @@ class TestBasicLangGraphWorkflow:
         
         # Compile and execute
         app = workflow.compile()
-        initial_state = TestState(value="test", errors=[], step="start")
+        initial_state = WorkflowState(value="test", errors=[], step="start")
         
         # Execute synchronously for this test
         result = app.invoke(initial_state)
@@ -256,16 +256,16 @@ class TestBasicLangGraphWorkflow:
         from langgraph.graph import StateGraph, END, START
         
         # Create workflow with TypedDict state
-        workflow = StateGraph(TestState)
+        workflow = StateGraph(WorkflowState)
         
-        def first_node(state: TestState) -> TestState:
+        def first_node(state: WorkflowState) -> WorkflowState:
             return {
                 "value": f"first_{state['value']}",
                 "errors": state.get("errors", []),
                 "step": "first"
             }
         
-        def second_node(state: TestState) -> TestState:
+        def second_node(state: WorkflowState) -> WorkflowState:
             return {
                 "value": f"second_{state['value']}",
                 "errors": state.get("errors", []),
@@ -282,7 +282,7 @@ class TestBasicLangGraphWorkflow:
         
         # Compile and execute
         app = workflow.compile()
-        initial_state = TestState(value="test", errors=[], step="start")
+        initial_state = WorkflowState(value="test", errors=[], step="start")
         
         result = app.invoke(initial_state)
         

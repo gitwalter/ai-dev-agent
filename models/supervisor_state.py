@@ -156,7 +156,7 @@ class SupervisorSwarmStateManager:
     
     def add_handoff_request(self, handoff: HandoffRequest) -> None:
         """Add a handoff request to the queue."""
-        self.state["handoff_queue"].append(handoff.dict())
+        self.state["handoff_queue"].append(handoff.model_dump())
     
     def process_handoff(self, handoff_id: str, action: str, approver: str = None) -> bool:
         """Process a handoff request."""
@@ -175,7 +175,7 @@ class SupervisorSwarmStateManager:
     
     def add_quality_gate(self, gate: QualityGate) -> None:
         """Add a quality gate."""
-        self.state["quality_gates"][gate.gate_id] = gate.dict()
+        self.state["quality_gates"][gate.gate_id] = gate.model_dump()
     
     def update_quality_gate(self, gate_id: str, score: float, passed: bool) -> bool:
         """Update a quality gate."""
@@ -263,6 +263,7 @@ class TaskStatus(str, Enum):
 class TaskPriority(str, Enum):
     """Task priority enumeration."""
     LOW = "low"
+    MEDIUM = "medium"
     NORMAL = "normal"
     HIGH = "high"
     CRITICAL = "critical"
@@ -283,6 +284,8 @@ class Task(BaseModel):
     retry_count: int = 0
     max_retries: int = 3
     metadata: Dict[str, Any] = {}
+    estimated_complexity: str = "moderate"
+    quality_criteria: Dict[str, Any] = {}
 
 
 class TaskResult(BaseModel):
@@ -380,7 +383,7 @@ def add_supervisor_decision(state: SupervisorSwarmState, decision: SupervisorDec
     """Add supervisor decision to state."""
     if "supervisor_decisions" not in state:
         state["supervisor_decisions"] = []
-    state["supervisor_decisions"].append(decision.dict())
+    state["supervisor_decisions"].append(decision.model_dump())
     return state
 
 
@@ -388,7 +391,7 @@ def add_quality_validation(state: SupervisorSwarmState, validation: ValidationRe
     """Add quality validation to state."""
     if "quality_validations" not in state:
         state["quality_validations"] = []
-    state["quality_validations"].append(validation.dict())
+    state["quality_validations"].append(validation.model_dump())
     return state
 
 
@@ -396,7 +399,7 @@ def add_handoff_record(state: SupervisorSwarmState, handoff: HandoffRecord) -> S
     """Add handoff record to state."""
     if "handoff_records" not in state:
         state["handoff_records"] = []
-    state["handoff_records"].append(handoff.dict())
+    state["handoff_records"].append(handoff.model_dump())
     return state
 
 
@@ -441,5 +444,5 @@ def add_performance_metric(state: SupervisorSwarmState, metric: PerformanceMetri
     """Add performance metric."""
     if "performance_metrics" not in state:
         state["performance_metrics"] = []
-    state["performance_metrics"].append(metric.dict())
+    state["performance_metrics"].append(metric.model_dump())
     return state

@@ -2,11 +2,19 @@
 
 A multi-agent system for automated software development using LangGraph and Google's Gemini API. This system implements a workflow-based approach to streamline software development tasks.
 
+## 🎉 **Generated with Cursor IDE**
+
+This entire project was **fully generated and developed using [Cursor IDE](https://cursor.sh/)**, the world's most advanced AI-powered code editor. Cursor's exceptional AI capabilities, intelligent code completion, and seamless development workflow made it possible to create this comprehensive multi-agent system efficiently and with high quality.
+
+**Special thanks to the amazing Cursor team** for building such an incredible development tool that empowers developers to create sophisticated applications with unprecedented speed and precision. The AI-assisted development experience provided by Cursor has been instrumental in bringing this project to life.
+
+*Built with ❤️ using Cursor IDE*
+
 ## 🎯 **Development Philosophy**
 
 This project follows a **comprehensive rule system** that ensures high-quality, efficient, and maintainable code through automated development standards and best practices.
 
-For complete rules and application guide, see [.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc](.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
+For complete rules and application guide, see [.cursor/rules/RULE_ORGANIZATION_STRUCTURE.md](.cursor/rules/RULE_ORGANIZATION_STRUCTURE.md) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
 
 ## 🚀 Quick Start
 
@@ -252,6 +260,7 @@ The system follows a sequential workflow where each agent builds upon the output
 - **Comprehensive Testing**: Test suite with unit, integration, and system tests
 - **Structured Output Parsing**: JSON-based parsing with fallback mechanisms
 - **Cursor Rules System**: Automated development standards and quality enforcement
+- **Agile Daily Deployed Builds**: Automated daily builds following agile methodology
 - **LangSmith Observability**: Comprehensive agent logging and monitoring
 
 ### Web Interface Features
@@ -297,6 +306,53 @@ LANGSMITH_PROJECT = "ai-dev-agent"
 ```
 
 📖 **For detailed LangSmith usage and debugging, see the [LangSmith Tracing Guide](docs/guides/observability/langsmith_tracing_guide.md)**
+
+## 🏗️ Daily Build Automation
+
+The system implements **Agile Daily Deployed Builds** following agile methodology principles to ensure continuous integration, rapid feedback, and reliable delivery.
+
+### Daily Build Features
+
+- **Automated Pipeline**: Complete build pipeline with quality gates
+- **Comprehensive Testing**: Unit, integration, system, and performance tests
+- **Security Validation**: Vulnerability scanning and dependency checks
+- **Quality Assurance**: Code coverage, documentation, and technical debt analysis
+- **Deployment Preparation**: Automated artifact creation and deployment readiness
+- **Stakeholder Communication**: Automated status reporting and notifications
+
+### Running Daily Builds
+
+#### Manual Execution
+```bash
+# Execute daily build manually
+python scripts/daily_build_automation.py --trigger-type manual
+
+# Force build execution
+python scripts/daily_build_automation.py --force
+
+# Check build status
+python scripts/daily_build_scheduler.py --check
+```
+
+#### Automated Scheduling
+```bash
+# Set up automated daily builds (requires admin/sudo)
+python scripts/daily_build_scheduler.py --schedule
+
+# Set up Git hooks for build automation
+python scripts/setup_daily_build_hooks.py
+```
+
+### Build Quality Gates
+
+All daily builds must pass these quality gates:
+- **Test Coverage**: ≥90% code coverage
+- **Test Pass Rate**: ≥99% test success rate
+- **Security**: Zero critical/high vulnerabilities
+- **Build Time**: ≤30 minutes
+- **Code Quality**: Linting score ≥9.0/10
+
+📖 **For detailed daily build configuration, see the [Agile Daily Deployed Build Rule](.cursor/rules/agile_daily_deployed_build_rule.mdc)**
 
 ## 📋 Development Standards
 

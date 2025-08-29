@@ -5,7 +5,7 @@ This module provides utilities for agents to load and use their system prompts.
 """
 
 from typing import Dict, Any, Optional
-from utils.prompt_manager import get_prompt_manager
+from utils.prompt_management.prompt_manager import get_prompt_manager
 
 class AgentPromptLoader:
     """Utility class for agents to load their prompts."""
