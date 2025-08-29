@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from typing import Dict, Any
 
-from utils.quality_assurance import (
+from utils.quality.quality_assurance import (
     QualityAssuranceSystem,
     QualityLevel,
     ValidationType,

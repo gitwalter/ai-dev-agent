@@ -214,6 +214,15 @@
 
 ```
 START
+├── 🚀 SESSION STARTUP ROUTINE (When user says "start our session")
+│   ├── Step 1: Agile Artifacts Analysis
+│   ├── Step 2: Rule Application Guide Loading
+│   ├── Step 3: Rule Compliance Enforcement
+│   ├── Step 4: Redundancy Cleanup Application
+│   ├── Step 5: Test-Driven Development Work
+│   ├── Step 6: Agile Artifacts Update
+│   ├── Step 7: Autonomous Work Execution
+│   └── Generate Session Summary
 ├── Apply Tier 1 Rules (Always)
 │   ├── Test-Driven Development
 │   ├── Systematic Problem-Solving

@@ -26,9 +26,11 @@ tags: ["relevant tags for categorization"]
 - **meta_rule_enforcement_rule.mdc** - MANDATORY systematic rule review and application before ALL actions
 - **development_core_principles_rule.mdc** - Core development principles including TDD, systematic problem-solving, framework-first development, error exposure, continuous validation, Agile/XP integration, and code quality
 - **boyscout_leave_cleaner_rule.mdc** - CRITICAL Boy Scout Rule: Always leave the codebase cleaner than you found it with proactive improvements
+- **session_startup_routine_rule.mdc** - CRITICAL 7-step session startup routine for systematic development sessions
 =======
 - **OPTIMIZED_DEVELOPMENT_RULES.mdc** - Core development principles including TDD, systematic problem-solving, framework-first development, error exposure, continuous validation, Agile/XP integration, and code quality
 - **pathfinder_principle_rule.mdc** - Proactive issue detection and resolution with trail-blazing development practices for future-ready code
+- **session_startup_routine_rule.mdc** - CRITICAL 7-step session startup routine for systematic development sessions
 >>>>>>> 57088de (Daily End Automation: Complete development session cleanup and documentation sync - Updated agent configurations and prompt database integration - Enhanced test organization and documentation structure - Applied comprehensive rule system optimizations - Cleaned up temporary files and updated documentation index - All unit tests passing (26/26) - Repository in clean, documented, committed state)
 - **agile_sprint_management_rule.mdc** - Comprehensive Agile sprint management with 2-week iterations and daily standups
 - **xp_test_first_development_rule.mdc** - Extreme Programming test-first methodology with continuous refactoring
@@ -165,25 +167,26 @@ All rules should be validated for:
 - **Quarterly**: Comprehensive rule review and optimization
 - **As Needed**: Immediate updates for critical issues or new requirements
 
-## Current Rule Count: 21 Rules
+## Current Rule Count: 22 Rules
 
-### Critical Rules (16):
+### Critical Rules (17):
 1. OPTIMIZED_DEVELOPMENT_RULES.mdc
 2. no_failing_tests_rule.mdc
 3. boyscout_leave_cleaner_rule.mdc
-4. agile_sprint_management_rule.mdc
-5. xp_test_first_development_rule.mdc
-6. agile_user_story_management_rule.mdc
-7. testing_test_monitoring_rule.mdc
-8. code_review_quality_gates_rule.mdc
-9. performance_monitoring_optimization_rule.mdc
-10. no-premature-victory.mdc
-11. documentation_live_updates_rule.mdc
-12. security_vulnerability_assessment_rule.mdc
-13. security_streamlit_secrets_rule.mdc
-14. error_handling_no_silent_errors_rule.mdc
-15. ai_model_selection_rule.mdc
-16. prompt_prompt_database_management_rule.mdc
+4. session_startup_routine_rule.mdc
+5. agile_sprint_management_rule.mdc
+6. xp_test_first_development_rule.mdc
+7. agile_user_story_management_rule.mdc
+8. testing_test_monitoring_rule.mdc
+9. code_review_quality_gates_rule.mdc
+10. performance_monitoring_optimization_rule.mdc
+11. no-premature-victory.mdc
+12. documentation_live_updates_rule.mdc
+13. security_vulnerability_assessment_rule.mdc
+14. security_streamlit_secrets_rule.mdc
+15. error_handling_no_silent_errors_rule.mdc
+16. ai_model_selection_rule.mdc
+17. prompt_prompt_database_management_rule.mdc
 
 ### High Priority Rules (5):
 17. framework_langchain_langgraph_standards_rule.mdc

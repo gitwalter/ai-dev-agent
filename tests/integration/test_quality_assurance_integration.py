@@ -7,7 +7,7 @@ import pytest
 import asyncio
 from typing import Dict, Any
 
-from utils.quality_assurance import quality_assurance, QualityGateResult
+from utils.quality.quality_assurance import quality_assurance, QualityGateResult
 from models.state import AgentState
 from models.config import AgentConfig
 
@@ -352,7 +352,7 @@ class TestQualityAssuranceIntegration:
         assert len(history) > 0
         
         # Check specific validation types
-        from utils.quality_assurance import ValidationType
+        from utils.quality.quality_assurance import ValidationType
         structure_history = quality_assurance.get_validation_history(ValidationType.STRUCTURE)
         content_history = quality_assurance.get_validation_history(ValidationType.CONTENT)
         consistency_history = quality_assurance.get_validation_history(ValidationType.CONSISTENCY)

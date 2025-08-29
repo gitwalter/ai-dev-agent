@@ -85,6 +85,11 @@
 
 ## 🎯 **Quick Reference**
 
+### **Session Management**
+1. **Start Session**: Say "start our session" to trigger the complete 7-step routine
+2. **Session Startup**: [Session Startup Routine](.cursor/rules/session_startup_routine_rule.mdc) - Systematic workflow
+3. **Session Script**: [Session Startup Script](scripts/session_startup.py) - Manual trigger
+
 ### **Getting Started**
 1. **System Overview**: Start with [System Architecture](architecture/overview/system_diagram.md)
 2. **Implementation**: Follow [Development Roadmap](guides/implementation/roadmap.md)
