@@ -130,7 +130,6 @@ logs/
 *.log
 
 # Database files
-
 # ChromaDB files
 chroma_db_*/
 *.bin
@@ -165,97 +164,11 @@ backups/
 demo_output/
 logs/
 
-
-# Database files - exclude development database with user data
+# Database files - managed by automation system
+# Exclude development database with user data
 prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude main database with user data
-prompts/prompt_templates.db
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude main database with user data
-prompts/prompt_templates.db
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude main database with user data
-prompts/prompt_templates.db
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-!prompts/prompt_templates_clean.db
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-!prompts/prompt_templates_clean.db
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-!prompts/prompt_templates_clean.db
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
-
-# Include clean database for GitHub distribution
-!prompts/prompt_templates_clean.db
-
-# Other database files
-chroma.sqlite3
-
-
-# Database files - exclude development database with user data
-prompts/prompt_templates.db
+prompts/prompt_templates_backup.db
+prompts/prompt_templates_development.db
 
 # Include clean database for GitHub distribution
 !prompts/prompt_templates_clean.db
