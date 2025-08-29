@@ -257,9 +257,22 @@ situations/deployment/development/
 └── collaboration_setup.mdc           # Collaboration setup
 ```
 
+#### **S11: Daily Deployment**
+**Purpose**: Rules for daily deployed builds
+**Directory**: `situations/deployment/daily_deployment/`
+
+```
+situations/deployment/daily_deployment/
+├── agile_daily_deployed_build.mdc    # Daily build agile practices
+├── build_pipeline_automation.mdc     # Automated build pipeline
+├── quality_gates_validation.mdc      # Build quality gates
+├── deployment_integration.mdc        # Deployment pipeline integration
+└── stakeholder_communication.mdc     # Build status communication
+```
+
 ### **Maintenance Situations**
 
-#### **S11: System Maintenance**
+#### **S12: System Maintenance**
 **Purpose**: Rules for system maintenance
 **Directory**: `situations/maintenance/system_maintenance/`
 
@@ -272,7 +285,7 @@ situations/maintenance/system_maintenance/
 └── backup_and_recovery.mdc           # Backup and recovery
 ```
 
-#### **S12: Code Maintenance**
+#### **S13: Code Maintenance**
 **Purpose**: Rules for code maintenance
 **Directory**: `situations/maintenance/code_maintenance/`
 
@@ -287,7 +300,7 @@ situations/maintenance/code_maintenance/
 
 ### **Problem-Solving Situations**
 
-#### **S13: Debugging**
+#### **S14: Debugging**
 **Purpose**: Rules for debugging
 **Directory**: `situations/problem_solving/debugging/`
 
@@ -300,7 +313,7 @@ situations/problem_solving/debugging/
 └── fix_validation.mdc                # Fix validation
 ```
 
-#### **S14: Performance Issues**
+#### **S15: Performance Issues**
 **Purpose**: Rules for performance issues
 **Directory**: `situations/problem_solving/performance/`
 
@@ -315,7 +328,7 @@ situations/problem_solving/performance/
 
 ### **Quality Assurance Situations**
 
-#### **S15: Code Review**
+#### **S16: Code Review**
 **Purpose**: Rules for code review
 **Directory**: `situations/quality_assurance/code_review/`
 
@@ -328,7 +341,7 @@ situations/quality_assurance/code_review/
 └── documentation_review.mdc          # Documentation review
 ```
 
-#### **S16: Quality Validation**
+#### **S17: Quality Validation**
 **Purpose**: Rules for quality validation
 **Directory**: `situations/quality_assurance/quality_validation/`
 
@@ -343,7 +356,7 @@ situations/quality_assurance/quality_validation/
 
 ### **Security Situations**
 
-#### **S17: Security Assessment**
+#### **S18: Security Assessment**
 **Purpose**: Rules for security assessment
 **Directory**: `situations/security/security_assessment/`
 
@@ -357,7 +370,7 @@ situations/security/security_assessment/
 └── security_testing.mdc              # Security testing
 ```
 
-#### **S18: Security Implementation**
+#### **S19: Security Implementation**
 **Purpose**: Rules for security implementation
 **Directory**: `situations/security/security_implementation/`
 

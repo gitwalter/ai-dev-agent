@@ -795,6 +795,276 @@ def execute_bottom_up_testing(test_suite: str) -> TestExecutionReport:
         )
 ```
 
+## Integration Failure Protocol
+
+### **CRITICAL: Integration Fails → Units First Rule**
+**MANDATORY**: When integration tests fail, immediately fall back to unit testing approach.
+
+```python
+# ✅ CORRECT: Integration Failure Protocol
+class IntegrationFailureProtocol:
+    """Handle integration test failures with systematic unit-first approach."""
+    
+    def handle_integration_failure(self, integration_result: TestResult) -> RecoveryResult:
+        """Execute systematic recovery from integration failures."""
+        
+        print("🚨 INTEGRATION TESTS FAILED - EXECUTING UNIT-FIRST PROTOCOL")
+        print("=" * 60)
+        
+        # Step 1: Immediately stop integration testing
+        self.stop_integration_testing()
+        
+        # Step 2: Identify all components involved in failure
+        failed_components = self.extract_failed_components(integration_result)
+        print(f"📋 Identified {len(failed_components)} components involved in failure")
+        
+        # Step 3: Test each component in complete isolation
+        component_results = {}
+        for component in failed_components:
+            print(f"\n🔍 Testing component in isolation: {component}")
+            
+            # Complete isolation with all dependencies mocked
+            isolation_result = self.test_component_in_complete_isolation(component)
+            component_results[component] = isolation_result
+            
+            if isolation_result.has_failures():
+                print(f"❌ Component {component} has unit-level failures")
+                
+                # Fix at unit level immediately
+                unit_fix_result = self.fix_unit_level_issues(component, isolation_result)
+                
+                if unit_fix_result.successful:
+                    print(f"✅ Component {component} unit issues fixed")
+                    # Re-test in isolation
+                    isolation_result = self.test_component_in_complete_isolation(component)
+                    component_results[component] = isolation_result
+                else:
+                    print(f"❌ Failed to fix unit issues in {component}")
+                    return RecoveryResult(
+                        success=False,
+                        message=f"Cannot fix unit-level issues in {component}",
+                        failed_component=component
+                    )
+            else:
+                print(f"✅ Component {component} passes in isolation")
+        
+        # Step 4: Progressive integration testing
+        print(f"\n🔄 Starting progressive integration...")
+        progressive_result = self.run_progressive_integration(failed_components)
+        
+        if progressive_result.successful:
+            print("✅ Progressive integration successful - issue resolved")
+            return RecoveryResult(success=True, method="unit_first_recovery")
+        else:
+            print("❌ Progressive integration still failing")
+            return RecoveryResult(
+                success=False,
+                message="Integration issues persist after unit fixes",
+                requires_step_back_analysis=True
+            )
+    
+    def test_component_in_complete_isolation(self, component: str) -> TestResult:
+        """Test component with ALL external dependencies mocked."""
+        
+        # Identify all external dependencies
+        dependencies = self.identify_external_dependencies(component)
+        
+        # Mock every single external dependency
+        with ExternalDependencyMocker(dependencies) as mocker:
+            # Create isolated test environment
+            isolated_env = self.create_completely_isolated_environment(component)
+            
+            # Run only this component's tests
+            result = self.run_component_tests_only(component, isolated_env)
+            
+            # Verify no external calls were made
+            mocker.verify_no_external_calls()
+            
+            return result
+    
+    def run_progressive_integration(self, components: List[str]) -> ProgressiveResult:
+        """Run progressive integration starting with smallest groups."""
+        
+        # Start with pairs of components
+        for i in range(len(components) - 1):
+            for j in range(i + 1, len(components)):
+                component_pair = [components[i], components[j]]
+                
+                print(f"  Testing pair: {component_pair}")
+                pair_result = self.test_component_pair(component_pair)
+                
+                if pair_result.has_failures():
+                    print(f"  ❌ Pair {component_pair} failed - fixing integration")
+                    fix_result = self.fix_pair_integration_issues(component_pair, pair_result)
+                    
+                    if not fix_result.successful:
+                        return ProgressiveResult(
+                            successful=False,
+                            failed_at_level="pair",
+                            failed_components=component_pair
+                        )
+        
+        # Then test larger groups progressively
+        for group_size in range(3, len(components) + 1):
+            groups = self.generate_component_groups(components, group_size)
+            
+            for group in groups:
+                print(f"  Testing group of {group_size}: {group}")
+                group_result = self.test_component_group(group)
+                
+                if group_result.has_failures():
+                    print(f"  ❌ Group {group} failed at size {group_size}")
+                    fix_result = self.fix_group_integration_issues(group, group_result)
+                    
+                    if not fix_result.successful:
+                        return ProgressiveResult(
+                            successful=False,
+                            failed_at_level=f"group_of_{group_size}",
+                            failed_components=group
+                        )
+        
+        return ProgressiveResult(successful=True)
+
+# ✅ CORRECT: Integration-to-Unit Fallback Workflow
+def integration_to_unit_fallback_workflow(test_suite: str) -> TestExecutionReport:
+    """Systematic fallback from integration to unit testing."""
+    
+    execution_report = TestExecutionReport()
+    
+    try:
+        # Step 1: Attempt integration tests first
+        print("🚀 Attempting integration tests...")
+        integration_result = run_integration_tests(test_suite)
+        
+        if integration_result.successful:
+            print("✅ Integration tests passed")
+            execution_report.add_integration_success(integration_result)
+            return execution_report
+        
+        # Step 2: Integration failed - execute fallback protocol
+        print("❌ Integration tests failed - executing unit-first fallback")
+        
+        failure_protocol = IntegrationFailureProtocol()
+        recovery_result = failure_protocol.handle_integration_failure(integration_result)
+        
+        if recovery_result.success:
+            print("✅ Recovery successful via unit-first approach")
+            execution_report.add_recovery_success(recovery_result)
+        else:
+            print("❌ Recovery failed - requires step back analysis")
+            execution_report.add_recovery_failure(recovery_result)
+            
+            # Trigger step back analysis for profound problem analysis
+            if recovery_result.requires_step_back_analysis:
+                step_back_result = execute_step_back_protocol({
+                    'problem_context': 'integration_testing_failure',
+                    'failed_components': recovery_result.failed_component,
+                    'step_back_reason': 'unit_first_recovery_failed'
+                })
+                execution_report.add_step_back_analysis(step_back_result)
+        
+        return execution_report
+        
+    except Exception as e:
+        execution_report.add_error(f"Fallback workflow failed: {e}")
+        return execution_report
+
+# ✅ CORRECT: Automated Integration-Unit Testing Decision
+class AutomatedTestingDecision:
+    """Automatically decide between integration-first vs unit-first testing."""
+    
+    def decide_testing_approach(self, context: Dict[str, Any]) -> TestingApproach:
+        """Decide optimal testing approach based on context."""
+        
+        # Analyze recent test history
+        recent_failures = self.analyze_recent_test_failures()
+        
+        # Check component complexity
+        component_complexity = self.assess_component_complexity(context)
+        
+        # Check integration complexity
+        integration_complexity = self.assess_integration_complexity(context)
+        
+        # Decision logic
+        if recent_failures.has_frequent_integration_failures():
+            return TestingApproach(
+                primary="unit_first",
+                reasoning="Recent integration failures suggest unit-first approach"
+            )
+        
+        elif component_complexity.is_high() or integration_complexity.is_high():
+            return TestingApproach(
+                primary="unit_first", 
+                reasoning="High complexity suggests unit-first approach"
+            )
+        
+        elif context.get('new_feature') or context.get('major_changes'):
+            return TestingApproach(
+                primary="unit_first",
+                reasoning="New features/major changes benefit from unit-first approach"
+            )
+        
+        else:
+            return TestingApproach(
+                primary="integration_first",
+                fallback="unit_first",
+                reasoning="Stable system allows integration-first with unit fallback"
+            )
+```
+
+### **Integration Failure Escalation Matrix**
+
+```python
+# ✅ CORRECT: Escalation matrix for integration failures
+class IntegrationFailureEscalation:
+    """Escalation matrix for handling different types of integration failures."""
+    
+    ESCALATION_MATRIX = {
+        "unit_passes_integration_fails": {
+            "approach": "progressive_integration",
+            "focus": "interface_boundaries",
+            "escalation_time": "15_minutes"
+        },
+        "unit_fails_integration_fails": {
+            "approach": "unit_first_mandatory",
+            "focus": "component_isolation", 
+            "escalation_time": "immediate"
+        },
+        "intermittent_integration_failures": {
+            "approach": "environmental_analysis",
+            "focus": "timing_and_state",
+            "escalation_time": "30_minutes"
+        },
+        "performance_integration_failures": {
+            "approach": "performance_unit_testing",
+            "focus": "resource_constraints",
+            "escalation_time": "45_minutes"
+        },
+        "dependency_integration_failures": {
+            "approach": "dependency_isolation",
+            "focus": "external_services",
+            "escalation_time": "20_minutes"
+        }
+    }
+    
+    def escalate_failure(self, failure_type: str, context: Dict[str, Any]) -> EscalationResult:
+        """Escalate integration failure based on type and context."""
+        
+        if failure_type not in self.ESCALATION_MATRIX:
+            failure_type = "unit_fails_integration_fails"  # Default to most conservative
+        
+        escalation_config = self.ESCALATION_MATRIX[failure_type]
+        
+        # Execute escalation approach
+        if escalation_config["approach"] == "unit_first_mandatory":
+            return self.execute_mandatory_unit_first(context)
+        elif escalation_config["approach"] == "progressive_integration":
+            return self.execute_progressive_integration(context)
+        # ... other approaches
+        
+        return EscalationResult(success=False, message="Unknown escalation approach")
+```
+
 ## Integration with Development Workflow
 
 ### Pre-Commit Test Monitoring

@@ -260,6 +260,7 @@ The system follows a sequential workflow where each agent builds upon the output
 - **Comprehensive Testing**: Test suite with unit, integration, and system tests
 - **Structured Output Parsing**: JSON-based parsing with fallback mechanisms
 - **Cursor Rules System**: Automated development standards and quality enforcement
+- **Agile Daily Deployed Builds**: Automated daily builds following agile methodology
 - **LangSmith Observability**: Comprehensive agent logging and monitoring
 
 ### Web Interface Features
@@ -305,6 +306,53 @@ LANGSMITH_PROJECT = "ai-dev-agent"
 ```
 
 📖 **For detailed LangSmith usage and debugging, see the [LangSmith Tracing Guide](docs/guides/observability/langsmith_tracing_guide.md)**
+
+## 🏗️ Daily Build Automation
+
+The system implements **Agile Daily Deployed Builds** following agile methodology principles to ensure continuous integration, rapid feedback, and reliable delivery.
+
+### Daily Build Features
+
+- **Automated Pipeline**: Complete build pipeline with quality gates
+- **Comprehensive Testing**: Unit, integration, system, and performance tests
+- **Security Validation**: Vulnerability scanning and dependency checks
+- **Quality Assurance**: Code coverage, documentation, and technical debt analysis
+- **Deployment Preparation**: Automated artifact creation and deployment readiness
+- **Stakeholder Communication**: Automated status reporting and notifications
+
+### Running Daily Builds
+
+#### Manual Execution
+```bash
+# Execute daily build manually
+python scripts/daily_build_automation.py --trigger-type manual
+
+# Force build execution
+python scripts/daily_build_automation.py --force
+
+# Check build status
+python scripts/daily_build_scheduler.py --check
+```
+
+#### Automated Scheduling
+```bash
+# Set up automated daily builds (requires admin/sudo)
+python scripts/daily_build_scheduler.py --schedule
+
+# Set up Git hooks for build automation
+python scripts/setup_daily_build_hooks.py
+```
+
+### Build Quality Gates
+
+All daily builds must pass these quality gates:
+- **Test Coverage**: ≥90% code coverage
+- **Test Pass Rate**: ≥99% test success rate
+- **Security**: Zero critical/high vulnerabilities
+- **Build Time**: ≤30 minutes
+- **Code Quality**: Linting score ≥9.0/10
+
+📖 **For detailed daily build configuration, see the [Agile Daily Deployed Build Rule](.cursor/rules/agile_daily_deployed_build_rule.mdc)**
 
 ## 📋 Development Standards
 

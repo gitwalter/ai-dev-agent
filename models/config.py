@@ -276,7 +276,7 @@ def save_config_to_file(config: SystemConfig, config_path: str):
     Path(config_path).parent.mkdir(parents=True, exist_ok=True)
     
     with open(config_path, 'w') as f:
-        yaml.dump(config.dict(), f, default_flow_style=False, indent=2)
+        yaml.dump(config.model_dump(), f, default_flow_style=False, indent=2)
 
 
 def get_default_config() -> SystemConfig:

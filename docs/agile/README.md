@@ -9,6 +9,9 @@ This directory contains all agile project management artifacts for the AI-Dev-Ag
 ### **Core Agile Concepts** (`core/`)
 - [Agile Workflow](core/agile_workflow.md) - Sprint-based development process
 - [Agile Cursor Rules](core/agile_cursor_rules.md) - Cursor rules for agile development
+- **[Agile Meeting Rules](core/agile_meeting_rules.md)** - Complete governance for all agile meetings
+- **[Agile Rules Index](core/agile_rules_index.md)** - Central index of all agile rules and guidelines
+- **[Meeting Rule Implementation Guide](core/meeting_rule_implementation_guide.md)** - Step-by-step implementation instructions
 - [Agile Transformation Summary](core/agile_transformation_summary.md) - Agile implementation overview
 - [Definition of Done](core/definition_of_done.md) - Quality criteria for completed work
 
@@ -26,8 +29,13 @@ This directory contains all agile project management artifacts for the AI-Dev-Ag
 - [Continuous Integration](execution/continuous_integration.md) - CI/CD in agile context
 - [User Story Configurable Tests](execution/user_story_configurable_tests.md) - Test-driven development
 
+### **Sprint Documentation** (`sprints/`)
+- [Sprint Documentation Guide](sprints/README.md) - Sprint organization and documentation standards
+- [Sprint 1 Documents](sprints/sprint_1/) - Complete Sprint 1 documentation
+- [Sprint Templates](sprints/templates/) - Templates for creating new sprint documentation
+
 ### **Templates** (`templates/`)
-- [Sprint Planning Templates](templates/sprint_planning/) - Templates for sprint planning and execution
+- [Sprint Planning Templates](templates/sprint_planning/) - Legacy templates for sprint planning and execution
 
 ### **Automation** (`automation/`)
 - [Automation Framework](automation/automation_framework.md) - Automated agile processes
@@ -40,8 +48,8 @@ This directory contains all agile project management artifacts for the AI-Dev-Ag
 ## 🎯 **Current Agile Artifacts**
 
 ### **Active Sprint Management**
-- **[Sprint 1 Backlog](sprint_1_backlog.md)** - Current sprint backlog with 5 user stories (42 story points)
-- **[Sprint 1 Progress](sprint_1_progress.md)** - Real-time sprint progress tracking and burndown
+- **[Sprint 1 Backlog](sprints/sprint_1/backlog.md)** - Current sprint backlog with 5 user stories (42 story points)
+- **[Sprint 1 Progress](sprints/sprint_1/progress.md)** - Real-time sprint progress tracking and burndown
 - **[Daily Standup](daily_standup.md)** - Current daily standup and team status
 - **[Current Velocity Tracking](velocity_tracking_current.md)** - Live velocity metrics and forecasting
 
@@ -82,14 +90,48 @@ This directory contains all agile project management artifacts for the AI-Dev-Ag
 - Flexible backlog prioritization
 - Continuous improvement through retrospectives
 
+## 📁 **Sprint Documentation Organization**
+
+### **New Sprint Folder Structure**
+All sprint documents are now organized in a standardized structure under `sprints/`:
+
+```
+sprints/
+├── README.md                    # Sprint documentation guide and standards
+├── templates/                   # Templates for creating new sprint folders
+│   ├── sprint_backlog_template.md
+│   ├── sprint_progress_template.md
+│   ├── sprint_planning_template.md
+│   ├── sprint_review_template.md
+│   └── sprint_retrospective_template.md
+├── sprint_1/                    # Sprint 1 documentation
+│   ├── backlog.md              # Sprint 1 backlog
+│   ├── progress.md             # Sprint 1 progress tracking
+│   ├── planning.md             # Sprint 1 planning (to be created)
+│   ├── review.md               # Sprint 1 review (to be created)
+│   └── retrospective.md        # Sprint 1 retrospective (to be created)
+└── sprint_N/                    # Future sprints follow same pattern
+```
+
+### **Sprint Document Standards**
+- **Core Documents Required**: Every sprint must have backlog, progress, planning, review, and retrospective documents
+- **Naming Convention**: Use `sprint_N` for folders and lowercase with underscores for files
+- **Template Usage**: All new sprint documents should be created from provided templates
+- **Real-time Updates**: Progress documents must be updated daily during sprint execution
+
 ## 🚀 **Getting Started**
 
-1. **Review Current Sprint** - Check [Sprint 1 Backlog](sprint_1_backlog.md) for current priorities
-2. **Check Daily Progress** - Review [Sprint 1 Progress](sprint_1_progress.md) for real-time status
-3. **Join Daily Standup** - Participate in [Daily Standup](daily_standup.md) for team updates
-4. **Monitor Velocity** - Track progress in [Current Velocity Tracking](velocity_tracking_current.md)
-5. **Understand Workflow** - Familiarize yourself with the agile development process
-6. **Apply Cursor Rules** - Use agile-specific cursor rules for development
+### **Essential Reading (Required)**
+1. **[Agile Rules Index](core/agile_rules_index.md)** - Start here for complete agile rule overview
+2. **[Agile Meeting Rules](core/agile_meeting_rules.md)** - Master all agile meeting governance
+3. **[Agile Cursor Rules](core/agile_cursor_rules.md)** - Learn development principles and automation
+
+### **Daily Operations**
+4. **Review Current Sprint** - Check [Sprint 1 Backlog](sprints/sprint_1/backlog.md) for current priorities
+5. **Check Daily Progress** - Review [Sprint 1 Progress](sprints/sprint_1/progress.md) for real-time status
+6. **Join Daily Standup** - Participate in [Daily Standup](daily_standup.md) following meeting rules
+7. **Monitor Velocity** - Track progress in [Current Velocity Tracking](velocity_tracking_current.md)
+8. **Follow Sprint Standards** - Use the [Sprint Documentation Guide](sprints/README.md) for sprint organization
 
 ## 📊 **Current Agile Status**
 

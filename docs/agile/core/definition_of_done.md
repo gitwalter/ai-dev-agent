@@ -36,9 +36,12 @@ All work items (User Stories, Tasks, Bugs, Spikes) must meet these criteria befo
 
 ### **5. Deployment Readiness**
 - [ ] **CI/CD pipeline passes**: All automated checks and deployments successful
+- [ ] **Daily build integrated**: Work is integrated into daily build pipeline
+- [ ] **Daily build quality gates passed**: All quality gates passed in daily build
 - [ ] **Environment tested**: Feature tested in staging/pre-production environment
 - [ ] **Database migrations tested**: Database changes tested and validated
 - [ ] **Rollback plan exists**: Clear rollback procedure documented and tested
+- [ ] **Daily deployment ready**: Work produces deployable daily artifacts
 
 ---
 

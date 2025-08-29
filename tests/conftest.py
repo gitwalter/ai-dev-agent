@@ -65,11 +65,11 @@ def mock_structured_outputs():
     
     # Only apply mocks in MOCK mode or when config not available
     if CONFIG_AVAILABLE and not is_mock_mode():
-        print("🔄 Running in REAL mode - skipping mock initialization")
+        print("Running in REAL mode - skipping mock initialization")
         yield
         return
     
-    print("🔄 Running in MOCK mode - initializing mocks")
+    print("Running in MOCK mode - initializing mocks")
     # Import our mock module
     from tests.mock_structured_outputs import (
         RequirementsAnalysisOutput,

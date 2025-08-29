@@ -1,21 +1,73 @@
 # Agile Cursor Rules for AI-Dev-Agent System
 
-## 🎯 **Agile Development Principles**
+## 🎯 **Agile Manifesto Integration**
 
-These Cursor rules are specifically designed to enforce agile principles, automate agile processes, and ensure the system operates with maximum agility and efficiency.
+**FOUNDATION**: These Cursor rules are built upon the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html) and specifically designed to enforce agile principles, automate agile processes, and ensure the system operates with maximum agility and efficiency.
+
+### **🏛️ Core Agile Manifesto Principles Integration**
+
+**Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.**
+- ✅ **Implemented**: Sprint-focused development with working software increments
+- ✅ **Automated**: Continuous delivery pipelines and customer value validation
+
+**Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage.**
+- ✅ **Implemented**: Flexible sprint planning and adaptive user story management
+- ✅ **Automated**: Change impact assessment and rapid adaptation processes
+
+**Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale.**
+- ✅ **Implemented**: Daily deployable builds and continuous integration
+- ✅ **Automated**: Automated deployment pipelines and daily release capabilities
+
+**Business people and developers must work together daily throughout the project.**
+- ✅ **Implemented**: Daily stakeholder communication and feedback loops
+- ✅ **Automated**: Automated progress reporting and stakeholder dashboards
+
+**Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done.**
+- ✅ **Implemented**: Self-organizing team principles and autonomous decision-making
+- ✅ **Automated**: Environment setup and tooling automation
+
+**The most efficient and effective method of conveying information to and within a development team is face-to-face conversation.**
+- ✅ **Implemented**: Daily standups and direct communication protocols
+- ✅ **Automated**: Meeting scheduling and communication facilitation
+
+**Working software is the primary measure of progress.**
+- ✅ **Implemented**: Test-driven development and working software validation
+- ✅ **Automated**: Automated testing and progress measurement based on working features
+
+**Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely.**
+- ✅ **Implemented**: Sustainable velocity tracking and workload management
+- ✅ **Automated**: Burndown monitoring and pace adjustment automation
+
+**Continuous attention to technical excellence and good design enhances agility.**
+- ✅ **Implemented**: Quality-first development and technical debt management
+- ✅ **Automated**: Code quality gates and design validation automation
+
+**Simplicity--the art of maximizing the amount of work not done--is essential.**
+- ✅ **Implemented**: Minimum viable product focus and feature prioritization
+- ✅ **Automated**: Complexity detection and simplification recommendations
+
+**The best architectures, requirements, and designs emerge from self-organizing teams.**
+- ✅ **Implemented**: Team-driven architecture decisions and collaborative design
+- ✅ **Automated**: Architecture documentation and decision tracking
+
+**At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly.**
+- ✅ **Implemented**: Sprint retrospectives and continuous improvement cycles
+- ✅ **Automated**: Metrics collection and improvement suggestion automation
 
 ---
 
 ## 🚀 **TIER 1: CRITICAL AGILE RULES (Always Apply)**
 
-### **Rule 1: Sprint-Focused Development**
-**CRITICAL**: All development must align with current sprint goals and deliver working software incrementally.
+### **Rule 1: Customer Value & Working Software Priority** 
+**MANIFESTO PRINCIPLE**: "Our highest priority is to satisfy the customer through early and continuous delivery of valuable software."
+**CRITICAL**: All development must prioritize customer value delivery and working software over documentation or process.
 
-#### **Core Requirements**
-- **Sprint Goal Alignment**: Every task must contribute to the current sprint goal
-- **Working Software Priority**: Focus on deliverable, functional increments over comprehensive documentation
-- **User Story Completion**: Complete entire user stories, not just technical tasks
-- **Sprint Boundary Respect**: No scope creep within sprint boundaries
+#### **Core Requirements** (Manifesto-Aligned)
+- **Customer Value First**: Every task must deliver measurable customer value
+- **Working Software Priority**: Focus on functional, testable software over documentation  
+- **Early & Continuous Delivery**: Deploy working increments frequently (daily preferred)
+- **User Story Completion**: Complete entire user stories that deliver customer value
+- **Value-Based Prioritization**: Prioritize features by customer impact, not technical convenience
 
 #### **Implementation Guidelines**
 ```python
@@ -43,8 +95,9 @@ def implement_technical_task(task_id: str):
 
 ---
 
-### **Rule 2: Continuous Integration & Delivery**
-**CRITICAL**: All code must be continuously integrated with automated testing and deployment pipelines.
+### **Rule 2: Embrace Change & Adaptation**
+**MANIFESTO PRINCIPLE**: "Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage."
+**CRITICAL**: All processes must be designed to embrace and adapt to change rapidly.
 
 #### **Core Requirements**
 - **Immediate Integration**: Code integrates within minutes of commit

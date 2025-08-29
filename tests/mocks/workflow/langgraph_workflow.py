@@ -59,12 +59,26 @@ class LangGraphWorkflowManager:
             "code_generator": {"status": "completed"},
             "test_generator": {"status": "completed"}
         }
+        state["documentation"] = {
+            "README.md": "# Mock Project\nThis is a mock generated project.",
+            "API_DOCS.md": "# API Documentation\nMock API documentation."
+        }
+        state["errors"] = []
         state["execution_history"] = [
             {"step": "requirements_analysis", "status": "completed"},
             {"step": "architecture_design", "status": "completed"},
             {"step": "code_generation", "status": "completed"},
             {"step": "test_generation", "status": "completed"}
         ]
+        
+        # Check for invalid state conditions and add errors
+        if not state.get("project_context") or state["project_context"].strip() == "":
+            state["errors"].append({
+                "type": "validation_error",
+                "message": "Empty project context provided",
+                "timestamp": "2024-01-15T10:00:00Z",
+                "severity": "warning"
+            })
         
         return state
 

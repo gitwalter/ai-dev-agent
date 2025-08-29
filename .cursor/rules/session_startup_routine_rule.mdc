@@ -41,38 +41,58 @@ def analyze_agile_artifacts() -> Dict[str, Any]:
     }
 ```
 
-### **STEP 2: Rule Application Guide Loading** 📋
-**MANDATORY**: Load and apply all relevant cursor rules systematically
+### **STEP 2: Critical Rules Framework Integration** 📋
+**MANDATORY**: Load and apply critical rules framework with courage and no premature success rules
 ```python
-def load_and_apply_cursor_rules() -> Dict[str, Any]:
-    """Load rule application guide and apply all relevant rules."""
+def load_and_apply_critical_rules_framework() -> Dict[str, Any]:
+    """Load critical rules framework and apply courage and no premature success rules."""
     
-    # 1. Read rule application guide (RULE_APPLICATION_GUIDE.md)
-    rule_guide = read_rule_application_guide()
+    # 1. Initialize core rule application framework
+    framework = CoreRuleApplicationFramework()
     
-    # 2. Load Tier 1 (Critical) rules - ALWAYS APPLIED
-    tier1_rules = load_tier1_rules()
+    # 2. Apply courage rule - ALWAYS ACTIVE
+    courage_context = framework.apply_courage_rule({
+        "session_type": "development_startup",
+        "courage_required": True,
+        "complete_work_commitment": True
+    })
     
-    # 3. Load situation-specific rules based on current context
-    situation_rules = load_situation_specific_rules(current_context)
+    # 3. Apply no premature success rule - ALWAYS ACTIVE
+    no_premature_context = framework.apply_no_premature_success_rule({
+        "validation_required": True,
+        "evidence_based_progress": True,
+        "no_assumptions_allowed": True
+    })
     
-    # 4. Load task-specific rules based on identified next action
-    task_rules = load_task_specific_rules(next_action)
+    # 4. Apply no failing tests rule - ALWAYS ACTIVE
+    test_context = framework.apply_no_failing_tests_rule({
+        "zero_tolerance": True,
+        "test_execution_required": True,
+        "failure_blocking": True
+    })
     
-    # 5. Apply rule priority and conflict resolution
-    prioritized_rules = apply_rule_prioritization(tier1_rules + situation_rules + task_rules)
+    # 5. Apply boy scout rule - ALWAYS ACTIVE
+    cleanup_context = framework.apply_boyscout_rule({
+        "leave_cleaner": True,
+        "proactive_improvements": True,
+        "codebase_enhancement": True
+    })
     
-    # 6. Create compliance plan
-    compliance_plan = create_compliance_plan(prioritized_rules)
-    
-    return {
-        "tier1_rules": tier1_rules,
-        "situation_rules": situation_rules,
-        "task_rules": task_rules,
-        "prioritized_rules": prioritized_rules,
-        "compliance_plan": compliance_plan,
-        "rule_application_status": "READY"
+    # 6. Create comprehensive rule context
+    rule_context = {
+        "courage_rule": courage_context,
+        "no_premature_success_rule": no_premature_context,
+        "no_failing_tests_rule": test_context,
+        "boyscout_rule": cleanup_context,
+        "critical_rules_active": True,
+        "rule_application_status": "CRITICAL_RULES_ACTIVE"
     }
+    
+    # 7. Apply automatic rule integration
+    integration = AutomaticRuleIntegration()
+    integrated_context = integration.integrate_into_session_startup(rule_context)
+    
+    return integrated_context
 ```
 
 ### **STEP 3: Rule Compliance Enforcement** ⚡

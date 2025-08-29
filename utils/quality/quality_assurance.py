@@ -71,6 +71,7 @@ class QualityGateResult:
     score: float
     agent_type: str
     output_type: str
+    gate_name: str = ""  # Added missing gate_name attribute
     validations: List[ValidationResult] = field(default_factory=list)
     metrics: List[QualityMetric] = field(default_factory=list)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -178,6 +179,7 @@ class QualityAssuranceSystem:
             score=overall_score,
             agent_type=agent_type,
             output_type=output_type,
+            gate_name=f"{agent_type}_quality_gate",  # Consistent naming pattern
             validations=validations,
             recommendations=recommendations
         )
@@ -435,6 +437,74 @@ class QualityAssuranceSystem:
             "average_score": average_score,
             "total_validations": len(self.validation_history),
             "agent_statistics": agent_stats,
+            "generated_at": datetime.now().isoformat()
+        }
+    
+    # Type-specific validation methods
+    def _validate_requirements_output(self, output: Dict[str, Any]) -> ValidationResult:
+        """Validate requirements analyst output specifically."""
+        return self._validate_structure(output, "requirements_analyst", "requirements")
+
+    def _validate_architecture_output(self, output: Dict[str, Any]) -> ValidationResult:
+        """Validate architecture designer output specifically."""
+        return self._validate_structure(output, "architecture_designer", "architecture")
+
+    def _validate_code_output(self, output: Dict[str, Any]) -> ValidationResult:
+        """Validate code generator output specifically."""
+        return self._validate_structure(output, "code_generator", "code")
+
+    def _validate_review_output(self, output: Dict[str, Any]) -> ValidationResult:
+        """Validate code reviewer output specifically."""
+        return self._validate_structure(output, "code_reviewer", "review")
+
+    def _validate_security_output(self, output: Dict[str, Any]) -> ValidationResult:
+        """Validate security analyst output specifically."""
+        return self._validate_structure(output, "security_analyst", "security")
+
+    def _validate_documentation_output(self, output: Dict[str, Any]) -> ValidationResult:
+        """Validate documentation generator output specifically."""
+        return self._validate_structure(output, "documentation_generator", "documentation")
+
+    def get_quality_metrics(self) -> Dict[str, Any]:
+        """Get comprehensive quality metrics."""
+        if not self.gate_results:
+            return {"message": "No quality metrics available"}
+        
+        agent_stats = {}
+        total_score = 0
+        total_passed = 0
+        
+        for result in self.gate_results:
+            agent_type = result.agent_type
+            if agent_type not in agent_stats:
+                agent_stats[agent_type] = {
+                    "scores": [],
+                    "passed": 0,
+                    "total": 0
+                }
+            
+            agent_stats[agent_type]["scores"].append(result.score)
+            agent_stats[agent_type]["total"] += 1
+            if result.passed:
+                agent_stats[agent_type]["passed"] += 1
+                total_passed += 1
+            
+            total_score += result.score
+        
+        # Calculate averages and pass rates
+        for agent_type, stats in agent_stats.items():
+            if stats["scores"]:
+                stats["average_score"] = sum(stats["scores"]) / len(stats["scores"])
+                stats["pass_rate"] = (stats["passed"] / stats["total"]) * 100
+        
+        overall_average = total_score / len(self.gate_results) if self.gate_results else 0
+        overall_pass_rate = (total_passed / len(self.gate_results)) * 100 if self.gate_results else 0
+        
+        return {
+            "agent_statistics": agent_stats,
+            "average_score": overall_average,
+            "pass_rate": overall_pass_rate,
+            "total_evaluations": len(self.gate_results),
             "generated_at": datetime.now().isoformat()
         }
     

@@ -2,16 +2,34 @@
 
 ## 🎯 **RULE ORGANIZATION & APPLICATION FRAMEWORK**
 
-### **TIER 1: CORE DEVELOPMENT PRINCIPLES** ⭐
-**These rules are ALWAYS applied first - they form the foundation of everything we do**
+### **TIER 1: CRITICAL RULES FRAMEWORK** ⭐
+**These rules are ALWAYS applied automatically through the Core Rule Application Framework**
 
-#### **Application Priority: CRITICAL - Always Applied**
+#### **Application Priority: CRITICAL - Always Applied Automatically**
 
-1. **No Failing Tests Rule** 🚨 **RULE #1**
-   - **When**: ALWAYS - before any other development work, during development, before commits
-   - **How**: Zero tolerance for failing tests, fix all failures immediately, block commits with failing tests
-   - **Validation**: 100% test success rate, no exceptions, CI/CD pipeline failures on test failures
-   - **Priority**: **ABSOLUTE - NO PROGRESS UNTIL ALL TESTS PASS - ZERO TOLERANCE**
+1. **Courage and Complete Work Rule** 💪 **CRITICAL RULE #1**
+   - **When**: ALWAYS - applied automatically to every work session, task, and problem-solving situation
+   - **How**: Automatic application through Core Rule Application Framework, systematic completion enforcement
+   - **Validation**: 100% work completion, no partial results accepted, systematic problem-solving
+   - **Priority**: **CRITICAL - AUTOMATICALLY APPLIED TO EVERY SITUATION**
+
+2. **No Premature Success Rule** 🎯 **CRITICAL RULE #2**
+   - **When**: ALWAYS - applied automatically to every progress report, completion claim, and status update
+   - **How**: Automatic validation through Core Rule Application Framework, evidence-based success declaration
+   - **Validation**: Complete validation before any success declaration, evidence required for all claims
+   - **Priority**: **CRITICAL - AUTOMATICALLY APPLIED TO EVERY PROGRESS REPORT**
+
+3. **No Failing Tests Rule** 🧪 **CRITICAL RULE #3**
+   - **When**: ALWAYS - applied automatically to every development session and commit
+   - **How**: Automatic application through Core Rule Application Framework, zero tolerance enforcement
+   - **Validation**: 100% test success rate, no exceptions, automatic failure blocking
+   - **Priority**: **CRITICAL - AUTOMATICALLY APPLIED TO EVERY DEVELOPMENT SESSION**
+
+4. **Boy Scout Rule** 🏕️ **CRITICAL RULE #4**
+   - **When**: ALWAYS - applied automatically to every code modification and cleanup
+   - **How**: Automatic application through Core Rule Application Framework, proactive improvement enforcement
+   - **Validation**: Codebase always enhanced, proactive improvements made, cleaner than found
+   - **Priority**: **CRITICAL - AUTOMATICALLY APPLIED TO EVERY CODE MODIFICATION**
 
 2. **Keep Things in Order Rule** 📋 **RULE #2**
    - **When**: ALWAYS - maintain order in everything
@@ -203,7 +221,13 @@
     - **How**: Repository sync, tasklist analysis, health check, initial tests
     - **Validation**: Clean, ready-to-develop state
 
-29. **Daily End Automation Rule** ⚡
+29. **Agile Daily Deployed Build Rule** ⚡
+    - **When**: Every development day, triggered by commits or schedule
+    - **How**: Automated build pipeline, quality gates, deployment integration, stakeholder communication
+    - **Validation**: Daily deployable artifacts, quality assurance, stakeholder visibility
+    - **Priority**: **CRITICAL - DAILY BUILD REQUIREMENT**
+
+30. **Daily End Automation Rule** ⚡
     - **When**: Every development session end
     - **How**: Tasklist update, documentation sync, cleanup, final tests, commit
     - **Validation**: Clean, documented, committed state
@@ -231,6 +255,7 @@ START
 │   ├── Continuous Validation
 │   └── Continuous Learning
 ├── Apply Daily Start Automation
+├── Apply Daily Build Rule (if build conditions met)
 ├── Apply Relevant Tier 2 Rules
 ├── Apply Relevant Tier 3 Rules
 ├── Apply Relevant Tier 4 Rules

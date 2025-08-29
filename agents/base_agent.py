@@ -1026,7 +1026,7 @@ class BaseAgent(ABC):
         Returns:
             AgentResponse object
         """
-        # Try to create simplified response first
+        # Try to create simplified output first
         try:
             simplified_output = self.create_simplified_output(output)
             if simplified_output is not None:
@@ -1034,22 +1034,30 @@ class BaseAgent(ABC):
         except Exception as e:
             self.logger.warning(f"Failed to create simplified output: {e}")
         
-        return AgentResponse(
-            agent_name=self.config.name,
-            task_name=task_name,
-            status=status,
-            output=output,
-            metadata={
-                "execution_time": execution_time,
+        # Create content dictionary with all the data
+        content = {
+            "task_name": task_name,
+            "output": output,
+            "execution_time": execution_time,
+            "metadata": {
                 "retry_count": self.config.max_retries,
                 "success_count": self.success_count,
                 "error_count": self.error_count,
                 "average_execution_time": sum(self.execution_times) / len(self.execution_times) if self.execution_times else 0
-            },
-            timestamp=datetime.now(),
-            execution_time=execution_time,
-            error_message=error_message,
-            warnings=warnings or []
+            }
+        }
+        
+        # Add error message and warnings if present
+        if error_message:
+            content["error_message"] = error_message
+        if warnings:
+            content["warnings"] = warnings
+        
+        return AgentResponse(
+            agent_name=self.config.name,
+            content=content,
+            status=status,
+            timestamp=datetime.now()
         )
 
     def create_simplified_output(self, output: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -1445,10 +1453,12 @@ class BaseAgent(ABC):
         """
         template = self.get_prompt_template()
         
+        # Get agent type for format instructions
+        agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
+        
         # Get enhanced format instructions for structured output
         try:
             from utils.parsing.enhanced_output_parsers import get_enhanced_format_instructions
-            agent_type = self.config.name if hasattr(self.config, 'name') else 'unknown'
             
             # Use simpler format instructions for architecture designer to avoid large prompts
             if agent_type == "architecture_designer":
@@ -1658,22 +1668,8 @@ IMPORTANT:
         
         return AgentResponse(
             agent_name=self.config.name,
-            task_name=self.config.description,
-            status=TaskStatus.COMPLETED,
-            output=output,
-            metadata={
-                                 "config": self.config.model_dump(),
-                "performance_metrics": {
-                    "execution_time": execution_time,
-                    "success_count": self.success_count,
-                    "error_count": self.error_count
-                }
-            },
-            execution_time=execution_time,
-            documentation=self.documentation,
-            logs=self.execution_logs,
-            decisions=self.decisions,
-            artifacts=self.artifacts
+            content=output,
+            status=TaskStatus.COMPLETED
         )
     
     def _get_fallback_json_data(self) -> Dict[str, Any]:

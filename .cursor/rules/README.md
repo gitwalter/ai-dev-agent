@@ -6,6 +6,13 @@ This directory contains all cursor project rules that have been optimized for be
 
 All rules follow the standardized naming convention: `category_action_rule.mdc`
 
+### Critical Rules Framework Integration
+**NEW**: Critical rules are now automatically applied through the Core Rule Application Framework:
+- **Courage Rule**: Always active in every work session
+- **No Premature Victory Declaration Rule**: Always active in every progress report and communication
+- **No Failing Tests Rule**: Always active in every development session
+- **Boy Scout Rule**: Always active in every code modification
+
 ### Metadata Structure
 Each rule includes standardized metadata:
 ```yaml
@@ -22,22 +29,20 @@ tags: ["relevant tags for categorization"]
 ## Rule Inventory
 
 ### Core Development Principles (Tier 1 - Critical)
-<<<<<<< HEAD
-- **meta_rule_enforcement_rule.mdc** - MANDATORY systematic rule review and application before ALL actions
-- **development_core_principles_rule.mdc** - Core development principles including TDD, systematic problem-solving, framework-first development, error exposure, continuous validation, Agile/XP integration, and code quality
-- **boyscout_leave_cleaner_rule.mdc** - CRITICAL Boy Scout Rule: Always leave the codebase cleaner than you found it with proactive improvements
-- **session_startup_routine_rule.mdc** - CRITICAL 7-step session startup routine for systematic development sessions
-=======
-- **OPTIMIZED_DEVELOPMENT_RULES.mdc** - Core development principles including TDD, systematic problem-solving, framework-first development, error exposure, continuous validation, Agile/XP integration, and code quality
-- **pathfinder_principle_rule.mdc** - Proactive issue detection and resolution with trail-blazing development practices for future-ready code
-- **session_startup_routine_rule.mdc** - CRITICAL 7-step session startup routine for systematic development sessions
->>>>>>> 57088de (Daily End Automation: Complete development session cleanup and documentation sync - Updated agent configurations and prompt database integration - Enhanced test organization and documentation structure - Applied comprehensive rule system optimizations - Cleaned up temporary files and updated documentation index - All unit tests passing (26/26) - Repository in clean, documented, committed state)
+- **core_rule_application_framework.mdc** - **NEW**: Core framework that automatically applies critical rules (Courage, No Premature Victory, No Failing Tests, Boy Scout) to every situation
+- **development_courage_completion_rule.mdc** - **CRITICAL**: Courage rule for systematic completion of ALL work - automatically applied to every work session
+- **no_premature_victory_declaration_rule.mdc** - **CRITICAL**: No Premature Victory Declaration rule - automatically applied to every progress report and communication
+- **no_failing_tests_rule.mdc** - **CRITICAL**: Zero tolerance for failing tests - automatically applied to every development session
+- **boyscout_leave_cleaner_rule.mdc** - **CRITICAL**: Boy Scout Rule - automatically applied to every code modification
+- **session_startup_routine_rule.mdc** - **CRITICAL**: 7-step session startup routine with integrated critical rules framework
 - **agile_sprint_management_rule.mdc** - Comprehensive Agile sprint management with 2-week iterations and daily standups
+- **agile_daily_deployed_build_rule.mdc** - **CRITICAL**: Daily deployed builds following agile methodology with automated quality gates
 - **xp_test_first_development_rule.mdc** - Extreme Programming test-first methodology with continuous refactoring
 - **agile_user_story_management_rule.mdc** - Agile user story management with INVEST criteria and TDD integration
 
 ### Quality Assurance and Testing (Tier 1 - Critical)
 - **no_failing_tests_rule.mdc** - CRITICAL zero tolerance for failing tests - all tests must pass at all times
+- **no_premature_victory_declaration_rule.mdc** - CRITICAL prevents premature success declarations and enforces concise progress communication
 - **testing_test_monitoring_rule.mdc** - Automated test monitoring with immediate error detection and bug fixing workflow
 - **code_review_quality_gates_rule.mdc** - Systematic code review process with quality gates and automated validation
 - **performance_monitoring_optimization_rule.mdc** - Proactive performance monitoring and optimization with continuous measurement
@@ -167,26 +172,27 @@ All rules should be validated for:
 - **Quarterly**: Comprehensive rule review and optimization
 - **As Needed**: Immediate updates for critical issues or new requirements
 
-## Current Rule Count: 22 Rules
+## Current Rule Count: 23 Rules
 
-### Critical Rules (17):
+### Critical Rules (18):
 1. OPTIMIZED_DEVELOPMENT_RULES.mdc
 2. no_failing_tests_rule.mdc
 3. boyscout_leave_cleaner_rule.mdc
 4. session_startup_routine_rule.mdc
 5. agile_sprint_management_rule.mdc
-6. xp_test_first_development_rule.mdc
-7. agile_user_story_management_rule.mdc
-8. testing_test_monitoring_rule.mdc
-9. code_review_quality_gates_rule.mdc
-10. performance_monitoring_optimization_rule.mdc
-11. no-premature-victory.mdc
-12. documentation_live_updates_rule.mdc
-13. security_vulnerability_assessment_rule.mdc
-14. security_streamlit_secrets_rule.mdc
-15. error_handling_no_silent_errors_rule.mdc
-16. ai_model_selection_rule.mdc
-17. prompt_prompt_database_management_rule.mdc
+6. agile_daily_deployed_build_rule.mdc
+7. xp_test_first_development_rule.mdc
+8. agile_user_story_management_rule.mdc
+9. testing_test_monitoring_rule.mdc
+10. code_review_quality_gates_rule.mdc
+11. performance_monitoring_optimization_rule.mdc
+12. no-premature-victory.mdc
+13. documentation_live_updates_rule.mdc
+14. security_vulnerability_assessment_rule.mdc
+15. security_streamlit_secrets_rule.mdc
+16. error_handling_no_silent_errors_rule.mdc
+17. ai_model_selection_rule.mdc
+18. prompt_prompt_database_management_rule.mdc
 
 ### High Priority Rules (5):
 17. framework_langchain_langgraph_standards_rule.mdc

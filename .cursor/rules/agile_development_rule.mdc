@@ -1,9 +1,71 @@
-# Agile Development Rule
+# Agile Development Rule - Manifesto Aligned
 
-**CRITICAL**: All development work must follow agile principles, maintain accurate agile artifacts, and ensure proper sprint management and user story tracking.
+**CRITICAL**: All development work must follow the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html), maintain accurate agile artifacts, and ensure proper sprint management and user story tracking.
 
 ## Description
-This rule enforces agile development practices, ensures proper agile artifact maintenance, and guarantees that all work is properly tracked and aligned with sprint goals and user stories.
+This rule enforces agile development practices based on the core Agile Manifesto principles, ensures proper agile artifact maintenance, and guarantees that all work is properly tracked and aligned with sprint goals and user stories.
+
+## 🏛️ **AGILE MANIFESTO FOUNDATION**
+
+### **Principle 1: Customer Satisfaction Priority**
+**"Our highest priority is to satisfy the customer through early and continuous delivery of valuable software."**
+- ✅ **Implemented**: All tasks must deliver customer value first
+- ✅ **Automated**: Continuous delivery pipelines and value validation
+
+### **Principle 2: Welcome Change**
+**"Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage."**
+- ✅ **Implemented**: Flexible sprint planning and adaptive processes
+- ✅ **Automated**: Change impact assessment and rapid adaptation
+
+### **Principle 3: Frequent Delivery**
+**"Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale."**
+- ✅ **Implemented**: Daily deployable builds and continuous integration
+- ✅ **Automated**: Automated deployment pipelines
+
+### **Principle 4: Daily Collaboration**
+**"Business people and developers must work together daily throughout the project."**
+- ✅ **Implemented**: Daily stakeholder communication and feedback loops
+- ✅ **Automated**: Progress reporting and stakeholder dashboards
+
+### **Principle 5: Motivated Individuals**
+**"Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done."**
+- ✅ **Implemented**: Self-organizing team principles and autonomous decision-making
+- ✅ **Automated**: Environment setup and tooling automation
+
+### **Principle 6: Face-to-Face Communication**
+**"The most efficient and effective method of conveying information to and within a development team is face-to-face conversation."**
+- ✅ **Implemented**: Daily standups and direct communication protocols
+- ✅ **Automated**: Meeting facilitation and communication tools
+
+### **Principle 7: Working Software Measure**
+**"Working software is the primary measure of progress."**
+- ✅ **Implemented**: Test-driven development and working software validation
+- ✅ **Automated**: Progress measurement based on working features
+
+### **Principle 8: Sustainable Development**
+**"Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely."**
+- ✅ **Implemented**: Sustainable velocity tracking and workload management
+- ✅ **Automated**: Burndown monitoring and pace adjustment
+
+### **Principle 9: Technical Excellence**
+**"Continuous attention to technical excellence and good design enhances agility."**
+- ✅ **Implemented**: Quality-first development and technical debt management
+- ✅ **Automated**: Code quality gates and design validation
+
+### **Principle 10: Simplicity**
+**"Simplicity--the art of maximizing the amount of work not done--is essential."**
+- ✅ **Implemented**: Minimum viable product focus and feature prioritization
+- ✅ **Automated**: Complexity detection and simplification recommendations
+
+### **Principle 11: Self-Organizing Teams**
+**"The best architectures, requirements, and designs emerge from self-organizing teams."**
+- ✅ **Implemented**: Team-driven architecture decisions and collaborative design
+- ✅ **Automated**: Architecture documentation and decision tracking
+
+### **Principle 12: Regular Reflection**
+**"At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly."**
+- ✅ **Implemented**: Sprint retrospectives and continuous improvement cycles
+- ✅ **Automated**: Metrics collection and improvement automation
 
 ## Core Requirements
 
@@ -310,6 +372,66 @@ def validate_sprint_alignment_for_task(task: str) -> bool:
     return True
 ```
 
+## Sprint Document Organization Requirements
+
+### 1. Sprint Folder Structure
+**MANDATORY**: All sprint documents must be organized in standardized folder structure
+```
+docs/agile/sprints/
+├── README.md                    # Sprint documentation guide
+├── templates/                   # Templates for creating new sprint folders
+├── sprint_1/                    # Sprint 1 documentation
+│   ├── backlog.md              # Sprint 1 backlog
+│   ├── progress.md             # Sprint 1 progress tracking
+│   ├── planning.md             # Sprint 1 planning documents
+│   ├── review.md               # Sprint 1 review meeting notes
+│   ├── retrospective.md        # Sprint 1 retrospective
+│   └── daily_standups/         # Daily standup notes (optional)
+├── sprint_2/                    # Sprint 2 documentation
+│   └── (same structure as sprint_1)
+└── sprint_N/                    # Future sprints follow same pattern
+```
+
+### 2. Sprint Document Standards
+**MANDATORY**: Each sprint folder must contain standardized documents
+```yaml
+# REQUIRED: Core sprint documents
+core_documents:
+  - "backlog.md"              # Sprint backlog with user stories and tasks
+  - "progress.md"             # Real-time progress tracking and status updates
+  - "planning.md"             # Sprint planning meeting notes and decisions
+  - "review.md"               # Sprint review meeting outcomes and demonstrations
+  - "retrospective.md"        # Sprint retrospective insights and action items
+
+# OPTIONAL: Supporting documents
+supporting_documents:
+  - "daily_standups/"         # Daily standup meeting notes
+  - "metrics.md"              # Sprint metrics and velocity tracking
+  - "blockers.md"             # Active blockers and impediments tracking
+  - "definition_of_done.md"   # Sprint-specific DoD criteria
+```
+
+### 3. Document Naming Convention
+**MANDATORY**: Use consistent naming patterns for all sprint documents
+```yaml
+# REQUIRED: Naming standards
+naming_convention:
+  sprint_folders: "sprint_N"     # Where N is the sprint number
+  core_documents: "lowercase_with_underscores.md"
+  daily_standups: "YYYY-MM-DD.md"
+  
+# EXAMPLES:
+correct_examples:
+  - "docs/agile/sprints/sprint_1/backlog.md"
+  - "docs/agile/sprints/sprint_2/daily_standups/2024-08-29.md"
+  - "docs/agile/sprints/sprint_3/retrospective.md"
+
+incorrect_examples:
+  - "docs/agile/sprints/Sprint1/Backlog.md"        # Wrong case
+  - "docs/agile/sprints/sprint_2/Daily Standup.md" # Spaces in filename
+  - "docs/agile/sprints/sprint_3/retro.md"         # Non-standard name
+```
+
 ## Agile Artifact Update Requirements
 
 ### 1. Product Backlog Updates
@@ -569,6 +691,108 @@ def handle_sprint_alignment_error(error: SprintAlignmentError):
 - **Continuous Improvement**: Retrospectives drive process improvement
 - **Stakeholder Communication**: Clear status and progress reporting
 
+### 4. Sprint Document Validation
+**MANDATORY**: Validate sprint document compliance and completeness
+```python
+# REQUIRED: Sprint document validation
+def validate_sprint_documents(sprint_number: int) -> bool:
+    """Validate sprint documents meet organizational standards."""
+    
+    sprint_path = f"docs/agile/sprints/sprint_{sprint_number}"
+    
+    # Check core documents exist
+    core_documents = [
+        "backlog.md",
+        "progress.md", 
+        "planning.md",
+        "review.md",
+        "retrospective.md"
+    ]
+    
+    for doc in core_documents:
+        doc_path = f"{sprint_path}/{doc}"
+        if not os.path.exists(doc_path):
+            raise SprintDocumentError(f"Missing required document: {doc_path}")
+    
+    # Validate document content completeness
+    validate_document_content(sprint_path)
+    
+    # Check naming conventions
+    validate_naming_conventions(sprint_path)
+    
+    return True
+
+def validate_document_content(sprint_path: str):
+    """Validate that sprint documents contain required content."""
+    
+    # Validate backlog contains sprint goal and user stories
+    backlog_content = read_file(f"{sprint_path}/backlog.md")
+    if "Sprint Goal" not in backlog_content:
+        raise ContentValidationError("Sprint backlog missing sprint goal")
+    
+    # Validate progress contains burndown data
+    progress_content = read_file(f"{sprint_path}/progress.md")
+    if "Sprint Status Overview" not in progress_content:
+        raise ContentValidationError("Sprint progress missing status overview")
+    
+    # Additional content validations...
+```
+
+### 5. Sprint Document Automation
+**MANDATORY**: Automate sprint document creation and updates
+```python
+# REQUIRED: Sprint automation
+def create_new_sprint_documents(sprint_number: int, sprint_goal: str):
+    """Automatically create new sprint folder and documents from templates."""
+    
+    sprint_path = f"docs/agile/sprints/sprint_{sprint_number}"
+    template_path = "docs/agile/sprints/templates"
+    
+    # Create sprint folder
+    os.makedirs(sprint_path, exist_ok=True)
+    
+    # Copy and customize templates
+    templates = [
+        "sprint_backlog_template.md",
+        "sprint_progress_template.md",
+        "sprint_planning_template.md", 
+        "sprint_review_template.md",
+        "sprint_retrospective_template.md"
+    ]
+    
+    for template in templates:
+        source = f"{template_path}/{template}"
+        target_name = template.replace("_template", "").replace("sprint_", "")
+        target = f"{sprint_path}/{target_name}"
+        
+        # Copy and replace placeholders
+        customize_template(source, target, sprint_number, sprint_goal)
+    
+    # Create daily_standups folder
+    os.makedirs(f"{sprint_path}/daily_standups", exist_ok=True)
+
+def customize_template(source: str, target: str, sprint_number: int, sprint_goal: str):
+    """Customize template with sprint-specific information."""
+    
+    with open(source, 'r') as f:
+        content = f.read()
+    
+    # Replace common placeholders
+    replacements = {
+        "{SPRINT_NUMBER}": str(sprint_number),
+        "{SPRINT_GOAL}": sprint_goal,
+        "{START_DATE}": get_sprint_start_date(sprint_number),
+        "{END_DATE}": get_sprint_end_date(sprint_number),
+        "{CURRENT_DATE}": datetime.now().strftime("%Y-%m-%d")
+    }
+    
+    for placeholder, value in replacements.items():
+        content = content.replace(placeholder, value)
+    
+    with open(target, 'w') as f:
+        f.write(content)
+```
+
 ## Enforcement
 
 This rule is **ALWAYS APPLIED** and must be followed for all:
@@ -577,8 +801,21 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - Sprint planning and management
 - Agile artifact maintenance
 - Process improvement activities
+- **Sprint document organization and maintenance**
+- **Sprint document template usage and customization**
+- **Sprint document validation and quality assurance**
 
 **Violations of this rule require immediate correction and agile artifact updates.**
+
+### Sprint Document Compliance Checklist
+- [ ] Sprint folder follows naming convention (sprint_N)
+- [ ] All core documents present (backlog, progress, planning, review, retrospective)
+- [ ] Documents contain required content sections
+- [ ] Templates used for document creation
+- [ ] Naming conventions followed for all files
+- [ ] Progress tracking updated daily
+- [ ] Sprint artifacts linked to product backlog
+- [ ] Document quality meets project standards
 description:
 globs:
 alwaysApply: true

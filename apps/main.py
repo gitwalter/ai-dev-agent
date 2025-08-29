@@ -269,7 +269,7 @@ Your goal is to create professional, comprehensive documentation that includes c
         Returns:
             WorkflowResult with complete execution results
         """
-        from utils.helpers import generate_project_name, create_project_path
+        from utils.core.helpers import generate_project_name, create_project_path
         
         # Generate project name from description
         project_name = generate_project_name(project_context)

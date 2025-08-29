@@ -362,6 +362,51 @@ def chunk_list(items: List[Any], chunk_size: int) -> List[List[Any]]:
     return chunks
 
 
+def get_llm_model(task_complexity="simple", task_type=None):
+    """
+    Get appropriate LLM model based on task complexity.
+    
+    Args:
+        task_complexity (str): "simple" or "complex"
+        task_type (str): Task type for backward compatibility (optional)
+        
+    Returns:
+        ChatGoogleGenerativeAI: Configured LLM instance
+    """
+    import streamlit as st
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    
+    # Get API key from Streamlit secrets
+    api_key = st.secrets["GEMINI_API_KEY"]
+    
+    # If task_type is provided, map it to complexity
+    if task_type:
+        # Map task types to complexity levels
+        complex_tasks = {
+            "requirements_analysis": "complex",
+            "architecture_design": "complex", 
+            "code_review": "complex",
+            "security_analysis": "complex",
+            "documentation": "simple",  # Can be simple or complex
+            "code_generation": "simple",  # Can be simple or complex
+            "test_generation": "simple"  # Can be simple or complex
+        }
+        task_complexity = complex_tasks.get(task_type, "simple")
+    
+    # Select model based on complexity
+    if task_complexity == "complex":
+        model_name = "gemini-2.5-flash"
+    else:
+        model_name = "gemini-2.5-flash-lite"
+    
+    return ChatGoogleGenerativeAI(
+        model=model_name,
+        google_api_key=api_key,
+        temperature=0.1,
+        max_tokens=8192
+    )
+
+
 # Export commonly used functions
 __all__ = [
     "generate_uuid",
@@ -383,6 +428,7 @@ __all__ = [
     "normalize_path",
     "ensure_list",
     "remove_duplicates",
-    "chunk_list"
+    "chunk_list",
+    "get_llm_model"
 ]
 

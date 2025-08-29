@@ -19,10 +19,12 @@ This document outlines the continuous integration (CI) practices for the AI-Dev-
 
 ### **Agile Integration**
 - **Sprint Alignment**: CI supports sprint goals and deliverables
+- **Daily Deployed Builds**: Mandatory daily builds following agile methodology
 - **Rapid Iteration**: Enables quick feedback and iteration
 - **Quality Assurance**: Automated quality checks support Definition of Done
 - **Risk Reduction**: Early detection of integration issues
 - **Team Collaboration**: Shared responsibility for build health
+- **Stakeholder Visibility**: Daily build status transparent to all stakeholders
 
 ## 🏗️ **CI Pipeline Architecture**
 
@@ -251,11 +253,13 @@ security_gates:
 - **Documentation Coverage**: 100% for public APIs
 
 ### **Build Metrics**
+- **Daily Build Completion**: 100% (mandatory daily builds)
 - **Build Success Rate**: > 95%
-- **Build Time**: < 10 minutes
-- **Deployment Frequency**: Multiple times per day
+- **Build Time**: < 30 minutes (daily build pipeline)
+- **Deployment Frequency**: Minimum once per day, multiple times per day preferred
 - **Lead Time**: < 1 hour from commit to deploy
 - **Mean Time to Recovery**: < 1 hour
+- **Daily Build Quality Score**: > 90%
 
 ### **Test Metrics**
 - **Test Execution Time**: < 5 minutes

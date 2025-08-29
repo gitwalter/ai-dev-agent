@@ -166,6 +166,10 @@ class RequirementsAnalyst(BaseAgent):
                 "execution_time": (datetime.now() - start_time).total_seconds()
             }
             
+            # Also add error to the errors array for test compatibility
+            error_state["errors"] = error_state.get("errors", [])
+            error_state["errors"].append(str(e))
+            
             return error_state
     
     async def _analyze_requirements(self, project_context: str, project_name: str) -> RequirementsAnalysis:

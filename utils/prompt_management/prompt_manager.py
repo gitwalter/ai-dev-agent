@@ -156,6 +156,48 @@ class PromptManager:
             logger.error(f"Failed to get active prompt for {agent_type}: {e}")
             return None
     
+    def get_simplified_prompt(self, agent_type: str) -> Optional[str]:
+        """
+        Get a simplified prompt for an agent type.
+        
+        Args:
+            agent_type: Type of agent to get prompt for
+            
+        Returns:
+            str: Simplified prompt text or None if not found
+        """
+        # For now, return the active prompt as simplified
+        # This can be enhanced later to store different prompt types
+        prompt_data = self.get_active_prompt(agent_type)
+        return prompt_data["prompt_text"] if prompt_data else None
+    
+    def get_enhanced_prompt(self, agent_type: str) -> Optional[str]:
+        """
+        Get an enhanced prompt for an agent type.
+        
+        Args:
+            agent_type: Type of agent to get prompt for
+            
+        Returns:
+            str: Enhanced prompt text or None if not found
+        """
+        # For now, return the active prompt as enhanced
+        # This can be enhanced later to store different prompt types
+        prompt_data = self.get_active_prompt(agent_type)
+        return prompt_data["prompt_text"] if prompt_data else None
+    
+    def get_best_prompt(self, agent_type: str) -> Optional[Dict[str, Any]]:
+        """
+        Get the best available prompt for an agent type.
+        
+        Args:
+            agent_type: Type of agent to get prompt for
+            
+        Returns:
+            Dict containing prompt data or None if not found
+        """
+        return self.get_active_prompt(agent_type)
+    
     def record_execution(self, agent_type: str, success: bool, 
                         error_message: Optional[str] = None,
                         performance_metrics: Optional[Dict[str, Any]] = None) -> bool:

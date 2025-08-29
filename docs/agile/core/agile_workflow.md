@@ -132,16 +132,22 @@ def automated_daily_standup():
     # 4. Plan today's work
     todays_plan = plan_daily_work(agent_progress, team_capacity)
     
-    # 5. Generate daily report
-    daily_report = generate_daily_standup_report()
+    # 5. Check daily build status and trigger if needed
+    daily_build_status = check_daily_build_completion()
+    if not daily_build_status.completed_today:
+        trigger_daily_build()
     
-    # 6. Communicate updates
+    # 6. Generate daily report
+    daily_report = generate_daily_standup_report(daily_build_status)
+    
+    # 7. Communicate updates
     send_daily_updates_to_stakeholders(daily_report)
     
     return {
         "progress": agent_progress,
         "blockers": blockers,
         "plan": todays_plan,
+        "build_status": daily_build_status,
         "report": daily_report
     }
 ```
@@ -459,12 +465,15 @@ class AgileAgentCoordinator:
 
 ### **Daily Execution Checklist**
 - [ ] Daily standup conducted (automated)
+- [ ] **Daily build completed successfully** ⭐ **CRITICAL**
+- [ ] Daily build quality gates passed
 - [ ] Sprint progress updated
 - [ ] Blockers identified and addressed
 - [ ] TDD cycles followed for all development
 - [ ] Code continuously integrated
 - [ ] Quality gates passed
-- [ ] Stakeholders informed of progress
+- [ ] Daily deployment artifacts created
+- [ ] Stakeholders informed of progress and build status
 
 ### **Sprint Review Checklist**
 - [ ] Automated demo generated

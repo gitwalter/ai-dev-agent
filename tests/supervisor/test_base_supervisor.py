@@ -66,6 +66,10 @@ class ConcreteSupervisor(BaseSupervisor):
             "result": "test_result",
             "context": context
         }
+    
+    async def _assess_quality(self, output, task_type: str) -> float:
+        """Assess quality of output for testing."""
+        return 8.5  # Mock quality score
 
 
 class TestBaseSupervisor:
