@@ -1,8 +1,8 @@
-# Pathfinder Principle Rule
+# Boy Scout Principle Rule
 
-**CRITICAL**: Always act as a pathfinder - proactively identify, analyze, and resolve issues before they become problems for others. Blaze trails of clean, maintainable, and future-ready code that others can follow confidently.
+**CRITICAL**: Always act as a boy scout - proactively identify, analyze, and resolve issues before they become problems for others. Leave the codebase cleaner than you found it, creating maintainable and future-ready code that others can follow confidently.
 
-## Core Principle: Pathfinder Mindset
+## Core Principle: Boy Scout Mindset
 
 ### 1. Proactive Problem Detection and Resolution
 
@@ -10,7 +10,7 @@
 **MANDATORY**: Identify and address issues before they impact others
 ```python
 # CORRECT: Proactive issue detection and resolution
-class PathfinderDetector:
+class BoyScoutDetector:
     """Detect and resolve issues before they become problems."""
     
     def __init__(self):
@@ -49,7 +49,7 @@ def wait_for_issues_to_arise():
 
 #### **Issue Classification Matrix**
 ```python
-class PathfinderIssueClassification:
+class BoyScoutIssueClassification:
     """Classify issues by impact and urgency."""
     
     CRITICAL = "critical"      # Immediate action required
@@ -84,20 +84,20 @@ class PathfinderIssueClassification:
         )
         
         if total_score >= 15:
-            return PathfinderIssueClassification.CRITICAL
+            return BoyScoutIssueClassification.CRITICAL
         elif total_score >= 12:
-            return PathfinderIssueClassification.HIGH
+            return BoyScoutIssueClassification.HIGH
         elif total_score >= 8:
-            return PathfinderIssueClassification.MEDIUM
+            return BoyScoutIssueClassification.MEDIUM
         else:
-            return PathfinderIssueClassification.LOW
+            return BoyScoutIssueClassification.LOW
 ```
 
 ### 2. Trail-Blazing Development Practices
 
 #### **Future-Ready Code Patterns**
 ```python
-class PathfinderCodePatterns:
+class BoyScoutCodePatterns:
     """Patterns that ensure code is future-ready and maintainable."""
     
     @staticmethod
@@ -132,16 +132,16 @@ class PathfinderCodePatterns:
         """Ensure changes maintain backward compatibility."""
         for change in changes:
             if change.get("breaking_change", False):
-                # Provide migration path
-                migration_guide = PathfinderCodePatterns._create_migration_guide(change)
-                PathfinderCodePatterns._document_migration(migration_guide)
+                        # Provide migration path
+        migration_guide = BoyScoutCodePatterns._create_migration_guide(change)
+        BoyScoutCodePatterns._document_migration(migration_guide)
         
         return True
 ```
 
 #### **Proactive Dependency Management**
 ```python
-class PathfinderDependencyManager:
+class BoyScoutDependencyManager:
     """Proactively manage dependencies for future compatibility."""
     
     def __init__(self):
@@ -191,7 +191,7 @@ class PathfinderDependencyManager:
 
 #### **Step 1: Proactive Detection**
 ```python
-class PathfinderDetector:
+class BoyScoutDetector:
     """Comprehensive detection of potential issues."""
     
     def __init__(self):
@@ -220,7 +220,7 @@ class PathfinderDetector:
     def prioritize_issues(self, issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Prioritize issues based on impact and urgency."""
         return sorted(issues, key=lambda x: (
-            PathfinderIssueClassification.classify_issue(x),
+            BoyScoutIssueClassification.classify_issue(x),
             x.get("affected_users", 0),
             x.get("fix_complexity", 10)
         ))
@@ -228,7 +228,7 @@ class PathfinderDetector:
 
 #### **Step 2: Immediate Resolution**
 ```python
-class PathfinderResolver:
+class BoyScoutResolver:
     """Resolve issues immediately when possible."""
     
     def __init__(self):
@@ -274,7 +274,7 @@ class PathfinderResolver:
 
 #### **Step 3: Escalation and Documentation**
 ```python
-class PathfinderEscalation:
+class BoyScoutEscalation:
     """Handle issues that cannot be resolved immediately."""
     
     def __init__(self):
@@ -323,12 +323,12 @@ class PathfinderEscalation:
         return deadlines.get(escalation_level, "24 hours")
 ```
 
-### 4. Specific Pathfinder Applications
+### 4. Specific Boy Scout Applications
 
 #### **Deprecation Handling**
 ```python
-class DeprecationPathfinder:
-    """Pathfinder approach to deprecation handling."""
+class DeprecationBoyScout:
+    """Boy Scout approach to deprecation handling."""
     
     def __init__(self):
         self.detector = DeprecationDetector()
@@ -354,8 +354,8 @@ class DeprecationPathfinder:
 
 #### **Security Vulnerability Prevention**
 ```python
-class SecurityPathfinder:
-    """Pathfinder approach to security vulnerability prevention."""
+class SecurityBoyScout:
+    """Boy Scout approach to security vulnerability prevention."""
     
     def __init__(self):
         self.detector = SecurityDetector()
@@ -382,8 +382,8 @@ class SecurityPathfinder:
 
 #### **Performance Optimization**
 ```python
-class PerformancePathfinder:
-    """Pathfinder approach to performance optimization."""
+class PerformanceBoyScout:
+    """Boy Scout approach to performance optimization."""
     
     def __init__(self):
         self.detector = PerformanceDetector()
@@ -408,21 +408,21 @@ class PerformancePathfinder:
         self._document_performance_patterns(bottlenecks)
 ```
 
-### 5. Automated Pathfinder Tools
+### 5. Automated Boy Scout Tools
 
-#### **Pre-commit Pathfinder Checks**
+#### **Pre-commit Boy Scout Checks**
 ```python
 #!/usr/bin/env python3
 """
-Pre-commit hook for pathfinder principle enforcement.
+Pre-commit hook for boy scout principle enforcement.
 """
 
 import sys
 import subprocess
 from pathlib import Path
 
-def run_pathfinder_checks():
-    """Run comprehensive pathfinder checks before commit."""
+def run_boy_scout_checks():
+    """Run comprehensive boy scout checks before commit."""
     
     checks = [
         ("Deprecation Check", "python scripts/check_deprecations.py"),
@@ -443,7 +443,7 @@ def run_pathfinder_checks():
             failed_checks.append((check_name, str(e)))
     
     if failed_checks:
-        print("PATHFINDER CHECKS FAILED:")
+        print("BOY SCOUT CHECKS FAILED:")
         for check_name, error in failed_checks:
             print(f"  {check_name}: {error}")
         return False
@@ -451,14 +451,14 @@ def run_pathfinder_checks():
     return True
 
 if __name__ == "__main__":
-    if not run_pathfinder_checks():
+    if not run_boy_scout_checks():
         sys.exit(1)
 ```
 
-#### **CI/CD Pathfinder Integration**
+#### **CI/CD Boy Scout Integration**
 ```yaml
-# .github/workflows/pathfinder-checks.yml
-name: Pathfinder Checks
+# .github/workflows/boy-scout-checks.yml
+name: Boy Scout Checks
 
 on: [push, pull_request]
 
@@ -479,27 +479,27 @@ jobs:
         pip install -r requirements.txt
         pip install pytest pytest-warnings bandit safety
     
-    - name: Run Pathfinder Checks
+    - name: Run Boy Scout Checks
       run: |
-        python scripts/pathfinder_full_scan.py
+        python scripts/boy_scout_full_scan.py
         
-    - name: Generate Pathfinder Report
+    - name: Generate Boy Scout Report
       run: |
-        python scripts/generate_pathfinder_report.py
+        python scripts/generate_boy_scout_report.py
         
-    - name: Upload Pathfinder Report
+    - name: Upload Boy Scout Report
       uses: actions/upload-artifact@v3
       with:
-        name: pathfinder-report
-        path: pathfinder_report.json
+        name: boy-scout-report
+        path: boy_scout_report.json
 ```
 
-### 6. Pathfinder Documentation and Knowledge Sharing
+### 6. Boy Scout Documentation and Knowledge Sharing
 
-#### **Pathfinder Decision Records**
+#### **Boy Scout Decision Records**
 ```python
-class PathfinderDecisionRecord:
-    """Record pathfinder decisions for future reference."""
+class BoyScoutDecisionRecord:
+    """Record boy scout decisions for future reference."""
     
     def __init__(self, title: str, context: str, decision: str, consequences: List[str]):
         self.title = title
@@ -537,18 +537,18 @@ class PathfinderDecisionRecord:
         self.archive_date = datetime.now().isoformat()
 ```
 
-#### **Pathfinder Knowledge Base**
+#### **Boy Scout Knowledge Base**
 ```python
-class PathfinderKnowledgeBase:
-    """Maintain knowledge base of pathfinder decisions and patterns."""
+class BoyScoutKnowledgeBase:
+    """Maintain knowledge base of boy scout decisions and patterns."""
     
-    def __init__(self, knowledge_base_path: str = "docs/pathfinder_knowledge_base"):
+    def __init__(self, knowledge_base_path: str = "docs/boy_scout_knowledge_base"):
         self.knowledge_base_path = Path(knowledge_base_path)
         self.knowledge_base_path.mkdir(parents=True, exist_ok=True)
     
     def add_pattern(self, pattern_name: str, pattern_description: str, 
                    implementation: str, examples: List[str]):
-        """Add a new pathfinder pattern to the knowledge base."""
+        """Add a new boy scout pattern to the knowledge base."""
         
         pattern_file = self.knowledge_base_path / f"{pattern_name}.md"
         
@@ -590,12 +590,12 @@ class PathfinderKnowledgeBase:
         return matching_files
 ```
 
-### 7. Pathfinder Metrics and Success Tracking
+### 7. Boy Scout Metrics and Success Tracking
 
-#### **Pathfinder Success Metrics**
+#### **Boy Scout Success Metrics**
 ```python
-class PathfinderMetrics:
-    """Track pathfinder success metrics."""
+class BoyScoutMetrics:
+    """Track boy scout success metrics."""
     
     def __init__(self):
         self.metrics = {
@@ -650,7 +650,7 @@ class PathfinderMetrics:
             )
     
     def generate_report(self) -> Dict[str, Any]:
-        """Generate comprehensive pathfinder report."""
+        """Generate comprehensive boy scout report."""
         return {
             "metrics": self.metrics,
             "average_resolution_time": (
@@ -666,25 +666,25 @@ class PathfinderMetrics:
 ### 8. Implementation Checklist
 
 #### **Before Each Development Session**
-- [ ] Run pathfinder scan for existing issues
+- [ ] Run boy scout scan for existing issues
 - [ ] Review and resolve any critical issues
 - [ ] Plan proactive improvements for the session
 - [ ] Update knowledge base with new patterns
 
 #### **During Development**
-- [ ] Apply pathfinder patterns consistently
+- [ ] Apply boy scout patterns consistently
 - [ ] Detect and resolve issues immediately
 - [ ] Document decisions and patterns
 - [ ] Share knowledge with team members
 
 #### **Before Each Commit**
-- [ ] Run comprehensive pathfinder checks
+- [ ] Run comprehensive boy scout checks
 - [ ] Ensure no new issues introduced
 - [ ] Update documentation if needed
 - [ ] Record any new patterns discovered
 
 #### **Before Each Release**
-- [ ] Full pathfinder audit of codebase
+- [ ] Full boy scout audit of codebase
 - [ ] Resolve all critical and high-priority issues
 - [ ] Update knowledge base with release learnings
 - [ ] Plan proactive improvements for next release
@@ -717,10 +717,10 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Immediate Resolution Rate**: >90% of issues resolved immediately
 - **Escalation Rate**: <10% of issues require escalation
 - **Knowledge Base Growth**: Regular updates with new patterns
-- **Team Adoption**: All team members actively apply pathfinder principles
+- **Team Adoption**: All team members actively apply boy scout principles
 - **Code Quality**: Consistent high-quality, future-ready code
 
-**Remember**: As pathfinders, we blaze trails of excellence that others can follow confidently. We don't just solve today's problems - we prevent tomorrow's issues and create a legacy of clean, maintainable, and future-ready code.
+**Remember**: As boy scouts, we leave the codebase cleaner than we found it. We don't just solve today's problems - we prevent tomorrow's issues and create a legacy of clean, maintainable, and future-ready code.
 description:
 globs:
 alwaysApply: true

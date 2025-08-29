@@ -530,7 +530,7 @@ class ArchitectureDesignOutput(BaseModel):
                     "relationships": ["has_many: posts"]
                 }
             ]
-        }
+        }}
     )
     
     api_design: Dict[str, Any] = Field(
@@ -544,7 +544,7 @@ class ArchitectureDesignOutput(BaseModel):
                     "authentication": "required"
                 }
             ]
-        }
+        }}
     )
 
 
@@ -561,7 +561,7 @@ class TestGenerationOutput(BaseModel):
             "unit_tests": ["Function-level tests", "Class-level tests"],
             "integration_tests": ["API endpoint tests", "Database integration tests"],
             "performance_tests": ["Load testing", "Stress testing"]
-        }
+        }}
     )
     
     test_data: Dict[str, str] = Field(
@@ -570,7 +570,7 @@ class TestGenerationOutput(BaseModel):
             "fixtures": "Sample test data and fixtures for comprehensive testing",
             "mocks": "Mock objects and stubs for isolated testing",
             "test_databases": "Test database setup and configuration"
-        }
+        }}
     )
     
     coverage_targets: Dict[str, str] = Field(
@@ -579,7 +579,7 @@ class TestGenerationOutput(BaseModel):
             "unit_test_coverage": "80%",
             "integration_test_coverage": "60%",
             "critical_path_coverage": "100%"
-        }
+        }}
     )
     
     testing_strategy: Dict[str, str] = Field(
@@ -589,7 +589,7 @@ class TestGenerationOutput(BaseModel):
             "assertion_library": "pytest assertions",
             "mocking_framework": "unittest.mock",
             "coverage_tool": "pytest-cov"
-        }
+        }}
     )
     
     test_execution_plan: List[str] = Field(
@@ -608,7 +608,7 @@ class SecurityAnalysisOutput(BaseModel):
             "security_score": 7,
             "compliance_status": "partial",
             "summary": "Security assessment completed with identified vulnerabilities"
-        }
+        }}
     )
     
     vulnerabilities: List[Issue] = Field(
@@ -628,7 +628,7 @@ class SecurityAnalysisOutput(BaseModel):
     
     compliance_requirements: List[str] = Field(
         description="List of compliance requirements and standards",
-        json_schema_extra={"example": ["GDPR} compliance", "OWASP Top 10", "ISO 27001"]
+        json_schema_extra={"example": ["GDPR compliance", "OWASP Top 10", "ISO 27001"]}
     )
     
     security_recommendations: List[Recommendation] = Field(
@@ -643,7 +643,7 @@ class SecurityAnalysisOutput(BaseModel):
             "vulnerability_scanning": "Regular vulnerability scanning with Bandit",
             "code_review": "Security-focused code review checklist",
             "security_monitoring": "Real-time security monitoring and alerting"
-        }
+        }}
     )
 
 
@@ -660,7 +660,7 @@ class DocumentationGenerationOutput(BaseModel):
             "docstrings": "Google-style docstrings for all functions and classes",
             "comments": "Inline comments for complex logic and business rules",
             "type_hints": "Type annotations for all function parameters and return values"
-        }
+        }}
     )
     
     user_documentation: Dict[str, str] = Field(
@@ -669,7 +669,7 @@ class DocumentationGenerationOutput(BaseModel):
             "user_guide": "Comprehensive user guide with step-by-step instructions",
             "admin_guide": "Administrator documentation for system management",
             "troubleshooting": "Common issues and their solutions"
-        }
+        }}
     )
     
     technical_documentation: Dict[str, str] = Field(
@@ -679,7 +679,7 @@ class DocumentationGenerationOutput(BaseModel):
             "database_schema": "Complete database schema documentation",
             "api_specification": "OpenAPI/Swagger specification",
             "testing_strategy": "Testing approach and coverage documentation"
-        }
+        }}
     )
     
     diagrams: Dict[str, Dict[str, str]] = Field(
@@ -705,12 +705,12 @@ class DocumentationGenerationOutput(BaseModel):
                 "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\">\n  <bpmn:process id=\"Process_1\">\n    <bpmn:startEvent id=\"StartEvent_1\"/>\n    <bpmn:task id=\"Task_1\" name=\"Process Task\"/>\n    <bpmn:endEvent id=\"EndEvent_1\"/>\n  </bpmn:process>\n</bpmn:definitions>",
                 "description": "BPMN diagram showing business process flow"
             }
-        }
+        }}
     )
     
     documentation_structure: List[str] = Field(
         description="Documentation directory structure",
-        json_schema_extra={"example": ["docs/"}, "docs/api/", "docs/architecture/", "docs/user-guide/"]
+        json_schema_extra={"example": ["docs/", "docs/api/", "docs/architecture/", "docs/user-guide/"]}
     )
     
     documentation_standards: Dict[str, str] = Field(
@@ -720,7 +720,7 @@ class DocumentationGenerationOutput(BaseModel):
             "style_guide": "Consistent formatting and terminology",
             "review_process": "Documentation review and approval workflow",
             "diagram_standards": "PlantUML for UML diagrams, Mermaid for flowcharts, BPMN XML for business processes"
-        }
+        }}
     )
     
     maintenance_plan: List[str] = Field(

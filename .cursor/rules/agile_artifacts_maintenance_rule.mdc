@@ -1,0 +1,709 @@
+# Agile Artifacts Maintenance Rule
+
+**CRITICAL**: Automatically maintain all agile artifacts (product backlog, sprint backlog, user stories, velocity tracking, burndown charts) in real-time to ensure maximum quality project management and maximum efficiency in agile processes.
+
+## Description
+This rule enforces automatic maintenance of all agile artifacts through intelligent detection of changes and automated updates. It applies holistic-detailed thinking to balance comprehensive agile tracking with efficient automation, ensuring our agile process is always current, accurate, and valuable for project management.
+
+## Core Requirements
+
+### 1. **Agile Artifact Detection and Monitoring**
+**MANDATORY**: Systematically monitor and detect changes requiring agile updates
+```python
+# REQUIRED: Agile artifact monitoring system
+class AgileArtifactMonitor:
+    """Holistic-detailed system for monitoring agile artifacts."""
+    
+    def __init__(self):
+        self.artifact_types = {
+            "product_backlog": self._monitor_product_backlog,
+            "sprint_backlog": self._monitor_sprint_backlog,
+            "user_stories": self._monitor_user_stories,
+            "velocity_tracking": self._monitor_velocity,
+            "burndown_charts": self._monitor_burndown,
+            "sprint_planning": self._monitor_sprint_planning,
+            "retrospectives": self._monitor_retrospectives,
+            "definition_of_done": self._monitor_definition_of_done
+        }
+        
+        self.update_triggers = {
+            "user_story_completed": 1.0,
+            "sprint_completed": 1.0,
+            "feature_completed": 0.9,
+            "bug_fixed": 0.7,
+            "test_coverage_improved": 0.6,
+            "documentation_updated": 0.5,
+            "code_quality_improved": 0.6,
+            "performance_optimized": 0.7,
+            "security_enhanced": 0.8,
+            "technical_debt_reduced": 0.6
+        }
+    
+    def monitor_agile_artifacts(self, session_context: dict) -> AgileMonitoringResult:
+        """Monitor all agile artifacts for required updates."""
+        
+        print("📊 MONITORING AGILE ARTIFACTS")
+        print("=" * 50)
+        
+        monitoring_results = {}
+        update_required = False
+        priority_updates = []
+        
+        # Monitor each artifact type
+        for artifact_type, monitor_func in self.artifact_types.items():
+            print(f"\n📋 Monitoring: {artifact_type}")
+            result = monitor_func(session_context)
+            monitoring_results[artifact_type] = result
+            
+            if result.update_required:
+                update_required = True
+                priority_updates.append({
+                    "artifact": artifact_type,
+                    "priority": result.priority,
+                    "reason": result.reason,
+                    "updates": result.required_updates
+                })
+                print(f"   🔴 UPDATE REQUIRED: {result.reason}")
+            else:
+                print(f"   ✅ UP TO DATE: {artifact_type}")
+        
+        # Sort updates by priority
+        priority_updates.sort(key=lambda x: x["priority"], reverse=True)
+        
+        print(f"\n📊 MONITORING SUMMARY:")
+        print(f"   Artifacts Monitored: {len(self.artifact_types)}")
+        print(f"   Updates Required: {len(priority_updates)}")
+        print(f"   Overall Status: {'🔴 UPDATES NEEDED' if update_required else '✅ ALL CURRENT'}")
+        
+        return AgileMonitoringResult(
+            update_required=update_required,
+            priority_updates=priority_updates,
+            monitoring_results=monitoring_results
+        )
+    
+    def _monitor_product_backlog(self, context: dict) -> ArtifactMonitoringResult:
+        """Monitor product backlog for required updates."""
+        
+        updates_needed = []
+        priority = 0
+        
+        # Check for completed user stories
+        if context.get("user_story_completed"):
+            updates_needed.append("mark_user_story_completed")
+            priority = max(priority, 0.9)
+        
+        # Check for new features or requirements
+        if context.get("new_feature_identified"):
+            updates_needed.append("add_new_user_story")
+            priority = max(priority, 0.8)
+        
+        # Check for priority changes
+        if context.get("priority_changes"):
+            updates_needed.append("update_story_priorities")
+            priority = max(priority, 0.7)
+        
+        # Check for effort estimation updates
+        if context.get("effort_estimation_updated"):
+            updates_needed.append("update_story_points")
+            priority = max(priority, 0.6)
+        
+        # Check for epic completion
+        if context.get("epic_completed"):
+            updates_needed.append("mark_epic_completed")
+            priority = max(priority, 1.0)
+        
+        return ArtifactMonitoringResult(
+            update_required=len(updates_needed) > 0,
+            priority=priority,
+            reason=f"Product backlog updates: {', '.join(updates_needed)}" if updates_needed else "No updates needed",
+            required_updates=updates_needed
+        )
+    
+    def _monitor_user_stories(self, context: dict) -> ArtifactMonitoringResult:
+        """Monitor user stories for status and progress updates."""
+        
+        updates_needed = []
+        priority = 0
+        
+        # Check for story completion
+        if context.get("user_story_completed"):
+            updates_needed.append("mark_story_completed")
+            priority = max(priority, 1.0)
+        
+        # Check for story progress
+        if context.get("story_progress_made"):
+            updates_needed.append("update_story_progress")
+            priority = max(priority, 0.7)
+        
+        # Check for acceptance criteria updates
+        if context.get("acceptance_criteria_met"):
+            updates_needed.append("update_acceptance_criteria")
+            priority = max(priority, 0.8)
+        
+        # Check for story status changes
+        if context.get("story_status_changed"):
+            updates_needed.append("update_story_status")
+            priority = max(priority, 0.9)
+        
+        # Check for blockers or impediments
+        if context.get("story_blocked"):
+            updates_needed.append("add_story_blocker")
+            priority = max(priority, 0.9)
+        
+        return ArtifactMonitoringResult(
+            update_required=len(updates_needed) > 0,
+            priority=priority,
+            reason=f"User story updates: {', '.join(updates_needed)}" if updates_needed else "No updates needed",
+            required_updates=updates_needed
+        )
+    
+    def _monitor_velocity(self, context: dict) -> ArtifactMonitoringResult:
+        """Monitor velocity tracking for updates."""
+        
+        updates_needed = []
+        priority = 0
+        
+        # Check for sprint completion
+        if context.get("sprint_completed"):
+            updates_needed.append("calculate_sprint_velocity")
+            priority = max(priority, 1.0)
+        
+        # Check for story point changes
+        if context.get("story_points_updated"):
+            updates_needed.append("recalculate_velocity")
+            priority = max(priority, 0.8)
+        
+        # Check for team changes
+        if context.get("team_capacity_changed"):
+            updates_needed.append("update_team_capacity")
+            priority = max(priority, 0.7)
+        
+        return ArtifactMonitoringResult(
+            update_required=len(updates_needed) > 0,
+            priority=priority,
+            reason=f"Velocity updates: {', '.join(updates_needed)}" if updates_needed else "No updates needed",
+            required_updates=updates_needed
+        )
+```
+
+### 2. **Automated Agile Update System**
+**MANDATORY**: Automatically update agile artifacts based on detected changes
+```python
+# REQUIRED: Automated agile update system
+class AutomatedAgileUpdater:
+    """Automated system for updating agile artifacts."""
+    
+    def __init__(self):
+        self.update_handlers = {
+            "product_backlog": self._update_product_backlog,
+            "sprint_backlog": self._update_sprint_backlog,
+            "user_stories": self._update_user_stories,
+            "velocity_tracking": self._update_velocity_tracking,
+            "burndown_charts": self._update_burndown_charts,
+            "sprint_planning": self._update_sprint_planning
+        }
+        
+        self.backlog_file = "docs/agile/product_backlog.md"
+        self.sprint_files = "docs/agile/sprint_planning/"
+        self.velocity_file = "docs/agile/velocity_tracking.md"
+        self.burndown_file = "docs/agile/burndown_charts.md"
+    
+    def execute_agile_updates(self, monitoring_result: AgileMonitoringResult,
+                             session_context: dict) -> AgileUpdateResult:
+        """Execute all required agile artifact updates."""
+        
+        print("🔄 EXECUTING AGILE ARTIFACT UPDATES")
+        print("=" * 50)
+        
+        update_results = {}
+        all_successful = True
+        
+        # Execute updates in priority order
+        for update_item in monitoring_result.priority_updates:
+            artifact_type = update_item["artifact"]
+            updates = update_item["updates"]
+            
+            print(f"\n📋 Updating: {artifact_type}")
+            print(f"   Priority: {update_item['priority']}")
+            print(f"   Reason: {update_item['reason']}")
+            
+            # Execute update
+            update_handler = self.update_handlers.get(artifact_type)
+            if update_handler:
+                result = update_handler(updates, session_context)
+                update_results[artifact_type] = result
+                
+                if result.success:
+                    print(f"   ✅ SUCCESS: {result.summary}")
+                else:
+                    print(f"   ❌ FAILED: {result.error}")
+                    all_successful = False
+            else:
+                print(f"   ❌ NO HANDLER: No update handler for {artifact_type}")
+                all_successful = False
+        
+        print(f"\n📊 UPDATE SUMMARY:")
+        print(f"   Total Updates: {len(monitoring_result.priority_updates)}")
+        print(f"   Successful: {len([r for r in update_results.values() if r.success])}")
+        print(f"   Failed: {len([r for r in update_results.values() if not r.success])}")
+        print(f"   Overall Status: {'✅ ALL SUCCESSFUL' if all_successful else '❌ SOME FAILED'}")
+        
+        return AgileUpdateResult(
+            success=all_successful,
+            update_results=update_results,
+            total_updates=len(monitoring_result.priority_updates)
+        )
+    
+    def _update_product_backlog(self, updates: List[str], context: dict) -> UpdateResult:
+        """Update the product backlog file."""
+        
+        try:
+            # Read current product backlog
+            with open(self.backlog_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            modified_content = content
+            changes_made = []
+            
+            # Process each update
+            for update in updates:
+                if update == "mark_user_story_completed":
+                    story_id = context.get("completed_story_id")
+                    if story_id:
+                        # Mark story as completed
+                        pattern = f"(#### \\*\\*{story_id}:.*?)\\n\\*\\*Priority\\*\\*:"
+                        replacement = f"\\1 ✅ **COMPLETED**\\n**Priority**:"
+                        modified_content = re.sub(pattern, replacement, modified_content, flags=re.MULTILINE | re.DOTALL)
+                        changes_made.append(f"Marked {story_id} as completed")
+                
+                elif update == "add_new_user_story":
+                    new_story = context.get("new_user_story")
+                    if new_story:
+                        # Add new user story to appropriate epic
+                        epic_section = self._find_epic_section(modified_content, new_story.get("epic"))
+                        if epic_section:
+                            story_text = self._format_user_story(new_story)
+                            modified_content = self._insert_user_story(modified_content, epic_section, story_text)
+                            changes_made.append(f"Added new user story: {new_story.get('id')}")
+                
+                elif update == "update_story_priorities":
+                    priority_updates = context.get("priority_updates", {})
+                    for story_id, new_priority in priority_updates.items():
+                        # Update story priority
+                        pattern = f"(#### \\*\\*{story_id}:.*?\\n\\*\\*Priority\\*\\*:).*?(\\|)"
+                        replacement = f"\\1 {new_priority} \\2"
+                        modified_content = re.sub(pattern, replacement, modified_content, flags=re.MULTILINE | re.DOTALL)
+                        changes_made.append(f"Updated {story_id} priority to {new_priority}")
+                
+                elif update == "mark_epic_completed":
+                    epic_id = context.get("completed_epic_id")
+                    if epic_id:
+                        # Mark epic as completed
+                        pattern = f"(## 🚀 \\*\\*{epic_id}:.*?)\\n\\*\\*Priority\\*\\*:"
+                        replacement = f"\\1 ✅ **COMPLETED**\\n**Priority**:"
+                        modified_content = re.sub(pattern, replacement, modified_content, flags=re.MULTILINE | re.DOTALL)
+                        changes_made.append(f"Marked epic {epic_id} as completed")
+            
+            # Write updated content if changes were made
+            if changes_made:
+                with open(self.backlog_file, 'w', encoding='utf-8') as f:
+                    f.write(modified_content)
+                
+                return UpdateResult(
+                    success=True,
+                    summary=f"Product backlog updated: {', '.join(changes_made)}",
+                    changes_made=len(changes_made)
+                )
+            else:
+                return UpdateResult(
+                    success=True,
+                    summary="No changes needed for product backlog",
+                    changes_made=0
+                )
+                
+        except Exception as e:
+            return UpdateResult(
+                success=False,
+                error=f"Failed to update product backlog: {e}",
+                changes_made=0
+            )
+    
+    def _update_user_stories(self, updates: List[str], context: dict) -> UpdateResult:
+        """Update user story statuses and progress."""
+        
+        changes_made = []
+        
+        try:
+            # Process user story updates
+            for update in updates:
+                if update == "mark_story_completed":
+                    story_id = context.get("completed_story_id")
+                    if story_id:
+                        # Update story status in product backlog
+                        result = self._mark_story_completed_in_backlog(story_id)
+                        if result:
+                            changes_made.append(f"Marked story {story_id} as completed")
+                
+                elif update == "update_story_progress":
+                    progress_updates = context.get("story_progress", {})
+                    for story_id, progress in progress_updates.items():
+                        result = self._update_story_progress_in_backlog(story_id, progress)
+                        if result:
+                            changes_made.append(f"Updated {story_id} progress to {progress}%")
+                
+                elif update == "update_acceptance_criteria":
+                    criteria_updates = context.get("acceptance_criteria_updates", {})
+                    for story_id, criteria in criteria_updates.items():
+                        result = self._update_acceptance_criteria_in_backlog(story_id, criteria)
+                        if result:
+                            changes_made.append(f"Updated acceptance criteria for {story_id}")
+            
+            return UpdateResult(
+                success=True,
+                summary=f"User stories updated: {', '.join(changes_made)}" if changes_made else "No user story updates needed",
+                changes_made=len(changes_made)
+            )
+            
+        except Exception as e:
+            return UpdateResult(
+                success=False,
+                error=f"Failed to update user stories: {e}",
+                changes_made=len(changes_made)
+            )
+    
+    def _update_velocity_tracking(self, updates: List[str], context: dict) -> UpdateResult:
+        """Update velocity tracking metrics."""
+        
+        changes_made = []
+        
+        try:
+            for update in updates:
+                if update == "calculate_sprint_velocity":
+                    sprint_id = context.get("completed_sprint_id")
+                    completed_points = context.get("completed_story_points", 0)
+                    
+                    if sprint_id and completed_points:
+                        # Update velocity tracking file
+                        velocity_data = self._calculate_and_record_velocity(sprint_id, completed_points)
+                        changes_made.append(f"Recorded velocity for {sprint_id}: {completed_points} points")
+                
+                elif update == "recalculate_velocity":
+                    # Recalculate average velocity
+                    new_average = self._recalculate_average_velocity()
+                    changes_made.append(f"Recalculated average velocity: {new_average}")
+            
+            return UpdateResult(
+                success=True,
+                summary=f"Velocity tracking updated: {', '.join(changes_made)}" if changes_made else "No velocity updates needed",
+                changes_made=len(changes_made)
+            )
+            
+        except Exception as e:
+            return UpdateResult(
+                success=False,
+                error=f"Failed to update velocity tracking: {e}",
+                changes_made=len(changes_made)
+            )
+```
+
+### 3. **Agile Metrics and Analytics**
+**MANDATORY**: Automatically calculate and update agile metrics
+```python
+# REQUIRED: Agile metrics and analytics system
+class AgileMetricsCalculator:
+    """Calculate and maintain agile metrics automatically."""
+    
+    def __init__(self):
+        self.metrics_config = {
+            "velocity": {
+                "calculation_method": "average_last_3_sprints",
+                "minimum_sprints": 2,
+                "weight_recent": 0.6
+            },
+            "burndown": {
+                "update_frequency": "daily",
+                "include_weekends": False,
+                "track_scope_changes": True
+            },
+            "cycle_time": {
+                "track_stages": ["todo", "in_progress", "review", "done"],
+                "exclude_blocked_time": True
+            },
+            "lead_time": {
+                "start_point": "backlog_entry",
+                "end_point": "production_release"
+            }
+        }
+    
+    def calculate_agile_metrics(self, context: dict) -> MetricsResult:
+        """Calculate all agile metrics based on current data."""
+        
+        print("📊 CALCULATING AGILE METRICS")
+        print("=" * 50)
+        
+        metrics = {}
+        
+        # Calculate velocity metrics
+        velocity_metrics = self._calculate_velocity_metrics(context)
+        metrics.update(velocity_metrics)
+        
+        # Calculate burndown metrics
+        burndown_metrics = self._calculate_burndown_metrics(context)
+        metrics.update(burndown_metrics)
+        
+        # Calculate cycle time metrics
+        cycle_time_metrics = self._calculate_cycle_time_metrics(context)
+        metrics.update(cycle_time_metrics)
+        
+        # Calculate quality metrics
+        quality_metrics = self._calculate_quality_metrics(context)
+        metrics.update(quality_metrics)
+        
+        # Calculate predictability metrics
+        predictability_metrics = self._calculate_predictability_metrics(context)
+        metrics.update(predictability_metrics)
+        
+        print(f"📊 CALCULATED METRICS:")
+        for metric_name, value in metrics.items():
+            print(f"   {metric_name}: {value}")
+        
+        return MetricsResult(
+            metrics=metrics,
+            calculation_timestamp=datetime.now(),
+            data_quality=self._assess_data_quality(context)
+        )
+    
+    def _calculate_velocity_metrics(self, context: dict) -> Dict[str, float]:
+        """Calculate velocity-related metrics."""
+        
+        sprint_data = context.get("sprint_history", [])
+        if len(sprint_data) < 2:
+            return {"velocity_average": 0, "velocity_trend": 0}
+        
+        # Extract completed points from last sprints
+        recent_velocities = [sprint.get("completed_points", 0) for sprint in sprint_data[-5:]]
+        
+        # Calculate average velocity
+        if len(recent_velocities) >= 3:
+            # Weighted average (more recent sprints have higher weight)
+            weights = [0.4, 0.3, 0.3] if len(recent_velocities) == 3 else [0.3, 0.25, 0.25, 0.2]
+            velocity_average = sum(v * w for v, w in zip(recent_velocities[-len(weights):], weights))
+        else:
+            velocity_average = sum(recent_velocities) / len(recent_velocities)
+        
+        # Calculate velocity trend
+        if len(recent_velocities) >= 2:
+            velocity_trend = (recent_velocities[-1] - recent_velocities[-2]) / recent_velocities[-2]
+        else:
+            velocity_trend = 0
+        
+        return {
+            "velocity_average": round(velocity_average, 1),
+            "velocity_trend": round(velocity_trend * 100, 1),  # Percentage
+            "velocity_consistency": self._calculate_velocity_consistency(recent_velocities)
+        }
+    
+    def _calculate_burndown_metrics(self, context: dict) -> Dict[str, float]:
+        """Calculate burndown-related metrics."""
+        
+        current_sprint = context.get("current_sprint", {})
+        if not current_sprint:
+            return {}
+        
+        total_points = current_sprint.get("total_points", 0)
+        completed_points = current_sprint.get("completed_points", 0)
+        days_elapsed = current_sprint.get("days_elapsed", 0)
+        total_days = current_sprint.get("total_days", 10)  # Default 2-week sprint
+        
+        if total_points == 0:
+            return {}
+        
+        # Calculate ideal burndown
+        ideal_remaining = total_points * (1 - days_elapsed / total_days)
+        actual_remaining = total_points - completed_points
+        
+        # Calculate burndown metrics
+        burndown_variance = actual_remaining - ideal_remaining
+        completion_rate = completed_points / total_points if total_points > 0 else 0
+        projected_completion = (completed_points / days_elapsed * total_days) if days_elapsed > 0 else 0
+        
+        return {
+            "burndown_variance": round(burndown_variance, 1),
+            "completion_rate": round(completion_rate * 100, 1),
+            "projected_completion": round(min(projected_completion / total_points * 100, 100), 1),
+            "on_track": abs(burndown_variance) <= total_points * 0.1  # Within 10%
+        }
+```
+
+### 4. **Integration with Development Workflow**
+**MANDATORY**: Integrate agile maintenance with development workflow
+```python
+# REQUIRED: Development workflow integration
+class AgileWorkflowIntegration:
+    """Integration of agile maintenance with development workflow."""
+    
+    def __init__(self):
+        self.monitor = AgileArtifactMonitor()
+        self.updater = AutomatedAgileUpdater()
+        self.metrics_calculator = AgileMetricsCalculator()
+        
+        self.integration_points = {
+            "code_commit": self._handle_code_commit,
+            "test_completion": self._handle_test_completion,
+            "feature_completion": self._handle_feature_completion,
+            "bug_fix": self._handle_bug_fix,
+            "sprint_start": self._handle_sprint_start,
+            "sprint_end": self._handle_sprint_end,
+            "story_status_change": self._handle_story_status_change
+        }
+    
+    def integrate_with_workflow(self, workflow_event: str, context: dict) -> IntegrationResult:
+        """Integrate agile maintenance with workflow events."""
+        
+        print(f"🔄 INTEGRATING AGILE WITH WORKFLOW EVENT: {workflow_event}")
+        print("=" * 60)
+        
+        # Handle specific workflow event
+        handler = self.integration_points.get(workflow_event)
+        if not handler:
+            return IntegrationResult(
+                success=False,
+                reason=f"No handler for workflow event: {workflow_event}"
+            )
+        
+        # Execute event-specific handling
+        event_result = handler(context)
+        
+        # Always check for general agile updates
+        monitoring_result = self.monitor.monitor_agile_artifacts(context)
+        
+        if monitoring_result.update_required:
+            # Execute agile updates
+            update_result = self.updater.execute_agile_updates(monitoring_result, context)
+            
+            # Calculate updated metrics
+            metrics_result = self.metrics_calculator.calculate_agile_metrics(context)
+            
+            return IntegrationResult(
+                success=update_result.success,
+                event_result=event_result,
+                agile_updates=update_result,
+                metrics=metrics_result.metrics
+            )
+        else:
+            return IntegrationResult(
+                success=True,
+                event_result=event_result,
+                reason="No agile updates required"
+            )
+    
+    def _handle_feature_completion(self, context: dict) -> EventResult:
+        """Handle feature completion event."""
+        
+        feature_id = context.get("feature_id")
+        user_story_id = context.get("user_story_id")
+        
+        if user_story_id:
+            # Mark user story as completed
+            context["user_story_completed"] = True
+            context["completed_story_id"] = user_story_id
+            
+            # Update story points if provided
+            if "story_points" in context:
+                context["completed_story_points"] = context["story_points"]
+            
+            return EventResult(
+                success=True,
+                summary=f"Feature {feature_id} completed, user story {user_story_id} marked for completion"
+            )
+        
+        return EventResult(
+            success=False,
+            reason="No user story ID provided for feature completion"
+        )
+    
+    def _handle_sprint_end(self, context: dict) -> EventResult:
+        """Handle sprint end event."""
+        
+        sprint_id = context.get("sprint_id")
+        if not sprint_id:
+            return EventResult(success=False, reason="No sprint ID provided")
+        
+        # Calculate sprint metrics
+        completed_stories = context.get("completed_stories", [])
+        total_points_completed = sum(story.get("points", 0) for story in completed_stories)
+        
+        # Update context for velocity calculation
+        context["sprint_completed"] = True
+        context["completed_sprint_id"] = sprint_id
+        context["completed_story_points"] = total_points_completed
+        
+        # Mark all completed stories
+        for story in completed_stories:
+            context[f"story_{story['id']}_completed"] = True
+        
+        return EventResult(
+            success=True,
+            summary=f"Sprint {sprint_id} ended with {total_points_completed} points completed"
+        )
+```
+
+## Implementation Strategy
+
+### 1. **Holistic Integration**
+**MANDATORY**: Integrate with all existing systems holistically
+- Integrate with automated Git protection rule
+- Integrate with documentation live updates rule
+- Integrate with test execution and quality validation
+- Integrate with rule compliance monitoring
+- Integrate with continuous improvement processes
+
+### 2. **Maximum Quality and Efficiency Balance**
+**MANDATORY**: Optimize for both maximum quality and maximum efficiency
+- Quality: Accurate tracking, comprehensive metrics, reliable automation
+- Efficiency: Automated updates, intelligent triggers, minimal manual work
+- Balance: Smart detection, configurable thresholds, adaptive behavior
+
+### 3. **Detailed Implementation**
+**MANDATORY**: Apply detailed thinking to all aspects
+- Comprehensive monitoring of all agile artifacts
+- Intelligent update triggers based on development events
+- Accurate metrics calculation with trend analysis
+- Full integration with development workflow events
+- Real-time maintenance of agile process health
+
+## Benefits
+
+- **Always Current**: Agile artifacts are always up-to-date and accurate
+- **Maximum Quality**: Comprehensive tracking ensures nothing is missed
+- **Maximum Efficiency**: Automated maintenance eliminates manual work
+- **Intelligent Behavior**: Smart detection and updates adapt to context
+- **Full Integration**: Works seamlessly with development workflow
+- **Holistic Approach**: Considers all aspects of agile process management
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Development activities that affect agile artifacts
+- User story and epic completion events
+- Sprint planning and completion activities
+- Feature development and delivery
+- Bug fixes and quality improvements
+- Team velocity and capacity changes
+
+### Critical Checkpoints:
+- [ ] Agile artifact monitoring system active
+- [ ] Automated update triggers configured
+- [ ] Integration with development workflow validated
+- [ ] Metrics calculation working properly
+- [ ] Real-time maintenance functional
+- [ ] Quality and accuracy verified
+
+### Success Metrics:
+- 100% agile artifacts maintained automatically
+- Zero manual agile artifact updates required
+- 95%+ accuracy in agile tracking and metrics
+- Real-time updates within 5 minutes of events
+- Seamless integration with all workflows
+
+**Remember: Agile artifacts are the foundation of our project management. They must always be current, accurate, and valuable for decision-making.**

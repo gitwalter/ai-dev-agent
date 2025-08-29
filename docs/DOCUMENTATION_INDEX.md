@@ -22,6 +22,9 @@
 - [Agile Cursor Rules](agile/agile_cursor_rules.md) - Agile automation rules
 - [Definition of Done](agile/definition_of_done.md) - Quality criteria and standards
 
+### **Development Rules and Standards**
+- [Boy Scout Principle Rule](.cursor/rules/boyscout_principle_rule.mdc) - **UPDATED** - Proactive code quality and maintenance principles
+
 ### **Implementation Guides**
 - [Development Roadmap](guides/implementation/roadmap.md) - Historical technical roadmap (see Agile section above for current)
 - [Database Setup](guides/database/database_setup.md) - Database configuration and management

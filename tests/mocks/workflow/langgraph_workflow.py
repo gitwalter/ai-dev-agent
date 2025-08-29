@@ -19,7 +19,8 @@ class WorkflowState(TypedDict):
 class LangGraphWorkflowManager:
     """Mock LangGraph Workflow Manager for backwards compatibility."""
 
-    def __init__(self):
+    def __init__(self, llm_config=None):
+        self.llm_config = llm_config
         self.workflow = MagicMock()
         self.agents = []
 
@@ -31,11 +32,40 @@ class LangGraphWorkflowManager:
         """Create a workflow with given config."""
         return self.workflow
 
-    def execute_workflow(self, state: WorkflowState) -> WorkflowState:
+    async def execute_workflow(self, state: WorkflowState) -> WorkflowState:
         """Execute the workflow with given state."""
-        # Mock successful execution
+        # Mock successful execution with all expected fields
+        state["current_step"] = "completed"
         state["status"] = "completed"
         state["results"] = {"success": True}
+        
+        # Mock agent outputs
+        state["requirements"] = [
+            {"id": "REQ-001", "title": "User Authentication", "description": "System must support login"}
+        ]
+        state["architecture"] = {
+            "pattern": "microservices",
+            "components": ["auth_service", "user_service"]
+        }
+        state["code_files"] = {
+            "main.py": {"content": "# Mock main file", "language": "python"}
+        }
+        state["tests"] = {
+            "test_main.py": {"content": "# Mock test file", "test_type": "unit"}
+        }
+        state["agent_outputs"] = {
+            "requirements_analyst": {"status": "completed"},
+            "architecture_designer": {"status": "completed"},
+            "code_generator": {"status": "completed"},
+            "test_generator": {"status": "completed"}
+        }
+        state["execution_history"] = [
+            {"step": "requirements_analysis", "status": "completed"},
+            {"step": "architecture_design", "status": "completed"},
+            {"step": "code_generation", "status": "completed"},
+            {"step": "test_generation", "status": "completed"}
+        ]
+        
         return state
 
     def get_workflow_status(self) -> str:

@@ -6,7 +6,7 @@ A multi-agent system for automated software development using LangGraph and Goog
 
 This project follows a **comprehensive rule system** that ensures high-quality, efficient, and maintainable code through automated development standards and best practices.
 
-For complete rules and application guide, see [.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc](.cursor/rules/OPTIMIZED_DEVELOPMENT_RULES.mdc) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
+For complete rules and application guide, see [.cursor/rules/RULE_ORGANIZATION_STRUCTURE.md](.cursor/rules/RULE_ORGANIZATION_STRUCTURE.md) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
 
 ## 🚀 Quick Start
 
