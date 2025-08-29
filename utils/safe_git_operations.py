@@ -303,47 +303,47 @@ def main():
             print(f"  Staged database files: {safe_git.get_staged_database_files()}")
             
         elif args.command == "pre-merge":
-            print("🔧 Pre-merge: Preparing for safe merge operation...")
+            print("Pre-merge: Preparing for safe merge operation...")
             success, stashed = safe_git.prepare_for_pull()
             if success:
-                print("✅ Pre-merge preparation completed successfully")
+                print("Pre-merge preparation completed successfully")
                 if stashed:
-                    print("📋 Database changes stashed for safe merge")
+                    print("Database changes stashed for safe merge")
                 sys.exit(0)
             else:
-                print("❌ Pre-merge preparation failed")
+                print("Pre-merge preparation failed")
                 sys.exit(1)
                 
         elif args.command == "post-merge":
-            print("🔧 Post-merge: Handling database operations after merge...")
+            print("Post-merge: Handling database operations after merge...")
             # For now, just report that the hook ran
-            print("✅ Post-merge hook executed successfully")
-            print("📋 Database operations completed")
+            print("Post-merge hook executed successfully")
+            print("Database operations completed")
             sys.exit(0)
             
         elif args.command == "prepare-pull":
-            print("🔧 Preparing for git pull...")
+            print("Preparing for git pull...")
             success, stashed = safe_git.prepare_for_pull()
             if success:
-                print("✅ Pull preparation completed")
+                print("Pull preparation completed")
                 sys.exit(0 if not stashed else 2)  # Exit code 2 indicates stashing occurred
             else:
-                print("❌ Pull preparation failed")
+                print("Pull preparation failed")
                 sys.exit(1)
                 
         elif args.command == "cleanup-pull":
-            print("🔧 Cleaning up after git pull...")
+            print("Cleaning up after git pull...")
             # This would need additional argument for stash status
             success = safe_git.cleanup_after_pull(True)
             if success:
-                print("✅ Pull cleanup completed")
+                print("Pull cleanup completed")
                 sys.exit(0)
             else:
-                print("❌ Pull cleanup failed")
+                print("Pull cleanup failed")
                 sys.exit(1)
                 
     except Exception as e:
-        logger.error(f"❌ Safe git operations failed: {e}")
+        logger.error(f"Safe git operations failed: {e}")
         sys.exit(1)
 
 
