@@ -32,7 +32,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from utils.safe_git_operations import SafeGitOperations
-from utils.github_database_automation import GitHubDatabaseAutomation
 
 
 class GitAutomationWrapper:
@@ -59,7 +58,6 @@ class GitAutomationWrapper:
         """
         self.project_root = project_root or Path(__file__).parent.parent
         self.safe_git = SafeGitOperations(self.project_root)
-        self.db_automation = GitHubDatabaseAutomation()
         
         # Git executable detection with Boy Scout improvement
         self.git_executable = self._find_git_executable()
@@ -196,16 +194,8 @@ class GitAutomationWrapper:
             
             logger.info("✅ Git pull completed successfully")
             
-            # Step 3: Restore development database
-            logger.info("🔄 Restoring development database with your data...")
-            db_restore_success = self.db_automation.restore_development_database()
-            
-            if db_restore_success:
-                logger.info("✅ Development database restored successfully")
-            else:
-                logger.warning("⚠️  Development database restoration failed")
-                logger.warning("   Your pull was successful, but you may need to manually restore your database")
-                logger.warning("   Run: python utils/github_database_automation.py restore")
+            # Step 3: Database handled by git hooks - no manual restoration needed
+            logger.info("✅ Database management handled by git hooks")
             
             # Step 4: Restore stashed changes
             if stashed_changes:

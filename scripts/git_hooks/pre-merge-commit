@@ -1,0 +1,29 @@
+#!/bin/bash
+# Pre-merge-commit hook - handles database files before any merge operation
+# This works with: command line git, IDE pull buttons, any git tool
+
+# Path to project root
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+
+# Log file for debugging
+LOG_FILE="$PROJECT_ROOT/.git/hooks.log"
+
+echo "$(date): Pre-merge-commit hook triggered" >> "$LOG_FILE"
+
+# Use Python to handle the database automation
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo "$(date): ERROR - Python not found" >> "$LOG_FILE"
+    exit 1
+fi
+
+# Run our safe git operations
+"$PYTHON_CMD" "$PROJECT_ROOT/utils/safe_git_operations.py" pre-merge 2>> "$LOG_FILE"
+
+exit_code=$?
+echo "$(date): Pre-merge-commit hook completed with exit code $exit_code" >> "$LOG_FILE"
+
+exit $exit_code

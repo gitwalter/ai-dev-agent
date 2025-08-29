@@ -1,0 +1,30 @@
+#!/bin/bash
+# Post-merge hook - restores development database after any merge operation
+# This works with: command line git, IDE pull buttons, any git tool
+
+# Path to project root
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+
+# Log file for debugging
+LOG_FILE="$PROJECT_ROOT/.git/hooks.log"
+
+echo "$(date): Post-merge hook triggered" >> "$LOG_FILE"
+
+# Use Python to handle the database restoration
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo "$(date): ERROR - Python not found" >> "$LOG_FILE"
+    exit 0  # Don't fail the merge for this
+fi
+
+# Run our database restoration
+"$PYTHON_CMD" "$PROJECT_ROOT/utils/safe_git_operations.py" post-merge 2>> "$LOG_FILE"
+
+exit_code=$?
+echo "$(date): Post-merge hook completed with exit code $exit_code" >> "$LOG_FILE"
+
+# Don't fail the merge even if restoration fails
+exit 0
