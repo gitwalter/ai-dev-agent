@@ -1,0 +1,554 @@
+# Automated User Story Status Updates Rule
+
+**CRITICAL**: Automate the comprehensive updating of user story status information and all related agile artifacts to ensure real-time accuracy and eliminate manual documentation lag.
+
+## Description
+This rule establishes automated processes for continuously updating user story status, progress metrics, and all related agile artifacts based on actual system status, test results, and implementation progress. This ensures agile documentation always reflects current reality.
+
+## Core Requirements
+
+### 1. Automated Status Collection
+**MANDATORY**: Collect status from all relevant sources automatically
+```python
+# REQUIRED: Automated status collection pipeline
+def collect_comprehensive_status():
+    """Collect status from all relevant sources for user story updates."""
+    
+    status_data = {
+        "test_results": collect_test_status(),
+        "health_monitoring": collect_health_status(),
+        "implementation_progress": collect_implementation_status(),
+        "system_metrics": collect_system_metrics(),
+        "validation_results": collect_validation_status(),
+        "timestamp": datetime.now().isoformat()
+    }
+    
+    return status_data
+
+def collect_test_status():
+    """Run tests and collect detailed results."""
+    # Execute: pytest tests/ --tb=short --json-report --json-report-file=status_report.json
+    # Parse results for pass/fail counts, categories, trends
+    pass
+
+def collect_health_status():
+    """Collect health monitoring validation results."""
+    # Read: monitoring/us-001-validation-results.json
+    # Read: monitoring/health_data.json
+    # Calculate completion percentages and component status
+    pass
+
+def collect_implementation_status():
+    """Analyze code implementation completeness."""
+    # Check: implemented features vs. acceptance criteria
+    # Analyze: code coverage and quality metrics
+    # Review: documentation completion
+    pass
+```
+
+### 2. User Story Status Updates
+**MANDATORY**: Update user stories with accurate, current status
+```python
+# REQUIRED: User story update automation
+def update_user_story_status(story_id: str, status_data: dict):
+    """Update specific user story with current status information."""
+    
+    story_file = f"docs/agile/sprints/sprint_1/user_stories/{story_id}.md"
+    
+    # Update status section with current data
+    updates = {
+        "test_progress": calculate_test_progress(status_data),
+        "completion_percentage": calculate_completion_percentage(status_data),
+        "acceptance_criteria_status": update_acceptance_criteria(status_data),
+        "blockers_resolved": analyze_resolved_blockers(status_data),
+        "next_actions": determine_next_actions(status_data),
+        "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    apply_story_updates(story_file, updates)
+
+def calculate_test_progress(status_data: dict) -> dict:
+    """Calculate detailed test progress metrics."""
+    test_results = status_data["test_results"]
+    
+    return {
+        "total_tests": test_results["total"],
+        "passing_tests": test_results["passed"],
+        "failing_tests": test_results["failed"],
+        "success_rate": f"{(test_results['passed'] / test_results['total'] * 100):.1f}%",
+        "test_categories": test_results["by_category"],
+        "trend": calculate_test_trend(test_results)
+    }
+```
+
+### 3. Agile Artifact Synchronization
+**MANDATORY**: Update all related agile artifacts automatically
+```python
+# REQUIRED: Comprehensive artifact updates
+def update_all_agile_artifacts(status_data: dict):
+    """Update all agile artifacts with current status information."""
+    
+    artifacts_to_update = [
+        "docs/agile/catalogs/USER_STORY_CATALOG.md",
+        "docs/agile/planning/user_stories.md", 
+        "docs/agile/sprints/sprint_1/backlog.md",
+        "docs/agile/sprints/sprint_1/progress.md",
+        "docs/agile/daily_standup.md",
+        "docs/agile/velocity_tracking_current.md",
+        "docs/agile/README.md"
+    ]
+    
+    for artifact in artifacts_to_update:
+        update_artifact(artifact, status_data)
+
+def update_artifact(artifact_file: str, status_data: dict):
+    """Update specific agile artifact with current status."""
+    
+    if "USER_STORY_CATALOG" in artifact_file:
+        update_story_catalog(artifact_file, status_data)
+    elif "backlog" in artifact_file:
+        update_sprint_backlog(artifact_file, status_data)
+    elif "progress" in artifact_file:
+        update_sprint_progress(artifact_file, status_data)
+    elif "daily_standup" in artifact_file:
+        update_daily_standup(artifact_file, status_data)
+    elif "velocity_tracking" in artifact_file:
+        update_velocity_tracking(artifact_file, status_data)
+```
+
+### 4. Status Validation and Quality Assurance
+**MANDATORY**: Validate all status updates for accuracy and completeness
+```python
+# REQUIRED: Status validation pipeline
+def validate_status_updates(before_state: dict, after_state: dict) -> dict:
+    """Validate that all status updates are accurate and complete."""
+    
+    validation_results = {
+        "data_accuracy": validate_data_accuracy(before_state, after_state),
+        "completeness": validate_update_completeness(after_state),
+        "consistency": validate_cross_artifact_consistency(after_state),
+        "trends": validate_progress_trends(before_state, after_state),
+        "acceptance_criteria": validate_acceptance_criteria_updates(after_state)
+    }
+    
+    return validation_results
+
+def validate_data_accuracy(before: dict, after: dict) -> bool:
+    """Ensure status updates accurately reflect actual system state."""
+    # Verify test counts match actual test execution
+    # Confirm health metrics match monitoring data
+    # Validate implementation progress against code analysis
+    pass
+
+def validate_cross_artifact_consistency(status_data: dict) -> bool:
+    """Ensure all artifacts show consistent status information."""
+    # Check that catalog matches individual stories
+    # Verify backlog aligns with progress reports
+    # Confirm velocity tracking matches actual progress
+    pass
+```
+
+### 5. Automated Execution Integration
+**MANDATORY**: Integrate automation with existing project workflows
+```python
+# REQUIRED: Workflow integration points
+class UserStoryStatusAutomation:
+    """Main automation coordinator for user story status updates."""
+    
+    def __init__(self):
+        self.schedule_interval = 300  # 5 minutes
+        self.triggers = [
+            "test_execution_complete",
+            "health_monitoring_update", 
+            "implementation_milestone",
+            "manual_trigger_request"
+        ]
+    
+    def execute_full_update_cycle(self):
+        """Execute complete user story status update cycle."""
+        
+        try:
+            # 1. Collect current status
+            status_data = collect_comprehensive_status()
+            
+            # 2. Validate data quality
+            if not validate_status_data(status_data):
+                raise ValueError("Status data validation failed")
+            
+            # 3. Update user stories
+            for story_id in ["US-000", "US-001", "US-002", "US-003", "US-004"]:
+                update_user_story_status(story_id, status_data)
+            
+            # 4. Update all agile artifacts
+            update_all_agile_artifacts(status_data)
+            
+            # 5. Validate updates
+            validation_results = validate_all_updates(status_data)
+            
+            # 6. Generate update report
+            generate_update_report(status_data, validation_results)
+            
+            return True
+            
+        except Exception as e:
+            log_automation_error(e)
+            notify_automation_failure(e)
+            return False
+```
+
+### 6. Real-time Status Monitoring
+**MANDATORY**: Monitor and update status in real-time
+```python
+# REQUIRED: Real-time monitoring and updates
+def setup_realtime_monitoring():
+    """Setup real-time monitoring for automatic status updates."""
+    
+    # File system watchers
+    setup_test_result_watcher()
+    setup_health_data_watcher() 
+    setup_implementation_watcher()
+    
+    # Scheduled updates
+    schedule_periodic_updates()
+    
+    # Event-driven updates
+    setup_event_triggers()
+
+def setup_test_result_watcher():
+    """Watch for test execution completion and trigger updates."""
+    # Monitor: test_reports/ directory for new results
+    # Trigger: immediate status update when tests complete
+    pass
+
+def setup_health_data_watcher():
+    """Watch for health monitoring data changes."""
+    # Monitor: monitoring/health_data.json
+    # Monitor: monitoring/us-001-validation-results.json
+    # Trigger: health status updates when data changes
+    pass
+```
+
+### 7. Status Update Templates and Standards
+**MANDATORY**: Use standardized templates for consistent updates
+```markdown
+# REQUIRED: User story status update template
+## Current Status Update - {timestamp}
+
+### Test Progress
+- **Total Tests**: {total_tests}
+- **Passing Tests**: {passing_tests} 
+- **Failing Tests**: {failing_tests}
+- **Success Rate**: {success_rate}
+- **Trend**: {trend_indicator}
+
+### Implementation Progress  
+- **Completion**: {completion_percentage}%
+- **Acceptance Criteria**: {criteria_completed}/{criteria_total} completed
+- **Blockers**: {active_blockers} active, {resolved_blockers} resolved
+
+### Health Monitoring (US-001 specific)
+- **Core Monitoring**: {core_monitoring_status}
+- **Agent Health**: {agent_health_status}
+- **Real-time Monitoring**: {realtime_status}
+- **API Endpoints**: {api_status}
+- **Dashboard**: {dashboard_status}
+
+### Next Actions
+{next_actions_list}
+
+### Last Updated
+{timestamp} - Automated status update
+```
+
+### 8. Error Handling and Recovery
+**MANDATORY**: Robust error handling for automation reliability
+```python
+# REQUIRED: Comprehensive error handling
+def handle_automation_errors():
+    """Handle errors in status update automation."""
+    
+    error_handlers = {
+        "test_execution_failure": handle_test_failure,
+        "file_access_error": handle_file_error,
+        "data_validation_error": handle_validation_error,
+        "network_connectivity": handle_network_error,
+        "permission_denied": handle_permission_error
+    }
+    
+    recovery_strategies = {
+        "retry_with_backoff": implement_exponential_backoff,
+        "fallback_to_manual": create_manual_update_request,
+        "cached_data_usage": use_cached_status_data,
+        "partial_update": execute_partial_status_update
+    }
+
+def implement_automation_monitoring():
+    """Monitor the automation system itself."""
+    # Track: automation execution success rate
+    # Monitor: update frequency and timeliness  
+    # Alert: when automation fails repeatedly
+    # Report: automation performance metrics
+    pass
+```
+
+### 9. Configuration and Customization
+**MANDATORY**: Configurable automation parameters
+```yaml
+# REQUIRED: Automation configuration
+automation_config:
+  update_frequency:
+    scheduled: "*/5 * * * *"  # Every 5 minutes
+    on_test_completion: true
+    on_health_change: true
+    on_implementation_milestone: true
+  
+  user_stories:
+    monitored: ["US-000", "US-001", "US-002", "US-003", "US-004"]
+    update_threshold: 0.01  # Update if 1% change
+    validation_required: true
+  
+  artifacts:
+    catalog_updates: true
+    backlog_updates: true  
+    progress_updates: true
+    standup_updates: true
+    velocity_updates: true
+  
+  quality_gates:
+    data_validation: true
+    consistency_checks: true
+    trend_analysis: true
+    acceptance_criteria_tracking: true
+
+  notifications:
+    success_notifications: false
+    error_notifications: true
+    summary_reports: true
+    frequency: "daily"
+```
+
+### 10. Integration with Existing Tools
+**MANDATORY**: Integrate with existing project tools and workflows
+```python
+# REQUIRED: Tool integration
+def integrate_with_existing_tools():
+    """Integrate automation with existing project tools."""
+    
+    # Git integration
+    setup_git_commit_automation()
+    
+    # Health monitoring integration  
+    integrate_health_monitoring_system()
+    
+    # Test execution integration
+    integrate_pytest_execution()
+    
+    # Documentation generation integration
+    integrate_documentation_updates()
+
+def setup_git_commit_automation():
+    """Automatically commit status updates to version control."""
+    # Auto-commit: status updates with descriptive messages
+    # Branch: create feature branches for major updates
+    # Tags: tag releases with status snapshots
+    pass
+
+def integrate_health_monitoring_system():
+    """Connect with existing health monitoring infrastructure."""
+    # Read: monitoring/health_data.json
+    # Parse: monitoring/us-001-validation-results.json
+    # Subscribe: to health monitoring events
+    pass
+```
+
+## Implementation Guidelines
+
+### 1. Automation Script Creation
+**MANDATORY**: Create supporting automation scripts
+```python
+# Create: scripts/automate_user_story_updates.py
+"""
+Automated User Story Status Updates
+==================================
+
+This script implements the automated user story status update system
+according to the Cursor rule specifications.
+"""
+
+# Create: utils/agile_automation/
+# - status_collector.py
+# - story_updater.py  
+# - artifact_synchronizer.py
+# - validation_engine.py
+```
+
+### 2. Testing and Validation
+**MANDATORY**: Comprehensive testing of automation system
+```python
+# Create: tests/automation/test_user_story_automation.py
+def test_status_collection_accuracy():
+    """Test that status collection accurately reflects system state."""
+    pass
+
+def test_user_story_updates():
+    """Test that user stories are updated correctly."""
+    pass
+
+def test_artifact_synchronization():
+    """Test that all agile artifacts are synchronized properly."""
+    pass
+
+def test_error_handling():
+    """Test automation error handling and recovery."""
+    pass
+```
+
+### 3. Documentation and Training
+**MANDATORY**: Complete documentation of automation system
+```markdown
+# Create: docs/automation/USER_STORY_STATUS_AUTOMATION.md
+
+## Overview
+Comprehensive guide to the automated user story status update system.
+
+## Configuration
+How to configure and customize the automation system.
+
+## Monitoring  
+How to monitor automation performance and troubleshoot issues.
+
+## Manual Override
+When and how to manually override automation.
+```
+
+## Trigger Conditions
+
+### 1. Automatic Triggers
+- **Test Execution Complete**: After pytest runs complete
+- **Health Data Update**: When monitoring/health_data.json changes
+- **Validation Results**: When monitoring/us-001-validation-results.json updates
+- **Scheduled Interval**: Every 5 minutes during development hours
+- **Implementation Milestones**: Major feature completions
+
+### 2. Manual Triggers  
+- **Cursor Command**: "Update user story status"
+- **Script Execution**: `python scripts/automate_user_story_updates.py`
+- **Development Milestone**: Major sprint or story completion
+- **Quality Gate**: Before releases or deployments
+
+### 3. Event-Driven Triggers
+- **Git Commits**: After significant code changes
+- **CI/CD Pipeline**: Integration with automated testing pipeline
+- **Health Alerts**: When system health issues are detected
+- **Performance Changes**: When performance metrics change significantly
+
+## Quality Assurance
+
+### 1. Data Accuracy Validation
+- **Test Result Verification**: Ensure test counts match actual execution
+- **Health Status Verification**: Confirm health metrics match monitoring data
+- **Implementation Progress**: Validate progress against actual code analysis
+- **Trend Analysis**: Ensure trends accurately reflect historical data
+
+### 2. Documentation Consistency
+- **Cross-Reference Validation**: Ensure all artifacts show consistent information
+- **Template Compliance**: Verify all updates follow standardized templates  
+- **Link Integrity**: Ensure all internal links remain valid
+- **Format Compliance**: Maintain consistent formatting across all artifacts
+
+### 3. Automation Reliability
+- **Error Rate Monitoring**: Track automation success/failure rates
+- **Performance Monitoring**: Monitor automation execution time
+- **Data Quality Metrics**: Track accuracy of automated updates
+- **User Feedback Integration**: Incorporate feedback on automation effectiveness
+
+## Benefits
+
+### 1. Real-time Accuracy
+- **Eliminate Manual Lag**: Status always reflects current reality
+- **Reduce Human Error**: Automated data collection and updates
+- **Improve Transparency**: Real-time visibility into project status
+- **Enhance Decision Making**: Current data for informed decisions
+
+### 2. Development Efficiency
+- **Reduce Manual Work**: Eliminate repetitive status update tasks
+- **Focus on Development**: More time for actual development work
+- **Consistent Documentation**: Standardized status reporting
+- **Automated Quality Gates**: Built-in validation and consistency checks
+
+### 3. Project Management Excellence
+- **Accurate Reporting**: Stakeholders get current, accurate status
+- **Trend Analysis**: Historical data for velocity and progress tracking
+- **Risk Identification**: Early detection of issues and blockers
+- **Compliance Assurance**: Automated adherence to documentation standards
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- User story status updates
+- Agile artifact maintenance  
+- Project status reporting
+- Development workflow integration
+- Quality assurance processes
+
+**Violations of this rule require immediate implementation of automation to eliminate manual status update lag.**
+
+## Implementation Checklist
+
+### Phase 1: Core Automation (Immediate)
+- [ ] Create status collection scripts
+- [ ] Implement user story update automation
+- [ ] Setup basic artifact synchronization
+- [ ] Create error handling and logging
+- [ ] Test core automation functionality
+
+### Phase 2: Integration and Validation (Week 1)
+- [ ] Integrate with existing health monitoring
+- [ ] Implement comprehensive validation
+- [ ] Setup real-time monitoring triggers
+- [ ] Create automation performance monitoring
+- [ ] Document automation procedures
+
+### Phase 3: Advanced Features (Week 2)  
+- [ ] Implement trend analysis and reporting
+- [ ] Create advanced error recovery
+- [ ] Setup notification systems
+- [ ] Implement automation analytics
+- [ ] Create user feedback integration
+
+### Phase 4: Optimization and Scaling (Ongoing)
+- [ ] Optimize automation performance
+- [ ] Expand to additional user stories
+- [ ] Enhance validation capabilities
+- [ ] Improve error handling
+- [ ] Continuous improvement based on usage
+
+## Success Metrics
+
+### 1. Automation Effectiveness
+- **Update Frequency**: Status updates within 5 minutes of changes
+- **Accuracy Rate**: >99% accuracy in automated status collection
+- **Coverage**: 100% of user stories and agile artifacts automated
+- **Reliability**: >99.9% automation uptime during development hours
+
+### 2. Development Impact
+- **Manual Work Reduction**: 90% reduction in manual status update time
+- **Documentation Freshness**: 100% current documentation at all times
+- **Error Reduction**: 95% reduction in status update errors
+- **Team Satisfaction**: Improved team satisfaction with documentation accuracy
+
+### 3. Quality Improvement
+- **Consistency**: 100% consistent status across all artifacts
+- **Timeliness**: Real-time status availability
+- **Completeness**: 100% coverage of all required status information
+- **Validation**: Automated quality gates prevent inconsistent updates
+
+## Remember
+
+**"Automation eliminates human error and ensures real-time accuracy."**
+
+**"Status should reflect reality, not historical assumptions."**
+
+**"Consistent, accurate documentation enables confident decision-making."**
+
+This rule ensures that all user story status information and agile artifacts are automatically maintained with current, accurate data, eliminating manual documentation lag and improving overall project transparency and decision-making capability.

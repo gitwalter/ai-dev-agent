@@ -95,6 +95,72 @@ tail -f logs/agent.log
 tail -f logs/langchain/workflow.log
 ```
 
+## 🚀 **VS Code Launch Configurations**
+
+### **Available Launch Configurations**
+
+The project includes pre-configured VS Code launch configurations in `.vscode/launch.json`:
+
+#### **Streamlit Applications**
+1. **🚀 Main Streamlit App** - Launches main web interface (Port 8501)
+2. **🤖 Prompt Manager App** - Launches prompt management interface (Port 8502)
+3. **🔍 System Health Monitor Dashboard** - Real-time system health monitoring (Port 8505)
+4. **🚀 Main Streamlit App (Debug Port 8503)** - Debug version with detailed logging
+5. **🤖 Prompt Manager App (Debug Port 8504)** - Debug version for prompt manager
+6. **🔍 System Health Monitor (Debug Port 8506)** - Debug version for health monitoring
+
+#### **CLI Applications**
+7. **🔧 Main CLI App (Debug)** - Debug CLI entry point with console integration
+
+### **Quick Start with Launch Configurations**
+
+1. **Open VS Code** in the project root directory
+2. **Press F5** or **Ctrl+Shift+D** to open Run and Debug panel
+3. **Select configuration** from dropdown (e.g., "🚀 Main Streamlit App")
+4. **Click Play button** or **Press F5** to launch
+
+### **Configuration Details**
+
+#### **Anaconda Python Integration**
+- All configurations use: `D:\Anaconda\python.exe`
+- Automatic PYTHONPATH configuration
+- Integrated terminal support
+
+#### **Port Assignments**
+| Application | Standard Port | Debug Port |
+|-------------|---------------|------------|
+| Main Streamlit App | 8501 | 8503 |
+| Prompt Manager App | 8502 | 8504 |
+| System Health Monitor | 8505 | 8506 |
+
+#### **Debug Features**
+- Integrated terminal console
+- Breakpoint support
+- Auto-reload for Streamlit apps
+- Enhanced logging in debug versions
+
+### **Troubleshooting Launch Configurations**
+
+#### **Common Issues**
+1. **Python not found**: Verify Anaconda installation at `D:\Anaconda\`
+2. **Module not found**: Ensure working directory is project root
+3. **Port conflicts**: Use debug configurations with alternative ports
+
+#### **Manual Launch (Alternative)**
+```bash
+# Main Streamlit App
+D:\Anaconda\python.exe -m streamlit run apps/streamlit_app.py --server.port 8501
+
+# Prompt Manager App  
+D:\Anaconda\python.exe -m streamlit run apps/prompt_manager_app.py --server.port 8502
+
+# System Health Monitor Dashboard
+D:\Anaconda\python.exe -m streamlit run utils/health_dashboard.py --server.port 8505
+
+# CLI App Debug
+D:\Anaconda\python.exe apps/main.py
+```
+
 ## 📁 **Key Files and Directories**
 
 ### **Session Management**

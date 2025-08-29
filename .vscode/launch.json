@@ -2,18 +2,174 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Streamlit App",
+            "name": "🚀 Main Streamlit App",
             "type": "python",
             "request": "launch",
             "module": "streamlit",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
             "args": [
                 "run",
-                "apps/streamlit_app.py"
+                "apps/streamlit_app.py",
+                "--server.port",
+                "8501",
+                "--server.headless",
+                "true"
             ],
-            "justMyCode": true,
-            "python": "C:/App/Anaconda/python.exe"
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "🤖 Prompt Manager App",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/prompt_manager_app.py",
+                "--server.port",
+                "8502",
+                "--server.headless",
+                "true"
+            ],
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "🔧 Main CLI App (Debug)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/apps/main.py",
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false
+        },
+        {
+            "name": "🚀 Main Streamlit App (Debug Port 8503)",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/streamlit_app.py",
+                "--server.port",
+                "8503",
+                "--server.headless",
+                "true",
+                "--logger.level",
+                "debug"
+            ],
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "🤖 Prompt Manager App (Debug Port 8504)",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/prompt_manager_app.py",
+                "--server.port",
+                "8504",
+                "--server.headless",
+                "true",
+                "--logger.level",
+                "debug"
+            ],
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "🔍 System Health Monitor Dashboard",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "utils/health_dashboard.py",
+                "--server.port",
+                "8505",
+                "--server.headless",
+                "true"
+            ],
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "🔍 System Health Monitor (Debug Port 8506)",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "utils/health_dashboard.py",
+                "--server.port",
+                "8506",
+                "--server.headless",
+                "true",
+                "--logger.level",
+                "debug"
+            ],
+            "python": "D:\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
         }
     ]
 }

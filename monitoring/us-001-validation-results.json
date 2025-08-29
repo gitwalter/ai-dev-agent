@@ -1,0 +1,250 @@
+{
+  "validation_timestamp": "2025-08-29T21:38:45.748547",
+  "user_story": "US-001: Automated System Health Monitoring",
+  "story_points": 8,
+  "sprint": "Sprint 1",
+  "tests": {
+    "core_monitoring": {
+      "test_name": "Core Health Monitoring",
+      "acceptance_criteria": "Real-time monitoring of all system components",
+      "started": "2025-08-29T21:38:45.748547",
+      "subtests": {
+        "initialization": {
+          "description": "Health monitor initializes correctly",
+          "passed": true,
+          "details": "Monitor instance: SystemHealthMonitor"
+        },
+        "agent_registry": {
+          "description": "All 7 agents registered for monitoring",
+          "passed": true,
+          "details": "Registered: 7/7 agents - ['requirements_analyst', 'architecture_designer', 'code_generator', 'test_generator', 'code_reviewer', 'security_analyst', 'documentation_generator']"
+        },
+        "configuration": {
+          "description": "Monitoring interval configured correctly",
+          "passed": true,
+          "details": "Interval: 300s"
+        },
+        "health_check": {
+          "description": "Health check executes successfully",
+          "passed": true,
+          "details": "Checked 7 agents"
+        }
+      },
+      "completed": "2025-08-29T21:38:53.992748",
+      "overall_passed": true
+    },
+    "agent_health": {
+      "test_name": "Agent Health Checks",
+      "acceptance_criteria": "All 7 agents monitored with health metrics",
+      "started": "2025-08-29T21:38:54.000285",
+      "subtests": {
+        "agent_requirements_analyst": {
+          "description": "requirements_analyst health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "5.2ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "agent_architecture_designer": {
+          "description": "architecture_designer health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "4.3ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "agent_code_generator": {
+          "description": "code_generator health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "6.7ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "agent_test_generator": {
+          "description": "test_generator health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "0.0ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "agent_code_reviewer": {
+          "description": "code_reviewer health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "0.0ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "agent_security_analyst": {
+          "description": "security_analyst health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "16.2ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "agent_documentation_generator": {
+          "description": "documentation_generator health check",
+          "passed": true,
+          "details": {
+            "status": "healthy",
+            "response_time": "6.1ms",
+            "success_rate": "100.0%"
+          }
+        },
+        "overall_health": {
+          "description": "Overall agent health status",
+          "passed": true,
+          "details": "7/7 agents healthy"
+        }
+      },
+      "completed": "2025-08-29T21:38:54.050359",
+      "overall_passed": true
+    },
+    "realtime_monitoring": {
+      "test_name": "Real-time Monitoring",
+      "acceptance_criteria": "Continuous monitoring with 5-minute intervals",
+      "started": "2025-08-29T21:38:54.051380",
+      "subtests": {
+        "monitoring_interval": {
+          "description": "Monitoring interval configured for real-time operation",
+          "passed": true,
+          "details": "Interval: 300s"
+        },
+        "data_persistence": {
+          "description": "Health data persisted to storage",
+          "passed": true,
+          "details": "Data file: monitoring\\health_data.json"
+        },
+        "data_freshness": {
+          "description": "Health data is fresh (< 10 minutes old)",
+          "passed": true,
+          "details": "Data age: 0s"
+        },
+        "monitoring_active": {
+          "description": "Monitoring system is active",
+          "passed": false,
+          "details": "Running: False"
+        }
+      },
+      "completed": "2025-08-29T21:38:54.068710",
+      "overall_passed": false
+    },
+    "alerting_system": {
+      "test_name": "Alerting System",
+      "acceptance_criteria": "Proactive alerts for system failures",
+      "started": "2025-08-29T21:38:54.068710",
+      "subtests": {
+        "alerting_init": {
+          "description": "Alerting system initializes correctly",
+          "passed": true,
+          "details": "System type: ProactiveAlertingSystem"
+        },
+        "alert_storage": {
+          "description": "Alert storage system available",
+          "passed": true,
+          "details": "Storage path: monitoring"
+        },
+        "smart_processing": {
+          "description": "Smart alert processor available",
+          "passed": true,
+          "details": "Smart correlation and deduplication enabled"
+        },
+        "notification_channels": {
+          "description": "Notification channels configured",
+          "passed": true,
+          "details": "Channels: [<NotificationChannel.CONSOLE: 'console'>, <NotificationChannel.FILE: 'file'>]"
+        }
+      },
+      "completed": "2025-08-29T21:38:54.068710",
+      "overall_passed": true
+    },
+    "api_endpoints": {
+      "test_name": "API Endpoints",
+      "acceptance_criteria": "Health check endpoints for external monitoring",
+      "started": "2025-08-29T21:38:54.068710",
+      "subtests": {
+        "api_module": {
+          "description": "API endpoints module available",
+          "passed": true,
+          "details": "FastAPI application and server classes available"
+        },
+        "endpoint_definitions": {
+          "description": "Required API endpoints defined",
+          "passed": true,
+          "details": "Available: ['/health', '/health/agents', '/health/alerts', '/health/metrics']"
+        },
+        "response_models": {
+          "description": "Response models defined",
+          "passed": true,
+          "details": "Pydantic models available for API responses"
+        },
+        "server_startup": {
+          "description": "API server can be instantiated",
+          "passed": true,
+          "details": "Server configured for localhost:8002"
+        }
+      },
+      "completed": "2025-08-29T21:38:55.903964",
+      "overall_passed": true
+    },
+    "dashboard": {
+      "test_name": "Dashboard Components",
+      "acceptance_criteria": "Dashboard showing system health and performance metrics",
+      "started": "2025-08-29T21:38:55.920791",
+      "subtests": {},
+      "error": "`np.round_` was removed in the NumPy 2.0 release. Use `np.round` instead.",
+      "completed": "2025-08-29T21:39:23.464768",
+      "overall_passed": true
+    },
+    "recovery_system": {
+      "test_name": "Recovery System",
+      "acceptance_criteria": "99.9% uptime with automatic recovery",
+      "started": "2025-08-29T21:39:23.464768",
+      "subtests": {
+        "recovery_config": {
+          "description": "Recovery system configured",
+          "passed": true,
+          "details": "Max attempts: 3"
+        },
+        "recovery_methods": {
+          "description": "Recovery methods available",
+          "passed": true,
+          "details": "Available methods: ['_attempt_recovery', '_perform_agent_recovery']"
+        },
+        "uptime_tracking": {
+          "description": "Uptime tracking available",
+          "passed": true,
+          "details": "Start time: 2025-08-29 21:38:45.593618"
+        },
+        "service_monitoring": {
+          "description": "Service monitoring capability",
+          "passed": true,
+          "details": "Health monitor provides basic service monitoring"
+        }
+      },
+      "completed": "2025-08-29T21:39:23.464768",
+      "overall_passed": true
+    }
+  },
+  "summary": {
+    "overall_result": "FAILED",
+    "total_tests": 7,
+    "passed_tests": 6,
+    "failed_tests": 1,
+    "test_success_rate": "85.7%",
+    "total_subtests": 28,
+    "passed_subtests": 27,
+    "subtest_success_rate": "96.4%",
+    "validation_status": "\u274c US-001 VALIDATION FAILED"
+  }
+}

@@ -1,8 +1,29 @@
-# Cursor Project Rules - Optimized and Standardized
+# Cursor Project Rules - Organized and Categorized
 
-This directory contains all cursor project rules that have been optimized for better usage and standardized naming conventions.
+This directory contains all cursor project rules organized into logical categories for better discoverability and management.
 
-## Rule Categories and Standards
+## New Organization Structure
+
+Rules are now organized into logical categories with clear folder structure:
+
+```
+.cursor/rules/
+├── core/                   # Critical rules that always apply (6 rules)
+├── development/            # Core development practices (6 rules)
+├── agile/                  # Agile methodology rules (6 rules)
+├── testing/                # Testing and QA rules (2 rules)
+├── security/               # Security standards (2 rules)
+├── quality/                # Quality assurance (4 rules)
+├── automation/             # Automation tools (3 rules)
+├── infrastructure/         # System configuration (3 rules)
+├── workflow/               # Session management (3 rules)
+├── meta/                   # Rule governance (6 rules)
+└── docs/                   # Documentation
+    ├── README.md           # This file
+    ├── index.md            # Complete rule index
+    ├── RULE_APPLICATION_GUIDE.md
+    └── RULE_DOCUMENT_EXCELLENCE.md
+```
 
 All rules follow the standardized naming convention: `category_action_rule.mdc`
 

@@ -174,11 +174,13 @@ class TestProjectManagerSupervisor:
         
         result = await project_manager._execute_task(task, "requirements_analyst", "test prompt")
         
-        assert result["task_id"] == "task_1"
-        assert result["worker"] == "requirements_analyst"
-        assert "Mock result for requirements_analysis" in result["result"]
-        assert result["status"] == "completed"
-        assert "timestamp" in result
+        assert isinstance(result, TaskResult)
+        assert result.task_id == "task_1"
+        assert result.success == True
+        assert result.result_data["worker"] == "requirements_analyst"
+        assert "Mock result for requirements_analysis" in result.result_data["result"]
+        assert result.result_data["status"] == "completed"
+        assert "timestamp" in result.result_data
     
     @pytest.mark.asyncio
     async def test_delegate_task_success(self, project_manager):

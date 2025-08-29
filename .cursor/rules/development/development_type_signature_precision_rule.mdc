@@ -1,0 +1,962 @@
+---
+description: "Maintain absolute precision in typing, function signatures, and API usage - every type annotation, parameter, and return value must be exact and correct"
+category: "development-standards"
+priority: "critical"
+alwaysApply: "true"
+globs: ["**/*.py", "**/*.ts", "**/*.js", "**/*.java", "**/*.cs"]
+tags: ["typing", "signatures", "apis", "precision", "quality", "god-in-details"]
+companion_rule: "RULE_DOCUMENT_EXCELLENCE.md"
+tier: "1"
+---
+
+# Type Consciousness and API Signature Precision Rule
+
+**CRITICAL**: Maintain absolute precision in typing, function signatures, and API usage. God is in the details - every type annotation, parameter, and return value must be exact and correct.
+
+## Description
+This rule enforces meticulous attention to type annotations, function signatures, API calls, and parameter passing. Every function call, method invocation, and data structure usage must be precisely typed and correctly implemented.
+
+## Core Requirements
+
+### 1. Type Annotation Precision
+**MANDATORY**: All functions, methods, and variables must have precise type annotations
+```python
+# CORRECT: Precise type annotations
+def process_data(
+    items: List[Dict[str, Union[str, int]]],
+    config: Optional[ProcessingConfig] = None,
+    timeout: float = 30.0
+) -> Tuple[List[ProcessedItem], List[ValidationError]]:
+    """Process data with exact type specifications."""
+    pass
+
+# INCORRECT: Missing or imprecise types
+def process_data(items, config=None, timeout=30):  # No types
+    pass
+
+def process_data(items: list, config: dict) -> list:  # Imprecise types
+    pass
+```
+
+### 2. Function Signature Compliance
+**MANDATORY**: Every function call must match the exact signature
+```python
+# CORRECT: Exact signature matching
+from typing import Protocol
+
+class DataProcessor(Protocol):
+    def process(self, data: List[str], mode: ProcessingMode) -> ProcessingResult:
+        ...
+
+# Function call must match exactly
+processor = DataProcessor()
+result = processor.process(
+    data=["item1", "item2"],  # Correct type: List[str]
+    mode=ProcessingMode.STRICT  # Correct type: ProcessingMode
+)
+
+# INCORRECT: Signature violations
+result = processor.process(["item1", "item2"])  # Missing required parameter
+result = processor.process("item1", ProcessingMode.STRICT)  # Wrong type: str instead of List[str]
+result = processor.process(["item1"], "strict")  # Wrong type: str instead of ProcessingMode
+```
+
+### 3. API Parameter Precision
+**MANDATORY**: All API calls must use correct parameter names and types
+```python
+# CORRECT: Exact API parameter usage
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Use exact parameter names and types as defined in the API
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",  # str
+    google_api_key=api_key,    # str
+    temperature=0.1,           # float
+    max_tokens=8192,          # int
+    max_output_tokens=None,    # Optional[int]
+    timeout=None,             # Optional[float]
+    max_retries=3,            # int
+    streaming=False           # bool
+)
+
+# INCORRECT: Wrong parameter names or types
+llm = ChatGoogleGenerativeAI(
+    model_name="gemini-2.5-flash",  # Wrong parameter name
+    api_key=api_key,               # Wrong parameter name
+    temp=0.1,                      # Wrong parameter name
+    max_tokens="8192",             # Wrong type: str instead of int
+    streaming="false"              # Wrong type: str instead of bool
+)
+```
+
+### 4. Return Type Verification
+**MANDATORY**: Verify and handle exact return types
+```python
+# CORRECT: Proper return type handling
+from typing import Union, Optional, Dict, Any
+
+def parse_response(response: str) -> Dict[str, Any]:
+    """Parse response with exact return type."""
+    try:
+        parsed: Dict[str, Any] = json.loads(response)
+        return parsed
+    except json.JSONDecodeError as e:
+        raise OutputParserException(f"Invalid JSON: {e}")
+
+# Function usage with proper type handling
+def process_response(response: str) -> ProcessedResult:
+    parsed_data: Dict[str, Any] = parse_response(response)
+    
+    # Type-safe access with validation
+    if "status" not in parsed_data:
+        raise ValueError("Missing 'status' field")
+    
+    status: str = parsed_data["status"]
+    if not isinstance(status, str):
+        raise TypeError(f"Expected str for 'status', got {type(status)}")
+    
+    return ProcessedResult(status=status, data=parsed_data.get("data", {}))
+```
+
+### 5. Generic Type Precision
+**MANDATORY**: Use precise generic types for collections and containers
+```python
+# CORRECT: Precise generic types
+from typing import Dict, List, Set, Tuple, Optional, Union, TypeVar, Generic
+
+T = TypeVar('T')
+K = TypeVar('K')
+V = TypeVar('V')
+
+class DataContainer(Generic[T]):
+    def __init__(self, items: List[T]) -> None:
+        self._items: List[T] = items
+    
+    def get_items(self) -> List[T]:
+        return self._items.copy()
+    
+    def add_item(self, item: T) -> None:
+        self._items.append(item)
+
+# Usage with specific types
+container: DataContainer[str] = DataContainer(["item1", "item2"])
+items: List[str] = container.get_items()
+container.add_item("item3")  # Type-safe addition
+
+# INCORRECT: Imprecise or missing generic types
+class DataContainer:  # Missing Generic[T]
+    def __init__(self, items):  # Missing type annotation
+        self._items = items
+    
+    def get_items(self):  # Missing return type
+        return self._items
+```
+
+### 6. Protocol and Interface Compliance
+**MANDATORY**: Implement exact protocol signatures
+```python
+# CORRECT: Exact protocol implementation
+from typing import Protocol, runtime_checkable
+
+@runtime_checkable
+class Serializable(Protocol):
+    def serialize(self) -> Dict[str, Any]:
+        """Serialize object to dictionary."""
+        ...
+    
+    def deserialize(self, data: Dict[str, Any]) -> None:
+        """Deserialize from dictionary."""
+        ...
+
+class UserData:
+    def __init__(self, name: str, age: int) -> None:
+        self.name = name
+        self.age = age
+    
+    # EXACT protocol compliance
+    def serialize(self) -> Dict[str, Any]:
+        return {"name": self.name, "age": self.age}
+    
+    def deserialize(self, data: Dict[str, Any]) -> None:
+        self.name = data["name"]
+        self.age = data["age"]
+
+# INCORRECT: Protocol violations
+class UserData:
+    def serialize(self) -> str:  # Wrong return type
+        return f"{self.name},{self.age}"
+    
+    def deserialize(self, data: str) -> Dict[str, Any]:  # Wrong parameter and return types
+        parts = data.split(",")
+        return {"name": parts[0], "age": int(parts[1])}
+```
+
+### 7. Exception Type Precision
+**MANDATORY**: Use and catch exact exception types
+```python
+# CORRECT: Precise exception handling
+from typing import NoReturn
+
+class ValidationError(Exception):
+    """Raised when validation fails."""
+    pass
+
+class ProcessingError(Exception):
+    """Raised when processing fails."""
+    pass
+
+def validate_data(data: Dict[str, Any]) -> None:
+    """Validate data with precise exception types."""
+    if not isinstance(data, dict):
+        raise ValidationError(f"Expected dict, got {type(data)}")
+    
+    if "required_field" not in data:
+        raise ValidationError("Missing required_field")
+
+def process_with_precise_exceptions(data: Dict[str, Any]) -> ProcessedResult:
+    try:
+        validate_data(data)
+        return ProcessedResult(data)
+    except ValidationError as e:
+        raise ProcessingError(f"Validation failed: {e}")
+    except (KeyError, TypeError) as e:
+        raise ProcessingError(f"Data processing error: {e}")
+
+# INCORRECT: Imprecise exception handling
+def process_data(data):
+    try:
+        # Some processing
+        pass
+    except Exception as e:  # Too broad
+        raise Exception("Something went wrong")  # Imprecise exception type
+```
+
+### 8. Async Type Precision
+**MANDATORY**: Precise typing for async functions and coroutines
+```python
+# CORRECT: Precise async typing
+import asyncio
+from typing import Awaitable, Coroutine, AsyncGenerator, AsyncIterator
+
+async def fetch_data(url: str, timeout: float = 30.0) -> Dict[str, Any]:
+    """Fetch data with precise async typing."""
+    # Implementation
+    pass
+
+async def process_multiple(
+    urls: List[str],
+    concurrency: int = 5
+) -> List[Dict[str, Any]]:
+    """Process multiple URLs with proper async typing."""
+    semaphore = asyncio.Semaphore(concurrency)
+    
+    async def bounded_fetch(url: str) -> Dict[str, Any]:
+        async with semaphore:
+            return await fetch_data(url)
+    
+    tasks: List[Coroutine[Any, Any, Dict[str, Any]]] = [
+        bounded_fetch(url) for url in urls
+    ]
+    
+    results: List[Dict[str, Any]] = await asyncio.gather(*tasks)
+    return results
+
+async def data_stream(
+    source: str
+) -> AsyncGenerator[Dict[str, Any], None]:
+    """Generate data stream with precise typing."""
+    while True:
+        data = await fetch_data(source)
+        yield data
+        await asyncio.sleep(1.0)
+
+# INCORRECT: Imprecise async typing
+async def fetch_data(url):  # Missing return type annotation
+    pass
+
+async def process_multiple(urls):  # Missing parameter and return types
+    tasks = [fetch_data(url) for url in urls]  # Imprecise task typing
+    return await asyncio.gather(*tasks)
+```
+
+## Static Type Checking Requirements
+
+### 1. MyPy Configuration
+**MANDATORY**: Use strict MyPy configuration
+```ini
+# mypy.ini
+[mypy]
+python_version = 3.9
+warn_return_any = True
+warn_unused_configs = True
+warn_redundant_casts = True
+warn_unused_ignores = True
+warn_no_return = True
+warn_unreachable = True
+strict_optional = True
+strict_equality = True
+strict_concatenate = True
+check_untyped_defs = True
+disallow_untyped_defs = True
+disallow_incomplete_defs = True
+disallow_untyped_decorators = True
+disallow_any_unimported = True
+disallow_any_expr = True
+disallow_any_decorated = True
+disallow_any_explicit = True
+disallow_any_generics = True
+disallow_subclassing_any = True
+```
+
+### 2. Runtime Type Checking
+**MANDATORY**: Use runtime type validation for critical functions
+```python
+# CORRECT: Runtime type validation
+import inspect
+from typing import get_type_hints, get_origin, get_args
+from functools import wraps
+
+def validate_types(func):
+    """Decorator to validate function argument and return types at runtime."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # Get function signature and type hints
+        sig = inspect.signature(func)
+        type_hints = get_type_hints(func)
+        
+        # Validate arguments
+        bound_args = sig.bind(*args, **kwargs)
+        bound_args.apply_defaults()
+        
+        for param_name, value in bound_args.arguments.items():
+            if param_name in type_hints:
+                expected_type = type_hints[param_name]
+                if not _is_instance(value, expected_type):
+                    raise TypeError(
+                        f"Parameter '{param_name}' expected {expected_type}, "
+                        f"got {type(value)}: {value}"
+                    )
+        
+        # Call function
+        result = func(*args, **kwargs)
+        
+        # Validate return type
+        if 'return' in type_hints:
+            expected_return_type = type_hints['return']
+            if not _is_instance(result, expected_return_type):
+                raise TypeError(
+                    f"Return value expected {expected_return_type}, "
+                    f"got {type(result)}: {result}"
+                )
+        
+        return result
+    
+    return wrapper
+
+def _is_instance(value, expected_type):
+    """Check if value matches expected type, handling complex types."""
+    # Handle Union types, Optional, List, Dict, etc.
+    # Implementation details...
+    pass
+
+# Usage
+@validate_types
+def process_user_data(
+    user_id: int,
+    data: Dict[str, str],
+    options: Optional[ProcessingOptions] = None
+) -> UserProcessingResult:
+    """Process user data with runtime type validation."""
+    pass
+```
+
+### 3. IDE Integration Requirements
+**MANDATORY**: Configure IDE for strict type checking
+```json
+// VS Code settings.json
+{
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyArgs": [
+        "--strict",
+        "--show-error-codes",
+        "--show-column-numbers"
+    ],
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.diagnosticMode": "workspace"
+}
+```
+
+## Documentation Requirements
+
+### 1. Type Documentation
+**MANDATORY**: Document all type decisions and constraints
+```python
+# CORRECT: Comprehensive type documentation
+from typing import TypedDict, Literal, Final
+
+class UserData(TypedDict):
+    """User data structure with exact field types.
+    
+    Fields:
+        user_id: Unique identifier (positive integer)
+        username: User display name (non-empty string, max 50 chars)
+        email: Valid email address (RFC 5322 compliant)
+        status: Account status (must be one of: active, inactive, suspended)
+        metadata: Additional data (any JSON-serializable structure)
+    """
+    user_id: int
+    username: str
+    email: str
+    status: Literal['active', 'inactive', 'suspended']
+    metadata: Dict[str, Any]
+
+# Type constraints documentation
+MAX_USERNAME_LENGTH: Final[int] = 50
+VALID_EMAIL_PATTERN: Final[str] = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+def validate_user_data(data: UserData) -> None:
+    """Validate user data according to type constraints.
+    
+    Args:
+        data: User data dictionary matching UserData structure
+        
+    Raises:
+        ValidationError: If data violates type constraints
+        TypeError: If data structure doesn't match UserData
+        
+    Type Constraints:
+        - user_id must be positive integer
+        - username must be 1-50 characters
+        - email must match RFC 5322 pattern
+        - status must be exact literal value
+        - metadata must be JSON-serializable
+    """
+    pass
+```
+
+### 2. API Signature Documentation
+**MANDATORY**: Document exact API signatures and parameter requirements
+```python
+# CORRECT: Complete API signature documentation
+class DataProcessingAPI:
+    """Data processing API with exact signature specifications.
+    
+    All methods require precise parameter types and return exact types.
+    No implicit conversions or type coercion is performed.
+    """
+    
+    def process_batch(
+        self,
+        items: List[ProcessingItem],
+        config: ProcessingConfig,
+        *,
+        timeout: Optional[float] = None,
+        retry_count: int = 3,
+        on_error: Literal['raise', 'skip', 'default'] = 'raise'
+    ) -> BatchProcessingResult:
+        """Process a batch of items with exact parameter specifications.
+        
+        Args:
+            items: List of items to process. Must not be empty.
+                   Each item must be a valid ProcessingItem instance.
+            config: Processing configuration. Must be fully initialized
+                   ProcessingConfig with all required fields set.
+            timeout: Optional processing timeout in seconds. If provided,
+                    must be positive float. None means no timeout.
+            retry_count: Number of retries for failed items. Must be
+                        non-negative integer. Default is 3.
+            on_error: Error handling strategy. Must be exact literal:
+                     - 'raise': Raise exception on any error
+                     - 'skip': Skip failed items and continue
+                     - 'default': Use default values for failed items
+        
+        Returns:
+            BatchProcessingResult with exact structure:
+            - successful_items: List[ProcessedItem] (never None)
+            - failed_items: List[Tuple[ProcessingItem, Exception]]
+            - processing_time: float (seconds, always positive)
+            - metadata: Dict[str, Any] (processing statistics)
+        
+        Raises:
+            ValueError: If items is empty or any item is invalid
+            TypeError: If any parameter has wrong type
+            ProcessingError: If processing fails and on_error='raise'
+            TimeoutError: If timeout is exceeded
+        
+        Example:
+            >>> api = DataProcessingAPI()
+            >>> items = [ProcessingItem(data="test")]
+            >>> config = ProcessingConfig(mode="strict", validate=True)
+            >>> result = api.process_batch(
+            ...     items=items,
+            ...     config=config,
+            ...     timeout=30.0,
+            ...     retry_count=2,
+            ...     on_error='skip'
+            ... )
+            >>> assert isinstance(result, BatchProcessingResult)
+            >>> assert len(result.successful_items) >= 0
+        """
+        pass
+```
+
+## Testing Requirements
+
+### 1. Type Testing
+**MANDATORY**: Test all type annotations and signatures
+```python
+# CORRECT: Comprehensive type testing
+import pytest
+from typing import get_type_hints
+import inspect
+
+class TestTypeSignatures:
+    """Test exact type signatures and annotations."""
+    
+    def test_function_signatures(self):
+        """Test that functions have exact required signatures."""
+        # Test function signature
+        sig = inspect.signature(process_data)
+        
+        # Verify parameter names and types
+        params = sig.parameters
+        assert 'data' in params
+        assert 'config' in params
+        assert 'timeout' in params
+        
+        # Verify parameter defaults
+        assert params['config'].default is None
+        assert params['timeout'].default == 30.0
+        
+        # Verify type hints
+        hints = get_type_hints(process_data)
+        assert hints['data'] == List[Dict[str, Union[str, int]]]
+        assert hints['config'] == Optional[ProcessingConfig]
+        assert hints['timeout'] == float
+        assert hints['return'] == Tuple[List[ProcessedItem], List[ValidationError]]
+    
+    def test_type_validation(self):
+        """Test runtime type validation."""
+        # Test correct types
+        result = process_data(
+            data=[{"key": "value", "count": 42}],
+            config=ProcessingConfig(),
+            timeout=15.0
+        )
+        assert isinstance(result, tuple)
+        assert len(result) == 2
+        assert isinstance(result[0], list)
+        assert isinstance(result[1], list)
+        
+        # Test type violations
+        with pytest.raises(TypeError, match="Expected List"):
+            process_data(data="not a list")
+        
+        with pytest.raises(TypeError, match="Expected float"):
+            process_data(data=[], timeout="30")
+    
+    def test_api_parameter_precision(self):
+        """Test exact API parameter usage."""
+        # Test LLM initialization with exact parameters
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            google_api_key="test-key",
+            temperature=0.1,
+            max_tokens=8192,
+            streaming=False
+        )
+        
+        # Verify parameter types
+        assert isinstance(llm.model_name, str)
+        assert isinstance(llm.temperature, float)
+        assert isinstance(llm.max_tokens, int)
+        assert isinstance(llm.streaming, bool)
+        
+        # Test parameter validation
+        with pytest.raises(ValueError):
+            ChatGoogleGenerativeAI(model="")  # Empty model name
+        
+        with pytest.raises(TypeError):
+            ChatGoogleGenerativeAI(
+                model="gemini-2.5-flash",
+                temperature="0.1"  # Wrong type
+            )
+```
+
+### 2. Integration Type Testing
+**MANDATORY**: Test type compatibility across system boundaries
+```python
+# CORRECT: Integration type testing
+class TestTypeIntegration:
+    """Test type compatibility across components."""
+    
+    def test_agent_workflow_types(self):
+        """Test type flow through agent workflow."""
+        # Create typed state
+        initial_state = WorkflowState(
+            user_input="test request",
+            messages=[],
+            current_step="requirements_analysis",
+            agent_outputs={},
+            workflow_complete=False
+        )
+        
+        # Verify state type
+        assert isinstance(initial_state, WorkflowState)
+        assert isinstance(initial_state.user_input, str)
+        assert isinstance(initial_state.messages, list)
+        assert isinstance(initial_state.current_step, str)
+        assert isinstance(initial_state.agent_outputs, dict)
+        assert isinstance(initial_state.workflow_complete, bool)
+        
+        # Test agent processing with exact types
+        agent = RequirementsAnalyst()
+        result_state = agent.execute(initial_state)
+        
+        # Verify result types
+        assert isinstance(result_state, WorkflowState)
+        assert isinstance(result_state.agent_outputs, dict)
+        assert "requirements_analyst" in result_state.agent_outputs
+        
+        output = result_state.agent_outputs["requirements_analyst"]
+        assert isinstance(output, RequirementsAnalysisOutput)
+        assert isinstance(output.requirements, list)
+        assert isinstance(output.priority, RequirementsPriority)
+        assert isinstance(output.constraints, list)
+    
+    def test_database_type_mapping(self):
+        """Test type mapping between application and database."""
+        # Create domain object with exact types
+        user = UserData(
+            user_id=123,
+            username="testuser",
+            email="test@example.com",
+            status="active",
+            metadata={"role": "admin", "permissions": ["read", "write"]}
+        )
+        
+        # Test database serialization
+        db_record = serialize_user_for_db(user)
+        assert isinstance(db_record, dict)
+        assert isinstance(db_record["user_id"], int)
+        assert isinstance(db_record["status"], str)
+        assert db_record["status"] in ["active", "inactive", "suspended"]
+        
+        # Test database deserialization
+        restored_user = deserialize_user_from_db(db_record)
+        assert isinstance(restored_user, UserData)
+        assert restored_user.user_id == user.user_id
+        assert restored_user.status == user.status
+        assert type(restored_user.metadata) == type(user.metadata)
+```
+
+## Code Review Standards
+
+### 1. Type Review Checklist
+**MANDATORY**: Apply this checklist during code reviews
+```yaml
+type_review_checklist:
+  function_signatures:
+    - [ ] All parameters have type annotations
+    - [ ] Return types are specified
+    - [ ] Generic types are properly parameterized
+    - [ ] Optional parameters use Optional[] or Union[..., None]
+    - [ ] Default values match parameter types
+  
+  api_usage:
+    - [ ] All API calls use exact parameter names
+    - [ ] Parameter types match API specifications
+    - [ ] Return types are properly handled
+    - [ ] Error types are correctly caught
+    - [ ] Async functions use proper async typing
+  
+  data_structures:
+    - [ ] Collection types specify element types
+    - [ ] Dictionary types specify key and value types
+    - [ ] Custom classes have typed attributes
+    - [ ] Protocol implementations match exactly
+    - [ ] TypedDict used for structured data
+  
+  error_handling:
+    - [ ] Exception types are specific
+    - [ ] Caught exceptions match raised types
+    - [ ] Error messages include type information
+    - [ ] Type guards are used for runtime checks
+    - [ ] Validation errors are typed
+  
+  testing:
+    - [ ] Type signatures are tested
+    - [ ] Runtime type validation is tested
+    - [ ] Type violations are tested
+    - [ ] Integration types are verified
+    - [ ] MyPy passes without warnings
+```
+
+### 2. Type Violation Reporting
+**MANDATORY**: Report and fix all type violations immediately
+```python
+# CRITICAL TYPE VIOLATIONS - FIX IMMEDIATELY:
+
+# 1. Missing type annotations
+def process(data):  # ❌ CRITICAL: Missing types
+    pass
+
+def process(data: List[str]) -> ProcessingResult:  # ✅ CORRECT
+    pass
+
+# 2. Wrong parameter types
+llm = ChatGoogleGenerativeAI(model_name="gemini")  # ❌ CRITICAL: Wrong parameter name
+
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")  # ✅ CORRECT
+
+# 3. Type mismatches
+def get_user_id() -> int:
+    return "123"  # ❌ CRITICAL: Returns str, declared int
+
+def get_user_id() -> int:
+    return 123  # ✅ CORRECT
+
+# 4. Imprecise generic types
+items: list = []  # ❌ CRITICAL: Imprecise type
+
+items: List[ProcessingItem] = []  # ✅ CORRECT
+
+# 5. Wrong API signatures
+result = api.process(data, mode="strict")  # ❌ CRITICAL: Check exact API
+
+result = api.process(items=data, processing_mode=ProcessingMode.STRICT)  # ✅ CORRECT
+```
+
+## Tools and Automation
+
+### 1. Type Checking Automation
+**MANDATORY**: Automated type checking in CI/CD
+```yaml
+# .github/workflows/type-check.yml
+name: Type Checking
+on: [push, pull_request]
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install mypy types-requests types-setuptools
+          pip install -r requirements.txt
+      
+      - name: Run MyPy
+        run: |
+          mypy --strict --show-error-codes --show-column-numbers .
+      
+      - name: Run Pyright
+        run: |
+          npm install -g pyright
+          pyright --stats
+      
+      - name: Type coverage report
+        run: |
+          mypy --html-report type-coverage-report .
+```
+
+### 2. Runtime Type Validation
+**MANDATORY**: Runtime validation for critical functions
+```python
+# Type validation utility
+from typing import Any, get_type_hints, get_origin, get_args
+import inspect
+
+class TypeValidator:
+    """Runtime type validation utility."""
+    
+    @staticmethod
+    def validate_function_call(func, *args, **kwargs):
+        """Validate function call against type hints."""
+        sig = inspect.signature(func)
+        hints = get_type_hints(func)
+        
+        # Bind arguments
+        bound = sig.bind(*args, **kwargs)
+        bound.apply_defaults()
+        
+        # Validate each argument
+        for param_name, value in bound.arguments.items():
+            if param_name in hints:
+                expected_type = hints[param_name]
+                if not TypeValidator._check_type(value, expected_type):
+                    raise TypeError(
+                        f"Argument '{param_name}' expected {expected_type}, "
+                        f"got {type(value).__name__}: {repr(value)}"
+                    )
+    
+    @staticmethod
+    def validate_return_type(func, return_value):
+        """Validate function return type."""
+        hints = get_type_hints(func)
+        if 'return' in hints:
+            expected_type = hints['return']
+            if not TypeValidator._check_type(return_value, expected_type):
+                raise TypeError(
+                    f"Return value expected {expected_type}, "
+                    f"got {type(return_value).__name__}: {repr(return_value)}"
+                )
+        return return_value
+    
+    @staticmethod
+    def _check_type(value: Any, expected_type: Any) -> bool:
+        """Check if value matches expected type."""
+        # Handle basic types
+        if expected_type == type(value):
+            return True
+        
+        # Handle Union types
+        origin = get_origin(expected_type)
+        if origin is Union:
+            return any(TypeValidator._check_type(value, arg) for arg in get_args(expected_type))
+        
+        # Handle Optional (Union[T, None])
+        if expected_type == Optional[get_args(expected_type)[0]]:
+            if value is None:
+                return True
+            return TypeValidator._check_type(value, get_args(expected_type)[0])
+        
+        # Handle List, Dict, etc.
+        if origin is list and isinstance(value, list):
+            if get_args(expected_type):
+                element_type = get_args(expected_type)[0]
+                return all(TypeValidator._check_type(item, element_type) for item in value)
+            return True
+        
+        # Add more type checking logic as needed
+        return isinstance(value, expected_type)
+
+# Decorator for automatic validation
+def type_validated(func):
+    """Decorator to automatically validate types."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        TypeValidator.validate_function_call(func, *args, **kwargs)
+        result = func(*args, **kwargs)
+        return TypeValidator.validate_return_type(func, result)
+    return wrapper
+```
+
+## Enforcement
+
+### 1. Pre-commit Hooks
+**MANDATORY**: Type checking in pre-commit hooks
+```bash
+#!/bin/sh
+# .git/hooks/pre-commit
+
+echo "Running type checks..."
+
+# Run MyPy
+mypy --strict --show-error-codes .
+if [ $? -ne 0 ]; then
+    echo "❌ MyPy type checking failed"
+    exit 1
+fi
+
+# Run Pyright
+pyright --stats
+if [ $? -ne 0 ]; then
+    echo "❌ Pyright type checking failed"
+    exit 1
+fi
+
+echo "✅ Type checking passed"
+```
+
+### 2. IDE Configuration
+**MANDATORY**: Configure IDE for strict type checking
+```json
+// .vscode/settings.json
+{
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyArgs": [
+        "--strict",
+        "--show-error-codes",
+        "--warn-unreachable",
+        "--warn-redundant-casts"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
+}
+```
+
+### 3. Quality Gates
+**MANDATORY**: Type checking quality gates
+```yaml
+quality_gates:
+  type_coverage: ">= 95%"  # MyPy type coverage
+  mypy_errors: "0"         # Zero MyPy errors
+  pyright_errors: "0"      # Zero Pyright errors
+  runtime_type_errors: "0" # Zero runtime type validation failures
+  
+enforcement_levels:
+  blocking:
+    - "MyPy strict mode errors"
+    - "Missing type annotations on public APIs"
+    - "Wrong parameter types in API calls"
+    - "Return type mismatches"
+  
+  warning:
+    - "Incomplete type annotations on private methods"
+    - "Type: ignore comments without explanations"
+    - "Complex Union types that could be simplified"
+```
+
+## Benefits
+
+- **Error Prevention**: Catch type-related bugs at development time
+- **API Correctness**: Ensure exact API usage and parameter matching
+- **Code Quality**: Improve overall code reliability and maintainability
+- **Documentation**: Type annotations serve as living documentation
+- **IDE Support**: Better autocomplete, refactoring, and error detection
+- **Team Collaboration**: Clear contracts between components and developers
+
+## Monitoring and Metrics
+
+### Success Indicators:
+- 95%+ type annotation coverage
+- Zero MyPy/Pyright errors in CI/CD
+- Reduced runtime type-related errors
+- Improved code review efficiency
+- Better IDE autocomplete accuracy
+
+### Failure Indicators:
+- Frequent type-related runtime errors
+- MyPy/Pyright errors in CI/CD
+- API parameter mismatches
+- Type annotation coverage below 90%
+- Developers avoiding type annotations
+
+## Remember
+
+**"Types are contracts - honor them precisely."**
+
+**"Every parameter, every return value, every API call must be exact."**
+
+**"God is in the details - and the details are in the types."**
+
+This rule is **ALWAYS APPLIED** and must be followed for all:
+- Function definitions and calls
+- API usage and integration
+- Data structure definitions
+- Error handling and exceptions
+- Testing and validation
+- Code reviews and quality checks
+
+**Violations of this rule require immediate remediation and precise type corrections.**

@@ -15,6 +15,9 @@ from models.responses import AgentResult, AgentStatus
 from models.state import AgentState
 from prompts import get_agent_prompt_loader
 
+# LangChain integration availability flag
+LANGCHAIN_AVAILABLE = False
+
 
 @dataclass
 class Requirement:

@@ -2,9 +2,28 @@
 
 ## 📋 **Agile Documents Overview**
 
-This directory contains all agile project management artifacts for the AI-Dev-Agent system, organized for maximum agility and automation.
+This directory contains all agile project management artifacts for the AI-Dev-Agent system, organized with a **sprint-centric approach** and **central catalog system** for maximum agility and visibility.
 
-## 📁 **Organized Structure**
+## 📁 **New Sprint-Centric Structure**
+
+### **🗂️ Central Catalogs** (`catalogs/`) - **NEW**
+- **[User Story Catalog](catalogs/USER_STORY_CATALOG.md)** - Master index of all user stories across sprints
+- **[Epic Overview](catalogs/EPIC_OVERVIEW.md)** - Cross-sprint epic progress tracking  
+- **[Sprint Summary](catalogs/SPRINT_SUMMARY.md)** - Cross-sprint status and metrics dashboard
+- **[Task Catalog](catalogs/TASK_CATALOG.md)** - Comprehensive task tracking across all sprints
+- **[Cross-Sprint Tracking](catalogs/CROSS_SPRINT_TRACKING.md)** - Dependencies and relationships
+
+### **🚀 Sprint-Centric Organization** (`sprints/`) - **ENHANCED**
+- **[Sprint Documentation Guide](sprints/README.md)** - Sprint organization standards
+- **[Sprint 1 Complete Package](sprints/sprint_1/)** - All Sprint 1 artifacts in one location:
+  - **[User Stories](sprints/sprint_1/user_stories/)** - All Sprint 1 user stories
+  - **[Tasks](sprints/sprint_1/tasks/)** - Sprint-specific task breakdown
+  - **[Daily Standups](sprints/sprint_1/daily_standups/)** - Daily progress tracking
+  - **[Metrics](sprints/sprint_1/metrics.md)** - Sprint metrics and analytics
+  - **[Blockers](sprints/sprint_1/blockers.md)** - Sprint-specific blocker tracking
+  - **[Progress](sprints/sprint_1/progress.md)** - Real-time sprint progress
+  - **[Backlog](sprints/sprint_1/backlog.md)** - Sprint backlog management
+- **[Sprint Templates](sprints/templates/)** - Templates for creating new sprints
 
 ### **Core Agile Concepts** (`core/`)
 - [Agile Workflow](core/agile_workflow.md) - Sprint-based development process
@@ -15,12 +34,12 @@ This directory contains all agile project management artifacts for the AI-Dev-Ag
 - [Agile Transformation Summary](core/agile_transformation_summary.md) - Agile implementation overview
 - [Definition of Done](core/definition_of_done.md) - Quality criteria for completed work
 
-### **Planning Documents** (`planning/`)
-- [Product Backlog](planning/product_backlog.md) - Prioritized list of features and user stories
+### **High-Level Planning** (`planning/`) - **CLEANED**
+- [Product Backlog](planning/product_backlog.md) - References catalog, high-level priorities
 - [Epic Breakdown](planning/epic_breakdown.md) - High-level feature groupings and themes
 - [Updated Roadmap](planning/updated_roadmap.md) - Agile-driven development roadmap
 - [Release Planning](planning/release_planning.md) - Release goals and roadmap
-- [User Stories](planning/user_stories.md) - Detailed user stories with acceptance criteria
+- [User Stories](planning/user_stories.md) - Master user story list (references catalog)
 - [Story Estimation](planning/story_estimation.md) - Story point estimation guidelines
 - [EPIC Utils Folder Reorganization](planning/EPIC_Utils_Folder_Reorganization.md) - Utils folder restructuring plan
 
@@ -29,13 +48,8 @@ This directory contains all agile project management artifacts for the AI-Dev-Ag
 - [Continuous Integration](execution/continuous_integration.md) - CI/CD in agile context
 - [User Story Configurable Tests](execution/user_story_configurable_tests.md) - Test-driven development
 
-### **Sprint Documentation** (`sprints/`)
-- [Sprint Documentation Guide](sprints/README.md) - Sprint organization and documentation standards
-- [Sprint 1 Documents](sprints/sprint_1/) - Complete Sprint 1 documentation
-- [Sprint Templates](sprints/templates/) - Templates for creating new sprint documentation
-
 ### **Templates** (`templates/`)
-- [Sprint Planning Templates](templates/sprint_planning/) - Legacy templates for sprint planning and execution
+- [Sprint Planning Templates](templates/sprint_planning/) - Templates for sprint planning and execution
 
 ### **Automation** (`automation/`)
 - [Automation Framework](automation/automation_framework.md) - Automated agile processes
@@ -119,19 +133,23 @@ sprints/
 - **Template Usage**: All new sprint documents should be created from provided templates
 - **Real-time Updates**: Progress documents must be updated daily during sprint execution
 
-## 🚀 **Getting Started**
+## 🚀 **Getting Started with Sprint-Centric Agile**
 
-### **Essential Reading (Required)**
-1. **[Agile Rules Index](core/agile_rules_index.md)** - Start here for complete agile rule overview
-2. **[Agile Meeting Rules](core/agile_meeting_rules.md)** - Master all agile meeting governance
-3. **[Agile Cursor Rules](core/agile_cursor_rules.md)** - Learn development principles and automation
+### **🗂️ Start with Central Catalogs (Overview)**
+1. **[User Story Catalog](catalogs/USER_STORY_CATALOG.md)** - Master index of all user stories across sprints
+2. **[Sprint Summary](catalogs/SPRINT_SUMMARY.md)** - Cross-sprint status dashboard and metrics
+3. **[Epic Overview](catalogs/EPIC_OVERVIEW.md)** - Epic progress tracking across multiple sprints
 
-### **Daily Operations**
-4. **Review Current Sprint** - Check [Sprint 1 Backlog](sprints/sprint_1/backlog.md) for current priorities
-5. **Check Daily Progress** - Review [Sprint 1 Progress](sprints/sprint_1/progress.md) for real-time status
-6. **Join Daily Standup** - Participate in [Daily Standup](daily_standup.md) following meeting rules
-7. **Monitor Velocity** - Track progress in [Current Velocity Tracking](velocity_tracking_current.md)
-8. **Follow Sprint Standards** - Use the [Sprint Documentation Guide](sprints/README.md) for sprint organization
+### **🚀 Current Sprint Focus (Sprint 1)**
+4. **[Sprint 1 Complete Package](sprints/sprint_1/)** - All Sprint 1 artifacts in one location
+5. **[Current Daily Standup](sprints/sprint_1/daily_standups/current_standup.md)** - Today's sprint status
+6. **[Sprint 1 Metrics](sprints/sprint_1/metrics.md)** - Real-time sprint performance tracking
+7. **[Sprint 1 Blockers](sprints/sprint_1/blockers.md)** - Current impediments and resolution plans
+
+### **📚 Essential Reading (Required)**
+8. **[Agile Rules Index](core/agile_rules_index.md)** - Complete agile rule overview
+9. **[Agile Meeting Rules](core/agile_meeting_rules.md)** - Meeting governance and standards
+10. **[Sprint Documentation Guide](sprints/README.md)** - Sprint organization standards
 
 ## 📊 **Current Agile Status**
 

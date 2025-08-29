@@ -22,21 +22,31 @@ class ProjectManagerSupervisor(BaseSupervisor):
     
     async def orchestrate_workflow(self, project_context: str) -> Dict[str, Any]:
         """Orchestrate the entire development workflow."""
-        self.logger.info("Starting project orchestration")
-        
-        # 1. Initialize project state
-        initial_state = await self._initialize_project_state(project_context)
-        
-        # 2. Create task breakdown
-        tasks = await self._create_task_breakdown(project_context)
-        
-        # 3. Prioritize and queue tasks
-        self.task_queue = await self._prioritize_tasks(tasks)
-        
-        # 4. Execute workflow
-        result = await self._execute_workflow(initial_state)
-        
-        return result
+        try:
+            self.logger.info("Starting project orchestration")
+            
+            # 1. Initialize project state
+            initial_state = await self._initialize_project_state(project_context)
+            
+            # 2. Create task breakdown
+            tasks = await self._create_task_breakdown(project_context)
+            
+            # 3. Prioritize and queue tasks
+            self.task_queue = await self._prioritize_tasks(tasks)
+            
+            # 4. Execute workflow
+            result = await self._execute_workflow(initial_state)
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Workflow orchestration failed: {e}")
+            return {
+                "status": "failed",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+                "project_context": project_context
+            }
     
     async def delegate_task(self, task: Task, worker: str) -> TaskResult:
         """Delegate a specific task to a worker agent."""
@@ -60,7 +70,7 @@ class ProjectManagerSupervisor(BaseSupervisor):
             return TaskResult(
                 task_id=task.task_id,
                 success=True,
-                result_data=result,
+                result_data=result.result_data,  # Extract the dict from TaskResult
                 timestamp=datetime.now()
             )
             
@@ -85,26 +95,46 @@ class ProjectManagerSupervisor(BaseSupervisor):
     
     async def handle_escalation(self, escalation: Escalation) -> Dict[str, Any]:
         """Handle escalations from worker agents."""
-        self.logger.info(f"Handling escalation: {escalation.reason}")
-        
-        # Analyze escalation
-        analysis = await self._analyze_escalation(escalation)
-        
-        # Determine resolution strategy
-        resolution = await self._determine_resolution_strategy(analysis)
-        
-        # Execute resolution
-        result = await self._execute_resolution(resolution)
-        
-        # Log escalation handling
-        self.log_decision({
-            "action": "escalation_handling",
-            "escalation_id": escalation.escalation_id,
-            "resolution": resolution,
-            "status": "resolved"
-        }, {"escalation": escalation.model_dump()})
-        
-        return result
+        try:
+            self.logger.info(f"Handling escalation: {escalation.reason}")
+            
+            # Analyze escalation
+            analysis = await self._analyze_escalation(escalation)
+            
+            # Check if analysis failed
+            if "error" in analysis:
+                self.logger.error(f"Escalation analysis failed: {analysis['error']}")
+                return {
+                    "status": "failed",
+                    "error": analysis["error"],
+                    "timestamp": datetime.now().isoformat(),
+                    "escalation_id": escalation.escalation_id
+                }
+            
+            # Determine resolution strategy
+            resolution = await self._determine_resolution_strategy(analysis)
+            
+            # Execute resolution
+            result = await self._execute_resolution(resolution)
+            
+            # Log escalation handling
+            self.log_decision({
+                "action": "escalation_handling",
+                "escalation_id": escalation.escalation_id,
+                "resolution": resolution,
+                "status": "resolved"
+            }, {"escalation": escalation.model_dump()})
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Escalation handling failed: {e}")
+            return {
+                "status": "failed",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
+                "escalation_id": escalation.escalation_id
+            }
     
     async def make_decision(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Make a supervisory decision based on context."""
@@ -224,37 +254,42 @@ class ProjectManagerSupervisor(BaseSupervisor):
     
     async def _create_task_breakdown(self, project_context: str) -> List[Task]:
         """Create a breakdown of tasks from project context."""
-        prompt = f"""
-        Analyze this project context and create a comprehensive task breakdown:
-        
-        {project_context}
-        
-        Create tasks for:
-        1. Requirements analysis
-        2. Architecture design
-        3. Code generation
-        4. Test generation
-        5. Code review
-        6. Security analysis
-        7. Documentation generation
-        
-        For each task, specify:
-        - Task type
-        - Description
-        - Priority (low/medium/high/critical)
-        - Estimated complexity (simple/moderate/complex)
-        - Dependencies
-        - Quality criteria
-        """
-        
-                # Use LLM to create task breakdown
-        response = await self.llm.ainvoke(prompt)
+        try:
+            prompt = f"""
+            Analyze this project context and create a comprehensive task breakdown:
+            
+            {project_context}
+            
+            Create tasks for:
+            1. Requirements analysis
+            2. Architecture design
+            3. Code generation
+            4. Test generation
+            5. Code review
+            6. Security analysis
+            7. Documentation generation
+            
+            For each task, specify:
+            - Task type
+            - Description
+            - Priority (low/medium/high/critical)
+            - Estimated complexity (simple/moderate/complex)
+            - Dependencies
+            - Quality criteria
+            """
+            
+            # Use LLM to create task breakdown
+            response = await self.llm.ainvoke(prompt)
 
-        # Parse response into Task objects - handle both string and object responses
-        response_content = response.content if hasattr(response, 'content') else response
-        tasks = self._parse_task_breakdown(response_content)
-        
-        return tasks
+            # Parse response into Task objects - handle both string and object responses
+            response_content = response.content if hasattr(response, 'content') else response
+            tasks = self._parse_task_breakdown(response_content)
+            
+            return tasks
+        except Exception as e:
+            self.logger.error(f"LLM task breakdown failed, using default tasks: {e}")
+            # Return default tasks when LLM fails
+            return self._parse_task_breakdown("")
     
     def _parse_task_breakdown(self, response: str) -> List[Task]:
         """Parse LLM response into Task objects."""
@@ -411,18 +446,42 @@ class ProjectManagerSupervisor(BaseSupervisor):
                 current_state["current_phase"] = f"executing_{task.task_name}"
                 
                 # Execute task (this would integrate with the actual workflow)
-                task_result = await self._execute_task(task, current_state)
+                worker = await self._select_worker_for_task(task)
+                task_result = await self.delegate_task(task, worker)
                 
-                # Update state with results
+                # Update state with results (ensure lists exist)
+                if "task_delegations" not in current_state:
+                    current_state["task_delegations"] = []
+                if "execution_history" not in current_state:
+                    current_state["execution_history"] = []
+                
                 current_state["task_delegations"].append(task_result.model_dump())
-                current_state["execution_history"].append({
-                    "task_id": task.task_id,
-                    "status": "completed",
-                    "timestamp": datetime.now().isoformat()
-                })
+                
+                # Update state with task result (includes agent_outputs and execution_history)
+                current_state = self._update_state_with_task_result(current_state, task, task_result)
+                
+                # Check if task failed and handle escalation
+                if not task_result.success:
+                    # Create escalation for failed task
+                    from models.supervisor_state import Escalation
+                    escalation = Escalation(
+                        escalation_id=f"esc_{task.task_id}",
+                        task_id=task.task_id,
+                        reason=task_result.error_message or "Task execution failed",
+                        level="high"
+                    )
+                    
+                    # Handle the escalation
+                    await self.handle_escalation(escalation)
                 
             except Exception as e:
                 self.logger.error(f"Task execution failed: {e}")
+                # Ensure error lists exist
+                if "errors" not in current_state:
+                    current_state["errors"] = []
+                if "execution_history" not in current_state:
+                    current_state["execution_history"] = []
+                    
                 current_state["errors"].append(f"Task {task.task_id} failed: {str(e)}")
                 current_state["execution_history"].append({
                     "task_id": task.task_id,
@@ -432,19 +491,55 @@ class ProjectManagerSupervisor(BaseSupervisor):
                 })
         
         current_state["current_phase"] = "completed"
-        return current_state
+        
+        # Calculate task execution counts
+        completed_tasks = len([h for h in current_state["execution_history"] if h.get("success") == True])
+        failed_tasks = len([h for h in current_state["execution_history"] if h.get("success") == False])
+        
+        # Check if workflow should be marked as failed
+        if "errors" in current_state and len(current_state["errors"]) > 0:
+            # If there are errors, mark as failed
+            return {
+                "status": "failed",
+                "state": current_state,
+                "error": "; ".join(current_state["errors"]),
+                "tasks_executed": completed_tasks,
+                "timestamp": datetime.now().isoformat(),
+                "execution_summary": {
+                    "total_tasks": len(self.task_queue),
+                    "completed_tasks": completed_tasks,
+                    "failed_tasks": failed_tasks
+                }
+            }
+        
+        # Return workflow result in expected format
+        return {
+            "status": "completed",
+            "state": current_state,
+            "tasks_executed": completed_tasks,  # Add the expected key
+            "timestamp": datetime.now().isoformat(),
+            "execution_summary": {
+                "total_tasks": len(self.task_queue),
+                "completed_tasks": completed_tasks,
+                "failed_tasks": failed_tasks
+            }
+        }
     
-    async def _execute_task(self, task: Task, worker: str, prompt: str) -> Dict[str, Any]:
+    async def _execute_task(self, task: Task, worker: str, prompt: str) -> TaskResult:
         """Execute a single task with the given worker and prompt."""
         # This would integrate with the actual agent workflow
-        # For now, return a mock result as a dictionary
-        return {
-            "task_id": task.task_id,
-            "worker": worker,
-            "result": f"Mock result for {task.task_name}",
-            "status": "completed",
-            "timestamp": datetime.now().isoformat()
-        }
+        # For now, return a mock result as a TaskResult object
+        return TaskResult(
+            task_id=task.task_id,
+            success=True,
+            result_data={
+                "worker": worker,
+                "result": f"Mock result for {task.task_name}",
+                "status": "completed",
+                "timestamp": datetime.now().isoformat()
+            },
+            timestamp=datetime.now()
+        )
 
     def _update_state_with_task_result(self, state: Dict[str, Any], task: Task, task_result: TaskResult) -> Dict[str, Any]:
         """Update state with task result."""
@@ -490,23 +585,63 @@ class ProjectManagerSupervisor(BaseSupervisor):
 
     async def _analyze_escalation(self, escalation: Escalation) -> Dict[str, Any]:
         """Analyze escalation and determine resolution strategy."""
-        return {
-            "analysis": f"Analysis of escalation: {escalation.reason}",
-            "severity": "high",
-            "recommended_action": "manual_intervention",
-            "resolution_strategy": "Strategy: Clarify requirements"
-        }
+        try:
+            # Use LLM for escalation analysis
+            prompt = f"Analyze this escalation: {escalation.reason}"
+            response = await self.llm.ainvoke(prompt)
+            analysis_text = response.content if hasattr(response, 'content') else str(response)
+            
+            return {
+                "analysis": analysis_text,
+                "escalation_id": escalation.escalation_id,
+                "severity": "high",
+                "recommended_action": "manual_intervention",
+                "resolution_strategy": "Strategy: Clarify requirements",
+                "timestamp": datetime.now().isoformat()
+            }
+        except Exception as e:
+            return {
+                "analysis": "Unable to analyze escalation",
+                "escalation_id": escalation.escalation_id,
+                "severity": "unknown",
+                "recommended_action": "manual_review",
+                "resolution_strategy": "Standard escalation resolution",
+                "timestamp": datetime.now().isoformat(),
+                "error": str(e)
+            }
 
-    async def _determine_resolution_strategy(self, escalation: Escalation) -> str:
+    async def _determine_resolution_strategy(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         """Determine resolution strategy for escalation."""
-        return "Strategy: Clarify requirements"
+        try:
+            # Use LLM to determine resolution strategy
+            prompt = f"Based on this analysis: {analysis.get('analysis', '')}, determine the best resolution strategy."
+            response = await self.llm.ainvoke(prompt)
+            strategy_text = response.content if hasattr(response, 'content') else str(response)
+            
+            return {
+                "strategy": strategy_text,
+                "analysis_id": analysis.get("escalation_id", "unknown"),
+                "priority": "high",
+                "estimated_time": "2 hours",
+                "timestamp": datetime.now().isoformat()
+            }
+        except Exception as e:
+            return {
+                "strategy": "Standard escalation resolution",
+                "analysis_id": analysis.get("escalation_id", "unknown"),
+                "priority": "high",
+                "estimated_time": "2 hours",
+                "timestamp": datetime.now().isoformat(),
+                "error": str(e)
+            }
 
-    async def _execute_resolution(self, escalation: Escalation, strategy: str) -> Dict[str, Any]:
+    async def _execute_resolution(self, resolution: Dict[str, Any]) -> Dict[str, Any]:
         """Execute resolution strategy."""
         return {
-            "resolution": f"Executed strategy: {strategy}",
+            "resolution": resolution,
             "status": "resolved",
-            "outcome": "Successfully resolved escalation"
+            "outcome": "Successfully resolved escalation",
+            "timestamp": datetime.now().isoformat()
         }
     
     async def _create_task_prompt(self, task: Task, worker: str) -> str:

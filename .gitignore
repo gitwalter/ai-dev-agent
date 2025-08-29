@@ -150,6 +150,7 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
+test_reports/
 
 # Process and lock files
 *.pid

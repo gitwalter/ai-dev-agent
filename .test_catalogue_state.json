@@ -1,0 +1,30 @@
+{
+  "test_files": {
+    "tests\\test_utils.py": "2d0cf630a754512ec618a4c09aa690bd",
+    "tests\\agile\\test_agile_artifacts_automation.py": "1eb8b2f3db0165ad2cb2f5cbabe643fb",
+    "tests\\config\\test_config.py": "1ea61f69816cfce8b6d72ab4658c8a1e",
+    "tests\\infrastructure\\test_automated_testing_pipeline.py": "197466b2f39f6c479b46f955e0bc1c5e",
+    "tests\\infrastructure\\test_git_hooks_automation.py": "2a782a4eb9616c2c95f2bd8dc962834a",
+    "tests\\integration\\test_agent_execution.py": "8f756e59b91f422c3d3d3847ec52a2b9",
+    "tests\\integration\\test_api_key_validation.py": "4feb2749c23342b69e3ead2d26863fa1",
+    "tests\\integration\\test_gemini_integration.py": "e5937bca6ffb1aded2682cfe5557f640",
+    "tests\\integration\\test_quality_assurance_integration.py": "e48c89e8a210c9d7d9a74b70d0d6cae4",
+    "tests\\isolated\\test_test_generator_isolated.py": "167dd495ae19fe5f971423110ffb5bb9",
+    "tests\\langgraph\\test_basic_workflow.py": "6fcedf0ee805f06ae1721a0c84f1c30d",
+    "tests\\langgraph\\test_langgraph_workflow_integration.py": "24bbbee28a3ef557ce5f80226557363f",
+    "tests\\langgraph\\test_simple_integration.py": "7215ee9c7d9dc229d2921a40e899ec5f",
+    "tests\\langgraph\\test_workflow_manager.py": "734197e0040acf950e4d48a196e07cfe",
+    "tests\\langgraph\\integration\\test_workflow_integration.py": "52c20b81a1036fd56ee234e54167d15e",
+    "tests\\langgraph\\unit\\test_agent_nodes.py": "6c5343de867d05ca9dd890c1844a8e07",
+    "tests\\langgraph\\unit\\test_agent_nodes_advanced.py": "0a7ed597e3c2bda651c8f057a1436229",
+    "tests\\supervisor\\test_base_supervisor.py": "04a45f17232391be37b9ba5e4590f47e",
+    "tests\\supervisor\\test_project_manager_supervisor.py": "5f3a534b8b035bd2592ae68a259108fe",
+    "tests\\system\\test_complete_workflow.py": "293b229a9883c04f620d482a4fb3b66b",
+    "tests\\unit\\test_base_agent.py": "aa241699cf07d4f561208285956bf2df",
+    "tests\\unit\\test_quality_assurance.py": "0cd3bb53bbc723ea729991ab15ceb3a8",
+    "tests\\unit\\agents\\test_test_generator.py": "74ab174308c2d29c62c14303fa46ef11",
+    "tests\\unit\\agents\\test_workflow_extraction.py": "80195cb67ffc7a3b463fb915abb42476"
+  },
+  "last_update": "2025-08-29T23:05:47.798126",
+  "catalogue_generated": true
+}
