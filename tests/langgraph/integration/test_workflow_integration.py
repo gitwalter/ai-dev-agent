@@ -207,9 +207,8 @@ class TestCompleteWorkflowIntegration:
                 technical_constraints=["Must work on web browsers"]
             ),
             "architecture_designer": ArchitectureDesignOutput(
-                architecture_overview="MVC architecture with React frontend and Node.js backend",
-                data_flow="User input -> UI -> Service -> Database -> Response",
-                deployment_strategy="Docker containers with web server deployment",
+                system_overview="MVC architecture with React frontend and Node.js backend for calculator application",
+                architecture_pattern="MVC",
                 components=[
                     {
                         "name": "Calculator UI",
@@ -222,10 +221,33 @@ class TestCompleteWorkflowIntegration:
                         "description": "Express.js service for arithmetic operations"
                     }
                 ],
-                tech_stack={
+                data_flow="User input -> UI -> Service -> Database -> Response",
+                technology_stack={
                     "frontend": ["React.js"],
                     "backend": ["Node.js", "Express"],
                     "database": ["SQLite"]
+                },
+                security_considerations=["Input validation", "HTTPS encryption", "XSS prevention"],
+                scalability_considerations=["Horizontal scaling", "Load balancing"],
+                performance_considerations=["Caching strategies", "Database indexing"],
+                deployment_strategy="Docker containers with web server deployment",
+                risk_mitigation=[{"risk": "Single point of failure", "mitigation": "Implement redundancy"}],
+                database_schema={
+                    "tables": [
+                        {
+                            "name": "calculations",
+                            "columns": ["id", "operation", "result", "timestamp"]
+                        }
+                    ]
+                },
+                api_design={
+                    "endpoints": [
+                        {
+                            "path": "/calculate",
+                            "method": "POST",
+                            "description": "Perform arithmetic operations"
+                        }
+                    ]
                 }
             ),
             "code_generator": {
@@ -465,16 +487,63 @@ class TestCompleteWorkflowIntegration:
                         "type": "functional"
                     }
                 ],
+                non_functional_requirements=[
+                    {
+                        "id": "NFR-001",
+                        "title": "Performance",
+                        "description": "Calculator must respond within 1 second",
+                        "category": "performance",
+                        "measurement": "response time < 1s"
+                    }
+                ],
+                user_stories=[
+                    {
+                        "id": "US-001",
+                        "as_a": "user",
+                        "i_want": "to perform basic arithmetic operations",
+                        "so_that": "I can calculate mathematical problems quickly"
+                    }
+                ],
+                risks=[
+                    {
+                        "risk": "Division by zero errors",
+                        "probability": "medium",
+                        "impact": "high",
+                        "mitigation": "Implement proper error handling and validation"
+                    }
+                ],
                 summary={"description": "Calculator app with basic arithmetic operations"},
                 assumptions=["User has basic computer literacy"],
                 technical_constraints=["Must work on web browsers"]
             ),
             "architecture_designer": ArchitectureDesignOutput(
-                architecture_overview="MVC architecture with React frontend and Node.js backend",
-                data_flow="Simple",
+                system_overview="MVC architecture with React frontend and Node.js backend for calculator application",
+                architecture_pattern="MVC",
+                components=[],
+                data_flow="Simple data flow for calculator operations",
+                technology_stack={"frontend": ["React.js"], "backend": ["Node.js"]},
+                security_considerations=["Input validation", "HTTPS encryption"],
+                scalability_considerations=["Horizontal scaling"],
+                performance_considerations=["Caching strategies"],
                 deployment_strategy="Docker deployment",
-                tech_stack={"frontend": ["React.js"], "backend": ["Node.js"]},
-                components=[]
+                risk_mitigation=[{"risk": "Single point of failure", "mitigation": "Implement redundancy"}],
+                database_schema={
+                    "tables": [
+                        {
+                            "name": "calculations",
+                            "columns": ["id", "operation", "result", "timestamp"]
+                        }
+                    ]
+                },
+                api_design={
+                    "endpoints": [
+                        {
+                            "path": "/calculate",
+                            "method": "POST",
+                            "description": "Perform arithmetic operations"
+                        }
+                    ]
+                }
             )
         }
         
@@ -710,6 +779,31 @@ class TestCompleteWorkflowIntegration:
                             "type": "functional"
                         }
                     ],
+                    non_functional_requirements=[
+                        {
+                            "id": "NFR-001",
+                            "title": "Performance",
+                            "description": "Calculator must respond within 1 second",
+                            "category": "performance",
+                            "measurement": "response time < 1s"
+                        }
+                    ],
+                    user_stories=[
+                        {
+                            "id": "US-001",
+                            "as_a": "user",
+                            "i_want": "to perform basic arithmetic operations",
+                            "so_that": "I can calculate mathematical problems quickly"
+                        }
+                    ],
+                    risks=[
+                        {
+                            "risk": "Division by zero errors",
+                            "probability": "medium",
+                            "impact": "high",
+                            "mitigation": "Implement proper error handling and validation"
+                        }
+                    ],
                     summary={"description": "Calculator app with basic arithmetic operations"},
                     assumptions=["User has basic computer literacy"],
                     technical_constraints=["Must work on web browsers"]
@@ -762,16 +856,63 @@ class TestCompleteWorkflowIntegration:
                             "type": "functional"
                         }
                     ],
+                    non_functional_requirements=[
+                        {
+                            "id": "NFR-001",
+                            "title": "Performance",
+                            "description": "Calculator must respond within 1 second",
+                            "category": "performance",
+                            "measurement": "response time < 1s"
+                        }
+                    ],
+                    user_stories=[
+                        {
+                            "id": "US-001",
+                            "as_a": "user",
+                            "i_want": "to perform basic arithmetic operations",
+                            "so_that": "I can calculate mathematical problems quickly"
+                        }
+                    ],
+                    risks=[
+                        {
+                            "risk": "Division by zero errors",
+                            "probability": "medium",
+                            "impact": "high",
+                            "mitigation": "Implement proper error handling and validation"
+                        }
+                    ],
                     summary={"description": "Calculator app with basic arithmetic operations"},
                     assumptions=["User has basic computer literacy"],
                     technical_constraints=["Must work on web browsers"]
                 ),
                 "architecture_designer": ArchitectureDesignOutput(
-                    architecture_overview="MVC architecture with React frontend and Node.js backend",
-                    data_flow="Simple",
+                    system_overview="MVC architecture with React frontend and Node.js backend for calculator application",
+                    architecture_pattern="MVC",
+                    components=[],
+                    data_flow="Simple data flow for calculator operations",
+                    technology_stack={"frontend": ["React.js"], "backend": ["Node.js"]},
+                    security_considerations=["Input validation", "HTTPS encryption"],
+                    scalability_considerations=["Horizontal scaling"],
+                    performance_considerations=["Caching strategies"],
                     deployment_strategy="Docker deployment",
-                    tech_stack={"frontend": ["React.js"], "backend": ["Node.js"]},
-                    components=[]
+                    risk_mitigation=[{"risk": "Single point of failure", "mitigation": "Implement redundancy"}],
+                    database_schema={
+                        "tables": [
+                            {
+                                "name": "calculations",
+                                "columns": ["id", "operation", "result", "timestamp"]
+                            }
+                        ]
+                    },
+                    api_design={
+                        "endpoints": [
+                            {
+                                "path": "/calculate",
+                                "method": "POST",
+                                "description": "Perform arithmetic operations"
+                            }
+                        ]
+                    }
                 )
             }
             
