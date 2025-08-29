@@ -27,20 +27,20 @@ The AI-Dev-Agent system has been successfully transformed from a waterfall-based
 ## 🗂️ **Complete Agile Artifact Portfolio**
 
 ### **Strategic Planning Documents**
-1. **[Product Backlog](product_backlog.md)** - 8 Epics, 45+ User Stories, ROI-prioritized
-2. **[Epic Breakdown](epic_breakdown.md)** - High-level feature planning with business justification
-3. **[Updated Roadmap](updated_roadmap.md)** - 5 releases over 20 weeks, value-driven
-4. **[Release Planning](release_planning.md)** - Comprehensive release strategy and success metrics
+1. **[Product Backlog](../planning/product_backlog.md)** - 8 Epics, 45+ User Stories, ROI-prioritized
+2. **[Epic Breakdown](../planning/epic_breakdown.md)** - High-level feature planning with business justification
+3. **[Updated Roadmap](../planning/updated_roadmap.md)** - 5 releases over 20 weeks, value-driven
+4. **[Release Planning](../planning/release_planning.md)** - Comprehensive release strategy and success metrics
 
 ### **Operational Agile Framework**
 5. **[Agile Workflow](agile_workflow.md)** - Complete sprint-based development process
 6. **[Definition of Done](definition_of_done.md)** - Quality criteria and automated validation
-7. **[Sprint Planning Templates](sprint_planning/README.md)** - Templates for all agile ceremonies
+7. **[Sprint Planning Templates](../templates/sprint_planning/README.md)** - Templates for all agile ceremonies
 8. **[Agile Cursor Rules](agile_cursor_rules.md)** - Automated agile development enforcement
 
 ### **Automation & Technical Excellence**
-9. **[Automation Framework](automation_framework.md)** - 95% automation with self-healing capabilities
-10. **[Agile Overview](README.md)** - Complete system overview and navigation guide
+9. **[Automation Framework](../automation/automation_framework.md)** - 95% automation with self-healing capabilities
+10. **[Agile Overview](../README.md)** - Complete system overview and navigation guide
 
 ---
 
@@ -314,23 +314,23 @@ current_status:
 ## 📚 **Documentation Navigation**
 
 ### **Quick Start Guide**
-1. **Begin Here**: [Agile Overview](README.md) - Understanding the complete system
-2. **Plan Work**: [Product Backlog](product_backlog.md) - Current priorities and user stories
+1. **Begin Here**: [Agile Overview](../README.md) - Understanding the complete system
+2. **Plan Work**: [Product Backlog](../planning/product_backlog.md) - Current priorities and user stories
 3. **Execute Sprints**: [Agile Workflow](agile_workflow.md) - Sprint-based development process
 4. **Ensure Quality**: [Definition of Done](definition_of_done.md) - Quality standards
 5. **Follow Rules**: [Agile Cursor Rules](agile_cursor_rules.md) - Development automation
 
 ### **Leadership Dashboard**
-- **Strategic View**: [Epic Breakdown](epic_breakdown.md) + [Release Planning](release_planning.md)
-- **Operational View**: [Agile Workflow](agile_workflow.md) + [Automation Framework](automation_framework.md)
+- **Strategic View**: [Epic Breakdown](../planning/epic_breakdown.md) + [Release Planning](../planning/release_planning.md)
+- **Operational View**: [Agile Workflow](agile_workflow.md) + [Automation Framework](../automation/automation_framework.md)
 - **Quality View**: [Definition of Done](definition_of_done.md) + Quality Metrics
 - **Progress View**: Sprint Planning + Real-time Dashboards
 
 ### **Development Team Guide**
 - **Daily Work**: [Agile Workflow](agile_workflow.md) + [Agile Cursor Rules](agile_cursor_rules.md)
-- **Sprint Planning**: [Sprint Planning Templates](sprint_planning/README.md)
+- **Sprint Planning**: [Sprint Planning Templates](../templates/sprint_planning/README.md)
 - **Quality Assurance**: [Definition of Done](definition_of_done.md)
-- **Automation**: [Automation Framework](automation_framework.md)
+- **Automation**: [Automation Framework](../automation/automation_framework.md)
 
 ---
 

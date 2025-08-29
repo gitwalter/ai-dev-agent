@@ -10,6 +10,7 @@ from .test_generator import TestGenerator
 from .code_reviewer import CodeReviewer
 from .security_analyst import SecurityAnalyst
 from .documentation_generator import DocumentationGenerator
+from .requirements_analyst import RequirementsAnalyst
 
 __all__ = [
     "BaseAgent",
@@ -18,5 +19,6 @@ __all__ = [
     "TestGenerator",
     "CodeReviewer",
     "SecurityAnalyst",
-    "DocumentationGenerator"
+    "DocumentationGenerator",
+    "RequirementsAnalyst"
 ]

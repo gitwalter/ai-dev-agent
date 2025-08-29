@@ -14,13 +14,13 @@
 
 ### **Agile Project Management**
 - [Agile Overview](agile/README.md) - Complete agile project management system
-- [Product Backlog](agile/product_backlog.md) - Prioritized user stories and business value
-- [Epic Breakdown](agile/epic_breakdown.md) - High-level feature planning and ROI
-- [Updated Roadmap](agile/updated_roadmap.md) - Agile-driven development roadmap
-- [Release Planning](agile/release_planning.md) - Comprehensive release planning
-- [Agile Workflow](agile/agile_workflow.md) - Sprint-based development process
-- [Agile Cursor Rules](agile/agile_cursor_rules.md) - Agile automation rules
-- [Definition of Done](agile/definition_of_done.md) - Quality criteria and standards
+- [Product Backlog](agile/planning/product_backlog.md) - Prioritized user stories and business value
+- [Epic Breakdown](agile/planning/epic_breakdown.md) - High-level feature planning and ROI
+- [Updated Roadmap](agile/planning/updated_roadmap.md) - Agile-driven development roadmap
+- [Release Planning](agile/planning/release_planning.md) - Comprehensive release planning
+- [Agile Workflow](agile/core/agile_workflow.md) - Sprint-based development process
+- [Agile Cursor Rules](agile/core/agile_cursor_rules.md) - Agile automation rules
+- [Definition of Done](agile/core/definition_of_done.md) - Quality criteria and standards
 
 ### **Development Rules and Standards**
 - [Boy Scout Principle Rule](.cursor/rules/boyscout_principle_rule.mdc) - **UPDATED** - Proactive code quality and maintenance principles

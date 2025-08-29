@@ -47,7 +47,7 @@ def analyze_agile_artifacts() -> Dict[str, Any]:
 def load_and_apply_cursor_rules() -> Dict[str, Any]:
     """Load rule application guide and apply all relevant rules."""
     
-    # 1. Read rule application guide
+    # 1. Read rule application guide (RULE_APPLICATION_GUIDE.md)
     rule_guide = read_rule_application_guide()
     
     # 2. Load Tier 1 (Critical) rules - ALWAYS APPLIED

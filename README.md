@@ -2,6 +2,14 @@
 
 A multi-agent system for automated software development using LangGraph and Google's Gemini API. This system implements a workflow-based approach to streamline software development tasks.
 
+## 🎉 **Generated with Cursor IDE**
+
+This entire project was **fully generated and developed using [Cursor IDE](https://cursor.sh/)**, the world's most advanced AI-powered code editor. Cursor's exceptional AI capabilities, intelligent code completion, and seamless development workflow made it possible to create this comprehensive multi-agent system efficiently and with high quality.
+
+**Special thanks to the amazing Cursor team** for building such an incredible development tool that empowers developers to create sophisticated applications with unprecedented speed and precision. The AI-assisted development experience provided by Cursor has been instrumental in bringing this project to life.
+
+*Built with ❤️ using Cursor IDE*
+
 ## 🎯 **Development Philosophy**
 
 This project follows a **comprehensive rule system** that ensures high-quality, efficient, and maintainable code through automated development standards and best practices.

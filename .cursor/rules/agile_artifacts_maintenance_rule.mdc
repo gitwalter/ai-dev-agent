@@ -203,10 +203,10 @@ class AutomatedAgileUpdater:
             "sprint_planning": self._update_sprint_planning
         }
         
-        self.backlog_file = "docs/agile/product_backlog.md"
-        self.sprint_files = "docs/agile/sprint_planning/"
-        self.velocity_file = "docs/agile/velocity_tracking.md"
-        self.burndown_file = "docs/agile/burndown_charts.md"
+        self.backlog_file = "docs/agile/planning/product_backlog.md"
+        self.sprint_files = "docs/agile/templates/sprint_planning/"
+        self.velocity_file = "docs/agile/execution/velocity_tracking.md"
+        self.burndown_file = "docs/agile/execution/burndown_charts.md"
     
     def execute_agile_updates(self, monitoring_result: AgileMonitoringResult,
                              session_context: dict) -> AgileUpdateResult:

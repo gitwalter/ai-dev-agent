@@ -1,0 +1,807 @@
+# Session Stop Routine Rule
+
+**CRITICAL**: This rule establishes the systematic workflow for properly ending every development session. When the user says "end session", "stop session", or indicates session completion, this routine must be executed completely and autonomously.
+
+## Description
+This rule defines a comprehensive 3-step session stop routine that ensures all work is properly validated, documented, and committed before ending a development session. The routine prioritizes test validation, documentation completeness, and proper git operations to maintain project integrity and quality.
+
+## Core Session Stop Routine
+
+### **STEP 1: Comprehensive Test Validation** 🧪
+**MANDATORY**: Run all tests and assert no errors exist
+```python
+def run_comprehensive_test_validation() -> Dict[str, Any]:
+    """Run all tests and validate no errors exist."""
+    
+    print("🧪 **STEP 1: Running comprehensive test validation...**")
+    
+    # 1. Run all unit tests
+    print("   - Running unit tests...")
+    unit_test_results = run_unit_tests()
+    
+    # 2. Run all integration tests
+    print("   - Running integration tests...")
+    integration_test_results = run_integration_tests()
+    
+    # 3. Run all system tests
+    print("   - Running system tests...")
+    system_test_results = run_system_tests()
+    
+    # 4. Run all performance tests
+    print("   - Running performance tests...")
+    performance_test_results = run_performance_tests()
+    
+    # 5. Run all security tests
+    print("   - Running security tests...")
+    security_test_results = run_security_tests()
+    
+    # 6. Validate test results
+    all_tests_passed = (
+        unit_test_results["passed"] and
+        integration_test_results["passed"] and
+        system_test_results["passed"] and
+        performance_test_results["passed"] and
+        security_test_results["passed"]
+    )
+    
+    if not all_tests_passed:
+        print("❌ **TEST VALIDATION FAILED**")
+        print(f"   - Unit tests: {'✅' if unit_test_results['passed'] else '❌'}")
+        print(f"   - Integration tests: {'✅' if integration_test_results['passed'] else '❌'}")
+        print(f"   - System tests: {'✅' if system_test_results['passed'] else '❌'}")
+        print(f"   - Performance tests: {'✅' if performance_test_results['passed'] else '❌'}")
+        print(f"   - Security tests: {'✅' if security_test_results['passed'] else '❌'}")
+        
+        return {
+            "status": "FAILED",
+            "reason": "Tests are failing - must fix before ending session",
+            "unit_tests": unit_test_results,
+            "integration_tests": integration_test_results,
+            "system_tests": system_test_results,
+            "performance_tests": performance_test_results,
+            "security_tests": security_test_results
+        }
+    
+    print("✅ **ALL TESTS PASSING**")
+    print(f"   - Total tests run: {unit_test_results['count'] + integration_test_results['count'] + system_test_results['count'] + performance_test_results['count'] + security_test_results['count']}")
+    print(f"   - All test suites: ✅ PASSED")
+    
+    return {
+        "status": "SUCCESS",
+        "unit_tests": unit_test_results,
+        "integration_tests": integration_test_results,
+        "system_tests": system_test_results,
+        "performance_tests": performance_test_results,
+        "security_tests": security_test_results,
+        "total_tests": unit_test_results['count'] + integration_test_results['count'] + system_test_results['count'] + performance_test_results['count'] + security_test_results['count']
+    }
+```
+
+### **STEP 2: Documentation Completeness Validation** 📚
+**MANDATORY**: Check complete documentation and all READMEs that they are up-to-date and fix if not so
+```python
+def validate_documentation_completeness() -> Dict[str, Any]:
+    """Check complete documentation and all READMEs for completeness and currency."""
+    
+    print("📚 **STEP 2: Validating documentation completeness...**")
+    
+    # 1. Check main project documentation
+    print("   - Checking main project documentation...")
+    main_docs_status = validate_main_documentation()
+    
+    # 2. Check all README files
+    print("   - Checking all README files...")
+    readme_status = validate_all_readme_files()
+    
+    # 3. Check API documentation
+    print("   - Checking API documentation...")
+    api_docs_status = validate_api_documentation()
+    
+    # 4. Check code documentation
+    print("   - Checking code documentation...")
+    code_docs_status = validate_code_documentation()
+    
+    # 5. Check architecture documentation
+    print("   - Checking architecture documentation...")
+    arch_docs_status = validate_architecture_documentation()
+    
+    # 6. Check deployment documentation
+    print("   - Checking deployment documentation...")
+    deployment_docs_status = validate_deployment_documentation()
+    
+    # 7. Identify and fix documentation issues
+    all_docs_valid = (
+        main_docs_status["valid"] and
+        readme_status["valid"] and
+        api_docs_status["valid"] and
+        code_docs_status["valid"] and
+        arch_docs_status["valid"] and
+        deployment_docs_status["valid"]
+    )
+    
+    if not all_docs_valid:
+        print("⚠️ **DOCUMENTATION ISSUES DETECTED**")
+        print("   - Fixing documentation issues...")
+        
+        # Fix main documentation issues
+        if not main_docs_status["valid"]:
+            fix_main_documentation(main_docs_status["issues"])
+        
+        # Fix README issues
+        if not readme_status["valid"]:
+            fix_readme_files(readme_status["issues"])
+        
+        # Fix API documentation issues
+        if not api_docs_status["valid"]:
+            fix_api_documentation(api_docs_status["issues"])
+        
+        # Fix code documentation issues
+        if not code_docs_status["valid"]:
+            fix_code_documentation(code_docs_status["issues"])
+        
+        # Fix architecture documentation issues
+        if not arch_docs_status["valid"]:
+            fix_architecture_documentation(arch_docs_status["issues"])
+        
+        # Fix deployment documentation issues
+        if not deployment_docs_status["valid"]:
+            fix_deployment_documentation(deployment_docs_status["issues"])
+        
+        # Re-validate after fixes
+        print("   - Re-validating documentation after fixes...")
+        final_validation = revalidate_documentation()
+        
+        if not final_validation["all_valid"]:
+            return {
+                "status": "FAILED",
+                "reason": "Documentation issues could not be fully resolved",
+                "remaining_issues": final_validation["remaining_issues"]
+            }
+    
+    print("✅ **ALL DOCUMENTATION VALIDATED AND UP-TO-DATE**")
+    print(f"   - Main docs: {'✅' if main_docs_status['valid'] else '❌'}")
+    print(f"   - README files: {'✅' if readme_status['valid'] else '❌'}")
+    print(f"   - API docs: {'✅' if api_docs_status['valid'] else '❌'}")
+    print(f"   - Code docs: {'✅' if code_docs_status['valid'] else '❌'}")
+    print(f"   - Architecture docs: {'✅' if arch_docs_status['valid'] else '❌'}")
+    print(f"   - Deployment docs: {'✅' if deployment_docs_status['valid'] else '❌'}")
+    
+    return {
+        "status": "SUCCESS",
+        "main_docs": main_docs_status,
+        "readme_files": readme_status,
+        "api_docs": api_docs_status,
+        "code_docs": code_docs_status,
+        "architecture_docs": arch_docs_status,
+        "deployment_docs": deployment_docs_status,
+        "fixes_applied": not all_docs_valid
+    }
+```
+
+### **STEP 3: Git Operations** 🔄
+**MANDATORY**: Commit and push to git
+```python
+def perform_git_operations() -> Dict[str, Any]:
+    """Commit and push all changes to git."""
+    
+    print("🔄 **STEP 3: Performing git operations...**")
+    
+    # 1. Check git status
+    print("   - Checking git status...")
+    git_status = check_git_status()
+    
+    if not git_status["has_changes"]:
+        print("   - No changes to commit")
+        return {
+            "status": "SUCCESS",
+            "message": "No changes to commit",
+            "commit_hash": None,
+            "push_status": "SKIPPED"
+        }
+    
+    # 2. Stage all changes
+    print("   - Staging all changes...")
+    stage_result = stage_all_changes()
+    
+    if not stage_result["success"]:
+        return {
+            "status": "FAILED",
+            "reason": f"Failed to stage changes: {stage_result['error']}",
+            "stage_result": stage_result
+        }
+    
+    # 3. Create comprehensive commit message
+    print("   - Creating commit message...")
+    commit_message = create_comprehensive_commit_message(git_status["changes"])
+    
+    # 4. Commit changes
+    print("   - Committing changes...")
+    commit_result = commit_changes(commit_message)
+    
+    if not commit_result["success"]:
+        return {
+            "status": "FAILED",
+            "reason": f"Failed to commit changes: {commit_result['error']}",
+            "commit_result": commit_result
+        }
+    
+    # 5. Push to remote repository
+    print("   - Pushing to remote repository...")
+    push_result = push_to_remote()
+    
+    if not push_result["success"]:
+        return {
+            "status": "FAILED",
+            "reason": f"Failed to push changes: {push_result['error']}",
+            "commit_result": commit_result,
+            "push_result": push_result
+        }
+    
+    print("✅ **GIT OPERATIONS COMPLETED SUCCESSFULLY**")
+    print(f"   - Commit hash: {commit_result['commit_hash']}")
+    print(f"   - Commit message: {commit_message}")
+    print(f"   - Push status: {push_result['status']}")
+    
+    return {
+        "status": "SUCCESS",
+        "commit_hash": commit_result["commit_hash"],
+        "commit_message": commit_message,
+        "push_status": push_result["status"],
+        "changes_committed": git_status["changes"]
+    }
+```
+
+## Complete Session Stop Workflow
+
+### **Main Session Stop Function**
+```python
+def end_development_session() -> Dict[str, Any]:
+    """Complete session stop routine - executed when user says 'end session'."""
+    
+    print("🛑 **SESSION STOP ROUTINE INITIATED**")
+    
+    # STEP 1: Comprehensive Test Validation
+    print("🧪 Step 1: Running comprehensive test validation...")
+    test_validation = run_comprehensive_test_validation()
+    
+    if test_validation["status"] == "FAILED":
+        print(f"❌ **SESSION STOP BLOCKED**: {test_validation['reason']}")
+        print("   - Please fix failing tests before ending session")
+        return test_validation
+    
+    # STEP 2: Documentation Completeness Validation
+    print("📚 Step 2: Validating documentation completeness...")
+    doc_validation = validate_documentation_completeness()
+    
+    if doc_validation["status"] == "FAILED":
+        print(f"❌ **SESSION STOP BLOCKED**: {doc_validation['reason']}")
+        print("   - Please resolve documentation issues before ending session")
+        return doc_validation
+    
+    # STEP 3: Git Operations
+    print("🔄 Step 3: Performing git operations...")
+    git_operations = perform_git_operations()
+    
+    if git_operations["status"] == "FAILED":
+        print(f"❌ **SESSION STOP BLOCKED**: {git_operations['reason']}")
+        print("   - Please resolve git issues before ending session")
+        return git_operations
+    
+    # Generate session summary
+    session_summary = generate_session_stop_summary(test_validation, doc_validation, git_operations)
+    
+    print("🎉 **SESSION STOP COMPLETE**")
+    print(session_summary)
+    
+    return {
+        "status": "SUCCESS",
+        "test_validation": test_validation,
+        "doc_validation": doc_validation,
+        "git_operations": git_operations,
+        "session_summary": session_summary
+    }
+```
+
+## Session Stop Summary Generation
+
+### **Automatic Summary Creation**
+```python
+def generate_session_stop_summary(test_validation: Dict, doc_validation: Dict, git_operations: Dict) -> str:
+    """Generate comprehensive session stop summary."""
+    
+    summary = f"""
+## 🛑 **SESSION STOP SUMMARY**
+
+### **Test Validation Results** 🧪
+- **Status**: {'✅ PASSED' if test_validation['status'] == 'SUCCESS' else '❌ FAILED'}
+- **Total Tests Run**: {test_validation.get('total_tests', 0)}
+- **Unit Tests**: {'✅' if test_validation['unit_tests']['passed'] else '❌'} ({test_validation['unit_tests']['count']} tests)
+- **Integration Tests**: {'✅' if test_validation['integration_tests']['passed'] else '❌'} ({test_validation['integration_tests']['count']} tests)
+- **System Tests**: {'✅' if test_validation['system_tests']['passed'] else '❌'} ({test_validation['system_tests']['count']} tests)
+- **Performance Tests**: {'✅' if test_validation['performance_tests']['passed'] else '❌'} ({test_validation['performance_tests']['count']} tests)
+- **Security Tests**: {'✅' if test_validation['security_tests']['passed'] else '❌'} ({test_validation['security_tests']['count']} tests)
+
+### **Documentation Validation Results** 📚
+- **Status**: {'✅ VALIDATED' if doc_validation['status'] == 'SUCCESS' else '❌ ISSUES'}
+- **Main Documentation**: {'✅' if doc_validation['main_docs']['valid'] else '❌'}
+- **README Files**: {'✅' if doc_validation['readme_files']['valid'] else '❌'}
+- **API Documentation**: {'✅' if doc_validation['api_docs']['valid'] else '❌'}
+- **Code Documentation**: {'✅' if doc_validation['code_docs']['valid'] else '❌'}
+- **Architecture Documentation**: {'✅' if doc_validation['architecture_docs']['valid'] else '❌'}
+- **Deployment Documentation**: {'✅' if doc_validation['deployment_docs']['valid'] else '❌'}
+- **Fixes Applied**: {'✅ Yes' if doc_validation.get('fixes_applied', False) else '❌ No'}
+
+### **Git Operations Results** 🔄
+- **Status**: {'✅ SUCCESS' if git_operations['status'] == 'SUCCESS' else '❌ FAILED'}
+- **Commit Hash**: {git_operations.get('commit_hash', 'N/A')}
+- **Commit Message**: {git_operations.get('commit_message', 'N/A')}
+- **Push Status**: {git_operations.get('push_status', 'N/A')}
+- **Changes Committed**: {len(git_operations.get('changes_committed', []))} files
+
+### **Session Stop Status** 🎯
+- **Overall Status**: {'✅ SUCCESS' if all([test_validation['status'] == 'SUCCESS', doc_validation['status'] == 'SUCCESS', git_operations['status'] == 'SUCCESS']) else '❌ FAILED'}
+- **Session End Time**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- **Next Session**: Ready to begin when needed
+
+### **Quality Assurance** ✅
+- **All Tests Passing**: {'✅ Yes' if test_validation['status'] == 'SUCCESS' else '❌ No'}
+- **Documentation Complete**: {'✅ Yes' if doc_validation['status'] == 'SUCCESS' else '❌ No'}
+- **Changes Committed**: {'✅ Yes' if git_operations['status'] == 'SUCCESS' else '❌ No'}
+- **Repository Clean**: {'✅ Yes' if git_operations['status'] == 'SUCCESS' else '❌ No'}
+
+**Session successfully ended with all quality checks passed!** 🎉
+"""
+    
+    return summary
+```
+
+## Trigger Mechanism
+
+### **Session Stop Trigger**
+```python
+# When user says "end session", "stop session", or indicates session completion:
+session_stop_triggers = [
+    "end session",
+    "stop session", 
+    "end our session",
+    "stop our session",
+    "session complete",
+    "done for today",
+    "finish session",
+    "complete session"
+]
+
+if any(trigger in user_input.lower() for trigger in session_stop_triggers):
+    session_stop_results = end_development_session()
+    return session_stop_results["session_summary"]
+```
+
+## Quality Assurance Functions
+
+### **Test Validation Functions**
+```python
+def run_unit_tests() -> Dict[str, Any]:
+    """Run all unit tests."""
+    import subprocess
+    import sys
+    
+    try:
+        result = subprocess.run([sys.executable, "-m", "pytest", "tests/unit/", "-v", "--tb=short"], 
+                               capture_output=True, text=True, timeout=300)
+        
+        return {
+            "passed": result.returncode == 0,
+            "count": len([line for line in result.stdout.split('\n') if 'PASSED' in line]),
+            "output": result.stdout,
+            "errors": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"passed": False, "count": 0, "output": "", "errors": str(e)}
+
+def run_integration_tests() -> Dict[str, Any]:
+    """Run all integration tests."""
+    import subprocess
+    import sys
+    
+    try:
+        result = subprocess.run([sys.executable, "-m", "pytest", "tests/integration/", "-v", "--tb=short"], 
+                               capture_output=True, text=True, timeout=600)
+        
+        return {
+            "passed": result.returncode == 0,
+            "count": len([line for line in result.stdout.split('\n') if 'PASSED' in line]),
+            "output": result.stdout,
+            "errors": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"passed": False, "count": 0, "output": "", "errors": str(e)}
+
+def run_system_tests() -> Dict[str, Any]:
+    """Run all system tests."""
+    import subprocess
+    import sys
+    
+    try:
+        result = subprocess.run([sys.executable, "-m", "pytest", "tests/system/", "-v", "--tb=short"], 
+                               capture_output=True, text=True, timeout=900)
+        
+        return {
+            "passed": result.returncode == 0,
+            "count": len([line for line in result.stdout.split('\n') if 'PASSED' in line]),
+            "output": result.stdout,
+            "errors": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"passed": False, "count": 0, "output": "", "errors": str(e)}
+
+def run_performance_tests() -> Dict[str, Any]:
+    """Run all performance tests."""
+    import subprocess
+    import sys
+    
+    try:
+        result = subprocess.run([sys.executable, "-m", "pytest", "tests/performance/", "-v", "--tb=short"], 
+                               capture_output=True, text=True, timeout=1200)
+        
+        return {
+            "passed": result.returncode == 0,
+            "count": len([line for line in result.stdout.split('\n') if 'PASSED' in line]),
+            "output": result.stdout,
+            "errors": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"passed": False, "count": 0, "output": "", "errors": str(e)}
+
+def run_security_tests() -> Dict[str, Any]:
+    """Run all security tests."""
+    import subprocess
+    import sys
+    
+    try:
+        result = subprocess.run([sys.executable, "-m", "pytest", "tests/security/", "-v", "--tb=short"], 
+                               capture_output=True, text=True, timeout=600)
+        
+        return {
+            "passed": result.returncode == 0,
+            "count": len([line for line in result.stdout.split('\n') if 'PASSED' in line]),
+            "output": result.stdout,
+            "errors": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"passed": False, "count": 0, "output": "", "errors": str(e)}
+```
+
+### **Documentation Validation Functions**
+```python
+def validate_main_documentation() -> Dict[str, Any]:
+    """Validate main project documentation."""
+    import os
+    
+    main_docs = [
+        "README.md",
+        "docs/README.md",
+        "docs/DOCUMENTATION_INDEX.md",
+        "docs/ARCHITECTURE.md",
+        "docs/DEPLOYMENT.md"
+    ]
+    
+    issues = []
+    for doc in main_docs:
+        if not os.path.exists(doc):
+            issues.append(f"Missing documentation file: {doc}")
+        else:
+            # Check for placeholder content
+            with open(doc, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if any(placeholder in content.lower() for placeholder in ['todo:', 'placeholder', 'coming soon', 'lorem ipsum']):
+                    issues.append(f"Placeholder content found in: {doc}")
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "files_checked": len(main_docs)
+    }
+
+def validate_all_readme_files() -> Dict[str, Any]:
+    """Validate all README files in the project."""
+    import os
+    import glob
+    
+    readme_files = glob.glob("**/README.md", recursive=True)
+    issues = []
+    
+    for readme in readme_files:
+        if not os.path.exists(readme):
+            issues.append(f"Missing README file: {readme}")
+        else:
+            with open(readme, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if any(placeholder in content.lower() for placeholder in ['todo:', 'placeholder', 'coming soon', 'lorem ipsum']):
+                    issues.append(f"Placeholder content found in: {readme}")
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "files_checked": len(readme_files)
+    }
+
+def validate_api_documentation() -> Dict[str, Any]:
+    """Validate API documentation."""
+    import os
+    
+    api_docs = [
+        "docs/api/README.md",
+        "docs/api/endpoints.md",
+        "docs/api/schemas.md"
+    ]
+    
+    issues = []
+    for doc in api_docs:
+        if not os.path.exists(doc):
+            issues.append(f"Missing API documentation: {doc}")
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "files_checked": len(api_docs)
+    }
+
+def validate_code_documentation() -> Dict[str, Any]:
+    """Validate code documentation."""
+    import os
+    import glob
+    
+    # Check for docstrings in Python files
+    python_files = glob.glob("**/*.py", recursive=True)
+    issues = []
+    
+    for py_file in python_files:
+        if os.path.exists(py_file):
+            with open(py_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                # Check for functions without docstrings
+                lines = content.split('\n')
+                for i, line in enumerate(lines):
+                    if line.strip().startswith('def ') and not line.strip().startswith('def __'):
+                        # Check if next line has docstring
+                        if i + 1 < len(lines) and not lines[i + 1].strip().startswith('"""'):
+                            issues.append(f"Missing docstring in {py_file}:{i+1}")
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "files_checked": len(python_files)
+    }
+
+def validate_architecture_documentation() -> Dict[str, Any]:
+    """Validate architecture documentation."""
+    import os
+    
+    arch_docs = [
+        "docs/architecture/README.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/components.md"
+    ]
+    
+    issues = []
+    for doc in arch_docs:
+        if not os.path.exists(doc):
+            issues.append(f"Missing architecture documentation: {doc}")
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "files_checked": len(arch_docs)
+    }
+
+def validate_deployment_documentation() -> Dict[str, Any]:
+    """Validate deployment documentation."""
+    import os
+    
+    deployment_docs = [
+        "docs/deployment/README.md",
+        "docs/deployment/setup.md",
+        "docs/deployment/configuration.md"
+    ]
+    
+    issues = []
+    for doc in deployment_docs:
+        if not os.path.exists(doc):
+            issues.append(f"Missing deployment documentation: {doc}")
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "files_checked": len(deployment_docs)
+    }
+```
+
+### **Git Operations Functions**
+```python
+def check_git_status() -> Dict[str, Any]:
+    """Check git status."""
+    import subprocess
+    
+    try:
+        result = subprocess.run(["git", "status", "--porcelain"], 
+                               capture_output=True, text=True)
+        
+        changes = []
+        if result.stdout.strip():
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    status = line[:2]
+                    filename = line[3:]
+                    changes.append({"status": status, "filename": filename})
+        
+        return {
+            "has_changes": len(changes) > 0,
+            "changes": changes,
+            "output": result.stdout
+        }
+    except Exception as e:
+        return {"has_changes": False, "changes": [], "error": str(e)}
+
+def stage_all_changes() -> Dict[str, Any]:
+    """Stage all changes."""
+    import subprocess
+    
+    try:
+        result = subprocess.run(["git", "add", "."], 
+                               capture_output=True, text=True)
+        
+        return {
+            "success": result.returncode == 0,
+            "output": result.stdout,
+            "error": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"success": False, "output": "", "error": str(e)}
+
+def create_comprehensive_commit_message(changes: List[Dict]) -> str:
+    """Create comprehensive commit message."""
+    from datetime import datetime
+    
+    # Categorize changes
+    added_files = [c["filename"] for c in changes if c["status"].startswith('A')]
+    modified_files = [c["filename"] for c in changes if c["status"].startswith('M')]
+    deleted_files = [c["filename"] for c in changes if c["status"].startswith('D')]
+    
+    # Create commit message
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    message = f"Session completion - {timestamp}\n\n"
+    
+    if added_files:
+        message += f"Added ({len(added_files)} files):\n"
+        for file in added_files[:5]:  # Limit to first 5
+            message += f"  - {file}\n"
+        if len(added_files) > 5:
+            message += f"  ... and {len(added_files) - 5} more\n"
+        message += "\n"
+    
+    if modified_files:
+        message += f"Modified ({len(modified_files)} files):\n"
+        for file in modified_files[:5]:  # Limit to first 5
+            message += f"  - {file}\n"
+        if len(modified_files) > 5:
+            message += f"  ... and {len(modified_files) - 5} more\n"
+        message += "\n"
+    
+    if deleted_files:
+        message += f"Deleted ({len(deleted_files)} files):\n"
+        for file in deleted_files[:5]:  # Limit to first 5
+            message += f"  - {file}\n"
+        if len(deleted_files) > 5:
+            message += f"  ... and {len(deleted_files) - 5} more\n"
+        message += "\n"
+    
+    message += "Session stop routine completed successfully with all quality checks passed."
+    
+    return message
+
+def commit_changes(commit_message: str) -> Dict[str, Any]:
+    """Commit changes."""
+    import subprocess
+    
+    try:
+        result = subprocess.run(["git", "commit", "-m", commit_message], 
+                               capture_output=True, text=True)
+        
+        # Extract commit hash from output
+        commit_hash = None
+        if result.returncode == 0:
+            for line in result.stdout.split('\n'):
+                if '[master' in line or '[main' in line:
+                    # Extract hash from line like "[master abc1234] message"
+                    parts = line.split()
+                    for part in parts:
+                        if len(part) == 7 and part.isalnum():
+                            commit_hash = part
+                            break
+        
+        return {
+            "success": result.returncode == 0,
+            "commit_hash": commit_hash,
+            "output": result.stdout,
+            "error": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"success": False, "commit_hash": None, "output": "", "error": str(e)}
+
+def push_to_remote() -> Dict[str, Any]:
+    """Push to remote repository."""
+    import subprocess
+    
+    try:
+        result = subprocess.run(["git", "push"], 
+                               capture_output=True, text=True)
+        
+        return {
+            "success": result.returncode == 0,
+            "status": "PUSHED" if result.returncode == 0 else "FAILED",
+            "output": result.stdout,
+            "error": result.stderr if result.returncode != 0 else ""
+        }
+    except Exception as e:
+        return {"success": False, "status": "ERROR", "output": "", "error": str(e)}
+```
+
+## Benefits
+
+### **Quality Assurance**
+- **Comprehensive Testing**: Ensures all tests pass before ending session
+- **Documentation Validation**: Guarantees all documentation is complete and current
+- **Git Integrity**: Proper commit and push operations maintain repository state
+- **Zero Technical Debt**: Prevents accumulation of incomplete work
+
+### **Systematic Approach**
+- **3-step systematic routine** ensures nothing is missed
+- **Quality gates** prevent substandard work from being committed
+- **Automated validation** reduces human error
+- **Comprehensive reporting** provides clear session summary
+
+### **Project Integrity**
+- **Clean repository state** maintained after every session
+- **Complete documentation** ensures knowledge preservation
+- **Test validation** guarantees working software
+- **Proper git operations** maintain version control integrity
+
+### **Efficiency**
+- **Automated validation** saves manual checking time
+- **Systematic approach** prevents rework and issues
+- **Clear reporting** provides session closure
+- **Quality gates** prevent future problems
+
+## Enforcement
+
+This rule is **ALWAYS APPLIED** when the user indicates session completion. The complete 3-step routine must be executed systematically with zero exceptions.
+
+**Remember**: When the user says "end session", this entire routine executes autonomously to ensure proper session closure with all quality checks passed.
+
+## Integration with Session Startup
+
+### **Session Continuity**
+- **Session stop** ensures clean state for next session startup
+- **Quality validation** prevents issues from carrying over
+- **Documentation updates** maintain project knowledge
+- **Git operations** preserve work history
+
+### **Quality Chain**
+- **Session startup** → **Development work** → **Session stop** → **Quality validation**
+- **Continuous quality** maintained throughout development cycle
+- **Zero technical debt** accumulation
+- **Professional development** standards maintained
+
+**Template Version**: 1.0  
+**Last Updated**: Current Session  
+**Rule Owner**: AI-Dev-Agent Quality Team  
+**Review Frequency**: Quarterly
+description:
+globs:
+alwaysApply: true
+---
+description:
+globs:
+alwaysApply: true
+---
