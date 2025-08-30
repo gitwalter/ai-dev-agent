@@ -269,7 +269,18 @@ class IntelligentRuleOptimizer:
         Returns:
             Optimally selected rules for the task
         """
-        return self.context_analyzer.select_adaptive_rules(task_description, context)
+        # SAFETY FIRST: Always include safety validation
+        selected_rules = self.context_analyzer.select_adaptive_rules(task_description, context)
+        
+        # Ensure SAFETY FIRST PRINCIPLE is always first
+        if "SAFETY FIRST PRINCIPLE" not in selected_rules:
+            selected_rules = ["SAFETY FIRST PRINCIPLE"] + selected_rules
+        else:
+            # Move SAFETY FIRST to the beginning
+            selected_rules.remove("SAFETY FIRST PRINCIPLE")
+            selected_rules = ["SAFETY FIRST PRINCIPLE"] + selected_rules
+            
+        return selected_rules
     
     def generate_optimization_report(self) -> str:
         """
@@ -716,8 +727,9 @@ class ContextAwareRuleEngine:
         
         applicable = []
         
-        # Always include critical foundation rules
+        # Always include critical foundation rules (SAFETY FIRST)
         applicable.extend([
+            "SAFETY FIRST PRINCIPLE",                    # Safety before everything else
             "Context Awareness and Excellence Rule",
             "No Premature Victory Declaration Rule", 
             "Live Documentation Updates Rule",
@@ -757,8 +769,9 @@ class ContextAwareRuleEngine:
             if score >= relevance_threshold
         ]
         
-        # Ensure critical rules are always included
+        # Ensure critical rules are always included (SAFETY FIRST)
         critical_rules = [
+            "SAFETY FIRST PRINCIPLE",                    # Safety before everything else
             "Context Awareness and Excellence Rule",
             "No Premature Victory Declaration Rule"
         ]

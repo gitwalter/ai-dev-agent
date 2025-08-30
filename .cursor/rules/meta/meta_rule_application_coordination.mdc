@@ -25,6 +25,7 @@ This foundational meta-rule establishes the systematic framework for applying al
 CRITICAL_FOUNDATION_RULES:
   priority: 1
   always_apply_first:
+    - "SAFETY FIRST PRINCIPLE"                    # Safety before everything else
     - "Context Awareness and Excellence Rule"     # Read context FIRST
     - "No Premature Victory Declaration Rule"     # No success claims without evidence
     - "Live Documentation Updates Rule"           # Update docs with ALL changes
@@ -81,19 +82,22 @@ RULE_COMBINATIONS:
   file_operations:
     triggers: ["File creation", "File modification", "File deletion", "File moves"]
     required_rules:
+      - "SAFETY FIRST PRINCIPLE"                  # Safety before any file operations
       - "File Organization Rule"
       - "Live Documentation Updates Rule" 
       - "Clean Repository Focus Rule"
       - "Context Awareness and Excellence Rule"
     sequence: 
-      1. "Context Awareness" # Understand structure first
-      2. "File Organization" # Apply proper structure
-      3. "Live Documentation Updates" # Document changes
-      4. "Clean Repository Focus" # Clean up artifacts
+      1. "SAFETY FIRST" # Safety validation first
+      2. "Context Awareness" # Understand structure first
+      3. "File Organization" # Apply proper structure
+      4. "Live Documentation Updates" # Document changes
+      5. "Clean Repository Focus" # Clean up artifacts
 
   code_implementation:
     triggers: ["New code", "Code changes", "Refactoring"]
     required_rules:
+      - "SAFETY FIRST PRINCIPLE"                  # Safety before any code changes
       - "Test-Driven Development Rule"
       - "No Silent Errors Rule"
       - "Model Selection Rule"
