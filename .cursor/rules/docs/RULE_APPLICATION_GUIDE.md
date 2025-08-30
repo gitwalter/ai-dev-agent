@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for RULE_APPLICATION_GUIDE.md"
+category: "general"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # Rule Application Guide
 
 ## 🎯 **RULE ORGANIZATION & APPLICATION FRAMEWORK**

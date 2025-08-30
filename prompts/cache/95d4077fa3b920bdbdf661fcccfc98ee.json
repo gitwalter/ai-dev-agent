@@ -1,0 +1,14 @@
+{
+  "original_prompt": "\n        Please note that I would like to request your assistance with a very important task.\n        It is important to understand that this task requires careful consideration and analysis.\n        You should know that the quality of your response will be critical for our success.\n        ",
+  "optimized_prompt": "\n        Please note that I would like to request your assistance with a very important task.\n        It is important to understand that this task requires careful consideration and analysis.\n        You should know that the quality of your response will be critical for our success.\n        \n\nPlease provide an efficient, optimized solution.\n\nPlease respond quickly and efficiently.\n\nConsider resource efficiency in your response.",
+  "strategy": "OptimizationStrategy.PERFORMANCE_TUNING",
+  "improvement_score": 0.004285714285714282,
+  "token_reduction": -34,
+  "performance_gain": -0.34,
+  "optimization_time": 0.0,
+  "metadata": {
+    "context": {
+      "task_type": "analysis"
+    }
+  }
+}

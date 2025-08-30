@@ -7,6 +7,9 @@ applies_to:
   - "**/*"
 alwaysApply: true
 enforcement: "MANDATORY"
+globs: ["**/*"]
+tags: ['meta_rules']
+tier: "2"
 ---
 
 # Meta-Rule: Systematic Rule Application Coordination

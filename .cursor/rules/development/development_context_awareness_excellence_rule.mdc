@@ -2,7 +2,7 @@
 description: "Always read context, README files, and documentation when working in any folder to ensure informed decision-making and maintain excellence standards"
 category: "development-standards"
 priority: "high"
-alwaysApply: "true"
+alwaysApply: true
 globs: ["**/*"]
 tags: ["context", "documentation", "excellence", "awareness", "quality"]
 companion_rule: "RULE_DOCUMENT_EXCELLENCE.md"

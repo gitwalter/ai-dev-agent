@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for testing_test_monitoring_rule.mdc"
+category: "testing-standards"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['testing_standards', 'testing', 'validation']
+tier: "2"
+---
+
 # Test Monitoring Rule
 
 ---
@@ -1155,7 +1165,7 @@ This rule is **CRITICAL** and must be followed for all:
 - Quality assurance processes
 
 **Violations of this rule require immediate remediation and test monitoring restoration.**
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

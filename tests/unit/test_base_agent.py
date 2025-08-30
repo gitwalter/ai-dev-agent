@@ -19,6 +19,9 @@ class MockAgent(BaseAgent):
     async def execute(self, state: AgentState) -> AgentState:
         return state
     
+    def validate_task(self, task: Any) -> bool:
+        return True
+    
     def get_prompt_template(self) -> str:
         return "Test prompt template"
 

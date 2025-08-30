@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "knowledge-management"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['knowledge_management']
+tier: "2"
+---
+
 # Knowledge & Research Rules
 
 **Category**: Knowledge & Research  

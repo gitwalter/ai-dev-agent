@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for xp_test_first_development_rule.mdc"
+category: "testing-standards"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['testing_standards']
+tier: "2"
+---
+
 # XP Test-First Development Rule
 
 **CRITICAL**: Always follow Extreme Programming test-first methodology with continuous refactoring and pair programming principles. This rule enhances the existing TDD philosophy with XP practices for maximum quality and efficiency.
@@ -427,7 +437,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Maintainability**: Continuous improvement of code maintainability
 - **Risk Reduction**: Early detection of quality issues through testing
 - **Knowledge Sharing**: Improved team knowledge through pair programming
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

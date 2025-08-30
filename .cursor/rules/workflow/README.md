@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "workflow"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['workflow']
+tier: "2"
+---
+
 # Workflow Rules
 
 **MEDIUM PRIORITY**: Workflow management and session control.

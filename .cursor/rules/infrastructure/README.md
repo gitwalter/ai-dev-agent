@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "infrastructure"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['infrastructure']
+tier: "2"
+---
+
 # Infrastructure Rules
 
 **MEDIUM PRIORITY**: Infrastructure, frameworks, and system configuration.

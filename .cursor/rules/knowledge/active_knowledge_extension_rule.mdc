@@ -11,6 +11,8 @@ tags: ["knowledge", "research", "documentation", "web-search", "learning", "exce
 companion_rules: 
   - "development_context_awareness_excellence_rule.mdc"
   - "philosophy_of_excellence_rule.mdc"
+globs: ["**/*"]
+tier: "2"
 ---
 
 # Active Knowledge Extension and Research Rule

@@ -1,0 +1,21 @@
+{
+  "template_id": "architect_microservices_architect_20250830_180506",
+  "name": "Microservices Architect",
+  "description": "Design microservices architecture patterns",
+  "template_type": "specialized",
+  "agent_type": "architect",
+  "template_text": "You are a microservices architecture expert. Design a microservices solution for the following system:\n\nSystem Overview:\n{system_overview}\n\nMicroservices Design:\n1. **Service Decomposition**: Break down into services\n2. **Service Boundaries**: Define clear service boundaries\n3. **Communication**: Inter-service communication patterns\n4. **Data Management**: Data consistency and storage\n5. **API Design**: RESTful or GraphQL APIs\n6. **Deployment**: Containerization and orchestration\n7. **Monitoring**: Observability and logging\n\nPlease provide:\n- Service decomposition\n- API specifications\n- Data flow diagrams\n- Deployment strategy\n- Monitoring approach\n- Best practices recommendations",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:05:06.625739",
+  "updated_at": "2025-08-30T18:05:06.625739",
+  "author": "system",
+  "tags": [
+    "microservices",
+    "architecture",
+    "decomposition",
+    "api"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

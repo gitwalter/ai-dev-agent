@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for agile_sprint_management_rule.mdc"
+category: "agile-methodology"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology', 'agile', 'project_management']
+tier: "2"
+---
+
 # Agile Sprint Management Rule
 
 **CRITICAL**: Always follow Agile sprint methodology with 2-week iterations, daily standups, and continuous delivery principles. This rule integrates with the existing TDD philosophy and systematic problem-solving approach.
@@ -291,7 +301,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Predictable Delivery**: Velocity-based planning and capacity management
 - **Risk Mitigation**: Early blocker identification and resolution
 - **Stakeholder Satisfaction**: Regular demonstrations and feedback cycles
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

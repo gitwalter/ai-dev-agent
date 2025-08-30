@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 
 # Import components to test
 from agents.test_generator import TestGenerator
-from models.config import AgentConfig
+from agents.base_agent import AgentConfig
 import streamlit as st
 import google.generativeai as genai
 
@@ -40,14 +40,15 @@ class TestTestGenerator:
         try:
             # Setup configuration
             config = AgentConfig(
-                name='test_generator',
-                description='Test generator',
-                enabled=True,
+                agent_id='test_generator',
+                agent_type='test_generation',
+                prompt_template_id='test_generator_template',
+                optimization_enabled=True,
+                performance_monitoring=True,
                 max_retries=3,
-                timeout=300,
-                prompt_template='Generate tests for: {code_files}',
-                system_prompt='You are a test generation expert.',
-                parameters={'temperature': 0.1}
+                timeout_seconds=300,
+                model_name='gemini-2.5-flash-lite',
+                temperature=0.1
             )
             
             # Setup Gemini client

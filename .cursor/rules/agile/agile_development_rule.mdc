@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for agile_development_rule.mdc"
+category: "agile-methodology"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology', 'agile', 'project_management']
+tier: "2"
+---
+
 # Agile Development Rule - Manifesto Aligned
 
 **CRITICAL**: All development work must follow the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html), maintain accurate agile artifacts, and ensure proper sprint management and user story tracking.
@@ -816,7 +826,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - [ ] Progress tracking updated daily
 - [ ] Sprint artifacts linked to product backlog
 - [ ] Document quality meets project standards
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

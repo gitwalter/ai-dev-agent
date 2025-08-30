@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for development_core_principles_rule.mdc"
+category: "development-standards"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['development_standards']
+tier: "2"
+---
+
 # Optimized Development Rules for AI Development Agent
 
 ## 🎯 **TIER 1: CORE DEVELOPMENT PRINCIPLES** ⭐

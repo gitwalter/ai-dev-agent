@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for no_failing_tests_rule.mdc"
+category: "core-foundation"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # No Failing Tests Rule
 
 **CRITICAL**: Zero tolerance for failing tests - all tests must pass at all times. No exceptions.

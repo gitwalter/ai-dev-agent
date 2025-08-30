@@ -1,5 +1,11 @@
 ---
+description: "All documentation must be updated immediately when any relevant changes occur. Documentation debt is not permitted."
+category: "quality-standards"
+priority: "critical"
 alwaysApply: true
+globs: ["**/*"]
+tags: ["documentation", "quality", "maintenance", "excellence"]
+tier: "1"
 ---
 
 # Live Documentation Updates Rule

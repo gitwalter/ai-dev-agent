@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for meta_rule_enforcement_rule.mdc"
+category: "meta-rules"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['meta_rules']
+tier: "2"
+---
+
 # Meta Rule Enforcement Rule
 
 **CRITICAL**: Systematically review and apply ALL established rules before every action. No exceptions.

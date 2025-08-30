@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for framework_langchain_langgraph_standards_rule.mdc"
+category: "infrastructure"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['infrastructure']
+tier: "2"
+---
+
 # LangChain and LangGraph Standards Rule
 
 **CRITICAL**: Always use established LangChain and LangGraph libraries and patterns instead of custom implementations. This rule enforces our migration to the LangChain ecosystem for 80% reduction in custom code.
@@ -407,10 +417,10 @@ This rule ensures we leverage the full power of the LangChain ecosystem while ma
 
 **Remember**: The goal is 80% reduction in custom code while maintaining 100% functionality and improving system reliability and maintainability.
 description: Enforces use of standard LangChain and LangGraph libraries instead of custom implementations
-globs:
+globs: ["**/*"]
 alwaysApply: true
 ---
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

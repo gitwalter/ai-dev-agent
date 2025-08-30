@@ -262,63 +262,113 @@ class PromptOptimizer:
             "it is important to",
             "you should know that",
             "I would like to",
-            "I want to"
+            "I want to",
+            "kindly",
+            "if you could",
+            "would you mind",
+            "I would appreciate if"
         ]
         
         for phrase in redundant_phrases:
-            optimized = optimized.replace(phrase, "")
+            optimized = optimized.replace(phrase.lower(), "")
+        
+        # Remove excessive punctuation
+        optimized = optimized.replace("...", ".")
+        optimized = optimized.replace("!!", "!")
+        optimized = optimized.replace("??", "?")
         
         # Simplify complex sentences
         optimized = self._simplify_sentences(optimized)
+        
+        # Remove empty lines and excessive spacing
+        lines = [line.strip() for line in optimized.split('\n') if line.strip()]
+        optimized = '\n'.join(lines)
         
         return optimized.strip()
     
     def _optimize_clarity(self, prompt: str) -> str:
         """Optimize prompt for clarity."""
-        # Add structure markers
-        if "instructions:" not in prompt.lower():
-            prompt = f"Instructions: {prompt}"
+        optimized = prompt
+        
+        # Add structure markers if missing
+        if "instructions:" not in optimized.lower() and "task:" not in optimized.lower():
+            optimized = f"Instructions: {optimized}"
         
         # Ensure clear action verbs
-        action_verbs = ["analyze", "create", "generate", "review", "validate", "optimize"]
-        has_action = any(verb in prompt.lower() for verb in action_verbs)
+        action_verbs = ["analyze", "create", "generate", "review", "validate", "optimize", "explain", "describe", "compare", "evaluate"]
+        has_action = any(verb in optimized.lower() for verb in action_verbs)
         
         if not has_action:
-            prompt = f"{prompt}\n\nPlease provide a clear response."
+            optimized = f"{optimized}\n\nPlease provide a clear, detailed response."
         
         # Add output format if not specified
-        if "format" not in prompt.lower() and "output" not in prompt.lower():
-            prompt = f"{prompt}\n\nPlease provide your response in a clear, structured format."
+        if "format" not in optimized.lower() and "output" not in optimized.lower():
+            optimized = f"{optimized}\n\nPlease provide your response in a clear, structured format."
         
-        return prompt
+        # Add context if missing
+        if "context:" not in optimized.lower() and "background:" not in optimized.lower():
+            # Only add if the prompt seems to need context
+            if len(optimized.split()) > 20:  # Long prompts might benefit from context
+                optimized = f"Context: You are an expert assistant.\n\n{optimized}"
+        
+        # Ensure proper sentence structure
+        if not optimized.endswith(('.', '!', '?')):
+            optimized = optimized.rstrip() + "."
+        
+        return optimized
     
     def _optimize_context(self, prompt: str, context: Dict[str, Any] = None) -> str:
         """Optimize prompt for context usage."""
         if not context:
             return prompt
         
+        optimized = prompt
+        
         # Add relevant context at the beginning
         context_str = "Context:\n"
+        context_added = False
+        
         for key, value in context.items():
             if isinstance(value, str) and len(value) < 200:  # Only add short context
                 context_str += f"- {key}: {value}\n"
+                context_added = True
+            elif isinstance(value, (int, float)):
+                context_str += f"- {key}: {value}\n"
+                context_added = True
         
-        if context_str != "Context:\n":
-            prompt = f"{context_str}\n{prompt}"
+        if context_added:
+            # Check if context already exists
+            if "context:" not in optimized.lower():
+                optimized = f"{context_str}\n{optimized}"
+            else:
+                # Append to existing context
+                optimized = optimized.replace("Context:", f"{context_str.strip()}\n\nContext:")
         
-        return prompt
+        return optimized
     
     def _optimize_performance(self, prompt: str) -> str:
         """Optimize prompt for performance."""
-        # Add performance hints
-        if "efficient" not in prompt.lower() and "performance" not in prompt.lower():
-            prompt = f"{prompt}\n\nPlease provide an efficient solution."
+        optimized = prompt
+        
+        # Add performance hints if not present
+        performance_keywords = ["efficient", "performance", "optimize", "fast", "quick"]
+        has_performance_hint = any(keyword in optimized.lower() for keyword in performance_keywords)
+        
+        if not has_performance_hint:
+            optimized = f"{optimized}\n\nPlease provide an efficient, optimized solution."
         
         # Add timeout hints if not present
-        if "timeout" not in prompt.lower() and "quick" not in prompt.lower():
-            prompt = f"{prompt}\n\nPlease respond quickly and efficiently."
+        timeout_keywords = ["timeout", "quick", "fast", "rapid", "immediate"]
+        has_timeout_hint = any(keyword in optimized.lower() for keyword in timeout_keywords)
         
-        return prompt
+        if not has_timeout_hint:
+            optimized = f"{optimized}\n\nPlease respond quickly and efficiently."
+        
+        # Add resource optimization hints
+        if "resource" not in optimized.lower() and "memory" not in optimized.lower():
+            optimized = f"{optimized}\n\nConsider resource efficiency in your response."
+        
+        return optimized
     
     def _count_tokens(self, text: str) -> int:
         """Estimate token count for text."""
@@ -331,15 +381,26 @@ class PromptOptimizer:
         optimized_tokens = self._count_tokens(optimized)
         
         # Token reduction score (0-1)
-        token_score = min(1.0, (original_tokens - optimized_tokens) / original_tokens)
+        if original_tokens > 0:
+            token_reduction = original_tokens - optimized_tokens
+            token_score = min(1.0, max(0.0, token_reduction / original_tokens))
+        else:
+            token_score = 0.0
         
         # Clarity improvement score
         original_clarity = self._analyze_clarity(original)
         optimized_clarity = self._analyze_clarity(optimized)
         clarity_score = max(0, optimized_clarity - original_clarity)
         
-        # Combined score
-        return (token_score * 0.6) + (clarity_score * 0.4)
+        # Structure improvement score
+        original_structure = self._analyze_structure(original)
+        optimized_structure = self._analyze_structure(optimized)
+        structure_score = max(0, optimized_structure - original_structure)
+        
+        # Combined score with better weighting
+        total_score = (token_score * 0.4) + (clarity_score * 0.4) + (structure_score * 0.2)
+        
+        return min(1.0, max(0.0, total_score))
     
     def _estimate_performance_gain(self, token_reduction: int) -> float:
         """Estimate performance gain from token reduction."""
@@ -369,6 +430,33 @@ class PromptOptimizer:
             score += 0.05
         
         return max(0.0, min(1.0, score))
+    
+    def _analyze_structure(self, prompt: str) -> float:
+        """Analyze prompt structure (0-1 score)."""
+        score = 0.0
+        
+        # Check for clear sections
+        sections = ["context:", "instructions:", "task:", "output:", "format:"]
+        section_count = sum(1 for section in sections if section in prompt.lower())
+        score += min(0.4, section_count * 0.1)
+        
+        # Check for proper line breaks and formatting
+        lines = prompt.split('\n')
+        if len(lines) > 1:
+            score += 0.2
+        
+        # Check for bullet points or numbered lists
+        if any(char in prompt for char in ['-', '*', '1.', '2.', '3.']):
+            score += 0.2
+        
+        # Check for consistent capitalization
+        sentences = prompt.split('.')
+        capitalized_sentences = sum(1 for s in sentences if s.strip() and s.strip()[0].isupper())
+        if len(sentences) > 1:
+            capitalization_score = capitalized_sentences / len(sentences)
+            score += capitalization_score * 0.2
+        
+        return min(1.0, score)
     
     def _analyze_context_efficiency(self, prompt: str) -> float:
         """Analyze context efficiency (0-1 score)."""

@@ -71,7 +71,7 @@ def mock_structured_outputs():
     
     print("Running in MOCK mode - initializing mocks")
     # Import our mock module
-    from tests.mock_structured_outputs import (
+    from tests.mocks.mock_structured_outputs import (
         RequirementsAnalysisOutput,
         ArchitectureDesignOutput,
         CodeGenerationOutput,

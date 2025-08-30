@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for continuous_improvement_systematic_rule.mdc"
+category: "meta-rules"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['meta_rules']
+tier: "2"
+---
+
 # Continuous Improvement Systematic Rule
 
 **CRITICAL**: Systematically improve ALL processes, systems, and outcomes continuously. Never accept the status quo - always seek to make everything better, faster, more reliable, and more efficient.
@@ -709,11 +719,11 @@ description: Systematic continuous improvement across all processes
 globs: ["**/*.py", "**/*.md", "**/*.yml", "**/*.yaml"]
 alwaysApply: true
 ---
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

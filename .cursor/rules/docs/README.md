@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "general"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # Cursor Project Rules - Organized and Categorized
 
 This directory contains all cursor project rules organized into logical categories for better discoverability and management.

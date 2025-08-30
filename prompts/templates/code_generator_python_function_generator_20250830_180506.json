@@ -1,0 +1,21 @@
+{
+  "template_id": "code_generator_python_function_generator_20250830_180506",
+  "name": "Python Function Generator",
+  "description": "Generate clean, well-documented Python functions with type hints",
+  "template_type": "simple",
+  "agent_type": "code_generator",
+  "template_text": "You are an expert Python developer. Generate a clean, well-documented function for the following task:\n\nTask: {task}\n\nRequirements:\n- Use type hints\n- Include docstring with parameters and return value\n- Follow PEP 8 style guidelines\n- Handle edge cases appropriately\n- Include error handling where necessary\n\nPlease provide only the function code without explanations.",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:05:06.510705",
+  "updated_at": "2025-08-30T18:05:06.510705",
+  "author": "system",
+  "tags": [
+    "python",
+    "function",
+    "generation",
+    "type-hints"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

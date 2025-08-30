@@ -1,0 +1,21 @@
+{
+  "template_id": "code_generator_javascript_class_generator_20250830_180246",
+  "name": "JavaScript Class Generator",
+  "description": "Generate modern JavaScript classes with ES6+ features",
+  "template_type": "enhanced",
+  "agent_type": "code_generator",
+  "template_text": "You are an expert JavaScript developer. Create a modern JavaScript class for the following requirements:\n\nRequirements: {requirements}\n\nGuidelines:\n- Use ES6+ class syntax\n- Include proper constructor\n- Add getter/setter methods where appropriate\n- Use JSDoc comments for documentation\n- Follow modern JavaScript best practices\n- Include error handling\n- Make the class reusable and extensible\n\nPlease provide only the class code with JSDoc comments.",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:02:46.344539",
+  "updated_at": "2025-08-30T18:02:46.344539",
+  "author": "system",
+  "tags": [
+    "javascript",
+    "class",
+    "es6",
+    "modern"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

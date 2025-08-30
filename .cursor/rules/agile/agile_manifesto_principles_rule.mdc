@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for agile_manifesto_principles_rule.mdc"
+category: "agile-methodology"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology', 'agile', 'project_management']
+tier: "2"
+---
+
 # Agile Manifesto Principles Rule
 
 **CRITICAL**: All development activities must strictly adhere to the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html) as the foundational guidelines for all work.
@@ -713,7 +723,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 
 **Reference**: [Agile Manifesto Principles](https://agilemanifesto.org/principles.html)
 
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

@@ -1,0 +1,21 @@
+{
+  "template_id": "code_reviewer_security_code_review_20250830_180653",
+  "name": "Security Code Review",
+  "description": "Security-focused code review for vulnerabilities",
+  "template_type": "specialized",
+  "agent_type": "code_reviewer",
+  "template_text": "You are a security expert conducting a security code review. Analyze the following code for vulnerabilities:\n\nCode to Review:\n{code}\n\nSecurity Focus Areas:\n1. **Input Validation**: SQL injection, XSS, injection attacks\n2. **Authentication**: Session management, access control\n3. **Data Protection**: Encryption, sensitive data handling\n4. **Error Handling**: Information disclosure\n5. **Dependencies**: Known vulnerabilities in libraries\n6. **Configuration**: Secure defaults, environment variables\n\nPlease provide:\n- Security risk assessment (Low/Medium/High/Critical)\n- Identified vulnerabilities\n- Exploitation scenarios\n- Remediation recommendations\n- Security best practices to follow",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:06:53.326797",
+  "updated_at": "2025-08-30T18:06:53.326797",
+  "author": "system",
+  "tags": [
+    "security",
+    "vulnerabilities",
+    "review",
+    "protection"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

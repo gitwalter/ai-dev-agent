@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "testing-standards"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['testing_standards']
+tier: "2"
+---
+
 # Testing Rules
 
 **HIGH PRIORITY**: Testing methodology and quality assurance practices.

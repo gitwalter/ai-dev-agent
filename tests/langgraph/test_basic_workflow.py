@@ -21,7 +21,7 @@ except ImportError:
     LANGGRAPH_AVAILABLE = False
 
 # Temporarily disabled due to syntax errors in structured_outputs.py
-from tests.mock_structured_outputs import RequirementsAnalysisOutput
+from tests.mocks.mock_structured_outputs import RequirementsAnalysisOutput
 
 # Using mock from tests.mock_structured_outputs
 

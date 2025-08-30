@@ -12,7 +12,8 @@ from agents.base_agent import BaseAgent
 from agents.requirements_analyst import RequirementsAnalyst
 from agents.architecture_designer import ArchitectureDesigner
 from agents.code_generator import CodeGenerator
-from models.config import AgentConfig, SystemConfig, GeminiConfig
+from models.config import SystemConfig, GeminiConfig
+from agents.base_agent import AgentConfig
 from models.state import AgentState
 
 
@@ -42,19 +43,15 @@ class TestAgentExecution:
     def agent_config(self):
         """Create an agent configuration."""
         return AgentConfig(
-            name="test_agent",
-            description="Test agent",
-            enabled=True,
+            agent_id="test_agent",
+            agent_type="requirements_analysis",
+            prompt_template_id="requirements_template",
+            optimization_enabled=True,
+            performance_monitoring=True,
             max_retries=3,
-            timeout=300,
-            prompt_template="Test prompt template for {task}",
-            system_prompt="You are a test agent. Please analyze the requirements and provide structured output.",
-            parameters={
-                "temperature": 0.1,
-                "top_p": 0.8,
-                "top_k": 40,
-                "max_tokens": 8192
-            }
+            timeout_seconds=30,
+            model_name="gemini-2.5-flash-lite",
+            temperature=0.1
         )
     
     @pytest.fixture
@@ -375,14 +372,15 @@ class TestAgentExecution:
         
         # Create agent with invalid config (missing required fields)
         invalid_config = AgentConfig(
-            name="test_agent",
-            description="Test agent",
-            enabled=True,
+            agent_id="test_agent",
+            agent_type="requirements_analysis",
+            prompt_template_id="",  # Empty prompt template
+            optimization_enabled=True,
+            performance_monitoring=True,
             max_retries=3,
-            timeout=300,
-            prompt_template="",  # Empty prompt template
-            system_prompt="",    # Empty system prompt
-            parameters={}  # Empty parameters
+            timeout_seconds=30,
+            model_name="gemini-2.5-flash-lite",
+            temperature=0.1
         )
         
         # Create the agent
@@ -420,19 +418,15 @@ class TestAgentErrorHandling:
     @pytest.fixture
     def agent_config(self):
         return AgentConfig(
-            name="test_agent",
-            description="Test agent",
-            enabled=True,
+            agent_id="test_agent",
+            agent_type="requirements_analysis",
+            prompt_template_id="requirements_template",
+            optimization_enabled=True,
+            performance_monitoring=True,
             max_retries=3,
-            timeout=300,
-            prompt_template="Test prompt template for {task}",
-            system_prompt="You are a test agent. Please analyze the requirements and provide structured output.",
-            parameters={
-                "temperature": 0.1,
-                "top_p": 0.8,
-                "top_k": 40,
-                "max_tokens": 8192
-            }
+            timeout_seconds=30,
+            model_name="gemini-2.5-flash-lite",
+            temperature=0.1
         )
     
     @pytest.fixture

@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "core-foundation"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # Core Rules
 
 **CRITICAL**: These rules apply to EVERY situation and are ALWAYS active.

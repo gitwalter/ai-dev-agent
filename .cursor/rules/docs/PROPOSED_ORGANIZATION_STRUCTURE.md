@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for PROPOSED_ORGANIZATION_STRUCTURE.md"
+category: "general"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # Rules Folder Organization Proposal
 
 **CRITICAL**: Reorganize rules folder with logical subfolder structure for better organization and discoverability.

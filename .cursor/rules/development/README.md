@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "development-standards"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['development_standards']
+tier: "2"
+---
+
 # Development Rules
 
 **HIGH PRIORITY**: Core development practices and coding standards.

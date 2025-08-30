@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for FILE_ORGANIZATION_SACRED_RULE.md"
+category: "general"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # FILE ORGANIZATION SACRED RULE - NEVER VIOLATE
 
 **SACRED PRINCIPLE**: The File Organization Rule is **SACRED** and represents the foundation of our systematic excellence. It must **NEVER** be violated under any circumstances.

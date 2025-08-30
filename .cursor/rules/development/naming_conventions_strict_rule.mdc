@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for naming_conventions_strict_rule.mdc"
+category: "development-standards"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['development_standards']
+tier: "2"
+---
+
 # Strict Naming Conventions Rule
 
 ## Description
@@ -439,7 +449,7 @@ description: Strict naming conventions for readability and maintainability
 globs: ["**/*.py", "**/*.md", "**/*.yml", "**/*.yaml"]
 alwaysApply: true
 ---
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

@@ -1,8 +1,11 @@
 ---
-name: No Silent Errors and Mock Fallbacks Rule
-description:
-globs:
+description: "Never use silent error handling, mock fallbacks, or placeholder data that masks real parsing failures. All errors must be exposed and addressed properly."
+category: "quality-standards"
+priority: "critical"
 alwaysApply: true
+globs: ["**/*"]
+tags: ["error-handling", "quality", "reliability", "debugging"]
+tier: "1"
 ---
 
 # No Silent Errors and Mock Fallbacks Rule

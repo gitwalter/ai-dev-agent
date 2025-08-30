@@ -1,0 +1,21 @@
+{
+  "template_id": "analyzer_code_complexity_analyzer_20250830_180506",
+  "name": "Code Complexity Analyzer",
+  "description": "Analyze code complexity and maintainability",
+  "template_type": "enhanced",
+  "agent_type": "analyzer",
+  "template_text": "You are a code quality analyst. Analyze the complexity and maintainability of the following code:\n\nCode to Analyze:\n{code}\n\nAnalysis Metrics:\n1. **Cyclomatic Complexity**: Measure code complexity\n2. **Code Duplication**: Identify repeated code patterns\n3. **Function Length**: Analyze function size and structure\n4. **Naming Conventions**: Review naming quality\n5. **Documentation**: Assess code documentation\n6. **Test Coverage**: Evaluate testing completeness\n7. **Technical Debt**: Identify areas for improvement\n\nPlease provide:\n- Complexity analysis report\n- Maintainability score\n- Refactoring recommendations\n- Quality improvement suggestions\n- Technical debt assessment",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:05:06.628843",
+  "updated_at": "2025-08-30T18:05:06.628843",
+  "author": "system",
+  "tags": [
+    "analysis",
+    "complexity",
+    "maintainability",
+    "quality"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

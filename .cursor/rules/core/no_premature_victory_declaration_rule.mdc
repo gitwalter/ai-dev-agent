@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for no_premature_victory_declaration_rule.mdc"
+category: "core-foundation"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # No Premature Victory Declaration Rule
 
 **CRITICAL**: Never declare success, completion, or victory until ALL verification steps are completed and ALL tests are passing with evidence. Always output concise, progress-relevant information only.
@@ -340,6 +350,6 @@ This rule is **CRITICAL** and must be followed for all development work, testing
 **Violations require immediate correction and re-validation.**
 
 description: Prevents premature success declarations and enforces concise progress-focused communication
-globs:
+globs: ["**/*"]
 alwaysApply: true
 ---

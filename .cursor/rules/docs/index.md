@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for index.md"
+category: "general"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # Rules Index and Navigation
 
 **Complete index of all rules organized by category**

@@ -30,7 +30,7 @@ class TestGenerator(BaseAgent):
     
     def __init__(self, config, gemini_client):
         """Initialize the TestGenerator agent."""
-        super().__init__(config, gemini_client)
+        super().__init__(config)
         self.prompt_loader = get_agent_prompt_loader("test_generator")
         
         # Setup LangChain parser if available
@@ -38,6 +38,24 @@ class TestGenerator(BaseAgent):
             self.json_parser = JsonOutputParser()
         else:
             self.json_parser = None
+    
+    def validate_task(self, task: Any) -> bool:
+        """
+        Validate that the task is appropriate for test generation.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid for test generation
+        """
+        # Basic validation - task should be a dict with required fields
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for required fields in the task
+        required_fields = ['code_files', 'project_context']
+        return all(field in task for field in required_fields)
     
     def get_prompt_template(self) -> str:
         """

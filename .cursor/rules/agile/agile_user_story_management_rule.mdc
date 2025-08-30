@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for agile_user_story_management_rule.mdc"
+category: "agile-methodology"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology', 'agile', 'project_management']
+tier: "2"
+---
+
 # Agile User Story Management Rule
 
 **CRITICAL**: Always create, manage, and track user stories with clear acceptance criteria, story point estimation, and TDD integration. This rule ensures systematic user story management aligned with existing development philosophy.
@@ -516,7 +526,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Predictable Delivery**: Story point estimation and velocity tracking
 - **Continuous Improvement**: Regular backlog refinement and process optimization
 - **Stakeholder Satisfaction**: Clear acceptance criteria and validation processes
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

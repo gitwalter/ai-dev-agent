@@ -287,6 +287,36 @@ class PromptTemplateSystem:
         logger.info(f"Created version {new_version} of template {template_id}")
         return new_template_id
     
+    def delete_template(self, template_id: str) -> bool:
+        """
+        Delete a template.
+        
+        Args:
+            template_id: Template ID to delete
+            
+        Returns:
+            bool: True if deleted successfully
+        """
+        template = self.get_template(template_id)
+        if not template:
+            return False
+        
+        # Remove from memory
+        if template_id in self.templates:
+            del self.templates[template_id]
+        
+        # Remove from cache
+        if template_id in self.template_cache:
+            del self.template_cache[template_id]
+        
+        # Remove file
+        template_file = self.templates_dir / f"{template_id}.json"
+        if template_file.exists():
+            template_file.unlink()
+        
+        logger.info(f"Deleted template {template_id}")
+        return True
+    
     def render_template(self, template_id: str, context: Dict[str, Any] = None) -> str:
         """
         Render a template with context.

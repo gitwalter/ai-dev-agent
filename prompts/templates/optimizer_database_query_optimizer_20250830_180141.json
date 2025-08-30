@@ -1,0 +1,21 @@
+{
+  "template_id": "optimizer_database_query_optimizer_20250830_180141",
+  "name": "Database Query Optimizer",
+  "description": "Optimize database queries for better performance",
+  "template_type": "specialized",
+  "agent_type": "optimizer",
+  "template_text": "You are a database optimization expert. Optimize the following database query:\n\nQuery to Optimize:\n{query}\n\nDatabase Context:\n{context}\n\nOptimization Focus:\n1. **Query Structure**: Improve query logic\n2. **Indexing**: Suggest appropriate indexes\n3. **JOIN Optimization**: Optimize table joins\n4. **Filtering**: Improve WHERE clauses\n5. **Aggregation**: Optimize GROUP BY operations\n6. **Subqueries**: Convert to more efficient alternatives\n7. **Execution Plan**: Analyze query execution\n\nPlease provide:\n- Query analysis\n- Optimization recommendations\n- Optimized query examples\n- Index suggestions\n- Performance improvements",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:01:41.335847",
+  "updated_at": "2025-08-30T18:01:41.335847",
+  "author": "system",
+  "tags": [
+    "database",
+    "query-optimization",
+    "indexing",
+    "performance"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

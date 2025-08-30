@@ -29,7 +29,7 @@ class ArchitectureDesigner(BaseAgent):
     
     def __init__(self, config, gemini_client):
         """Initialize the ArchitectureDesigner agent."""
-        super().__init__(config, gemini_client)
+        super().__init__(config)
         self.prompt_loader = get_agent_prompt_loader("architecture_designer")
         
         # Setup LangChain parser if available
@@ -37,6 +37,24 @@ class ArchitectureDesigner(BaseAgent):
             self.json_parser = JsonOutputParser()
         else:
             self.json_parser = None
+    
+    def validate_task(self, task: Any) -> bool:
+        """
+        Validate that the task is appropriate for architecture design.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid for architecture design
+        """
+        # Basic validation - task should be a dict with required fields
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for required fields in the task
+        required_fields = ['project_context', 'requirements']
+        return all(field in task for field in required_fields)
     
     def get_prompt_template(self) -> str:
         """

@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "agile-methodology"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology']
+tier: "2"
+---
+
 # Agile Rules
 
 **HIGH PRIORITY**: Agile methodology implementation and practices.

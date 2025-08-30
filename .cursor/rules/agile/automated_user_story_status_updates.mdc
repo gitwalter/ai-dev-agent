@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for automated_user_story_status_updates.mdc"
+category: "agile-methodology"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology']
+tier: "2"
+---
+
 # Automated User Story Status Updates Rule
 
 **CRITICAL**: Automate the comprehensive updating of user story status information and all related agile artifacts to ensure real-time accuracy and eliminate manual documentation lag.

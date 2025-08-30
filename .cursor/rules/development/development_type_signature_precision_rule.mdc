@@ -2,7 +2,7 @@
 description: "Maintain absolute precision in typing, function signatures, and API usage - every type annotation, parameter, and return value must be exact and correct"
 category: "development-standards"
 priority: "critical"
-alwaysApply: "true"
+alwaysApply: true
 globs: ["**/*.py", "**/*.ts", "**/*.js", "**/*.java", "**/*.cs"]
 tags: ["typing", "signatures", "apis", "precision", "quality", "god-in-details"]
 companion_rule: "RULE_DOCUMENT_EXCELLENCE.md"

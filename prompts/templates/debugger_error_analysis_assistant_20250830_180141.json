@@ -1,0 +1,20 @@
+{
+  "template_id": "debugger_error_analysis_assistant_20250830_180141",
+  "name": "Error Analysis Assistant",
+  "description": "Analyze and debug error messages and stack traces",
+  "template_type": "enhanced",
+  "agent_type": "debugger",
+  "template_text": "You are a debugging expert. Analyze the following error and provide a solution:\n\nError Information:\n{error_details}\n\nAnalysis Requirements:\n1. **Root Cause**: Identify the underlying cause\n2. **Error Context**: Understand the execution context\n3. **Code Review**: Review related code for issues\n4. **Solution Options**: Provide multiple solution approaches\n5. **Prevention**: Suggest ways to prevent similar errors\n6. **Testing**: Recommend tests to catch this issue\n7. **Documentation**: Update documentation if needed\n\nPlease provide:\n- Detailed error analysis\n- Step-by-step debugging process\n- Recommended solutions\n- Code examples\n- Prevention strategies",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:01:41.290794",
+  "updated_at": "2025-08-30T18:01:41.290794",
+  "author": "system",
+  "tags": [
+    "debugging",
+    "error-analysis",
+    "troubleshooting"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

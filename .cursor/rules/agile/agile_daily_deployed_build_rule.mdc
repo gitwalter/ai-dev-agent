@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for agile_daily_deployed_build_rule.mdc"
+category: "agile-methodology"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['agile_methodology', 'agile', 'project_management']
+tier: "2"
+---
+
 # Agile Daily Deployed Build Rule
 
 **CRITICAL**: Implement and maintain daily deployed builds as a cornerstone of agile development methodology to ensure continuous integration, rapid feedback, and reliable delivery.

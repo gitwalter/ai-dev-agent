@@ -1,0 +1,20 @@
+{
+  "template_id": "documentation_writer_readme_generator_20250830_180246",
+  "name": "README Generator",
+  "description": "Generate professional README files for projects",
+  "template_type": "simple",
+  "agent_type": "documentation_writer",
+  "template_text": "You are a technical writer creating a README file. Generate a comprehensive README for the following project:\n\nProject Information:\n{project_info}\n\nREADME Sections to Include:\n1. **Project Title and Description**\n2. **Features and Benefits**\n3. **Installation Instructions**\n4. **Usage Examples**\n5. **Configuration Options**\n6. **API Reference** (if applicable)\n7. **Contributing Guidelines**\n8. **License Information**\n9. **Support and Contact**\n\nPlease create a professional, well-structured README that follows best practices.",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:02:46.386615",
+  "updated_at": "2025-08-30T18:02:46.386615",
+  "author": "system",
+  "tags": [
+    "readme",
+    "documentation",
+    "project"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

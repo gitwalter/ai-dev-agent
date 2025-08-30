@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for boyscout_principle_rule.mdc"
+category: "core-foundation"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # Boy Scout Principle Rule
 
 **CRITICAL**: Always act as a boy scout - proactively identify, analyze, and resolve issues before they become problems for others. Leave the codebase cleaner than you found it, creating maintainable and future-ready code that others can follow confidently.
@@ -721,7 +731,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Code Quality**: Consistent high-quality, future-ready code
 
 **Remember**: As boy scouts, we leave the codebase cleaner than we found it. We don't just solve today's problems - we prevent tomorrow's issues and create a legacy of clean, maintainable, and future-ready code.
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

@@ -7,7 +7,7 @@ __version__ = "1.0.0"
 __author__ = "AI Development Agent Team"
 
 # Import common test utilities
-from .test_utils import *
+from .unit.test_utils import *
 
 # Test categories
 TEST_CATEGORIES = {

@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for RULE_DOCUMENT_EXCELLENCE.md"
+category: "general"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # Document Excellence and Quality Standards Rule
 
 **CRITICAL**: All documentation, templates, and generated content must meet the highest quality standards. No dummy content, poor placeholders, or substandard material is acceptable.

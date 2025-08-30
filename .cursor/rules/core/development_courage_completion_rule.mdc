@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for development_courage_completion_rule.mdc"
+category: "core-foundation"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # Courage and Complete Work Rule
 
 **CRITICAL**: Be brave and complete ALL work systematically. Never stop with partial results or when significant work remains incomplete.

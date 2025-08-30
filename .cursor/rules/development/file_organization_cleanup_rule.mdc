@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for file_organization_cleanup_rule.mdc"
+category: "development-standards"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['development_standards']
+tier: "2"
+---
+
 # File Organization and Cleanup Rule
 
 **CRITICAL**: Always maintain a clean, organized file structure by automatically deleting empty files and organizing code according to established patterns.

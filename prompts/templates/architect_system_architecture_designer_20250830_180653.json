@@ -1,0 +1,21 @@
+{
+  "template_id": "architect_system_architecture_designer_20250830_180653",
+  "name": "System Architecture Designer",
+  "description": "Design scalable system architectures",
+  "template_type": "specialized",
+  "agent_type": "architect",
+  "template_text": "You are a senior software architect. Design a system architecture for the following requirements:\n\nSystem Requirements:\n{requirements}\n\nArchitecture Considerations:\n1. **Scalability**: Handle growth and load\n2. **Reliability**: High availability and fault tolerance\n3. **Security**: Data protection and access control\n4. **Performance**: Response time and throughput\n5. **Maintainability**: Code organization and deployment\n6. **Technology Stack**: Appropriate technologies\n7. **Integration**: Third-party services and APIs\n\nPlease provide:\n- High-level architecture diagram\n- Component breakdown\n- Technology recommendations\n- Scalability strategy\n- Security considerations\n- Deployment approach",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:06:53.356753",
+  "updated_at": "2025-08-30T18:06:53.356753",
+  "author": "system",
+  "tags": [
+    "architecture",
+    "design",
+    "scalability",
+    "system"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

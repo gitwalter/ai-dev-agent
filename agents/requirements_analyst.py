@@ -78,12 +78,30 @@ class RequirementsAnalyst(BaseAgent):
     """
     
     def __init__(self, config: Dict[str, Any], gemini_client=None):
-        super().__init__(config, gemini_client)
+        super().__init__(config)
         self.prompt_loader = get_agent_prompt_loader("requirements_analyst")
         self.requirements: List[Requirement] = []
         self.user_stories: List[UserStory] = []
         self.analysis_history: List[Dict[str, Any]] = []
         self.logs: List[Dict[str, Any]] = []  # Add missing logs attribute
+    
+    def validate_task(self, task: Any) -> bool:
+        """
+        Validate that the task is appropriate for requirements analysis.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid for requirements analysis
+        """
+        # Basic validation - task should be a dict with required fields
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for required fields in the task
+        required_fields = ['project_context', 'project_name']
+        return all(field in task for field in required_fields)
     
     def get_prompt_template(self) -> str:
         """
@@ -132,7 +150,7 @@ class RequirementsAnalyst(BaseAgent):
             # Update state with mock results
             updated_state = state.copy()
             updated_state["agent_outputs"] = updated_state.get("agent_outputs", {})
-            updated_state["agent_outputs"][self.name] = {
+            updated_state["agent_outputs"][self.config.agent_id] = {
                 "status": "completed",
                 "output": {
                     "requirements_analysis": {
@@ -163,7 +181,7 @@ class RequirementsAnalyst(BaseAgent):
             # Update state with error information
             error_state = state.copy()
             error_state["agent_outputs"] = error_state.get("agent_outputs", {})
-            error_state["agent_outputs"][self.name] = {
+            error_state["agent_outputs"][self.config.agent_id] = {
                 "status": "failed",
                 "error": str(e),
                 "execution_time": (datetime.now() - start_time).total_seconds()

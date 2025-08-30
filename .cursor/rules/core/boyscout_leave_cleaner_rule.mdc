@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for boyscout_leave_cleaner_rule.mdc"
+category: "core-foundation"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # Boy Scout Rule - Leave the Codebase Cleaner Than You Found It
 
 **CRITICAL**: Always leave the codebase, documentation, and project structure in a better state than when you started working on it. If you see something that can be improved, fix it immediately.

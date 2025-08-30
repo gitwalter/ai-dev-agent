@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for anti_redundancy_elimination_rule.mdc"
+category: "meta-rules"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['meta_rules']
+tier: "2"
+---
+
 # Anti-Redundancy Elimination Rule
 
 **CRITICAL**: Systematically eliminate all forms of redundancy across code, rules, documentation, processes, and data. Redundancy is technical debt that reduces maintainability and increases complexity.

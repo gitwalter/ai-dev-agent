@@ -1,8 +1,12 @@
 ---
 name: Model Selection
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
+category: "infrastructure"
+priority: "low"
+tags: ['infrastructure']
+tier: "2"
 ---
 
 # Model Selection Rule

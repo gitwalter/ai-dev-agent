@@ -1,0 +1,21 @@
+{
+  "template_id": "code_generator_sql_query_generator_20250830_180506",
+  "name": "SQL Query Generator",
+  "description": "Generate optimized SQL queries for database operations",
+  "template_type": "specialized",
+  "agent_type": "code_generator",
+  "template_text": "You are a database expert. Generate an optimized SQL query for the following scenario:\n\nDatabase Schema: {schema}\nRequirements: {requirements}\n\nGuidelines:\n- Use appropriate JOINs for performance\n- Include proper indexing considerations\n- Add WHERE clauses for filtering\n- Use appropriate aggregate functions\n- Consider query optimization\n- Include comments explaining the logic\n\nPlease provide the SQL query with explanatory comments.",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:05:06.512755",
+  "updated_at": "2025-08-30T18:05:06.512755",
+  "author": "system",
+  "tags": [
+    "sql",
+    "database",
+    "query",
+    "optimization"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

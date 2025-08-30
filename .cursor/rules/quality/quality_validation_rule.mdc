@@ -1,5 +1,11 @@
 ---
+description: "Never declare success, completion, or victory until ALL verification steps are completed and ALL tests are passing with evidence."
+category: "quality-standards"
+priority: "critical"
 alwaysApply: true
+globs: ["**/*"]
+tags: ["validation", "testing", "quality", "evidence", "verification"]
+tier: "1"
 ---
 
 # No Premature Victory Declaration Rule

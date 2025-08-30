@@ -1,0 +1,20 @@
+{
+  "template_id": "documentation_writer_api_documentation_generator_20250830_180246",
+  "name": "API Documentation Generator",
+  "description": "Generate comprehensive API documentation",
+  "template_type": "enhanced",
+  "agent_type": "documentation_writer",
+  "template_text": "You are a technical writer specializing in API documentation. Create comprehensive documentation for the following API:\n\nAPI Details:\n{api_details}\n\nDocumentation Requirements:\n1. **Overview**: Purpose and functionality\n2. **Authentication**: How to authenticate\n3. **Endpoints**: Complete endpoint documentation\n4. **Request/Response Examples**: Real examples\n5. **Error Codes**: All possible error responses\n6. **Rate Limiting**: Usage limits and policies\n7. **SDK Examples**: Code examples in multiple languages\n\nPlease provide well-structured, clear documentation that developers can easily follow.",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:02:46.379233",
+  "updated_at": "2025-08-30T18:02:46.379233",
+  "author": "system",
+  "tags": [
+    "api",
+    "documentation",
+    "technical-writing"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

@@ -1,0 +1,21 @@
+{
+  "template_id": "analyzer_dependency_analyzer_20250830_180246",
+  "name": "Dependency Analyzer",
+  "description": "Analyze project dependencies and security",
+  "template_type": "specialized",
+  "agent_type": "analyzer",
+  "template_text": "You are a dependency analysis expert. Analyze the dependencies of the following project:\n\nProject Dependencies:\n{dependencies}\n\nAnalysis Focus:\n1. **Security Vulnerabilities**: Check for known vulnerabilities\n2. **Version Compatibility**: Ensure compatible versions\n3. **License Compliance**: Review license requirements\n4. **Dependency Health**: Assess maintenance status\n5. **Size Impact**: Analyze bundle size impact\n6. **Update Strategy**: Plan dependency updates\n7. **Alternative Options**: Suggest better alternatives\n\nPlease provide:\n- Security vulnerability report\n- Dependency health assessment\n- Update recommendations\n- License compliance summary\n- Optimization suggestions",
+  "version": "1.0.0",
+  "status": "draft",
+  "created_at": "2025-08-30T18:02:46.410745",
+  "updated_at": "2025-08-30T18:02:46.410745",
+  "author": "system",
+  "tags": [
+    "dependencies",
+    "security",
+    "vulnerabilities",
+    "licenses"
+  ],
+  "parameters": {},
+  "metadata": {}
+}

@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for REORGANIZATION_COMPLETE.md"
+category: "general"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['general']
+tier: "2"
+---
+
 # Rules Folder Reorganization - COMPLETE
 
 **✅ SUCCESSFULLY COMPLETED**: Complete reorganization of the rules folder with logical categorization and improved navigation.

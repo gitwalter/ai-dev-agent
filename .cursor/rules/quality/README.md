@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "quality-standards"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['quality_standards']
+tier: "2"
+---
+
 # Quality Rules
 
 **HIGH PRIORITY**: Quality assurance and documentation standards.

@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for core_rule_application_framework.mdc"
+category: "core-foundation"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation']
+tier: "2"
+---
+
 # Core Rule Application Framework
 
 **CRITICAL**: This framework ensures that critical rules are automatically applied to every situation, task, and development session. The Courage Rule and No Premature Victory Declaration Rule are ALWAYS active.
@@ -494,7 +504,7 @@ This Core Rule Application Framework ensures that our most critical rules - the 
 - **Boy Scout Rule** is applied to every code modification
 
 This ensures our goal of **fully automated, crystal clear code production** with **accurate tests and documentation** and **up-to-date project tracking** following **excellence standards**.
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

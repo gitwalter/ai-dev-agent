@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for code_review_quality_gates_rule.mdc"
+category: "development-standards"
+priority: "high"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['development_standards', 'quality', 'standards']
+tier: "2"
+---
+
 # Code Review and Quality Gates Rule
 
 ---
@@ -344,7 +354,7 @@ This rule is **CRITICAL** and must be followed for all:
 - Documentation updates
 
 **Violations of this rule require immediate remediation and review process improvement.**
-description:
-globs:
+description: "Auto-generated description"
+globs: ["**/*"]
 alwaysApply: true
 ---

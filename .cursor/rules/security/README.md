@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "security-standards"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['security_standards']
+tier: "2"
+---
+
 # Security Rules
 
 **HIGH PRIORITY**: Security practices and vulnerability assessment.

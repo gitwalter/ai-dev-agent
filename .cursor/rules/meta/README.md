@@ -1,3 +1,13 @@
+---
+description: "Auto-generated description for README.md"
+category: "meta-rules"
+priority: "low"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['meta_rules']
+tier: "2"
+---
+
 # Meta Rules
 
 **MEDIUM PRIORITY**: Rules about rules and meta-governance.
