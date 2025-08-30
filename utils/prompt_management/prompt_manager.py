@@ -278,6 +278,31 @@ class PromptManager:
             logger.error(f"Failed to get execution history for {agent_type}: {e}")
             return []
 
+    def get_all_prompts(self) -> List[Dict[str, Any]]:
+        """
+        Get all stored prompts.
+        
+        Returns:
+            List of all prompts
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM stored_prompts ORDER BY created_at DESC")
+                
+                columns = [description[0] for description in cursor.description]
+                results = []
+                
+                for row in cursor.fetchall():
+                    result = dict(zip(columns, row))
+                    results.append(result)
+                
+                return results
+                
+        except Exception as e:
+            logger.error(f"Failed to get all prompts: {e}")
+            return []
+
 
 # Global prompt manager instance
 _prompt_manager = None

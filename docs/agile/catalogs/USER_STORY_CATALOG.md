@@ -30,7 +30,7 @@ This catalog provides a comprehensive view of all user stories across the entire
 ### **Epic 0: Development Excellence & Process Optimization (New)**
 | ID | Title | Priority | Points | Ready for Sprint | Dependencies | Notes |
 |----|-------|----------|--------|------------------|--------------|-------|
-| US-E0-009 | **NEW: Active Knowledge Extension and Research System** | HIGH | 8 | ✅ Sprint 2 | Context Awareness Rule | Proactive knowledge gathering and web research |
+| US-E0-009 | **Active Knowledge Extension and Research System** | HIGH | 8 | ✅ Sprint 2 | Context Awareness Rule | Proactive knowledge gathering and web research |
 
 ### **Epic 2: Agent Development & Integration**
 | ID | Title | Priority | Points | Ready for Sprint | Dependencies | Notes |
