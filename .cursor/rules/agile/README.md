@@ -11,6 +11,8 @@
 - `agile_artifacts_maintenance_rule.mdc` - Agile artifacts maintenance and tracking
 - `agile_manifesto_principles_rule.mdc` - Agile manifesto principles implementation
 - `agile_development_rule.mdc` - Core agile development methodology
+- `automated_user_story_status_updates.mdc` - Automated user story status tracking and updates
+- `automated_user_story_status_updates.mdc` - Automated user story status tracking and updates
 
 ## Priority and Application
 

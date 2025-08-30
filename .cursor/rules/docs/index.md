@@ -53,6 +53,7 @@
 | `agile_artifacts_maintenance_rule.mdc` | High | Agile artifacts maintenance and tracking |
 | `agile_manifesto_principles_rule.mdc` | High | Agile manifesto principles implementation |
 | `agile_development_rule.mdc` | High | Core agile development methodology |
+| `automated_user_story_status_updates.mdc` | High | Automated user story status tracking and updates |
 
 ## Testing Rules
 
@@ -115,10 +116,12 @@
 
 ## Meta Rules
 
-**MEDIUM PRIORITY - Rule Management Context**
+**MIXED PRIORITY - Rule Management Context**
 
 | Rule | Priority | Purpose |
 |------|----------|---------|
+| `meta_rule_application_coordination.mdc` | **Critical** | **Systematic coordination of all rule applications** |
+| `philosophy_of_excellence_rule.mdc` | **Critical** | **Core values: love, passion, dedication, and optimization** |
 | `meta_rule_enforcement_rule.mdc` | Medium | Meta-rule for enforcing other rules |
 | `metarule_holistic_boyscout_rule.mdc` | Medium | Holistic boyscout meta-rule application |
 | `holistic_detailed_thinking_rule.mdc` | Medium | Holistic detailed thinking methodology |
@@ -128,10 +131,10 @@
 
 ## Rule Summary Statistics
 
-- **Total Rules**: 41
-- **Critical Rules**: 6 (Always apply)
-- **High Priority Rules**: 18 (Context-dependent)
-- **Medium Priority Rules**: 17 (Situational)
+- **Total Rules**: 43 (including new Active Knowledge Extension rule and moved rules)
+- **Critical Rules**: 8 (Always apply - including 2 moved meta-governance rules)
+- **High Priority Rules**: 20 (Context-dependent, including Knowledge rule and moved agile rule)
+- **Medium Priority Rules**: 15 (Situational)
 
 ## Rule Application Priority
 
@@ -161,3 +164,4 @@ Each category has its own folder with a README explaining the rules in that cate
 - [`../infrastructure/`](../infrastructure/) - System configuration
 - [`../workflow/`](../workflow/) - Session management
 - [`../meta/`](../meta/) - Rule governance
+- [`../knowledge/`](../knowledge/) - Knowledge & research standards

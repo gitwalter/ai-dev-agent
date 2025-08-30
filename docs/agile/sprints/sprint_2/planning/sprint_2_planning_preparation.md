@@ -97,6 +97,12 @@
 
 ### **📦 Backlog Stories (Consideration)**
 
+#### **US-E0-009: Active Knowledge Extension and Research System** (8 points)
+- **Readiness**: ✅ Ready
+- **Dependencies**: Context Awareness Rule (✅ Complete)
+- **Business Value**: Systematic knowledge gathering for informed development decisions
+- **Consideration**: High-value addition for agent development quality
+
 #### **US-010: Code Review Agent** (13 points)
 - **Readiness**: 🟡 Needs Refinement
 - **Dependencies**: Code generation agent (US-009)

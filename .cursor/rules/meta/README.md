@@ -5,6 +5,11 @@
 ## Rules in this Category
 
 ### **Meta-Governance and Rule Management**
+### **Critical Priority Rules (SACRED)**
+- `meta_rule_application_coordination.mdc` - **CRITICAL: Systematic coordination of all rule applications**
+- `philosophy_of_excellence_rule.mdc` - **CRITICAL: Core values: love, passion, dedication, and optimization**
+
+### **Medium Priority Rules**
 - `meta_rule_enforcement_rule.mdc` - Meta-rule for enforcing other rules
 - `metarule_holistic_boyscout_rule.mdc` - Holistic boyscout meta-rule application
 - `holistic_detailed_thinking_rule.mdc` - Holistic detailed thinking methodology

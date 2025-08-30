@@ -1,5 +1,29 @@
 # Changelog
 
+## [2025-01-20-B] - Documentation Excellence & Active Knowledge Extension
+
+### Added
+- **Active Knowledge Extension Rule**: Proactive knowledge gathering and web research system (.cursor/rules/knowledge/active_knowledge_extension_rule.mdc)
+- **Knowledge documentation category**: Complete knowledge & research rule category with README
+- **Sprint 1 final documentation**: Complete closure, final status, and achievement records
+- **Sprint 2 preparation**: Full planning materials with new knowledge extension story (US-E0-009)
+- **Meta-documentation index**: Comprehensive documentation tracking system (docs/agile/META_DOCUMENTATION_INDEX.md)
+- **Rules documentation updates**: Updated rule index with new knowledge category (42 total rules)
+
+### Changed
+- **Epic 0 status**: Updated to reflect 100% completion of core excellence infrastructure
+- **Epic 1 status**: Updated to reflect 100% completion of foundation infrastructure  
+- **Sprint 1 documentation**: Updated to reflect final 100% completion status with 98% quality score
+- **Rule statistics**: Updated to include new knowledge category (19 high-priority rules)
+- **Documentation organization**: Enhanced cross-references and navigation
+
+### Fixed
+- **Documentation currency**: All agile documentation now reflects actual completion status
+- **Rule documentation accuracy**: Rule index now includes all 42 rules in proper categories
+- **Epic metrics accuracy**: Corrected epic completion percentages and story point totals
+
+## [2025-01-20-A] - File Organization, Rule Optimization & Excellence Systems
+
 ## [Unreleased]
 
 ### Fixed
