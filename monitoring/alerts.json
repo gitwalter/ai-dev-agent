@@ -1,48 +1,30 @@
 {
-  "timestamp": "2025-08-29T23:45:16.178406",
+  "timestamp": "2025-08-30T09:05:54.587105",
   "alerts": [
     {
-      "alert_id": "requirements_analyst_1756503865",
-      "level": "warning",
-      "agent_name": "requirements_analyst",
-      "message": "Agent requirements_analyst performance degraded - response time: 5922.14ms",
-      "timestamp": "2025-08-29T23:44:25.492141",
-      "resolved": false,
-      "resolution_time": null
-    },
-    {
-      "alert_id": "requirements_analyst_1756503865",
-      "level": "warning",
-      "agent_name": "requirements_analyst",
-      "message": "Agent requirements_analyst response time high: 5922.14ms",
-      "timestamp": "2025-08-29T23:44:25.492141",
-      "resolved": false,
-      "resolution_time": null
-    },
-    {
-      "alert_id": "code_reviewer_1756503916",
+      "alert_id": "security_analyst_1756537554",
       "level": "critical",
-      "agent_name": "code_reviewer",
-      "message": "Agent code_reviewer is in critical state - response time: 50684.37ms",
-      "timestamp": "2025-08-29T23:45:16.176513",
+      "agent_name": "security_analyst",
+      "message": "Agent security_analyst is in critical state - response time: 23506.23ms",
+      "timestamp": "2025-08-30T09:05:54.587105",
       "resolved": false,
       "resolution_time": null
     },
     {
-      "alert_id": "code_reviewer_1756503916",
+      "alert_id": "security_analyst_1756537554",
       "level": "critical",
-      "agent_name": "code_reviewer",
-      "message": "Agent code_reviewer response time critical: 50684.37ms",
-      "timestamp": "2025-08-29T23:45:16.178406",
+      "agent_name": "security_analyst",
+      "message": "Agent security_analyst response time critical: 23506.23ms",
+      "timestamp": "2025-08-30T09:05:54.587105",
       "resolved": false,
       "resolution_time": null
     },
     {
-      "alert_id": "code_reviewer_1756503916",
+      "alert_id": "security_analyst_1756537554",
       "level": "info",
-      "agent_name": "code_reviewer",
-      "message": "Agent code_reviewer recovery successful",
-      "timestamp": "2025-08-29T23:45:16.178406",
+      "agent_name": "security_analyst",
+      "message": "Agent security_analyst recovery successful",
+      "timestamp": "2025-08-30T09:05:54.587105",
       "resolved": false,
       "resolution_time": null
     }
