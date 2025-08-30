@@ -9,6 +9,7 @@
 - `error_handling_no_silent_errors_rule.mdc` - Zero-tolerance policy for silent error handling
 - `performance_monitoring_optimization_rule.mdc` - Proactive performance monitoring and optimization
 - `quality_validation_rule.mdc` - Mandatory evidence-based validation before declaring success
+- `no_marketing_show_rule.mdc` - Pure realism, empiricism, and logic in all reporting and communication
 
 ## Priority and Application
 
