@@ -50,7 +50,7 @@ class TestCatalogueAutomation:
         self.test_root = self.project_root / "tests"
         self.catalogue_file = self.project_root / "docs" / "testing" / "TEST_CATALOGUE.md"
         self.generator_script = self.project_root / "scripts" / "generate_test_catalogue.py"
-        self.state_file = self.project_root / ".test_catalogue_state.json"
+        self.state_file = self.project_root / "monitoring" / ".test_catalogue_state.json"
         
     def get_test_files_state(self) -> Dict[str, str]:
         """Get current state (checksums) of all test files."""

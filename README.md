@@ -14,7 +14,7 @@ This entire project was **fully generated and developed using [Cursor IDE](https
 
 This project follows a **comprehensive rule system** that ensures high-quality, efficient, and maintainable code through automated development standards and best practices.
 
-For complete rules and application guide, see [.cursor/rules/RULE_ORGANIZATION_STRUCTURE.md](.cursor/rules/RULE_ORGANIZATION_STRUCTURE.md) and [.cursor/rules/RULE_APPLICATION_GUIDE.md](.cursor/rules/RULE_APPLICATION_GUIDE.md).
+For complete rules and application guide, see [Rules Index and Navigation](.cursor/rules/docs/index.md) and [Rule Application Guide](.cursor/rules/docs/RULE_APPLICATION_GUIDE.md).
 
 ## 🚀 Quick Start
 

@@ -1,0 +1,44 @@
+[
+  {
+    "rule_name": "File Organization Rule",
+    "execution_time": 15.0,
+    "success_rate": 1.0,
+    "efficiency_score": 0.95,
+    "quality_impact": 0.8,
+    "context_appropriateness": 0.7,
+    "timestamp": "2025-08-30T07:23:07.171204",
+    "task_context": {
+      "task_type": "file_organization",
+      "files_count": 3,
+      "complexity": "simple"
+    }
+  },
+  {
+    "rule_name": "File Organization Rule",
+    "execution_time": 20.0,
+    "success_rate": 1.0,
+    "efficiency_score": 0.9333333333333333,
+    "quality_impact": 0.8500000000000001,
+    "context_appropriateness": 0.7,
+    "timestamp": "2025-08-30T07:23:07.194864",
+    "task_context": {
+      "task_type": "documentation_update",
+      "files_count": 5,
+      "complexity": "medium"
+    }
+  },
+  {
+    "rule_name": "File Organization Rule",
+    "execution_time": 25.0,
+    "success_rate": 1.0,
+    "efficiency_score": 0.9166666666666666,
+    "quality_impact": 0.9,
+    "context_appropriateness": 0.7,
+    "timestamp": "2025-08-30T07:23:07.195858",
+    "task_context": {
+      "task_type": "code_implementation",
+      "files_count": 2,
+      "complexity": "complex"
+    }
+  }
+]
