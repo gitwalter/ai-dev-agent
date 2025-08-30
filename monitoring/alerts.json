@@ -1,30 +1,21 @@
 {
-  "timestamp": "2025-08-30T09:05:54.587105",
+  "timestamp": "2025-08-30T14:36:23.994251",
   "alerts": [
     {
-      "alert_id": "security_analyst_1756537554",
-      "level": "critical",
-      "agent_name": "security_analyst",
-      "message": "Agent security_analyst is in critical state - response time: 23506.23ms",
-      "timestamp": "2025-08-30T09:05:54.587105",
+      "alert_id": "requirements_analyst_1756557383",
+      "level": "warning",
+      "agent_name": "requirements_analyst",
+      "message": "Agent requirements_analyst performance degraded - response time: 8294.08ms",
+      "timestamp": "2025-08-30T14:36:23.994251",
       "resolved": false,
       "resolution_time": null
     },
     {
-      "alert_id": "security_analyst_1756537554",
-      "level": "critical",
-      "agent_name": "security_analyst",
-      "message": "Agent security_analyst response time critical: 23506.23ms",
-      "timestamp": "2025-08-30T09:05:54.587105",
-      "resolved": false,
-      "resolution_time": null
-    },
-    {
-      "alert_id": "security_analyst_1756537554",
-      "level": "info",
-      "agent_name": "security_analyst",
-      "message": "Agent security_analyst recovery successful",
-      "timestamp": "2025-08-30T09:05:54.587105",
+      "alert_id": "requirements_analyst_1756557383",
+      "level": "warning",
+      "agent_name": "requirements_analyst",
+      "message": "Agent requirements_analyst response time high: 8294.08ms",
+      "timestamp": "2025-08-30T14:36:23.994251",
       "resolved": false,
       "resolution_time": null
     }
