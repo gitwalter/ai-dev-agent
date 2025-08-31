@@ -552,18 +552,24 @@ class ContextOrchestrator:
         score = 1.0
         
         # Check if expected outputs are present
+        missing_outputs = []
         for expected_output in phase.outputs:
             if expected_output not in results:
+                missing_outputs.append(expected_output)
                 messages.append(f"Missing expected output: {expected_output}")
                 score -= 0.2
         
         # Check for errors in results
-        if 'error' in results or 'errors' in results:
+        has_errors = 'error' in results or 'errors' in results
+        if has_errors:
             messages.append("Phase results contain errors")
             score -= 0.3
         
+        # Validation fails if any required outputs are missing or there are errors
+        passed = len(missing_outputs) == 0 and not has_errors
+        
         return ValidationResult(
-            passed=score >= 0.7,
+            passed=passed,
             score=score,
             messages=messages,
             details={'phase_id': phase.phase_id, 'results_keys': list(results.keys())}
@@ -625,10 +631,10 @@ class ContextOrchestrator:
                 'reason': 'Retry on timeout with backoff'
             },
             {
-                'name': 'validation_skip',
+                'name': 'validation_fail',
                 'condition': lambda ctx, err, state: 'validation' in str(err).lower(),
-                'action': 'skip',
-                'reason': 'Skip phase on validation error'
+                'action': 'abort',
+                'reason': 'Fail phase on validation error'
             },
             {
                 'name': 'critical_abort',
@@ -643,7 +649,7 @@ class ContextOrchestrator:
         execution_time = state.get_execution_time() or 0
         
         return WorkflowResult(
-            workflow_id=workflow.workflow_id,
+            workflow_id=state.workflow_id,
             status=state.status,
             results=state.phase_results,
             execution_time=execution_time,

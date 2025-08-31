@@ -133,10 +133,12 @@ class TestContextOrchestrator:
         state = WorkflowState(workflow_id="test_workflow")
         
         # Mock phase execution to take longer than timeout
+        async def slow_execution(*args):
+            await asyncio.sleep(0.1)  # Longer than timeout (0.001)
+            return {"result": "success"}
+        
         with patch.object(self.orchestrator, '_execute_phase_logic', new_callable=AsyncMock) as mock_execute:
-            mock_execute.return_value = {"result": "success"}
-            # Make it sleep longer than timeout
-            mock_execute.side_effect = lambda *args: asyncio.sleep(0.1)
+            mock_execute.side_effect = slow_execution
             
             await self.orchestrator._execute_single_phase(phase, self.sample_workflow, state)
             
@@ -695,11 +697,21 @@ class TestContextOrchestrator:
             estimated_duration=30
         )
         
-        # Execute both workflows concurrently
-        results = await asyncio.gather(
-            self.orchestrator.execute_workflow(workflow1),
-            self.orchestrator.execute_workflow(workflow2)
-        )
+        # Mock phase execution to produce expected outputs
+        async def mock_execution(phase, workflow, state):
+            # Return expected outputs based on phase
+            if phase.outputs:
+                return {output: f"mock_{output}_result" for output in phase.outputs}
+            return {"result": "success"}
+        
+        with patch.object(self.orchestrator, '_execute_phase_logic', new_callable=AsyncMock) as mock_execute:
+            mock_execute.side_effect = mock_execution
+            
+            # Execute both workflows concurrently
+            results = await asyncio.gather(
+                self.orchestrator.execute_workflow(workflow1),
+                self.orchestrator.execute_workflow(workflow2)
+            )
         
         assert len(results) == 2
         assert all(isinstance(result, WorkflowResult) for result in results)

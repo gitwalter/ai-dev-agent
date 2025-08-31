@@ -185,9 +185,8 @@ CRITICAL: Respond with ONLY valid JSON - no explanations, no markdown, no additi
             # Update state with results
             state = self.update_state_with_result(
                 state=state,
-                task_name="test_generation",
-                output=output,
-                execution_time=execution_time
+                result=output,
+                task_type="test_generation"
             )
             
             self.add_log_entry("info", f"Test generation completed successfully in {execution_time:.2f}s")
@@ -409,26 +408,10 @@ CRITICAL: Respond with ONLY valid JSON - no explanations, no markdown, no additi
         test_types = test_data.get("test_types", [])
         coverage_targets = test_data.get("coverage_targets", {})
         
-        self.create_documentation(
-            summary=f"Generated {len(test_files)} test files covering {len(test_types)} test types",
-            details={
-                "test_files": {
-                    "total_files": len(test_files),
-                    "file_names": list(test_files.keys()) if isinstance(test_files, dict) else [f"test_file_{i}" for i in range(len(test_files))]
-                },
-                "test_types": {
-                    "types": test_types,
-                    "count": len(test_types)
-                },
-                "coverage_targets": coverage_targets,
-                "test_strategy": test_data.get("test_strategy", ""),
-                "testing_approach": {
-                    "framework": test_data.get("testing_strategy", {}).get("framework", "pytest"),
-                    "coverage_tool": test_data.get("testing_strategy", {}).get("coverage_tool", "pytest-cov"),
-                    "test_organization": "standard"
-                }
-            }
-        )
+        # Log documentation of test generation results
+        self.logger.info(f"Generated {len(test_files)} test files covering {len(test_types)} test types")
+        self.logger.info(f"Test types: {test_types}")
+        self.logger.info(f"Coverage targets: {len(coverage_targets)} targets")
     
     def _create_test_files(self, test_data: Dict[str, Any]):
         """

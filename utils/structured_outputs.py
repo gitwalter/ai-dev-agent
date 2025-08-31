@@ -7,7 +7,7 @@ from typing import Dict, Any, Optional, List, Union, Literal
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 from pydantic.types import conint, constr
 
 # Configure logging
@@ -154,8 +154,7 @@ class SourceFile(BaseModel):
             return v[:497] + "..."
         return v
     
-    class Config:
-        extra = "allow"  # Allow extra fields for flexibility
+    model_config = ConfigDict(extra="allow")  # Allow extra fields for flexibility
 
 
 class ConfigurationFile(BaseModel):

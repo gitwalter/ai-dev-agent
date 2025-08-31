@@ -47,6 +47,11 @@ class AgentConfig(BaseModel):
     prompt_template: str
     system_prompt: str
     parameters: Dict[str, Any] = Field(default_factory=dict)
+    optimization_enabled: bool = Field(default=True, description="Enable optimization features")
+    performance_monitoring: bool = Field(default=True, description="Enable performance monitoring")
+    error_recovery: bool = Field(default=True, description="Enable automatic error recovery")
+    model_name: str = Field(default="gemini-2.0-flash-exp", description="Name of the LLM model to use")
+    temperature: float = Field(default=0.1, description="Temperature for LLM generation")
 
 
 class WorkflowConfig(BaseModel):
@@ -305,6 +310,7 @@ def get_default_config() -> SystemConfig:
     # Create agent configurations
     agent_configs = {
         "requirements_analyst": AgentConfig(
+            agent_id="requirements_analyst",
             name="requirements_analyst",
             description="Analyzes project requirements and creates detailed specifications",
             enabled=True,
@@ -315,6 +321,7 @@ def get_default_config() -> SystemConfig:
             parameters={"temperature": 0.1}
         ),
         "architecture_designer": AgentConfig(
+            agent_id="architecture_designer",
             name="architecture_designer",
             description="Designs system architecture and technology stack",
             enabled=True,
@@ -325,6 +332,7 @@ def get_default_config() -> SystemConfig:
             parameters={"temperature": 0.1}
         ),
         "code_generator": AgentConfig(
+            agent_id="code_generator",
             name="code_generator",
             description="Generates code based on requirements and architecture",
             enabled=True,
@@ -349,6 +357,7 @@ Your goal is to create a complete, professional-grade application that can be de
             parameters={"temperature": 0.1}
         ),
         "test_generator": AgentConfig(
+            agent_id="test_generator",
             name="test_generator",
             description="Generates comprehensive tests for the codebase",
             enabled=True,
@@ -359,6 +368,7 @@ Your goal is to create a complete, professional-grade application that can be de
             parameters={"temperature": 0.1}
         ),
         "code_reviewer": AgentConfig(
+            agent_id="code_reviewer",
             name="code_reviewer",
             description="Reviews code for quality and best practices",
             enabled=True,
@@ -369,6 +379,7 @@ Your goal is to create a complete, professional-grade application that can be de
             parameters={"temperature": 0.1}
         ),
         "security_analyst": AgentConfig(
+            agent_id="security_analyst",
             name="security_analyst",
             description="Analyzes code for security vulnerabilities",
             enabled=True,
@@ -379,6 +390,7 @@ Your goal is to create a complete, professional-grade application that can be de
             parameters={"temperature": 0.1}
         ),
         "documentation_generator": AgentConfig(
+            agent_id="documentation_generator",
             name="documentation_generator",
             description="Generates comprehensive documentation with UML and BPMN diagrams",
             enabled=True,

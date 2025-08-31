@@ -230,14 +230,33 @@ class WorkflowComposer:
         # Apply optimization rules
         optimized_phases = self._apply_optimization_rules(workflow.phases)
         
+        # Build logical dependencies if none exist
+        dependencies = workflow.dependencies
+        if not dependencies:
+            # Use a minimal task analysis for dependency building
+            from workflow.models.workflow_models import TaskAnalysis
+            temp_analysis = TaskAnalysis(
+                task_id="temp",
+                description="temp",
+                entities=[],
+                complexity=ComplexityLevel.MEDIUM,
+                required_contexts=[],
+                estimated_duration=60,
+                dependencies=[],
+                success_criteria=[],
+                confidence=1.0
+            )
+            dependencies = self._build_phase_dependencies(optimized_phases, temp_analysis)
+        
         # Identify parallel execution opportunities
-        optimized_phases = self._identify_parallel_groups(optimized_phases, workflow.dependencies)
+        optimized_phases = self._identify_parallel_groups(optimized_phases, dependencies)
         
         # Optimize phase ordering
-        optimized_phases = self._optimize_phase_order(optimized_phases, workflow.dependencies)
+        optimized_phases = self._optimize_phase_order(optimized_phases, dependencies)
         
         # Update workflow
         workflow.phases = optimized_phases
+        workflow.dependencies = dependencies
         workflow.estimated_duration = self._estimate_workflow_duration(optimized_phases, ComplexityLevel.MEDIUM)
         
         return workflow
@@ -269,7 +288,7 @@ class WorkflowComposer:
         for phase in workflow.phases:
             if phase.context not in valid_contexts:
                 messages.append(f"Invalid context in phase {phase.name}: {phase.context}")
-                score -= 0.2
+                score -= 0.5  # Invalid contexts are critical failures
         
         # Check for essential contexts
         contexts = {phase.context for phase in workflow.phases}
@@ -379,7 +398,10 @@ class WorkflowComposer:
         # Template category matching
         category_matches = {
             'feature_development': {'feature', 'component', 'api', 'ui'},
+            'development': {'feature', 'component', 'api', 'ui'},  # Added for backward compatibility
+            'test': {'feature', 'component', 'api', 'ui'},  # Added for test templates
             'bug_fix': {'bug', 'issue', 'error'},
+            'maintenance': {'bug', 'issue', 'error'},  # Added for backward compatibility
             'security_audit': {'security', 'vulnerability'},
             'performance_optimization': {'performance', 'optimization'},
             'code_review': {'review', 'quality'},
@@ -391,13 +413,13 @@ class WorkflowComposer:
             if entity_types & category_entities:
                 score += 0.3
         
-        # Complexity matching
+        # Complexity matching (more lenient ranges)
         phase_count = len(template.phases)
-        if analysis.complexity == ComplexityLevel.SIMPLE and phase_count <= 3:
+        if analysis.complexity == ComplexityLevel.SIMPLE and phase_count <= 4:
             score += 0.2
-        elif analysis.complexity == ComplexityLevel.MEDIUM and 3 <= phase_count <= 6:
+        elif analysis.complexity == ComplexityLevel.MEDIUM and 2 <= phase_count <= 6:
             score += 0.2
-        elif analysis.complexity == ComplexityLevel.COMPLEX and phase_count >= 5:
+        elif analysis.complexity == ComplexityLevel.COMPLEX and phase_count >= 4:
             score += 0.2
         
         # Success rate bonus
@@ -482,6 +504,9 @@ class WorkflowComposer:
             'quality_gates': ['basic_validation']
         })
         
+        # Handle None analysis by using default complexity
+        complexity = analysis.complexity if analysis else ComplexityLevel.MEDIUM
+        
         return WorkflowPhase(
             phase_id=f"{workflow_id}_phase_{index}_{context.replace('@', '')}",
             context=context,
@@ -489,7 +514,7 @@ class WorkflowComposer:
             description=template['description'],
             inputs=template['inputs'],
             outputs=template['outputs'],
-            timeout=self._get_context_timeout(context, analysis.complexity),
+            timeout=self._get_context_timeout(context, complexity),
             retry_count=3,
             quality_gates=template['quality_gates']
         )
@@ -692,10 +717,10 @@ class WorkflowComposer:
         """Build dependencies between phases."""
         dependencies = {}
         
-        # Basic context-based dependencies
+        # Basic context-based dependencies with fallbacks
         context_deps = {
             '@design': ['@agile'],
-            '@code': ['@design'],
+            '@code': ['@design', '@agile'],  # Fallback to @agile if @design missing
             '@test': ['@code'],
             '@debug': ['@test'],
             '@docs': ['@code'],
@@ -714,10 +739,12 @@ class WorkflowComposer:
             deps = []
             context_dependencies = context_deps.get(phase.context, [])
             
+            # Find the first available dependency context
             for dep_context in context_dependencies:
                 if dep_context in phase_by_context:
                     # Add dependency on all phases of the required context
                     deps.extend([p.phase_id for p in phase_by_context[dep_context]])
+                    break  # Use first available dependency only
             
             if deps:
                 dependencies[phase.phase_id] = deps
@@ -726,15 +753,28 @@ class WorkflowComposer:
     
     def _estimate_workflow_duration(self, phases: List[WorkflowPhase], complexity: ComplexityLevel) -> int:
         """Estimate total workflow duration."""
+        # Base duration from phase timeouts
         total_duration = sum(phase.timeout for phase in phases) // 60  # Convert to minutes
         
-        # Adjust for complexity
-        if complexity == ComplexityLevel.COMPLEX:
-            total_duration = int(total_duration * 1.3)
-        elif complexity == ComplexityLevel.SIMPLE:
-            total_duration = int(total_duration * 0.8)
+        # Add complexity-based base time to ensure meaningful differences
+        complexity_base = {
+            ComplexityLevel.SIMPLE: 15,
+            ComplexityLevel.MEDIUM: 30,
+            ComplexityLevel.COMPLEX: 60
+        }
         
-        return max(15, total_duration)  # Minimum 15 minutes
+        base_time = complexity_base.get(complexity, 30)
+        
+        # Combine base time with phase timeouts
+        combined_duration = max(base_time, total_duration)
+        
+        # Apply complexity multipliers
+        if complexity == ComplexityLevel.COMPLEX:
+            combined_duration = int(combined_duration * 1.3)
+        elif complexity == ComplexityLevel.SIMPLE:
+            combined_duration = int(combined_duration * 0.8)
+        
+        return max(15, combined_duration)
     
     def _get_quality_gates(self, analysis: TaskAnalysis) -> List[str]:
         """Get quality gates for the workflow."""

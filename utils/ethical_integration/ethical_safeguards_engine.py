@@ -140,7 +140,15 @@ class EthicalSafeguardsEngine:
                     return func(*args, **kwargs)
             
             def sync_wrapper(*args, **kwargs):
-                return asyncio.run(async_wrapper(*args, **kwargs))
+                try:
+                    # Check if we're already in an event loop
+                    asyncio.get_running_loop()
+                    # We're in an event loop, can't use asyncio.run
+                    # Return the coroutine to be awaited by the caller
+                    return async_wrapper(*args, **kwargs)
+                except RuntimeError:
+                    # No event loop running, safe to use asyncio.run
+                    return asyncio.run(async_wrapper(*args, **kwargs))
             
             if asyncio.iscoroutinefunction(func):
                 return async_wrapper

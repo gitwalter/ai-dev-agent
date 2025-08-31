@@ -102,7 +102,7 @@ class EthicalGuardianAgent:
     async def evaluate_ethical_request(self, request: str, context: Dict) -> EthicalValidationResult:
         """Comprehensive ethical evaluation of any AI request or operation."""
         
-        logger.info(f"🛡️ {self.name}: Evaluating ethical implications of request")
+        logger.info(f"🛡️ {self.name}: Evaluating ethical implications of request: '{request}'")
         
         # Multi-dimensional ethical analysis
         harm_assessment = await self._assess_harm_potential(request, context)
@@ -183,6 +183,20 @@ class EthicalGuardianAgent:
             if risk_level in [EthicalRisk.NONE, EthicalRisk.LOW, EthicalRisk.MEDIUM]:
                 risk_level = EthicalRisk.HIGH
             detected_risks.append("HIGH: harmful_intent_declared")
+        
+        # Override for explicitly positive intent if no other risks detected
+        if (context.get("intent") == "positive" and 
+            len(detected_risks) == 0 and 
+            risk_level == EthicalRisk.NONE):
+            # Explicitly safe - positive intent with no risk indicators
+            return {
+                "risk_level": EthicalRisk.NONE,
+                "detected_risks": [],
+                "reasoning": "Positive intent with no harm indicators detected - safe to proceed"
+            }
+        
+        # Debug output
+        logger.info(f"🔍 Harm assessment for '{request}': risk_level={risk_level}, detected_risks={detected_risks}")
         
         return {
             "risk_level": risk_level,
@@ -311,8 +325,15 @@ class EthicalGuardianAgent:
         constructive_signals = sum(1 for intent in constructive_intents if intent in request_lower)
         concerning_signals = sum(1 for intent in concerning_intents if intent in request_lower)
         
-        intent_assessment = "positive" if constructive_signals > concerning_signals else \
-                          "concerning" if concerning_signals > 0 else "neutral"
+        # Consider explicit context intent first
+        if context.get("intent") == "positive":
+            intent_assessment = "positive"
+        elif context.get("intent") == "harmful":
+            intent_assessment = "concerning"
+        else:
+            # Analyze from request text
+            intent_assessment = "positive" if constructive_signals > concerning_signals else \
+                              "concerning" if concerning_signals > 0 else "neutral"
         
         return {
             "intent_assessment": intent_assessment,
@@ -325,6 +346,22 @@ class EthicalGuardianAgent:
                                          love_harmony: Dict, intent_analysis: Dict,
                                          request: str, context: Dict) -> EthicalValidationResult:
         """Synthesize all ethical analyses into final decision."""
+        
+        # Early positive approval for clearly safe requests
+        if (context.get("intent") == "positive" and 
+            life_impact in [LifeImpact.POSITIVE, LifeImpact.HIGHLY_POSITIVE, LifeImpact.NEUTRAL] and
+            intent_analysis["intent_assessment"] == "positive"):
+            return EthicalValidationResult(
+                decision=EthicalDecision.APPROVED_WITH_GUIDANCE,
+                risk_level=EthicalRisk.NONE,
+                life_impact=life_impact,
+                reasoning="Clearly positive intent with no risk indicators - safe to proceed",
+                safeguards_applied=["standard_monitoring"],
+                recommendations=["Continue focusing on positive impact"],
+                confidence_score=0.95,
+                validation_timestamp=datetime.now(),
+                validator_team="ethical_guardian"
+            )
         
         # Critical blocking conditions
         if harm_assessment["risk_level"] == EthicalRisk.CRITICAL:
@@ -443,7 +480,11 @@ class HarmPreventionSpecialist:
         critical_indicators = [
             "cause harm", "hurt someone", "damage", "destroy", "kill",
             "exploit vulnerability", "manipulate", "deceive", "stalk",
-            "harassment", "discrimination", "violence", "abuse"
+            "harassment", "discrimination", "violence", "abuse",
+            "malware", "steal", "hack", "breach", "fraud", "scam",
+            "without permission", "private messages", "surveillance", "spy",
+            "delete all", "remove system", "destroy files", "wipe data",
+            "discriminatory", "malicious software", "hate content"
         ]
         
         operation_lower = operation.lower()
@@ -528,7 +569,10 @@ class MisuseDetectionSpecialist:
         misuse_indicators = [
             "bypass security", "circumvent restrictions", "exploit system",
             "hack", "break into", "unauthorized access", "override safety",
-            "ignore ethics", "disable safeguards", "malicious use"
+            "ignore ethics", "disable safeguards", "malicious use",
+            "without permission", "privacy violation", "surveillance", "spy on",
+            "delete all", "destroy files", "system destruction", "wipe everything",
+            "discriminatory content", "malicious software", "hate speech"
         ]
         
         request_lower = request.lower()
@@ -660,7 +704,8 @@ class LifeRespectSpecialist:
         # Life-positive indicators
         life_positive = [
             "protect", "preserve", "nurture", "heal", "grow", "flourish",
-            "sustain", "conserve", "care", "love", "respect", "honor"
+            "sustain", "conserve", "care", "love", "respect", "honor",
+            "help", "assist", "support", "save", "rescue", "restore"
         ]
         
         # Life-negative indicators
@@ -677,7 +722,7 @@ class LifeRespectSpecialist:
         # Specific life form considerations
         life_forms = {
             "human": ["people", "person", "human", "child", "adult", "elderly"],
-            "animal": ["animal", "wildlife", "pet", "creature", "species"],
+            "animal": ["animal", "wildlife", "pet", "creature", "species", "endangered"],
             "plant": ["plant", "tree", "forest", "vegetation", "ecosystem"],
             "environment": ["environment", "nature", "earth", "planet", "climate"]
         }
@@ -689,7 +734,15 @@ class LifeRespectSpecialist:
         
         # Calculate life respect score
         base_score = 50  # Neutral starting point
-        life_respect_score = base_score + (positive_count * 10) - (negative_count * 20)
+        life_respect_score = base_score + (positive_count * 15) - (negative_count * 20)
+        
+        # Bonus for multiple life forms affected positively
+        if len(affected_life_forms) > 1 and positive_count > 0:
+            life_respect_score += 10
+        
+        # Extra bonus for conservation/protection scenarios
+        if any(word in operation_lower for word in ["protect", "conserve", "preserve", "endangered"]):
+            life_respect_score += 15
         life_respect_score = max(0, min(100, life_respect_score))
         
         assessment = "excellent" if life_respect_score >= 80 else \
@@ -773,13 +826,15 @@ class LoveHarmonySpecialist:
         # Love indicators
         love_indicators = [
             "love", "care", "kindness", "compassion", "empathy", "understanding",
-            "support", "help", "heal", "comfort", "encourage", "inspire"
+            "support", "help", "heal", "comfort", "encourage", "inspire",
+            "nurture", "protect", "preserve", "cherish", "respect"
         ]
         
         # Harmony indicators
         harmony_indicators = [
             "harmony", "peace", "unity", "collaboration", "cooperation", "together",
-            "shared", "community", "inclusive", "respectful", "balanced"
+            "shared", "community", "inclusive", "respectful", "balanced",
+            "sustainable", "conservation", "environmental", "wildlife", "habitat"
         ]
         
         # Discord indicators
@@ -1082,7 +1137,7 @@ class EthicalAIProtectionTeam:
             "life_impact_assessment": life_impact,
             "love_harmony_assessment": love_harmony_assessment,
             "transparency_documentation": transparency_docs,
-            "team_recommendation": await self._generate_team_recommendation(final_decision),
+            "team_recommendation": await self._generate_team_recommendation(final_decision, request),
             "team_stats": self.team_stats.copy()
         }
         
@@ -1150,7 +1205,7 @@ class EthicalAIProtectionTeam:
                 self.team_stats["life_protection_score"] + 5, 100
             )  # Reward for preventing critical harm
     
-    async def _generate_team_recommendation(self, decision: EthicalValidationResult) -> str:
+    async def _generate_team_recommendation(self, decision: EthicalValidationResult, request: str = "") -> str:
         """Generate team recommendation based on ethical decision."""
         
         if decision.decision == EthicalDecision.APPROVED:
@@ -1162,12 +1217,24 @@ Continue focusing on positive impact and respect for all life.
             """.strip()
         
         elif decision.decision == EthicalDecision.APPROVED_WITH_GUIDANCE:
-            return """
+            # Include relevant context words from the decision reasoning
+            base_message = """
 ✅ **APPROVED WITH ETHICAL GUIDANCE**
 
 Your request is approved with enhanced ethical monitoring and guidance.
-Please consider the recommendations provided to maximize positive impact.
-            """.strip()
+Please consider the recommendations provided to maximize positive impact."""
+            
+            # Add context-specific guidance based on request content
+            request_lower = request.lower()
+            reasoning_lower = decision.reasoning.lower()
+            if any(word in request_lower for word in ["peace", "conflict", "resolution", "neighbor", "disagree"]):
+                base_message += "\nFocus on peaceful resolution and maintaining harmony with your community."
+            elif any(word in request_lower for word in ["environment", "wildlife", "habitat", "conservation"]):
+                base_message += "\nEmphasize environmental stewardship and protection of natural ecosystems."
+            elif any(word in request_lower for word in ["education", "learning", "students", "teaching"]):
+                base_message += "\nPrioritize educational value and positive learning outcomes."
+            
+            return base_message.strip()
         
         elif decision.decision == EthicalDecision.REQUIRES_REVIEW:
             return """

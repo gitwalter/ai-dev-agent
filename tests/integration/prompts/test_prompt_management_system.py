@@ -397,7 +397,11 @@ class TestPromptManagementSystemIntegration(unittest.TestCase):
         
         for component in expected_components:
             self.assertIn(component, status)
-            self.assertEqual(status[component], "operational")
+            # Check if component has nested status or is a simple string
+            if isinstance(status[component], dict):
+                self.assertEqual(status[component]["status"], "operational")
+            else:
+                self.assertEqual(status[component], "operational")
     
     def test_quality_assessment_integration(self):
         """Test quality assessment integration."""
@@ -513,7 +517,11 @@ class TestUSPE02Completeness(unittest.TestCase):
         # Test infrastructure operational
         status = system.get_system_status()
         for component, component_status in status.items():
-            self.assertEqual(component_status, "operational")
+            # Handle both nested dict and simple string status
+            if isinstance(component_status, dict):
+                self.assertEqual(component_status["status"], "operational")
+            else:
+                self.assertEqual(component_status, "operational")
         
         # Test web interface functional (basic test)
         self.assertIsNotNone(system.web_interface)

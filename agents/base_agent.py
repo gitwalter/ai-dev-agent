@@ -368,3 +368,134 @@ class BaseAgent(ABC):
         error_state["errors"].append(str(error))
         
         return error_state
+    
+    def update_state_with_result(self, state: Dict[str, Any], result: Any, task_type: str = "generic") -> Dict[str, Any]:
+        """Update state with successful execution result."""
+        updated_state = state.copy()
+        
+        # Ensure agent_outputs exists
+        if "agent_outputs" not in updated_state:
+            updated_state["agent_outputs"] = {}
+        
+        # Add agent output
+        updated_state["agent_outputs"][self.config.agent_id] = {
+            "status": "success",
+            "result": result,
+            "task_type": task_type,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        return updated_state
+    
+    def validate_gemini_config(self) -> bool:
+        """Validate Gemini client configuration."""
+        # Check if config exists
+        if not hasattr(self, 'config') or self.config is None:
+            return False
+        
+        # Check if client exists
+        if not hasattr(self, 'gemini_client') or self.gemini_client is None:
+            return False
+        
+        # Check if client has generate_content method
+        if not hasattr(self.gemini_client, 'generate_content'):
+            return False
+        
+        # Config parameters must exist and not be empty
+        if not hasattr(self.config, 'parameters') or not self.config.parameters:
+            return False
+        
+        return True
+    
+    async def generate_response(self, prompt: str, **kwargs) -> str:
+        """Generate response using Gemini client."""
+        if not self.validate_gemini_config():
+            raise ValueError("Invalid Gemini configuration")
+        
+        try:
+            # Use the client to generate response
+            response = await self.gemini_client.generate_content(prompt)
+            
+            # Extract text from response
+            if hasattr(response, 'text'):
+                if response.text and response.text.strip():
+                    return response.text
+                else:
+                    raise ValueError("Empty or invalid response from Gemini API")
+            elif hasattr(response, 'parts') and response.parts:
+                # Handle parts structure directly
+                return response.parts[0].text
+            elif hasattr(response, 'candidates') and response.candidates:
+                try:
+                    candidate = response.candidates[0]
+                    if hasattr(candidate, 'content'):
+                        if hasattr(candidate.content, 'parts'):
+                            return candidate.content.parts[0].text
+                        else:
+                            return str(candidate.content)
+                    else:
+                        return str(candidate)
+                except (IndexError, TypeError):
+                    # Handle mock objects or empty candidates
+                    return str(response)
+            else:
+                return str(response)
+                
+        except Exception as e:
+            self.logger.error(f"Error generating response: {e}")
+            raise
+    
+    def parse_json_response(self, response: str) -> dict:
+        """Parse JSON response with error handling."""
+        import json
+        import re
+        
+        # Clean the response - remove code blocks if present
+        if "```json" in response:
+            # Extract JSON from code blocks
+            json_match = re.search(r'```(?:json)?\s*(.*?)\s*```', response, re.DOTALL)
+            if json_match:
+                response = json_match.group(1)
+        elif "```" in response:
+            # Generic code blocks
+            json_match = re.search(r'```\s*(.*?)\s*```', response, re.DOTALL)
+            if json_match:
+                response = json_match.group(1)
+        
+        # Remove trailing commas
+        response = re.sub(r',(\s*[}\]])', r'\1', response)
+        
+        # Remove trailing commas in arrays
+        response = re.sub(r',(\s*\])', r'\1', response)
+        
+        try:
+            return json.loads(response)
+        except json.JSONDecodeError as e:
+            self.logger.error(f"JSON parsing error: {e}")
+            # Return a fallback dict instead of raising
+            return {"error": "JSON parsing failed", "original_response": response}
+    
+    def prepare_prompt(self, state: dict, **kwargs) -> str:
+        """Prepare prompt using template and context."""
+        if not hasattr(self.config, 'prompt_template'):
+            raise ValueError("No prompt template configured")
+        
+        # Merge state and kwargs for template formatting
+        context = {**state, **kwargs}
+        
+        try:
+            # Get base prompt from template
+            base_prompt = self.config.prompt_template.format(**context)
+            
+            # Add JSON format instructions if not already present
+            if "JSON" not in base_prompt and "format" not in base_prompt:
+                format_instruction = "\n\nPlease provide your response in valid JSON format."
+                base_prompt += format_instruction
+            
+            return base_prompt
+        except KeyError as e:
+            self.logger.error(f"Missing template variable: {e}")
+            raise ValueError(f"Missing template variable: {e}")
+        except Exception as e:
+            self.logger.error(f"Error preparing prompt: {e}")
+            raise

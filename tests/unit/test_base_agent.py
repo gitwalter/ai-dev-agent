@@ -33,6 +33,7 @@ class TestBaseAgent:
     def mock_config(self):
         """Create a mock agent configuration."""
         return AgentConfig(
+            agent_id="test_agent_001",
             name="test_agent",
             description="Test agent",
             enabled=True,
@@ -52,7 +53,7 @@ class TestBaseAgent:
     def mock_gemini_client(self):
         """Create a mock Gemini client."""
         client = Mock()
-        client.generate_content = Mock()
+        client.generate_content = AsyncMock()
         return client
     
     @pytest.fixture
@@ -110,6 +111,7 @@ class TestBaseAgent:
         """Test Gemini configuration validation with no config."""
         # Create a minimal config for the agent to initialize properly
         minimal_config = AgentConfig(
+            agent_id="test_agent_minimal",
             name="test_agent",
             description="Test agent",
             enabled=True,
@@ -127,6 +129,7 @@ class TestBaseAgent:
     def test_validate_gemini_config_no_parameters(self, mock_gemini_client):
         """Test Gemini configuration validation with no parameters."""
         config = AgentConfig(
+            agent_id="test_agent_no_params",
             name="test_agent",
             description="Test agent",
             enabled=True,
@@ -204,6 +207,7 @@ class TestBaseAgent:
         """Test response generation with invalid configuration."""
         # Create agent with invalid config
         config = AgentConfig(
+            agent_id="test_agent_invalid",
             name="test_agent",
             description="Test agent",
             enabled=True,
@@ -304,13 +308,13 @@ class TestBaseAgent:
     def test_update_state_with_result(self, base_agent, sample_state):
         """Test state update with results."""
         output = {"test": "data"}
-        result = base_agent.update_state_with_result(sample_state, "test_task", output, 1.5)
+        result = base_agent.update_state_with_result(sample_state, output, "test_task")
         
         assert "agent_outputs" in result
-        # The structure might be different, check for the agent name instead
-        assert base_agent.config.name in result["agent_outputs"]
-        agent_output = result["agent_outputs"][base_agent.config.name]
-        assert "content" in agent_output  # Updated to match AgentResponse structure
+        # The structure uses agent_id as key
+        assert base_agent.config.agent_id in result["agent_outputs"]
+        agent_output = result["agent_outputs"][base_agent.config.agent_id]
+        assert "result" in agent_output  # Updated to match actual structure
 
 
 class TestGeminiAPIErrorScenarios:
@@ -319,6 +323,7 @@ class TestGeminiAPIErrorScenarios:
     @pytest.fixture
     def mock_config(self):
         return AgentConfig(
+            agent_id="test_agent_gemini",
             name="test_agent",
             description="Test agent",
             enabled=True,
@@ -337,7 +342,7 @@ class TestGeminiAPIErrorScenarios:
     @pytest.fixture
     def mock_gemini_client(self):
         client = Mock()
-        client.generate_content = Mock()
+        client.generate_content = AsyncMock()
         return client
     
     @pytest.mark.asyncio

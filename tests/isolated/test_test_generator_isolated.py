@@ -41,6 +41,7 @@ class TestTestGeneratorIsolated:
         
         # Create test configuration
         self.config = AgentConfig(
+            agent_id='test_generator_isolated',
             name='test_generator',
             description='Test generator',
             enabled=True,
@@ -188,7 +189,7 @@ def subtract(a, b):
         # Validate output structure
         assert 'tests' in result, "Result should contain 'tests' key"
         assert 'agent_outputs' in result, "Result should contain 'agent_outputs' key"
-        assert 'test_generator' in result['agent_outputs'], "Should contain test_generator output"
+        assert 'test_generator_isolated' in result['agent_outputs'], "Should contain test_generator_isolated output"
         
         test_files = result['tests']
         assert isinstance(test_files, dict), "Tests should be a dictionary"

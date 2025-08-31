@@ -8,7 +8,17 @@ For comprehensive security testing documentation, see **[docs/testing/security_t
 
 ## Test Structure
 
+```
+tests/security/
+└── test_ethical_ai_protection.py     # Ethical AI protection and safety tests
+```
+
 Security tests cover:
+- Ethical AI decision-making validation
+- Harm prevention and safety checks
+- Life protection algorithms
+- Ethical guardian system validation
+- AI safety and protection mechanisms
 - Input validation and sanitization
 - Authentication and authorization
 - API key and secrets management

@@ -9,6 +9,7 @@ from unittest.mock import Mock, patch, MagicMock
 import tempfile
 import os
 import yaml
+from datetime import datetime
 
 from workflow.composition.workflow_composer import WorkflowComposer
 from workflow.models.workflow_models import (
@@ -205,22 +206,29 @@ class TestWorkflowComposer:
     
     def test_validate_workflow_invalid_context(self):
         """Test workflow validation with invalid context."""
-        workflow = WorkflowDefinition(
+        # Use model_construct to bypass Pydantic validation for testing
+        invalid_phase = WorkflowPhase.model_construct(
+            phase_id="invalid_phase",
+            context="@invalid",  # Invalid context
+            name="Invalid Phase", 
+            description="Phase with invalid context",
+            inputs=[],
+            outputs=[],
+            timeout=300.0,
+            retry_count=3,
+            quality_gates=[]
+        )
+        
+        workflow = WorkflowDefinition.model_construct(
             workflow_id="invalid_workflow",
             name="Invalid Workflow",
             description="Workflow with invalid context",
-            phases=[
-                WorkflowPhase(
-                    phase_id="invalid_phase",
-                    context="@invalid",  # Invalid context
-                    name="Invalid Phase",
-                    description="Phase with invalid context",
-                    inputs=[],
-                    outputs=[]
-                )
-            ],
+            phases=[invalid_phase],
             dependencies={},
-            estimated_duration=60
+            estimated_duration=60,
+            quality_gates=[],
+            metadata={},
+            created_at=datetime.now()
         )
         
         validation = self.composer.validate_workflow(workflow)
@@ -230,13 +238,17 @@ class TestWorkflowComposer:
     
     def test_validate_workflow_empty_phases(self):
         """Test workflow validation with no phases."""
-        workflow = WorkflowDefinition(
+        # Use model_construct to bypass Pydantic validation for testing
+        workflow = WorkflowDefinition.model_construct(
             workflow_id="empty_workflow",
-            name="Empty Workflow",
+            name="Empty Workflow", 
             description="Workflow with no phases",
             phases=[],  # No phases
             dependencies={},
-            estimated_duration=0
+            estimated_duration=0,
+            quality_gates=[],
+            metadata={},
+            created_at=datetime.now()
         )
         
         validation = self.composer.validate_workflow(workflow)

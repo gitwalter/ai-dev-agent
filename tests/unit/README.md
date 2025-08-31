@@ -10,11 +10,21 @@ For comprehensive unit testing documentation, see **[docs/testing/unit_testing.m
 
 ```
 tests/unit/
-├── test_config.py                    # Configuration testing
-├── test_output_parsers.py            # Output parser testing
-├── test_prompt_manager.py            # Prompt management testing
-├── test_structured_outputs.py       # Structured output testing
-└── test_workflow_manager.py          # Workflow testing
+├── agents/
+│   ├── test_agent_system.py         # Agent system testing
+│   ├── test_test_generator.py       # Test generator unit tests
+│   └── test_workflow_extraction.py  # Workflow extraction tests
+├── prompts/
+│   ├── test_advanced_prompt_optimization.py  # Prompt optimization
+│   ├── test_prompt_engineering_system.py     # Prompt engineering
+│   ├── test_prompt_interface_imports.py      # Prompt interface tests
+│   └── test_prompt_management_infrastructure.py # Prompt infrastructure
+├── test_base_agent.py               # Base agent testing
+├── test_fast_utils.py               # Fast utility testing
+├── test_intelligent_rule_loader.py  # Rule loader testing
+├── test_quality_assurance.py        # QA system testing
+├── test_strategic_rule_selector.py  # Rule selector testing
+└── test_utils.py                    # General utility testing
 ```
 
 ## Running Unit Tests
