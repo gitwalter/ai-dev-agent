@@ -15,8 +15,8 @@ from unittest.mock import Mock, patch, AsyncMock
 # Test imports
 try:
     from langgraph.graph import StateGraph, END, START
-    from langchain.output_parsers import PydanticOutputParser
-    from langchain.prompts import PromptTemplate
+    from langchain_core.output_parsers import PydanticOutputParser
+    from langchain_core.prompts import PromptTemplate
     from langchain_google_genai import ChatGoogleGenerativeAI
     LANGGRAPH_AVAILABLE = True
 except ImportError as e:

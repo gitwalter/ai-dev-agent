@@ -335,22 +335,20 @@ Your goal is to create professional, comprehensive documentation that includes c
             execution_time = asyncio.get_event_loop().time() - start_time
             
             # Log workflow completion
-            session_logger.log_workflow_step("workflow_complete", {
-                "execution_time": execution_time,
-                "agent_outputs_count": len(result_state.get("agent_outputs", {})),
-                "errors": result_state.get("errors", []),
-                "status": "success"
-            }, "workflow_complete")
+            session_logger.info(f"Workflow completed successfully - "
+                               f"Execution time: {execution_time:.2f}s, "
+                               f"Agent outputs: {len(result_state.get('agent_outputs', {}))}, "
+                               f"Errors: {len(result_state.get('errors', []))}")
             
             # Log performance metrics
-            session_logger.log_performance_metrics({
-                "total_execution_time": execution_time,
-                "agents_executed": len(result_state.get("agent_outputs", {})),
-                "files_generated": len(result_state.get("code_files", {})) + 
-                                 len(result_state.get("tests", {})) + 
-                                 len(result_state.get("documentation", {})),
-                "errors_count": len(result_state.get("errors", []))
-            })
+            files_generated = (len(result_state.get("code_files", {})) + 
+                             len(result_state.get("tests", {})) + 
+                             len(result_state.get("documentation", {})))
+            session_logger.info(f"Performance metrics - "
+                               f"Total time: {execution_time:.2f}s, "
+                               f"Agents: {len(result_state.get('agent_outputs', {}))}, "
+                               f"Files: {files_generated}, "
+                               f"Errors: {len(result_state.get('errors', []))}")
             
             # Save results
             await self._save_results(result_state, project_path)

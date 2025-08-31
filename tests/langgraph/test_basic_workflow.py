@@ -13,8 +13,8 @@ from unittest.mock import Mock, patch
 try:
     from langgraph.graph import StateGraph, END, START
     from langgraph.checkpoint.memory import MemorySaver
-    from langchain.output_parsers import PydanticOutputParser
-    from langchain.prompts import PromptTemplate
+    from langchain_core.output_parsers import PydanticOutputParser
+    from langchain_core.prompts import PromptTemplate
     from langchain_google_genai import ChatGoogleGenerativeAI
     LANGGRAPH_AVAILABLE = True
 except ImportError:
@@ -72,8 +72,8 @@ class TestBasicLangGraphWorkflow:
         # Test basic imports
         from langgraph.graph import StateGraph, END, START
         from langgraph.checkpoint.memory import MemorySaver
-        from langchain.output_parsers import PydanticOutputParser
-        from langchain.prompts import PromptTemplate
+        from langchain_core.output_parsers import PydanticOutputParser
+        from langchain_core.prompts import PromptTemplate
         
         assert StateGraph is not None
         assert END is not None
@@ -138,7 +138,7 @@ class TestBasicLangGraphWorkflow:
             pytest.skip("LangGraph not available")
         
         from langchain_core.output_parsers.string import StrOutputParser
-        from langchain.prompts import PromptTemplate
+        from langchain_core.prompts import PromptTemplate
         
         # Create StrOutputParser
         parser = StrOutputParser()
@@ -369,7 +369,7 @@ class TestRequirementsAnalysisNode:
         
         from langgraph.graph import StateGraph, END, START
         from langchain_core.output_parsers.string import StrOutputParser
-        from langchain.prompts import PromptTemplate
+        from langchain_core.prompts import PromptTemplate
 
         # Mock LLM response - JSON string format
         mock_response = """{

@@ -14,10 +14,10 @@ try:
     from langgraph.graph import StateGraph, END
     from langgraph.checkpoint.memory import MemorySaver
     from langchain_core.output_parsers import JsonOutputParser
-    from langchain.prompts import PromptTemplate
-    from langchain.schema.runnable import RunnablePassthrough
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.runnables import RunnablePassthrough
     from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain.schema import BaseMessage, HumanMessage, SystemMessage
+    from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
     from langchain.agents import AgentExecutor, create_openai_functions_agent
     from langchain.tools import BaseTool, tool
     from pydantic import BaseModel, Field

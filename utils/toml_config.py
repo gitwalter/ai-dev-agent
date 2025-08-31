@@ -174,6 +174,45 @@ def validate_toml_config(config: Dict[str, Any], required_keys: list) -> bool:
     return True
 
 
+def ensure_secrets_file(secrets_path: str = "secrets.toml") -> bool:
+    """
+    Ensure that a secrets file exists, creating it if necessary.
+    
+    Args:
+        secrets_path: Path to the secrets file
+        
+    Returns:
+        True if file exists or was created successfully, False otherwise
+    """
+    try:
+        secrets_file = Path(secrets_path)
+        
+        if secrets_file.exists():
+            logging.getLogger(__name__).info(f"Secrets file already exists: {secrets_path}")
+            return True
+        
+        # Create directory if it doesn't exist
+        secrets_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create a basic secrets file template
+        template_content = """# AI Development Agent Secrets Configuration
+# This file contains sensitive configuration data
+# DO NOT commit this file to version control
+
+GEMINI_API_KEY = "your-gemini-api-key-here"
+"""
+        
+        with open(secrets_file, 'w', encoding='utf-8') as f:
+            f.write(template_content)
+        
+        logging.getLogger(__name__).info(f"Created secrets file template: {secrets_path}")
+        return True
+        
+    except Exception as e:
+        logging.getLogger(__name__).error(f"Failed to ensure secrets file {secrets_path}: {e}")
+        return False
+
+
 class TOMLConfigLoader:
     """
     Legacy compatibility class for TOML configuration loading.
@@ -218,5 +257,6 @@ __all__ = [
     "save_toml_config",
     "merge_toml_configs",
     "validate_toml_config",
+    "ensure_secrets_file",
     "TOMLConfigLoader"
 ]

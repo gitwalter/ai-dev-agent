@@ -21,7 +21,7 @@ from models.responses import WorkflowResult, WorkflowStatus
 from utils.logging_config import setup_logging
 from main import AIDevelopmentAgent
 from models.config import load_config_from_env
-from utils.toml_config import TOMLConfigLoader, ensure_secrets_file
+# Removed unnecessary TOML dependency - using streamlit.secrets instead
 from utils.prompt_editor import get_prompt_editor
 from utils.rag_processor import get_rag_processor
 
@@ -103,71 +103,59 @@ def initialize_session_state():
 
 
 def configure_api_key():
-    """Configure API key using multiple sources with proper priority."""
+    """Configure API key using streamlit.secrets (simplified approach)."""
     st.sidebar.subheader("🔑 API Key Configuration")
     
-    # Priority 1: Check Streamlit secrets (highest priority)
+    # Check Streamlit secrets (handles .streamlit/secrets.toml and environment automatically)
     try:
         if hasattr(st.secrets, "GEMINI_API_KEY"):
             api_key = st.secrets.GEMINI_API_KEY
             if api_key and api_key != "your-gemini-api-key-here":
-                st.sidebar.success("✅ API key found in Streamlit secrets")
+                st.sidebar.success("✅ API key configured via Streamlit secrets")
                 st.session_state.api_key_configured = True
                 return True
     except Exception:
         pass
     
-    # Priority 2: Check secrets.toml file
-    try:
-        toml_loader = TOMLConfigLoader()
-        api_key = toml_loader.get_gemini_api_key()
-        if api_key and api_key != "your-gemini-api-key-here":
-            st.sidebar.success("✅ API key found in secrets.toml")
-            st.session_state.api_key_configured = True
-            return True
-    except Exception:
-        pass
-    
-    # Priority 3: Check environment variable
+    # Check environment variable as fallback
     env_api_key = os.getenv("GEMINI_API_KEY", "")
     if env_api_key:
         st.sidebar.success("✅ API key found in environment variable")
         st.session_state.api_key_configured = True
         return True
     
-    # If no API key found, provide input option
+    # If no API key found, provide simple input
     st.sidebar.warning("⚠️ No API key found")
     
     with st.sidebar.expander("Configure API Key", expanded=True):
-        st.info("Please provide your Gemini API key to use the application.")
+        st.info("""
+        **How to configure your API key:**
+        
+        1. **Recommended**: Create `.streamlit/secrets.toml` with:
+        ```
+        GEMINI_API_KEY = "your-api-key-here"
+        ```
+        
+        2. **Alternative**: Set environment variable:
+        ```
+        GEMINI_API_KEY=your-api-key-here
+        ```
+        
+        3. **Temporary**: Enter below (not persistent):
+        """)
         
         api_key_input = st.text_input(
-            "Gemini API Key",
+            "Gemini API Key (temporary)",
             type="password",
             help="Enter your Gemini API key from Google AI Studio"
         )
         
-        if st.button("Save API Key"):
-            if api_key_input:
-                # Save to secrets.toml
-                try:
-                    ensure_secrets_file()
-                    secrets_content = f"""# AI Development Agent Secrets Configuration
-# This file contains sensitive configuration data
-# DO NOT commit this file to version control
-
-GEMINI_API_KEY = "{api_key_input}"
-"""
-                    with open("secrets.toml", "w") as f:
-                        f.write(secrets_content)
-                    
-                    st.success("✅ API key saved to secrets.toml")
-                    st.session_state.api_key_configured = True
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"❌ Error saving API key: {str(e)}")
-            else:
-                st.error("❌ Please enter a valid API key")
+        if api_key_input:
+            # Store temporarily in session state
+            os.environ["GEMINI_API_KEY"] = api_key_input
+            st.session_state.api_key_configured = True
+            st.sidebar.success("✅ API key set temporarily for this session")
+            st.rerun()
     
     return False
 
@@ -982,7 +970,7 @@ def display_results():
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
-        st.metric("Status", result.status.value)
+        st.metric("Status", result.status)
     
     with col2:
         st.metric("Execution Time", f"{result.total_execution_time:.2f}s")
@@ -1083,7 +1071,7 @@ def display_results():
                 # Agent summary
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    st.metric("Status", agent_result.status.value)
+                    st.metric("Status", agent_result.status)
                 with col2:
                     st.metric("Execution Time", f"{agent_result.execution_time:.2f}s")
                 with col3:
@@ -1213,6 +1201,39 @@ def delete_generated_project(project_name: str):
         return False, f"Error deleting project: {str(e)}"
 
 
+def delete_all_generated_projects():
+    """Delete all generated projects from the filesystem."""
+    try:
+        projects_path = Path("generated_projects")
+        if not projects_path.exists():
+            return True, "No generated projects found to delete."
+        
+        import shutil
+        deleted_count = 0
+        total_size = 0
+        
+        # Calculate total size and count before deletion
+        for project_path in projects_path.iterdir():
+            if project_path.is_dir():
+                deleted_count += 1
+                # Calculate directory size
+                for file_path in project_path.rglob('*'):
+                    if file_path.is_file():
+                        total_size += file_path.stat().st_size
+        
+        # Delete the entire generated_projects directory
+        shutil.rmtree(projects_path)
+        
+        # Recreate the empty directory
+        projects_path.mkdir(exist_ok=True)
+        
+        size_mb = total_size / (1024 * 1024)
+        return True, f"Successfully deleted {deleted_count} projects ({size_mb:.1f} MB freed)."
+        
+    except Exception as e:
+        return False, f"Error deleting all projects: {str(e)}"
+
+
 def list_generated_projects():
     """List all generated projects."""
     projects_path = Path("generated_projects")
@@ -1240,6 +1261,42 @@ def display_project_management():
     if not projects:
         st.info("No generated projects found.")
         return
+    
+    # Project summary and bulk actions
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        total_size_mb = sum(project['size'] for project in projects) / (1024 * 1024)
+        st.write(f"**Total: {len(projects)} projects ({total_size_mb:.1f} MB)**")
+    
+    with col2:
+        # Initialize session state for delete confirmation
+        if 'show_delete_confirmation' not in st.session_state:
+            st.session_state.show_delete_confirmation = False
+        
+        if not st.session_state.show_delete_confirmation:
+            if st.button("🗑️ Delete All Projects", type="secondary"):
+                st.session_state.show_delete_confirmation = True
+                st.rerun()
+        else:
+            # Show confirmation dialog
+            st.warning("⚠️ **DANGER ZONE**: This will permanently delete ALL generated projects!")
+            col_confirm, col_cancel = st.columns(2)
+            
+            with col_confirm:
+                if st.button("✅ Confirm Delete All", type="primary", key="confirm_delete_all"):
+                    success, message = delete_all_generated_projects()
+                    st.session_state.show_delete_confirmation = False
+                    if success:
+                        st.success(message)
+                        st.rerun()
+                    else:
+                        st.error(message)
+            
+            with col_cancel:
+                if st.button("❌ Cancel", key="cancel_delete_all"):
+                    st.session_state.show_delete_confirmation = False
+                    st.rerun()
     
     st.subheader("📁 Generated Projects")
     
@@ -1282,7 +1339,7 @@ def display_project_info():
     with col1:
         st.subheader("📋 Project Overview")
         st.write(f"**Project Name:** {result.project_name}")
-        st.write(f"**Status:** {result.status.value}")
+        st.write(f"**Status:** {result.status}")
         st.write(f"**Execution Time:** {result.total_execution_time:.2f} seconds")
         st.write(f"**Generated Files:** {len(result.generated_files)}")
         

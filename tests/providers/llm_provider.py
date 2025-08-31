@@ -25,7 +25,7 @@ from enum import Enum
 try:
     import streamlit as st
     from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain.schema import AIMessage
+    from langchain_core.messages import AIMessage
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False

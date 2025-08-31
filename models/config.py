@@ -237,29 +237,42 @@ def load_config_from_env() -> SystemConfig:
 
 def _load_gemini_api_key() -> str:
     """
-    Load Gemini API key from .streamlit/secrets.toml and set environment variable for LangChain.
+    Load Gemini API key with fallback logic.
     
     Returns:
         API key string or empty string if not found
     """
+    # First try environment variable (highest priority)
+    env_key = os.getenv("GEMINI_API_KEY", "")
+    if env_key:
+        return env_key
+    
+    # Try to read from .streamlit/secrets.toml directly
     try:
-        from utils.toml_config import TOMLConfigLoader
-        
-        # Look for secrets.toml in .streamlit directory
-        loader = TOMLConfigLoader(".streamlit")
-        api_key = loader.get_gemini_api_key()
-        
-        if api_key and api_key != "your-gemini-api-key-here":
-            # Set environment variable for LangChain compatibility
-            os.environ["GEMINI_API_KEY"] = api_key
-            return api_key
-        else:
-            return ""
+        secrets_path = Path(".streamlit/secrets.toml")
+        if secrets_path.exists():
+            # Try tomllib first (Python 3.11+), fallback to toml
+            try:
+                import tomllib
+                with open(secrets_path, "rb") as f:
+                    secrets = tomllib.load(f)
+            except ImportError:
+                import toml
+                with open(secrets_path, "r") as f:
+                    secrets = toml.load(f)
+            
+            api_key = secrets.get("GEMINI_API_KEY", "")
+            if api_key and api_key != "your-gemini-api-key-here":
+                # Set environment variable for LangChain and other components
+                os.environ["GEMINI_API_KEY"] = api_key
+                return api_key
     except Exception as e:
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Failed to load API key from .streamlit/secrets.toml: {e}")
-        return ""
+        logger.debug(f"Failed to load from secrets.toml: {e}")
+    
+    # Last resort - empty string (will trigger validation error)
+    return ""
 
 
 def load_config_from_file(config_path: str) -> SystemConfig:

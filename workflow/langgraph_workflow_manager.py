@@ -13,10 +13,10 @@ import re
 try:
     from langgraph.graph import StateGraph, END, START
     from langgraph.checkpoint.memory import MemorySaver
-    from langchain.output_parsers import PydanticOutputParser
+    from langchain_core.output_parsers import PydanticOutputParser
     from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
-    from langchain.prompts import PromptTemplate
-    from langchain.schema.runnable import RunnablePassthrough
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.runnables import RunnablePassthrough
     from langchain_google_genai import ChatGoogleGenerativeAI
     from pydantic import BaseModel, Field
     LANGGRAPH_AVAILABLE = True

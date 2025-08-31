@@ -44,27 +44,58 @@ class TaskResult(BaseModel):
 class WorkflowResult(BaseModel):
     """Result of a complete workflow execution - LangChain compatible."""
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",  # Allow extra fields for workflow flexibility
         validate_assignment=True
     )
     
+    # Core workflow fields
     workflow_id: str = Field(description="Unique identifier for the workflow")
     status: str = Field(description="Overall workflow status")
     tasks: List[TaskResult] = Field(default_factory=list, description="Results of individual tasks")
     start_time: datetime = Field(default_factory=datetime.now, description="Workflow start time")
+    
+    # Extended workflow fields (previously missing)
+    session_id: Optional[str] = Field(None, description="Session identifier")
+    project_name: Optional[str] = Field(None, description="Project name")
+    project_context: Optional[str] = Field(None, description="Project context description")
+    agent_results: Dict[str, Any] = Field(default_factory=dict, description="Agent execution results")
+    generated_files: Dict[str, Any] = Field(default_factory=dict, description="Generated file data")
+    code_files: Dict[str, Any] = Field(default_factory=dict, description="Generated code files")
+    test_files: Dict[str, Any] = Field(default_factory=dict, description="Generated test files")
+    documentation_files: Dict[str, Any] = Field(default_factory=dict, description="Generated documentation files")
+    configuration_files: Dict[str, Any] = Field(default_factory=dict, description="Generated configuration files")
+    diagram_files: Dict[str, Any] = Field(default_factory=dict, description="Generated diagram files")
+    total_execution_time: Optional[float] = Field(None, description="Total execution time in seconds")
+    end_time: Optional[datetime] = Field(None, description="Workflow end time")
+    human_approvals: List[str] = Field(default_factory=list, description="Human approval requests")
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    warnings: List[str] = Field(default_factory=list, description="Warning messages")
 
 
 class AgentResponse(BaseModel):
     """Response from an individual agent - LangChain compatible."""
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",  # Allow extra fields for agent flexibility
         validate_assignment=True
     )
     
+    # Core agent response fields
     agent_name: str = Field(description="Name of the responding agent")
-    content: Dict[str, Any] = Field(description="Response content")
-    status: TaskStatus = Field(description="Response status")
+    content: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Response content")
+    status: Optional[TaskStatus] = Field(None, description="Response status")
     timestamp: datetime = Field(default_factory=datetime.now, description="Response timestamp")
+    
+    # Extended agent response fields (previously missing)
+    task_name: Optional[str] = Field(None, description="Task name")
+    output: Dict[str, Any] = Field(default_factory=dict, description="Agent output data")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Agent metadata")
+    execution_time: Optional[float] = Field(None, description="Execution time in seconds")
+    error_message: Optional[str] = Field(None, description="Error message if any")
+    warnings: List[str] = Field(default_factory=list, description="Warning messages")
+    documentation: Dict[str, Any] = Field(default_factory=dict, description="Generated documentation")
+    logs: List[str] = Field(default_factory=list, description="Agent log messages")
+    decisions: List[str] = Field(default_factory=list, description="Agent decisions made")
+    artifacts: List[str] = Field(default_factory=list, description="Generated artifacts")
 
 
 class RequirementsAnalysisResponse(BaseModel):

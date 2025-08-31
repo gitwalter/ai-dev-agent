@@ -1,16 +1,16 @@
 ---
-description: "Auto-generated description for no_premature_victory_declaration_rule.mdc"
+description: "Scientific verification and evidence-based success validation with zero tolerance for unverified claims"
 category: "core-foundation"
-priority: "low"
-alwaysApply: false
-contexts: ['DEFAULT']
+priority: "critical"
+alwaysApply: true
+contexts: ['DEFAULT', 'CODING', 'TESTING', 'DEBUGGING', 'ARCHITECTURE', 'AGILE', 'DOCUMENTATION']
 globs: ["**/*"]
-tags: ['core_foundation']
-tier: "2"
+tags: ['core_foundation', 'scientific_rigor', 'formal_verification', 'always_active']
+tier: "1"
 ---
-# No Premature Victory Declaration Rule
+# Scientific Verification and Evidence-Based Success Rule
 
-**CRITICAL**: Never declare success, completion, or victory until ALL verification steps are completed and ALL tests are passing with evidence. Always output concise, progress-relevant information only.
+**CRITICAL**: All claims, completions, and success declarations must be formally verified through systematic evidence collection and scientific validation. Zero tolerance for unverified assertions, marketing language, or premature victory declarations.
 
 ## Description
 This rule prevents premature declarations of success, completion, or victory before proper validation and testing has been performed. All claims must be backed by concrete evidence. Additionally, all outputs must be concise and focused only on progress-relevant information to improve speed and efficiency.

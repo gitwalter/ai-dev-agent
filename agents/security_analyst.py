@@ -14,7 +14,7 @@ from prompts import get_agent_prompt_loader
 
 try:
     from langchain_core.output_parsers import JsonOutputParser
-    from langchain.prompts import PromptTemplate
+    from langchain_core.prompts import PromptTemplate
     from langchain_google_genai import ChatGoogleGenerativeAI
     LANGCHAIN_AVAILABLE = True
 except ImportError:

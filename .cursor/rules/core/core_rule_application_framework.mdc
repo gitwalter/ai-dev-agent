@@ -38,6 +38,11 @@ This framework provides automatic rule application that ensures critical rules a
 - **Application**: Applied to every code modification and cleanup
 - **Enforcement**: Automatic cleanup and improvement verification
 
+### **5. Automatic Agile Artifact Maintenance Rule** 📋
+- **Purpose**: Automatically maintain all agile artifacts immediately after any task completion
+- **Application**: Applied to every task completion, story status change, sprint milestone
+- **Enforcement**: DNA-level embedding with zero tolerance for missed artifacts
+
 ## Framework Implementation
 
 ### **Automatic Rule Application System**
@@ -71,6 +76,12 @@ class CoreRuleApplicationFramework:
                 "priority": "critical",
                 "always_apply": True,
                 "triggers": ["code_modification", "cleanup", "session_end"]
+            },
+            "automatic_agile_artifact_maintenance_rule": {
+                "file": "automatic_agile_artifact_maintenance_rule.mdc",
+                "priority": "critical",
+                "always_apply": True,
+                "triggers": ["task_completion", "story_status_change", "sprint_milestone", "quality_gate_passage", "documentation_creation"]
             }
         }
     
@@ -90,6 +101,9 @@ class CoreRuleApplicationFramework:
         
         # Apply boy scout rule
         context = self.apply_boyscout_rule(context)
+        
+        # Apply automatic agile artifact maintenance rule
+        context = self.apply_automatic_artifact_maintenance_rule(context)
         
         print("✅ CRITICAL RULES FRAMEWORK APPLIED")
         return context
@@ -191,6 +205,40 @@ class CoreRuleApplicationFramework:
         }
         
         print("✅ BOY SCOUT RULE APPLIED")
+        return context
+    
+    def apply_automatic_artifact_maintenance_rule(self, context: dict) -> dict:
+        """Apply automatic agile artifact maintenance rule to ensure all artifacts are updated."""
+        
+        print("📋 APPLYING AUTOMATIC AGILE ARTIFACT MAINTENANCE RULE")
+        
+        # Artifact maintenance requirements
+        context["artifact_maintenance"] = {
+            "automatic_execution": True,
+            "zero_tolerance": True,
+            "immediate_updates": True,
+            "stakeholder_notification": True
+        }
+        
+        # Artifact monitoring
+        context["artifact_monitoring"] = {
+            "user_stories": "docs/agile/sprints/*/user_stories/*.md",
+            "sprint_catalogs": "docs/agile/catalogs/*.md",
+            "sprint_summaries": "docs/agile/sprints/*/SPRINT_*_SUMMARY.md",
+            "quality_metrics": True,
+            "stakeholder_communications": True
+        }
+        
+        # Automatic execution triggers
+        context["artifact_triggers"] = {
+            "task_completion": True,
+            "story_status_change": True,
+            "sprint_milestone": True,
+            "quality_gate_passage": True,
+            "documentation_creation": True
+        }
+        
+        print("✅ AUTOMATIC AGILE ARTIFACT MAINTENANCE RULE APPLIED")
         return context
 ```
 
