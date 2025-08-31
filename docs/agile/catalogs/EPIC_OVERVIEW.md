@@ -6,6 +6,29 @@
 
 ## 📊 **Epic Progress Dashboard**
 
+### **Epic 6: Full Cursor Automation & Intelligent Workflow Orchestration** 🆕
+**Status**: 📋 Planned  
+**Target Completion**: Sprint 3-4  
+**Business Value**: Revolutionary development workflow automation and complete task-to-workflow transformation
+
+| Sprint | User Stories | Story Points | Status | Completion % |
+|--------|--------------|--------------|--------|--------------|
+| Sprint 3 | US-AUTO-001, US-AUTO-002, US-AUTO-003 | 51 | 📋 Planned | 0% (planning phase) |
+| Sprint 4 | US-AUTO-004, US-AUTO-005, US-AUTO-006 | 45 | 📋 Planned | 0% (planning phase) |
+| **Total** | **6 stories** | **96 points** | **Planned** | **0%** |
+
+**Key Deliverables**:
+- 📋 Full cursor automation with workflow composition (US-AUTO-001)
+- 📋 Comprehensive workflow template library (US-AUTO-002)  
+- 📋 Intelligent context orchestration system (US-AUTO-003)
+- 📋 Adaptive workflow learning and optimization (US-AUTO-004)
+- 📋 Custom workflow designer interface (US-AUTO-005)
+- 📋 Enterprise integration and scaling capabilities (US-AUTO-006)
+
+**Strategic Impact**: Transforms development from manual process orchestration to intelligent, automated workflow composition
+
+---
+
 ### **Epic 0: Development Excellence & Process Optimization**
 **Status**: ✅ Complete (100% Complete)  
 **Target Completion**: Sprint 0  
@@ -204,6 +227,14 @@
 - [ ] External tool integrations stable
 - [ ] Security requirements met
 - [ ] ML capabilities demonstrable
+
+### **Epic 6: Full Cursor Automation Success Criteria**
+- [ ] Complete workflow automation from single task requests
+- [ ] Multi-context orchestration with seamless @keyword transitions
+- [ ] Comprehensive workflow template library operational
+- [ ] 60-80% reduction in manual workflow orchestration time
+- [ ] 95%+ automated workflow completion rate
+- [ ] Intelligent workflow composition and optimization
 
 ## 🔗 **Cross-References**
 

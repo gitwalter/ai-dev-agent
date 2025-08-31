@@ -1,0 +1,83 @@
+name: "research_spike"
+description: "Research and prototyping workflow for investigating technologies and approaches"
+category: "research"
+tags: ["research", "spike", "investigation", "prototype", "poc"]
+
+contexts:
+  - context: "@research"
+    phase: "investigation"
+    name: "Technology Investigation"
+    description: "Research and investigate available technologies, frameworks, and approaches"
+    inputs: ["research_objectives", "evaluation_criteria", "constraints", "current_context"]
+    outputs: ["technology_analysis", "comparison_matrix", "pros_cons_analysis", "research_findings"]
+    quality_gates: ["comprehensive_research", "objective_evaluation", "criteria_coverage"]
+    timeout: 1800
+    retry_count: 2
+    
+  - context: "@design"
+    phase: "poc_architecture"
+    name: "Proof of Concept Architecture"
+    description: "Design minimal architecture for proof of concept implementation"
+    inputs: ["research_findings", "selected_technologies", "poc_requirements"]
+    outputs: ["poc_architecture", "implementation_plan", "technical_decisions", "risk_assessment"]
+    quality_gates: ["architecture_feasible", "risks_identified", "implementation_clear"]
+    timeout: 600
+    retry_count: 2
+    
+  - context: "@code"
+    phase: "prototype_implementation"
+    name: "Prototype Implementation"
+    description: "Build minimal viable prototype to validate concepts and approaches"
+    inputs: ["poc_architecture", "implementation_plan", "success_metrics"]
+    outputs: ["prototype_code", "implementation_notes", "lessons_learned", "performance_data"]
+    quality_gates: ["prototype_functional", "concepts_validated", "metrics_collected"]
+    timeout: 2400
+    retry_count: 3
+    
+  - context: "@test"
+    phase: "validation_testing"
+    name: "Prototype Validation"
+    description: "Test and validate prototype functionality against research objectives"
+    inputs: ["prototype_code", "validation_criteria", "test_scenarios"]
+    outputs: ["validation_results", "performance_metrics", "functionality_assessment", "limitation_analysis"]
+    quality_gates: ["validation_criteria_met", "performance_acceptable", "limitations_documented"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@docs"
+    phase: "findings_documentation"
+    name: "Research Documentation"
+    description: "Document research findings, recommendations, and implementation guidance"
+    inputs: ["research_findings", "prototype_results", "validation_data", "lessons_learned"]
+    outputs: ["research_report", "recommendations", "implementation_guide", "decision_matrix"]
+    quality_gates: ["findings_comprehensive", "recommendations_actionable", "guidance_clear"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@agile"
+    phase: "backlog_update"
+    name: "Product Backlog Update"
+    description: "Update product backlog with research insights and recommended next steps"
+    inputs: ["research_report", "recommendations", "implementation_estimates"]
+    outputs: ["updated_backlog", "new_user_stories", "technical_debt_items", "roadmap_updates"]
+    quality_gates: ["backlog_reflects_findings", "stories_well_defined", "priorities_updated"]
+    timeout: 300
+    retry_count: 2
+
+parameters:
+  research_depth: "comprehensive"
+  prototype_scope: "minimal_viable"
+  validation_required: true
+  documentation_detail: "high"
+  stakeholder_review: true
+  decision_documentation: true
+
+estimated_duration: 180  # 3 hours
+complexity_level: "medium"
+success_criteria:
+  - "Research objectives are fully addressed"
+  - "Technology options are thoroughly evaluated"
+  - "Prototype validates key concepts and approaches"
+  - "Performance and feasibility are assessed"
+  - "Findings are documented with clear recommendations"
+  - "Product backlog is updated with actionable insights"

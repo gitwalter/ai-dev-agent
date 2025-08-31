@@ -1,0 +1,83 @@
+name: "code_review"
+description: "Comprehensive code review process with quality gates and automated validation"
+category: "quality"
+tags: ["review", "quality", "validation", "standards"]
+
+contexts:
+  - context: "@code"
+    phase: "code_analysis"
+    name: "Code Quality Analysis"
+    description: "Analyze code quality, patterns, and adherence to coding standards"
+    inputs: ["source_code", "coding_standards", "style_guide", "complexity_metrics"]
+    outputs: ["quality_analysis", "standards_compliance", "code_metrics", "improvement_suggestions"]
+    quality_gates: ["coding_standards_met", "complexity_acceptable", "maintainability_good"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@test"
+    phase: "test_review"
+    name: "Test Coverage and Quality Review"
+    description: "Review test coverage, test quality, and testing strategies"
+    inputs: ["test_suite", "coverage_report", "test_quality_metrics"]
+    outputs: ["test_analysis", "coverage_assessment", "test_quality_score", "testing_recommendations"]
+    quality_gates: ["adequate_test_coverage", "test_quality_sufficient", "edge_cases_covered"]
+    timeout: 600
+    retry_count: 2
+    
+  - context: "@security"
+    phase: "security_assessment"
+    name: "Security Review"
+    description: "Assess security implications and identify potential vulnerabilities"
+    inputs: ["source_code", "security_guidelines", "threat_model"]
+    outputs: ["security_analysis", "vulnerability_assessment", "security_recommendations", "risk_evaluation"]
+    quality_gates: ["no_critical_vulnerabilities", "security_best_practices", "data_protection_adequate"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@docs"
+    phase: "documentation_review"
+    name: "Documentation Review"
+    description: "Verify documentation completeness, accuracy, and clarity"
+    inputs: ["code_documentation", "api_docs", "user_guides", "inline_comments"]
+    outputs: ["documentation_assessment", "clarity_evaluation", "completeness_check", "documentation_suggestions"]
+    quality_gates: ["documentation_complete", "examples_accurate", "clarity_sufficient"]
+    timeout: 600
+    retry_count: 2
+    
+  - context: "@agile"
+    phase: "requirements_validation"
+    name: "Requirements Fulfillment"
+    description: "Confirm implementation meets all requirements and acceptance criteria"
+    inputs: ["acceptance_criteria", "user_stories", "implementation_details"]
+    outputs: ["requirements_compliance", "acceptance_validation", "feature_completeness", "gap_analysis"]
+    quality_gates: ["all_requirements_met", "acceptance_criteria_satisfied", "no_scope_creep"]
+    timeout: 300
+    retry_count: 2
+    
+  - context: "@git"
+    phase: "review_completion"
+    name: "Review Completion and Approval"
+    description: "Provide comprehensive review feedback and approval decision"
+    inputs: ["all_analysis_results", "quality_metrics", "compliance_status"]
+    outputs: ["review_summary", "approval_decision", "action_items", "feedback_report"]
+    quality_gates: ["all_checks_passed", "feedback_constructive", "decision_justified"]
+    timeout: 300
+    retry_count: 1
+
+parameters:
+  min_test_coverage: 80
+  max_complexity_score: 10
+  security_scan_required: true
+  documentation_required: true
+  automated_checks: true
+  peer_review_required: true
+
+estimated_duration: 90  # 1.5 hours
+complexity_level: "medium"
+success_criteria:
+  - "Code meets all quality standards and guidelines"
+  - "Test coverage is adequate and tests are high quality"
+  - "No critical security vulnerabilities identified"
+  - "Documentation is complete and accurate"
+  - "All requirements and acceptance criteria are met"
+  - "Review feedback is constructive and actionable"

@@ -10,29 +10,34 @@ tier: "1"
 
 # Streamlined Git Operations Rule
 
-**CRITICAL**: In standard development situations, execute only `git commit` and `git push` commands. Avoid unnecessary git status checks, staging commands, or other git operations unless explicitly requested.
+**CRITICAL**: In standard development situations, execute the proven three-command sequence: `git add .`, `git commit`, and `git push`. Avoid unnecessary git status checks or other git operations unless explicitly requested.
 
 ## Core Principle
 
-**"Commit and Push Only - Keep It Simple"**
+**"Add, Commit, Push - The Proven Workflow"**
 
-When the user requests git operations for standard development workflow, execute only the essential commands: commit and push. This reduces command overhead and streamlines the development process.
+When the user requests git operations for standard development workflow, execute the proven three-command sequence: `git add .`, `git commit`, and `git push`. This ensures all changes are captured and reduces command overhead while maintaining reliability.
 
 ## Standard Git Workflow
 
 ### 1. **Standard Commit and Push Sequence**
 **REQUIRED for standard situations:**
 ```bash
+git add .
 git commit -m "descriptive commit message"
 git push
 ```
 
+**PROVEN SUCCESSFUL WORKFLOW:**
+- `git add .` - Stage all changes (IDE staging may be incomplete)
+- `git commit -m "message"` - Commit with descriptive message
+- `git push` - Push to remote repository
+
 **FORBIDDEN in standard situations:**
-- `git status` (unless explicitly requested)
-- `git add .` (assume files are already staged by IDE)
-- `git branch` checks
-- `git log` reviews
-- Multiple git commands in sequence
+- `git status` (unless explicitly requested for diagnostics)
+- `git branch` checks (unless troubleshooting)
+- `git log` reviews (unless explicitly requested)
+- Multiple status checks between commands
 
 ### 2. **When to Use Standard Workflow**
 **Apply streamlined approach when:**
@@ -79,25 +84,27 @@ git push
 
 ### 1. **Command Execution**
 ```python
-# REQUIRED: Streamlined approach
+# REQUIRED: Proven successful approach
 def standard_git_workflow(commit_message):
+    run_command("git add .")
     run_command(f"git commit -m '{commit_message}'")
     run_command("git push")
 
-# FORBIDDEN: Verbose approach
+# FORBIDDEN: Verbose approach with unnecessary commands
 def verbose_git_workflow():
-    run_command("git status")  # Unnecessary
-    run_command("git add .")   # Assume already staged
+    run_command("git status")  # Unnecessary unless debugging
+    run_command("git add .")   
     run_command("git status")  # Redundant
     run_command("git commit -m 'message'")
     run_command("git status")  # Unnecessary
     run_command("git push")
+    run_command("git status")  # Excessive
 ```
 
 ### 2. **Context Detection**
 **Standard situations:**
 - User in normal development flow
-- Files already staged by IDE
+- Files may need staging (IDE staging can be incomplete)
 - No git issues mentioned
 - Routine commit and push request
 
@@ -195,6 +202,6 @@ This rule is **ALWAYS ACTIVE** and applies to:
 
 **"Commit and push - that's it. Keep git simple."**
 
-**"Let the IDE handle staging, we handle committing."**
+**"Always stage, commit, and push - the proven three-step workflow."**
 
-**"Two commands, not twenty."**
+**"Three commands that work: add, commit, push."**

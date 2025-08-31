@@ -1,0 +1,83 @@
+name: "bug_fix"
+description: "Systematic bug investigation and resolution workflow"
+category: "maintenance"
+tags: ["bug", "fix", "debugging", "maintenance"]
+
+contexts:
+  - context: "@debug"
+    phase: "investigation"
+    name: "Bug Investigation"
+    description: "Investigate and diagnose the root cause of the reported bug"
+    inputs: ["bug_report", "system_logs", "error_traces", "reproduction_steps"]
+    outputs: ["root_cause_analysis", "reproduction_confirmed", "impact_assessment", "investigation_notes"]
+    quality_gates: ["root_cause_identified", "reproduction_reliable", "impact_assessed"]
+    timeout: 1200
+    retry_count: 3
+    
+  - context: "@test"
+    phase: "test_creation"
+    name: "Failing Test Creation"
+    description: "Create failing test that reproduces the bug to ensure fix validation"
+    inputs: ["reproduction_steps", "expected_behavior", "root_cause_analysis"]
+    outputs: ["failing_test", "test_case_documentation", "test_environment_setup"]
+    quality_gates: ["test_reproduces_bug", "test_is_reliable", "test_documentation_complete"]
+    timeout: 600
+    retry_count: 2
+    
+  - context: "@code"
+    phase: "fix_implementation"
+    name: "Bug Fix Implementation"
+    description: "Implement fix with minimal impact and following best practices"
+    inputs: ["root_cause_analysis", "failing_test", "codebase_context"]
+    outputs: ["fixed_code", "implementation_notes", "change_summary", "risk_assessment"]
+    quality_gates: ["minimal_change_impact", "fix_addresses_root_cause", "code_quality_maintained"]
+    timeout: 1800
+    retry_count: 3
+    
+  - context: "@test"
+    phase: "verification"
+    name: "Fix Verification"
+    description: "Verify fix resolves the issue and run comprehensive regression tests"
+    inputs: ["fixed_code", "test_case", "regression_test_suite"]
+    outputs: ["test_results", "regression_results", "fix_validation", "performance_impact"]
+    quality_gates: ["original_test_passes", "no_regressions", "performance_acceptable"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@docs"
+    phase: "documentation_update"
+    name: "Documentation Update"
+    description: "Update documentation if the fix affects user-facing behavior"
+    condition: "documentation_affected"
+    inputs: ["fixed_code", "implementation_notes", "user_impact_analysis"]
+    outputs: ["updated_documentation", "changelog_entry", "user_communication"]
+    quality_gates: ["documentation_accuracy", "user_impact_documented", "changelog_complete"]
+    timeout: 300
+    retry_count: 2
+    
+  - context: "@git"
+    phase: "deployment"
+    name: "Bug Fix Deployment"
+    description: "Commit fix with detailed description and deploy to appropriate environments"
+    inputs: ["fixed_code", "test_results", "documentation_updates"]
+    outputs: ["commit_hash", "fix_description", "deployment_status", "hotfix_notes"]
+    quality_gates: ["commit_message_descriptive", "deployment_successful", "monitoring_active"]
+    timeout: 300
+    retry_count: 2
+
+parameters:
+  regression_test_required: true
+  performance_impact_check: true
+  documentation_update_threshold: "user_facing_changes"
+  hotfix_deployment: false
+  rollback_plan_required: true
+
+estimated_duration: 120  # 2 hours
+complexity_level: "simple"
+success_criteria:
+  - "Bug root cause is identified and documented"
+  - "Failing test reproduces the original issue"
+  - "Fix resolves the issue without introducing regressions"
+  - "All tests pass including regression suite"
+  - "Documentation is updated if necessary"
+  - "Fix is deployed successfully with monitoring"

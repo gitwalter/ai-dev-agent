@@ -1,0 +1,104 @@
+name: "feature_development"
+description: "Complete feature implementation from requirements to deployment"
+category: "development"
+tags: ["feature", "development", "full-cycle"]
+
+contexts:
+  - context: "@agile"
+    phase: "requirements_analysis"
+    name: "Requirements Analysis"
+    description: "Analyze requirements and create user stories with acceptance criteria"
+    inputs: ["task_description", "project_context", "stakeholder_requirements"]
+    outputs: ["user_stories", "acceptance_criteria", "story_points", "sprint_planning"]
+    quality_gates: ["requirements_completeness", "acceptance_criteria_clarity", "stakeholder_approval"]
+    timeout: 300
+    retry_count: 2
+    
+  - context: "@design"
+    phase: "architecture_design"
+    name: "Architecture Design"
+    description: "Create system architecture and design specifications for the feature"
+    inputs: ["user_stories", "existing_architecture", "technical_constraints"]
+    outputs: ["design_specifications", "api_contracts", "architecture_diagrams", "design_decisions"]
+    quality_gates: ["design_completeness", "architecture_consistency", "scalability_review"]
+    timeout: 600
+    retry_count: 2
+    
+  - context: "@code"
+    phase: "implementation"
+    name: "Feature Implementation"
+    description: "Implement the feature following TDD principles and design specifications"
+    inputs: ["design_specifications", "coding_standards", "api_contracts"]
+    outputs: ["source_code", "unit_tests", "implementation_notes", "code_metrics"]
+    quality_gates: ["code_quality", "coding_standards_compliance", "test_coverage"]
+    timeout: 1800
+    retry_count: 3
+    
+  - context: "@test"
+    phase: "comprehensive_testing"
+    name: "Comprehensive Testing"
+    description: "Create and execute comprehensive test suite including unit, integration, and acceptance tests"
+    inputs: ["source_code", "acceptance_criteria", "test_requirements"]
+    outputs: ["test_suite", "test_results", "coverage_report", "quality_metrics"]
+    quality_gates: ["test_coverage_minimum", "acceptance_tests_pass", "performance_acceptable"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@debug"
+    phase: "issue_resolution"
+    name: "Issue Resolution"
+    description: "Debug and resolve any issues found during testing"
+    condition: "test_failures_exist"
+    inputs: ["test_results", "source_code", "error_logs"]
+    outputs: ["fixed_code", "resolution_notes", "regression_tests"]
+    quality_gates: ["all_issues_resolved", "no_regressions", "fix_quality"]
+    timeout: 1200
+    retry_count: 3
+    
+  - context: "@docs"
+    phase: "documentation"
+    name: "Feature Documentation"
+    description: "Create comprehensive documentation for the feature"
+    inputs: ["source_code", "api_contracts", "user_stories"]
+    outputs: ["api_documentation", "user_guides", "technical_docs", "changelog"]
+    quality_gates: ["documentation_completeness", "clarity_review", "example_accuracy"]
+    timeout: 600
+    retry_count: 2
+    
+  - context: "@security"
+    phase: "security_review"
+    name: "Security Review"
+    description: "Perform security analysis and vulnerability assessment"
+    inputs: ["source_code", "api_contracts", "security_requirements"]
+    outputs: ["security_analysis", "vulnerability_report", "security_recommendations"]
+    quality_gates: ["security_compliance", "vulnerability_assessment", "penetration_testing"]
+    timeout: 900
+    retry_count: 2
+    
+  - context: "@git"
+    phase: "deployment"
+    name: "Feature Deployment"
+    description: "Commit changes, create pull request, and deploy feature"
+    inputs: ["source_code", "test_results", "documentation", "security_clearance"]
+    outputs: ["commit_hash", "pull_request", "deployment_status", "release_notes"]
+    quality_gates: ["deployment_success", "no_breaking_changes", "rollback_ready"]
+    timeout: 300
+    retry_count: 2
+
+parameters:
+  min_test_coverage: 80
+  code_quality_threshold: 8.0
+  security_scan_required: true
+  documentation_required: true
+  peer_review_required: true
+
+estimated_duration: 240  # 4 hours
+complexity_level: "medium"
+success_criteria:
+  - "Feature implementation is complete and functional"
+  - "All acceptance criteria are met"
+  - "Test coverage meets minimum requirements"
+  - "Security review passes"
+  - "Documentation is complete and accurate"
+  - "Code review is approved"
+  - "Feature is successfully deployed"

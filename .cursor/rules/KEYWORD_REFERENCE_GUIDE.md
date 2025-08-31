@@ -131,11 +131,12 @@ tier: "1"
 @git Standard git workflow
 ```
 
-**Key Feature - Streamlined Operations**:
-- **Standard workflow**: Only executes `git commit` and `git push`
-- **No unnecessary commands**: Skips `git status`, `git add` (assumes IDE staging)
+**Key Feature - Proven Three-Step Workflow**:
+- **Standard workflow**: Executes `git add .`, `git commit`, and `git push`
+- **Reliable staging**: Always stages all changes (IDE staging can be incomplete)
+- **No unnecessary commands**: Avoids `git status` unless debugging
 - **Exception handling**: User can request specific git commands when needed
-- **Efficiency focus**: Minimal command overhead for routine operations
+- **Efficiency focus**: Three proven commands that work consistently
 
 **Auto-Detection Triggers**:
 - Message patterns: "git", "commit", "push", "merge", "pull request", "PR", "deploy", "release"
@@ -385,7 +386,7 @@ tier: "1"
 - **CODING**: 6 rules (85% reduction from 39)
 - **DEBUGGING**: 5 rules (87% reduction from 39)
 - **AGILE**: 5 rules (87% reduction from 39)
-- **GIT_OPERATIONS**: 5 rules (87% reduction from 39)
+- **GIT_OPERATIONS**: 7 rules (82% reduction from 39)
 - **TESTING**: 6 rules (85% reduction from 39)
 - **ARCHITECTURE**: 5 rules (87% reduction from 39)
 - **DOCUMENTATION**: 5 rules (87% reduction from 39)
