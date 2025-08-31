@@ -56,6 +56,28 @@ class ArchitectureDesigner(BaseAgent):
         required_fields = ['project_context', 'requirements']
         return all(field in task for field in required_fields)
     
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """
+        Validate that the task is appropriate for architecture design.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid, False otherwise
+        """
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for requirements or project context
+        has_requirements = (
+            task.get('requirements') or 
+            task.get('project_context') or
+            task.get('functional_requirements')
+        )
+        
+        return bool(has_requirements)
+    
     def get_prompt_template(self) -> str:
         """
         Get the prompt template from the database.

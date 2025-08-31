@@ -225,8 +225,8 @@ Your goal is to create professional, comprehensive documentation that includes c
                 }
             }
             
-            # Import AgentConfig
-            from models.config import AgentConfig
+            # Import AgentConfig from the correct location
+            from agents.base_agent import AgentConfig
             
             # Initialize agents
             agent_classes = {
@@ -242,8 +242,16 @@ Your goal is to create professional, comprehensive documentation that includes c
             for agent_name, agent_class in agent_classes.items():
                 if agent_configs[agent_name]["enabled"]:
                     config_dict = agent_configs[agent_name]
-                    # Create proper AgentConfig object
-                    config = AgentConfig(**config_dict)
+                    # Create proper AgentConfig object with correct fields
+                    config = AgentConfig(
+                        agent_id=agent_name,
+                        agent_type=agent_name,
+                        prompt_template_id=f"{agent_name}_template",
+                        model_name=config_dict.get("parameters", {}).get("model_name", "gemini-2.5-flash-lite"),
+                        temperature=config_dict.get("parameters", {}).get("temperature", 0.1),
+                        max_retries=config_dict.get("max_retries", 3),
+                        timeout_seconds=config_dict.get("timeout", 300)
+                    )
                     agents[agent_name] = agent_class(config, self.gemini_client)
                     self.logger.info(f"Initialized agent: {agent_name}")
             
@@ -291,11 +299,7 @@ Your goal is to create professional, comprehensive documentation that includes c
         self.logger.info(f"Session ID: {session_id}")
         
         # Log workflow start
-        session_logger.log_workflow_step("workflow_start", {
-            "project_name": project_name,
-            "project_context": project_context[:200] + "...",
-            "output_dir": output_dir
-        }, "workflow_start")
+        session_logger.info(f"Workflow started - Project: {project_name}, Context: {project_context[:200]}..., Output: {output_dir}")
         
         try:
             # Create initial state
@@ -312,11 +316,15 @@ Your goal is to create professional, comprehensive documentation that includes c
             # Execute workflow using LangGraph workflow manager with logging
             self.logger.info("Executing workflow...")
             
-            # Get LangChain callback configuration
-            runnable_config = self.logging_manager.get_runnable_config(
-                session_id=session_id,
-                tags=["workflow_execution", project_name]
-            )
+            # Get LangChain callback configuration with thread_id for LangGraph
+            runnable_config = {
+                "configurable": {
+                    "thread_id": session_id,
+                    "session_id": session_id,
+                    "checkpoint_id": session_id
+                },
+                "tags": ["workflow_execution", project_name]
+            }
             
             result_state = await self.workflow_manager.workflow.ainvoke(
                 initial_state,
@@ -360,18 +368,10 @@ Your goal is to create professional, comprehensive documentation that includes c
             execution_time = asyncio.get_event_loop().time() - start_time
             
             # Log error
-            session_logger.log_error(e, {
-                "project_name": project_name,
-                "project_context": project_context[:200] + "...",
-                "execution_time": execution_time
-            }, agent_name="workflow_manager")
+            session_logger.error(f"Workflow execution failed: {str(e)} (Project: {project_name}, Context: {project_context[:200]}..., Time: {execution_time:.2f}s)")
             
             # Log workflow failure
-            session_logger.log_workflow_step("workflow_failed", {
-                "execution_time": execution_time,
-                "error": str(e),
-                "status": "failed"
-            }, "workflow_failed")
+            session_logger.error(f"Workflow failed after {execution_time:.2f}s - Status: failed, Error: {str(e)}")
             
             # Create error result
             error_state = create_initial_state(

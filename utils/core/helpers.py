@@ -362,6 +362,54 @@ def chunk_list(items: List[Any], chunk_size: int) -> List[List[Any]]:
     return chunks
 
 
+def generate_project_name(project_context: str) -> str:
+    """
+    Generate a project name from project context.
+    
+    Args:
+        project_context: Project description/context
+        
+    Returns:
+        Generated project name
+    """
+    # Extract key words from context
+    words = re.findall(r'\b[a-zA-Z]+\b', project_context.lower())
+    
+    # Filter out common words
+    common_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must', 'shall', 'this', 'that', 'these', 'those'}
+    
+    # Get meaningful words
+    meaningful_words = [word for word in words if len(word) > 3 and word not in common_words]
+    
+    # Take first 2-3 words and create project name
+    if len(meaningful_words) >= 2:
+        project_name = '_'.join(meaningful_words[:3])
+    elif len(meaningful_words) == 1:
+        project_name = meaningful_words[0] + '_project'
+    else:
+        project_name = 'ai_generated_project'
+    
+    # Add timestamp for uniqueness
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    return f"{project_name}_{timestamp}"
+
+
+def create_project_path(base_dir: str, project_name: str) -> Path:
+    """
+    Create project directory path.
+    
+    Args:
+        base_dir: Base directory for projects
+        project_name: Name of the project
+        
+    Returns:
+        Path to project directory
+    """
+    project_path = Path(base_dir) / project_name
+    project_path.mkdir(parents=True, exist_ok=True)
+    return project_path
+
+
 def get_llm_model(task_complexity="simple", task_type=None):
     """
     Get appropriate LLM model based on task complexity.
@@ -429,6 +477,8 @@ __all__ = [
     "ensure_list",
     "remove_duplicates",
     "chunk_list",
+    "generate_project_name",
+    "create_project_path",
     "get_llm_model"
 ]
 

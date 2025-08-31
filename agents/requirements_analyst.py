@@ -103,6 +103,28 @@ class RequirementsAnalyst(BaseAgent):
         required_fields = ['project_context', 'project_name']
         return all(field in task for field in required_fields)
     
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """
+        Validate that the task is appropriate for requirements analysis.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid, False otherwise
+        """
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for project context or description
+        has_context = (
+            task.get('project_context') or 
+            task.get('description') or
+            task.get('user_requirements')
+        )
+        
+        return bool(has_context)
+    
     def get_prompt_template(self) -> str:
         """
         Get the prompt template from the database.

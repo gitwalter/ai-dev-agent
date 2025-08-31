@@ -49,8 +49,9 @@ class BaseAgent(ABC):
     prompt integration, performance monitoring, and error handling.
     """
     
-    def __init__(self, config: AgentConfig):
+    def __init__(self, config: AgentConfig, gemini_client=None):
         self.config = config
+        self.gemini_client = gemini_client
         self.state = AgentState(agent_id=config.agent_id)
         self.logger = logging.getLogger(f"agent.{config.agent_id}")
         self.performance_metrics = {}

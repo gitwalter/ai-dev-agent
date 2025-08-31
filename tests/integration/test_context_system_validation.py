@@ -61,8 +61,8 @@ class TestContextSystemValidation:
             result = auto_switch_context_reliable(context_message)
             rule_count = result.get('new_rule_count', 0)
             
-            # Should be between 4-8 rules per context (significant reduction from 33+)
-            assert 4 <= rule_count <= 8, f"Rule count {rule_count} not in expected range 4-8 for {context_message}"
+            # Should be between 6-10 rules per context (significant reduction from 33+)
+            assert 6 <= rule_count <= 10, f"Rule count {rule_count} not in expected range 6-10 for {context_message}"
     
     def test_file_generation_and_reload(self):
         """Test that .cursor-rules file is generated and reload works."""

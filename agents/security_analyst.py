@@ -38,6 +38,29 @@ class SecurityAnalyst(BaseAgent):
         else:
             self.json_parser = None
     
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """
+        Validate that the task is appropriate for security analysis.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid, False otherwise
+        """
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for code files, architecture, or project context
+        has_security_target = (
+            task.get('code_files') or 
+            task.get('architecture') or
+            task.get('project_context') or
+            task.get('system_design')
+        )
+        
+        return bool(has_security_target)
+    
     def get_prompt_template(self) -> str:
         """
         Get the prompt template from the database.

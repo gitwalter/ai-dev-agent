@@ -90,7 +90,7 @@ class Issue(BaseModel):
     )
     category: constr(min_length=1, max_length=50) = Field(
         description="Category of the issue (e.g., security, performance, style)",
-        example="security"
+        json_schema_extra={"example": "security"}
     )
     location: Optional[str] = Field(
         description="File and line number where the issue occurs",

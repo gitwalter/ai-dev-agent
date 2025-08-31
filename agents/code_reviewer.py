@@ -43,6 +43,29 @@ class CodeReviewer(BaseAgent):
         else:
             self.json_parser = None
     
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """
+        Validate that the task is appropriate for code review.
+        
+        Args:
+            task: Task to validate
+            
+        Returns:
+            True if task is valid, False otherwise
+        """
+        # Check if task has required fields for code review
+        if not isinstance(task, dict):
+            return False
+        
+        # Check for code files or project context
+        has_code = (
+            task.get('code_files') or 
+            task.get('project_context') or
+            task.get('generated_files')
+        )
+        
+        return bool(has_code)
+    
     def get_prompt_template(self) -> str:
         """
         Get the prompt template from the database.

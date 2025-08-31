@@ -1,0 +1,200 @@
+---
+description: "Streamlined git operations - execute only commit and push in standard situations"
+category: "core-foundation"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation', 'git_operations', 'streamlined']
+tier: "1"
+---
+
+# Streamlined Git Operations Rule
+
+**CRITICAL**: In standard development situations, execute only `git commit` and `git push` commands. Avoid unnecessary git status checks, staging commands, or other git operations unless explicitly requested.
+
+## Core Principle
+
+**"Commit and Push Only - Keep It Simple"**
+
+When the user requests git operations for standard development workflow, execute only the essential commands: commit and push. This reduces command overhead and streamlines the development process.
+
+## Standard Git Workflow
+
+### 1. **Standard Commit and Push Sequence**
+**REQUIRED for standard situations:**
+```bash
+git commit -m "descriptive commit message"
+git push
+```
+
+**FORBIDDEN in standard situations:**
+- `git status` (unless explicitly requested)
+- `git add .` (assume files are already staged by IDE)
+- `git branch` checks
+- `git log` reviews
+- Multiple git commands in sequence
+
+### 2. **When to Use Standard Workflow**
+**Apply streamlined approach when:**
+- User requests "commit" or "push" 
+- User says "let's commit now"
+- User asks "should we commit?"
+- Standard development workflow context
+- No specific git issues mentioned
+
+**Do NOT use streamlined approach when:**
+- User explicitly requests git status
+- User mentions merge conflicts
+- User asks about branches
+- User requests specific git diagnostics
+- Error conditions are suspected
+
+### 3. **Commit Message Standards**
+**REQUIRED format:**
+- Clear, descriptive commit messages
+- Present tense, imperative mood
+- Include feature/fix context
+- Reference user story or issue when applicable
+
+**Examples:**
+```
+"Implement intelligent context-aware rule system"
+"Fix rule metadata for context detection"
+"Update documentation for US-E0-010 completion"
+"Add comprehensive validation suite for context system"
+```
+
+### 4. **Error Handling**
+**If commit fails:**
+- Show the error message
+- Ask user for guidance
+- Do not automatically run additional git commands
+
+**If push fails:**
+- Show the error message
+- Ask user for guidance
+- Do not automatically attempt pull or merge
+
+## Implementation Guidelines
+
+### 1. **Command Execution**
+```python
+# REQUIRED: Streamlined approach
+def standard_git_workflow(commit_message):
+    run_command(f"git commit -m '{commit_message}'")
+    run_command("git push")
+
+# FORBIDDEN: Verbose approach
+def verbose_git_workflow():
+    run_command("git status")  # Unnecessary
+    run_command("git add .")   # Assume already staged
+    run_command("git status")  # Redundant
+    run_command("git commit -m 'message'")
+    run_command("git status")  # Unnecessary
+    run_command("git push")
+```
+
+### 2. **Context Detection**
+**Standard situations:**
+- User in normal development flow
+- Files already staged by IDE
+- No git issues mentioned
+- Routine commit and push request
+
+**Non-standard situations:**
+- User mentions git problems
+- User explicitly requests git status
+- User asks about branches or history
+- Error conditions present
+
+### 3. **User Communication**
+**REQUIRED communication:**
+- Confirm commit message before executing
+- Report success or failure clearly
+- Ask for guidance if errors occur
+
+**FORBIDDEN communication:**
+- Verbose git status reports
+- Unnecessary command explanations
+- Multiple status updates during execution
+
+## Exception Handling
+
+### 1. **When to Break the Rule**
+**Use full git workflow when:**
+- User explicitly requests `git status`
+- User mentions "check status" or "what's changed"
+- User asks about branches, history, or conflicts
+- Error conditions require diagnosis
+- User is troubleshooting git issues
+
+### 2. **Error Recovery**
+**If streamlined approach fails:**
+- Show the specific error
+- Ask user what they want to do
+- Do not automatically escalate to verbose commands
+- Let user decide next steps
+
+### 3. **User Override**
+**User can override by:**
+- Explicitly requesting specific git commands
+- Mentioning they want to see status
+- Asking for git diagnostics
+- Indicating non-standard workflow needs
+
+## Benefits
+
+### 1. **Efficiency**
+- Faster commit and push cycles
+- Reduced command overhead
+- Streamlined development workflow
+- Less terminal output clutter
+
+### 2. **Simplicity**
+- Clear, predictable behavior
+- Fewer commands to execute
+- Reduced cognitive load
+- Focus on development, not git mechanics
+
+### 3. **Reliability**
+- Consistent behavior in standard cases
+- Predictable command sequence
+- Clear error handling
+- User maintains control
+
+## Integration with Context System
+
+### 1. **Git Context Detection**
+**When @git keyword used:**
+- Apply streamlined approach by default
+- Execute commit and push only
+- Avoid unnecessary git commands
+
+### 2. **Other Context Integration**
+**When other contexts active:**
+- Still apply streamlined git when git operations requested
+- Maintain context-appropriate behavior
+- Keep git operations simple regardless of context
+
+### 3. **Rule Priority**
+**This rule takes precedence for:**
+- Standard git operations
+- Routine commit and push requests
+- Normal development workflow
+
+## Enforcement
+
+This rule is **ALWAYS ACTIVE** and applies to:
+
+- All git operation requests
+- Standard development workflows
+- Routine commit and push cycles
+- Normal development contexts
+
+## Remember
+
+**"Commit and push - that's it. Keep git simple."**
+
+**"Let the IDE handle staging, we handle committing."**
+
+**"Two commands, not twenty."**

@@ -31,10 +31,7 @@ class TaskResult(BaseModel):
     """Result of a single task execution - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     task_id: str = Field(description="Unique identifier for the task")
@@ -48,10 +45,7 @@ class WorkflowResult(BaseModel):
     """Result of a complete workflow execution - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     workflow_id: str = Field(description="Unique identifier for the workflow")
@@ -64,10 +58,7 @@ class AgentResponse(BaseModel):
     """Response from an individual agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     agent_name: str = Field(description="Name of the responding agent")
@@ -80,10 +71,7 @@ class RequirementsAnalysisResponse(BaseModel):
     """Response from requirements analysis agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     functional_requirements: List[Dict[str, Any]] = Field(default_factory=list, description="List of functional requirements")
@@ -101,10 +89,7 @@ class ArchitectureDesignResponse(BaseModel):
     """Response from architecture design agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     architecture_overview: Dict[str, Any] = Field(default_factory=dict, description="Overall architecture description")
@@ -121,10 +106,7 @@ class CodeGenerationResponse(BaseModel):
     """Response from code generation agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     generated_code: Dict[str, str] = Field(default_factory=dict, description="Generated code files")
@@ -139,10 +121,7 @@ class TestGenerationResponse(BaseModel):
     """Response from test generation agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     test_files: Dict[str, str] = Field(default_factory=dict, description="Generated test files")
@@ -156,10 +135,7 @@ class CodeReviewResponse(BaseModel):
     """Response from code review agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     review_summary: Dict[str, Any] = Field(default_factory=dict, description="Review summary")
@@ -173,10 +149,7 @@ class SecurityAnalysisResponse(BaseModel):
     """Response from security analysis agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     security_summary: Dict[str, Any] = Field(default_factory=dict, description="Security analysis summary")
@@ -190,10 +163,7 @@ class DocumentationResponse(BaseModel):
     """Response from documentation generation agent - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     documentation_files: Dict[str, str] = Field(default_factory=dict, description="Generated documentation files")
@@ -207,10 +177,7 @@ class AgentResult(BaseModel):
     """Generic agent result - LangChain compatible."""
     model_config = ConfigDict(
         extra="forbid",
-        validate_assignment=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat()
-        }
+        validate_assignment=True
     )
     
     result_data: Dict[str, Any] = Field(default_factory=dict, description="Result data")

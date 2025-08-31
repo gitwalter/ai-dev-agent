@@ -1,8 +1,8 @@
 # Core Framework Dependencies
 langgraph>=0.2.0
-langchain>=0.1.0
-langchain-core>=0.1.0
-langchain-google-genai>=0.1.0
+langchain>=0.3.27
+langchain-core>=0.3.75
+langchain-google-genai>=2.1.10
 
 # LLM and AI Dependencies
 google-generativeai>=0.8.0

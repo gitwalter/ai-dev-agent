@@ -22,7 +22,7 @@ tier: "1"
 | `@code` | CODING | 6 | DeveloperAgent | Feature implementation |
 | `@debug` | DEBUGGING | 5 | DebuggingAgent | Problem solving |
 | `@agile` | AGILE | 5 | ScrumMasterAgent | Sprint management |
-| `@git` | GIT_OPERATIONS | 5 | DevOpsAgent | Version control |
+| `@git` | GIT_OPERATIONS | 7 | DevOpsAgent | Version control |
 | `@test` | TESTING | 6 | QAAgent | Quality assurance |
 | `@design` | ARCHITECTURE | 5 | ArchitectAgent | System design |
 | `@docs` | DOCUMENTATION | 5 | TechnicalWriterAgent | Documentation |
@@ -114,20 +114,28 @@ tier: "1"
 ### **@git - Git Operations Mode**
 **Context**: GIT_OPERATIONS  
 **Agent Future**: DevOpsAgent  
-**Rules Applied**: 5 rules
+**Rules Applied**: 7 rules
 - `safety_first_principle`
-- `automated_git_protection_rule`
-- `development_clean_commit_messages_rule`
-- `development_merge_validation_rule`
-- `deployment_safety_rule`
+- `intelligent_context_aware_rule_system`
+- `core_rule_application_framework`
+- `user_controlled_success_declaration_rule`
+- `scientific_communication_rule`
+- `streamlined_git_operations_rule`
+- `boyscout_leave_cleaner_rule`
 
 **Use Cases**:
 ```
 @git Let's commit the current changes
-@git Check the current branch status
-@git Review the recent commits
-@git Help me with a merge conflict
+@git Push the latest commits
+@git Commit and push now
+@git Standard git workflow
 ```
+
+**Key Feature - Streamlined Operations**:
+- **Standard workflow**: Only executes `git commit` and `git push`
+- **No unnecessary commands**: Skips `git status`, `git add` (assumes IDE staging)
+- **Exception handling**: User can request specific git commands when needed
+- **Efficiency focus**: Minimal command overhead for routine operations
 
 **Auto-Detection Triggers**:
 - Message patterns: "git", "commit", "push", "merge", "pull request", "PR", "deploy", "release"

@@ -49,13 +49,14 @@ def detect_context_from_message(message: str) -> str:
         return "DEFAULT"
 
 def get_core_rules() -> List[str]:
-    """Get the 5 core rules that should always be loaded."""
+    """Get the 6 core rules that should always be loaded."""
     return [
         "safety_first_principle",
         "intelligent_context_aware_rule_system", 
         "core_rule_application_framework",
         "user_controlled_success_declaration_rule",
-        "scientific_communication_rule"
+        "scientific_communication_rule",
+        "streamlined_git_operations_rule"
     ]
 
 def get_context_specific_rules(context: str) -> List[str]:
