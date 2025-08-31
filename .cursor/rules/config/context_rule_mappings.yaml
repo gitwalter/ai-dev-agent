@@ -17,6 +17,7 @@ contexts:
       directories: []
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "no_premature_victory_declaration_rule"
       - "boyscout_leave_cleaner_rule"
       - "development_context_awareness_excellence_rule"
@@ -33,6 +34,7 @@ contexts:
       directories: ["src/", "lib/", "app/", "components/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "xp_test_first_development_rule"
       - "development_core_principles_rule"
       - "error_handling_no_silent_errors_rule"
@@ -50,6 +52,7 @@ contexts:
       directories: ["docs/architecture/", "design/", "specs/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "development_foundational_development_rule"
       - "carnap_constitutional_development_rule"
       - "documentation_live_updates_rule"
@@ -66,6 +69,7 @@ contexts:
       directories: ["logs/", "debug/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "development_systematic_problem_solving_rule"
       - "error_handling_no_silent_errors_rule"
       - "testing_test_monitoring_rule"
@@ -82,6 +86,7 @@ contexts:
       directories: ["tests/", "test/", "__tests__/", "spec/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "xp_test_first_development_rule"
       - "testing_test_monitoring_rule"
       - "no_failing_tests_rule"
@@ -99,6 +104,7 @@ contexts:
       directories: ["docs/agile/", "agile/", "scrum/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "agile_artifacts_maintenance_rule"
       - "documentation_live_updates_rule"
       - "agile_sprint_management_rule"
@@ -115,6 +121,7 @@ contexts:
       directories: [".git/", ".github/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "automated_git_protection_rule"
       - "development_clean_commit_messages_rule"
       - "development_merge_validation_rule"
@@ -131,6 +138,7 @@ contexts:
       directories: ["docs/", "documentation/", "wiki/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "documentation_live_updates_rule"
       - "rule_document_excellence_rule"
       - "development_clear_communication_rule"
@@ -147,6 +155,7 @@ contexts:
       directories: ["research/", "analysis/", "investigation/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "documentation_live_updates_rule"
       - "development_clear_communication_rule"
       - "development_context_awareness_excellence_rule"
@@ -163,6 +172,7 @@ contexts:
       directories: ["benchmarks/", "performance/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "performance_monitoring_optimization_rule"
       - "development_benchmark_validation_rule"
       - "development_optimization_validation_rule"
@@ -179,6 +189,7 @@ contexts:
       directories: ["security/", "auth/"]
     rules:
       - "safety_first_principle"
+      - "unhackable_ethical_dna_security_rule"
       - "security_vulnerability_assessment_rule"
       - "security_streamlit_secrets_rule"
       - "development_secure_coding_rule"
