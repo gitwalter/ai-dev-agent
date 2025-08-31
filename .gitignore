@@ -174,6 +174,33 @@ prompts/prompt_templates_development.db
 # Include clean database for GitHub distribution
 !prompts/prompt_templates_clean.db
 
+# Analytics and optimization databases (CRITICAL: Generated files)
+prompts/analytics/
+utils/rule_system/
+*.db
+
+# Backup files and directories (CRITICAL: Generated backups)
+prompt_backups/
+*_backup.*
+*.backup
+*.bak
+
+# Execution results and reports (CRITICAL: Generated reports)
+workflow/orchestration/results_*
+**/results_*.json
+**/results_exec_*.json
+
+# Sprint execution data (JSON reports with runtime data)
+docs/agile/sprints/*/user_stories/*-results.json
+docs/agile/sprints/*/user_stories/*-data.json
+docs/agile/sprints/*/user_stories/*-integration-results.json
+
+# Monitoring and health data
+monitoring/
+health_data.json
+health_history.json
+rule_performance_analytics.json
+
 # Other database files
 *.sqlite
 *.sqlite3
