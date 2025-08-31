@@ -2,12 +2,12 @@
 description: "Auto-generated description for boyscout_principle_rule.mdc"
 category: "core-foundation"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 globs: ["**/*"]
 tags: ['core_foundation']
 tier: "2"
 ---
-
 # Boy Scout Principle Rule
 
 **CRITICAL**: Always act as a boy scout - proactively identify, analyze, and resolve issues before they become problems for others. Leave the codebase cleaner than you found it, creating maintainable and future-ready code that others can follow confidently.
@@ -603,75 +603,8 @@ class BoyScoutKnowledgeBase:
 ### 7. Boy Scout Metrics and Success Tracking
 
 #### **Boy Scout Success Metrics**
-```python
-class BoyScoutMetrics:
-    """Track boy scout success metrics."""
-    
-    def __init__(self):
-        self.metrics = {
-            "issues_prevented": 0,
-            "issues_resolved_immediately": 0,
-            "issues_escalated": 0,
-            "resolution_time": [],
-            "prevention_rate": 0.0,
-            "escalation_rate": 0.0
-        }
-    
-    def record_issue_prevented(self, issue: Dict[str, Any]):
-        """Record an issue that was prevented."""
-        self.metrics["issues_prevented"] += 1
-        self._update_prevention_rate()
-    
-    def record_issue_resolved(self, issue: Dict[str, Any], resolution_time: float):
-        """Record an issue that was resolved."""
-        self.metrics["issues_resolved_immediately"] += 1
-        self.metrics["resolution_time"].append(resolution_time)
-        self._update_prevention_rate()
-    
-    def record_issue_escalated(self, issue: Dict[str, Any]):
-        """Record an issue that was escalated."""
-        self.metrics["issues_escalated"] += 1
-        self._update_escalation_rate()
-    
-    def _update_prevention_rate(self):
-        """Update prevention rate."""
-        total_issues = (
-            self.metrics["issues_prevented"] + 
-            self.metrics["issues_resolved_immediately"] + 
-            self.metrics["issues_escalated"]
-        )
-        
-        if total_issues > 0:
-            self.metrics["prevention_rate"] = (
-                self.metrics["issues_prevented"] / total_issues
-            )
-    
-    def _update_escalation_rate(self):
-        """Update escalation rate."""
-        total_issues = (
-            self.metrics["issues_prevented"] + 
-            self.metrics["issues_resolved_immediately"] + 
-            self.metrics["issues_escalated"]
-        )
-        
-        if total_issues > 0:
-            self.metrics["escalation_rate"] = (
-                self.metrics["issues_escalated"] / total_issues
-            )
-    
-    def generate_report(self) -> Dict[str, Any]:
-        """Generate comprehensive boy scout report."""
-        return {
-            "metrics": self.metrics,
-            "average_resolution_time": (
-                sum(self.metrics["resolution_time"]) / 
-                len(self.metrics["resolution_time"]) 
-                if self.metrics["resolution_time"] else 0
-            ),
-            "success_rate": 1 - self.metrics["escalation_rate"],
-            "prevention_effectiveness": self.metrics["prevention_rate"]
-        }
-```
+# Code example removed for brevity
+
 
 ### 8. Implementation Checklist
 
@@ -711,13 +644,7 @@ class BoyScoutMetrics:
 
 ### 10. Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Code development and modifications
-- System design and architecture decisions
-- Dependency management and updates
-- Testing and validation procedures
-- Documentation and knowledge sharing
-- Release preparation and deployment
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate remediation and may result in code review failures or deployment blocks.**
 
@@ -733,5 +660,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 **Remember**: As boy scouts, we leave the codebase cleaner than we found it. We don't just solve today's problems - we prevent tomorrow's issues and create a legacy of clean, maintainable, and future-ready code.
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

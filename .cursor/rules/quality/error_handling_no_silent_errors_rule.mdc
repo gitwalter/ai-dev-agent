@@ -1,11 +1,12 @@
 ---
 description: "Never use silent error handling, mock fallbacks, or placeholder data that masks real parsing failures. All errors must be exposed and addressed properly."
 category: "quality-standards"
-priority: "critical"
-alwaysApply: true
+priority: "high"
+alwaysApply: false
+contexts: ["DEBUGGING", "CODING", "TESTING", "DEFAULT"]
 globs: ["**/*"]
 tags: ["error-handling", "quality", "reliability", "debugging"]
-tier: "1"
+tier: "2"
 ---
 
 # No Silent Errors and Mock Fallbacks Rule
@@ -252,17 +253,8 @@ class OutputParser:
 ```
 
 #### **No Fallback Configuration**
-```python
-# FORBIDDEN: Fallback configuration options
-class OutputParser:
-    def __init__(self, 
-                 fail_on_error: bool = True,  # OK
-                 allow_fallbacks: bool = False,  # OK
-                 silent_errors: bool = False):  # OK
-        # FORBIDDEN: Allow fallback configuration
-        if allow_fallbacks or silent_errors:
-            raise ValueError("Fallbacks and silent errors are not allowed")
-```
+# Code example removed for brevity
+
 
 ### 10. Code Review Requirements
 
@@ -275,107 +267,18 @@ class OutputParser:
 - [ ] No placeholder or default data
 
 #### **Forbidden Patterns**
-```python
-# FORBIDDEN PATTERNS TO CHECK FOR:
+# Code example removed for brevity
 
-# 1. Silent error handling
-except Exception as e:
-    logger.warning(f"Error: {e}")
-    return default_data
-
-# 2. Fallback mechanisms
-except Exception as e:
-    return self._get_fallback_data()
-
-# 3. Graceful degradation
-except Exception as e:
-    return self._degrade_gracefully()
-
-# 4. Warning-only logging for errors
-except Exception as e:
-    logger.warning(f"Error occurred: {e}")
-    continue
-
-# 5. Empty error handling
-except Exception:
-    pass  # Silent ignore
-```
 
 ### 11. Implementation Guidelines
 
 #### **Error Handling Template**
-```python
-# CORRECT ERROR HANDLING TEMPLATE
-def parse_response(self, response: str) -> Dict[str, Any]:
-    """
-    Parse response with proper error handling.
-    
-    Args:
-        response: The response to parse
-        
-    Returns:
-        Parsed response data
-        
-    Raises:
-        OutputParserException: If parsing fails
-        ValidationException: If validation fails
-    """
-    try:
-        # Primary parsing attempt
-        parsed_data = self._primary_parse(response)
-        
-        # Validate the parsed data
-        validated_data = self._validate_data(parsed_data)
-        
-        return validated_data
-        
-    except Exception as e:
-        # Log comprehensive error information
-        self.logger.error(f"Parsing failed: {e}")
-        self.logger.error(f"Response: {response}")
-        self.logger.error(f"Parser state: {self._get_parser_state()}")
-        
-        # Re-raise with context
-        raise OutputParserException(f"Failed to parse response: {e}")
-```
+# Code example removed for brevity
+
 
 #### **Agent Error Handling Template**
-```python
-# CORRECT AGENT ERROR HANDLING TEMPLATE
-async def execute(self, state: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Execute agent with proper error handling.
-    
-    Args:
-        state: Current workflow state
-        
-    Returns:
-        Updated workflow state
-        
-    Raises:
-        AgentExecutionException: If agent execution fails
-    """
-    try:
-        # Generate response
-        response = await self._generate_response(state)
-        
-        # Parse response
-        parsed_response = self.parser.parse(response)
-        
-        # Update state
-        updated_state = self._update_state(state, parsed_response)
-        
-        return updated_state
-        
-    except Exception as e:
-        # Log comprehensive error information
-        self.logger.error(f"Agent {self.name} execution failed: {e}")
-        self.logger.error(f"Current state: {state}")
-        self.logger.error(f"Agent configuration: {self.config}")
-        
-        # Raise agent execution exception
-        raise AgentExecutionException(f"Agent {self.name} failed: {e}")
-```
+# Code example removed for brevity
+
 
 ### 12. Benefits
 
@@ -387,13 +290,7 @@ async def execute(self, state: Dict[str, Any]) -> Dict[str, Any]:
 
 ### 13. Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Parser implementations
-- Agent error handling
-- Workflow error handling
-- Testing procedures
-- Code reviews
-- Configuration management
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate remediation and removal of all fallback mechanisms.**
 
@@ -407,22 +304,7 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 5. **Update Documentation**: Remove references to fallback mechanisms
 
 #### **Example Migration**
-```python
-# BEFORE: With fallbacks
-def parse_response(self, response: str):
-    try:
-        return self._parse(response)
-    except Exception as e:
-        logger.warning(f"Parsing failed: {e}")
-        return self._get_fallback_data()
+# Code example removed for brevity
 
-# AFTER: Without fallbacks
-def parse_response(self, response: str):
-    try:
-        return self._parse(response)
-    except Exception as e:
-        logger.error(f"Parsing failed: {e}")
-        raise OutputParserException(f"Failed to parse response: {e}")
-```
 
 **Remember**: The goal is to expose all errors, not hide them. This ensures system reliability and forces proper error handling and validation.

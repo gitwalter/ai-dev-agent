@@ -2,12 +2,12 @@
 description: "Auto-generated description for agile_daily_deployed_build_rule.mdc"
 category: "agile-methodology"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'CODING', 'TESTING']
 globs: ["**/*"]
 tags: ['agile_methodology', 'agile', 'project_management']
 tier: "2"
 ---
-
 # Agile Daily Deployed Build Rule
 
 **CRITICAL**: Implement and maintain daily deployed builds as a cornerstone of agile development methodology to ensure continuous integration, rapid feedback, and reliable delivery.
@@ -756,12 +756,6 @@ echo "✅ Daily build requirements satisfied"
 
 **"A day without a build is a day without progress."**
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Development work and code changes
-- Sprint planning and execution
-- Quality assurance and validation
-- Deployment and release management
-- Stakeholder communication and reporting
-- Continuous improvement initiatives
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate remediation and process improvement.**

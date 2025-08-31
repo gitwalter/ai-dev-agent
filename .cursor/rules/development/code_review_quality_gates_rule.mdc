@@ -1,22 +1,12 @@
 ---
-description: "Auto-generated description for code_review_quality_gates_rule.mdc"
-category: "development-standards"
-priority: "high"
-alwaysApply: true
-globs: ["**/*"]
-tags: ['development_standards', 'quality', 'standards']
-tier: "2"
----
-
-# Code Review and Quality Gates Rule
-
----
 description: "Systematic code review process with quality gates and automated validation"
 category: "quality-assurance"
-priority: "critical"
-alwaysApply: true
+priority: "high"
+alwaysApply: false
+contexts: ["CODING", "TESTING", "AGILE", "DEFAULT"]
 globs: ["**/*.py", "**/*.js", "**/*.ts", "**/*.java", "**/*.go"]
 tags: ["code-review", "quality-gates", "validation", "standards"]
+tier: "2"
 ---
 
 # Code Review and Quality Gates Rule
@@ -356,5 +346,5 @@ This rule is **CRITICAL** and must be followed for all:
 **Violations of this rule require immediate remediation and review process improvement.**
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

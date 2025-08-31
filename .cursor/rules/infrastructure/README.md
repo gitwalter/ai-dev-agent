@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "infrastructure"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['infrastructure']
 tier: "2"

@@ -2,22 +2,13 @@
 description: "Auto-generated description for testing_test_monitoring_rule.mdc"
 category: "testing-standards"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['TESTING', 'CODING', 'DEBUGGING']
 globs: ["**/*"]
 tags: ['testing_standards', 'testing', 'validation']
 tier: "2"
 ---
-
 # Test Monitoring Rule
-
----
-description: "Automated test monitoring with immediate error detection and bug fixing workflow"
-category: "testing"
-priority: "critical"
-alwaysApply: true
-globs: ["**/*.py", "tests/**/*.py", "**/test_*.py"]
-tags: ["testing", "monitoring", "automation", "error-detection", "bug-fixing"]
----
 
 # Test Monitoring Rule
 
@@ -1167,5 +1158,5 @@ This rule is **CRITICAL** and must be followed for all:
 **Violations of this rule require immediate remediation and test monitoring restoration.**
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

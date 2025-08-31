@@ -1,22 +1,12 @@
 ---
-description: "Auto-generated description for performance_monitoring_optimization_rule.mdc"
-category: "quality-standards"
-priority: "low"
-alwaysApply: true
-globs: ["**/*"]
-tags: ['quality_standards']
-tier: "2"
----
-
-# Performance Monitoring and Optimization Rule
-
----
 description: "Proactive performance monitoring and optimization with continuous measurement and improvement"
 category: "performance"
-priority: "critical"
-alwaysApply: true
+priority: "high"
+alwaysApply: false
+contexts: ["PERFORMANCE", "CODING", "ARCHITECTURE", "TESTING"]
 globs: ["**/*.py", "**/*.js", "**/*.ts", "**/*.java", "**/*.go"]
 tags: ["performance", "monitoring", "optimization", "profiling", "metrics"]
+tier: "2"
 ---
 
 # Performance Monitoring and Optimization Rule
@@ -549,5 +539,5 @@ This rule is **CRITICAL** and must be followed for all:
 **Violations of this rule require immediate performance analysis and optimization.**
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

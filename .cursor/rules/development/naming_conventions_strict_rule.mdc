@@ -2,12 +2,12 @@
 description: "Auto-generated description for naming_conventions_strict_rule.mdc"
 category: "development-standards"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['CODING', 'ARCHITECTURE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['development_standards']
 tier: "2"
 ---
-
 # Strict Naming Conventions Rule
 
 ## Description
@@ -442,14 +442,7 @@ class NamingConventionDocumentation:
 - **Maintainable** - Code is easy to maintain and modify
 - **Testable** - Code is easy to test with clear test names
 
----
-
-**This rule ensures all code follows strict naming conventions for readability, maintainability, and testability.**
-description: Strict naming conventions for readability and maintainability
-globs: ["**/*.py", "**/*.md", "**/*.yml", "**/*.yaml"]
-alwaysApply: true
----
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

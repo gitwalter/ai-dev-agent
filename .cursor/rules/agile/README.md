@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "agile-methodology"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['agile_methodology']
 tier: "2"

@@ -1,11 +1,12 @@
 ---
 description: "Never declare success, completion, or victory until ALL verification steps are completed and ALL tests are passing with evidence."
 category: "quality-standards"
-priority: "critical"
-alwaysApply: true
+priority: "high"
+alwaysApply: false
+contexts: ["TESTING", "CODING", "AGILE", "DEFAULT"]
 globs: ["**/*"]
 tags: ["validation", "testing", "quality", "evidence", "verification"]
-tier: "1"
+tier: "2"
 ---
 
 # No Premature Victory Declaration Rule
@@ -110,91 +111,27 @@ time python -c "import your_module; your_module.run_performance_test()"
 ## Implementation Guidelines
 
 ### 1. Test-Driven Validation
-```python
-# MANDATORY: Always verify with actual tests
-def validate_feature_completion():
-    # Run comprehensive tests
-    test_results = subprocess.run(['python', '-m', 'pytest', 'tests/', '-v'], 
-                                  capture_output=True, text=True)
-    
-    if test_results.returncode != 0:
-        return False, f"Tests failing: {test_results.stdout}"
-    
-    # Additional validations...
-    health_check = check_system_health()
-    if not health_check.all_healthy:
-        return False, f"System health issues: {health_check.issues}"
-    
-    return True, "All validations passed"
+# Code example removed for brevity
 
-# Only declare success after validation
-is_complete, message = validate_feature_completion()
-if is_complete:
-    print(f"✅ Feature complete: {message}")
-else:
-    print(f"🔄 Work continues: {message}")
-```
 
 ### 2. Progress Tracking
-```python
-# CORRECT: Honest progress reporting
-def report_current_status():
-    status = {
-        "tests_passing": count_passing_tests(),
-        "tests_failing": count_failing_tests(), 
-        "agents_healthy": count_healthy_agents(),
-        "agents_total": count_total_agents(),
-        "linting_errors": count_linting_errors()
-    }
-    
-    if status["tests_failing"] > 0:
-        print(f"🔄 {status['tests_failing']} tests still failing")
-    elif status["linting_errors"] > 0:
-        print(f"⚠️ Tests pass, but {status['linting_errors']} linting errors remain")
-    else:
-        print(f"✅ All {status['tests_passing']} tests passing, all validations complete")
-```
+# Code example removed for brevity
+
 
 ### 3. Rollback Mechanism
 **MANDATORY**: If premature victory is declared, immediately correct it
-```python
-# If you catch yourself declaring premature victory:
-def correct_premature_declaration():
-    print("❌ CORRECTION: Previous success claim was premature")
-    print("🔄 Returning to validation and testing")
-    
-    # Immediately run actual verification
-    actual_status = run_comprehensive_validation()
-    print(f"📊 Actual status: {actual_status}")
-```
+# Code example removed for brevity
+
 
 ## Examples
 
 ### ❌ **WRONG: Premature Declaration**
-```python
-# Fixed import issue
-print("🎉 **EXCELLENT! All issues RESOLVED! System COMPLETE!**")
-# Without testing anything else
-```
+# Code example removed for brevity
+
 
 ### ✅ **CORRECT: Evidence-Based Reporting**
-```python
-# Fixed import issue
-print("✅ Import issue resolved")
+# Code example removed for brevity
 
-# Verify with tests
-test_result = run_tests()
-if test_result.exit_code == 0:
-    print(f"✅ All {test_result.count} tests passing - import fix verified")
-else:
-    print(f"⚠️ Import fixed but {test_result.failures} other tests failing")
-    
-# Additional verification
-health_status = check_system_health() 
-print(f"📊 System health: {health_status.healthy}/{health_status.total} agents healthy")
-```
-
-## Enforcement
 
 ### 1. Code Review Requirements
 - [ ] All success claims backed by test results
@@ -236,23 +173,7 @@ print(f"📊 System health: {health_status.healthy}/{health_status.total} agents
 - Accurate progress reporting matches actual status
 - High team confidence in reported status
 
-## Remember
-
-**"It's not done until it's tested and verified."**
-
-**"Measure twice, declare once."**
-
-**"Evidence first, celebration second."**
-
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Feature development claims
-- Bug fix declarations  
-- System status reports
-- Performance improvement claims
-- Integration success statements
-- Deployment readiness assertions
-
-**Violations of this rule require immediate correction and re-validation.**# No Premature Victory Declaration Rule
+# No Premature Victory Declaration Rule
 
 **CRITICAL**: Never declare success, completion, or victory until ALL verification steps are completed and ALL tests are passing with evidence.
 
@@ -354,91 +275,27 @@ time python -c "import your_module; your_module.run_performance_test()"
 ## Implementation Guidelines
 
 ### 1. Test-Driven Validation
-```python
-# MANDATORY: Always verify with actual tests
-def validate_feature_completion():
-    # Run comprehensive tests
-    test_results = subprocess.run(['python', '-m', 'pytest', 'tests/', '-v'], 
-                                  capture_output=True, text=True)
-    
-    if test_results.returncode != 0:
-        return False, f"Tests failing: {test_results.stdout}"
-    
-    # Additional validations...
-    health_check = check_system_health()
-    if not health_check.all_healthy:
-        return False, f"System health issues: {health_check.issues}"
-    
-    return True, "All validations passed"
+# Code example removed for brevity
 
-# Only declare success after validation
-is_complete, message = validate_feature_completion()
-if is_complete:
-    print(f"✅ Feature complete: {message}")
-else:
-    print(f"🔄 Work continues: {message}")
-```
 
 ### 2. Progress Tracking
-```python
-# CORRECT: Honest progress reporting
-def report_current_status():
-    status = {
-        "tests_passing": count_passing_tests(),
-        "tests_failing": count_failing_tests(), 
-        "agents_healthy": count_healthy_agents(),
-        "agents_total": count_total_agents(),
-        "linting_errors": count_linting_errors()
-    }
-    
-    if status["tests_failing"] > 0:
-        print(f"🔄 {status['tests_failing']} tests still failing")
-    elif status["linting_errors"] > 0:
-        print(f"⚠️ Tests pass, but {status['linting_errors']} linting errors remain")
-    else:
-        print(f"✅ All {status['tests_passing']} tests passing, all validations complete")
-```
+# Code example removed for brevity
+
 
 ### 3. Rollback Mechanism
 **MANDATORY**: If premature victory is declared, immediately correct it
-```python
-# If you catch yourself declaring premature victory:
-def correct_premature_declaration():
-    print("❌ CORRECTION: Previous success claim was premature")
-    print("🔄 Returning to validation and testing")
-    
-    # Immediately run actual verification
-    actual_status = run_comprehensive_validation()
-    print(f"📊 Actual status: {actual_status}")
-```
+# Code example removed for brevity
+
 
 ## Examples
 
 ### ❌ **WRONG: Premature Declaration**
-```python
-# Fixed import issue
-print("🎉 **EXCELLENT! All issues RESOLVED! System COMPLETE!**")
-# Without testing anything else
-```
+# Code example removed for brevity
+
 
 ### ✅ **CORRECT: Evidence-Based Reporting**
-```python
-# Fixed import issue
-print("✅ Import issue resolved")
+# Code example removed for brevity
 
-# Verify with tests
-test_result = run_tests()
-if test_result.exit_code == 0:
-    print(f"✅ All {test_result.count} tests passing - import fix verified")
-else:
-    print(f"⚠️ Import fixed but {test_result.failures} other tests failing")
-    
-# Additional verification
-health_status = check_system_health() 
-print(f"📊 System health: {health_status.healthy}/{health_status.total} agents healthy")
-```
-
-## Enforcement
 
 ### 1. Code Review Requirements
 - [ ] All success claims backed by test results
@@ -480,20 +337,3 @@ print(f"📊 System health: {health_status.healthy}/{health_status.total} agents
 - Accurate progress reporting matches actual status
 - High team confidence in reported status
 
-## Remember
-
-**"It's not done until it's tested and verified."**
-
-**"Measure twice, declare once."**
-
-**"Evidence first, celebration second."**
-
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Feature development claims
-- Bug fix declarations  
-- System status reports
-- Performance improvement claims
-- Integration success statements
-- Deployment readiness assertions
-
-**Violations of this rule require immediate correction and re-validation.**

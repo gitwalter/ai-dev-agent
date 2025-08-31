@@ -2,12 +2,12 @@
 description: "Auto-generated description for agile_development_rule.mdc"
 category: "agile-methodology"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'CODING', 'TESTING']
 globs: ["**/*"]
 tags: ['agile_methodology', 'agile', 'project_management']
 tier: "2"
 ---
-
 # Agile Development Rule - Manifesto Aligned
 
 **CRITICAL**: All development work must follow the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html), maintain accurate agile artifacts, and ensure proper sprint management and user story tracking.
@@ -459,239 +459,60 @@ incorrect_examples:
 
 ### 2. Sprint Backlog Updates
 **MANDATORY**: Keep sprint backlog current with daily progress
-```markdown
-# REQUIRED: Sprint backlog update pattern
-## Sprint Progress Update
-- **Sprint**: [Sprint Number]
-- **Sprint Goal**: [Current sprint goal]
-- **Stories In Progress**: [List of active stories]
-- **Stories Completed**: [List of completed stories]
-- **Blockers**: [List of current blockers]
-- **Burndown Status**: [Current burndown position]
-```
+# Code example removed for brevity
+
 
 ### 3. Definition of Done Validation
 **MANDATORY**: Validate definition of done for all completed work
-```python
-# REQUIRED: Definition of done checklist
-def validate_definition_of_done(work_item: WorkItem) -> bool:
-    """Validate work item meets definition of done."""
-    
-    checklist = [
-        "All acceptance criteria are met and tested",
-        "Code is reviewed and approved",
-        "All tests are written and passing",
-        "Documentation is updated and accurate",
-        "Code follows coding standards",
-        "No critical bugs or issues remain",
-        "Feature is deployable and tested in staging",
-        "User story status is updated in backlog",
-        "Sprint backlog reflects completion",
-        "Velocity tracking is updated"
-    ]
-    
-    for item in checklist:
-        if not validate_checklist_item(work_item, item):
-            return False
-    
-    return True
-```
+# Code example removed for brevity
+
 
 ## Sprint Management Requirements
 
 ### 1. Sprint Planning
 **MANDATORY**: Proper sprint planning with goal alignment
-```python
-# REQUIRED: Sprint planning validation
-def validate_sprint_planning(sprint_plan: dict) -> bool:
-    """Validate sprint planning meets agile standards."""
-    
-    # Validate sprint goal
-    if not sprint_plan.get("sprint_goal"):
-        raise SprintPlanningError("Sprint goal is required")
-    
-    # Validate story selection
-    stories = sprint_plan.get("stories", [])
-    for story in stories:
-        if not validate_story_sprint_alignment(story, sprint_plan["sprint_goal"]):
-            raise SprintPlanningError(f"Story {story.id} does not align with sprint goal")
-    
-    # Validate capacity planning
-    total_story_points = sum(story.story_points for story in stories)
-    if total_story_points > get_team_capacity():
-        raise SprintPlanningError("Sprint overcommitted")
-    
-    return True
-```
+# Code example removed for brevity
+
 
 ### 2. Daily Standup Automation
 **MANDATORY**: Automated daily progress tracking
-```python
-# REQUIRED: Daily standup automation
-def conduct_daily_standup():
-    """Conduct automated daily standup."""
-    
-    # Collect progress from all agents
-    progress = collect_agent_progress()
-    
-    # Update sprint backlog
-    update_sprint_backlog_with_progress(progress)
-    
-    # Identify blockers
-    blockers = identify_blockers(progress)
-    
-    # Update burndown chart
-    update_burndown_chart()
-    
-    # Generate standup report
-    report = generate_standup_report(progress, blockers)
-    
-    # Communicate updates
-    communicate_standup_updates(report)
-```
+# Code example removed for brevity
+
 
 ### 3. Sprint Review and Retrospective
 **MANDATORY**: Automated sprint review and retrospective
-```python
-# REQUIRED: Sprint review automation
-def conduct_sprint_review():
-    """Conduct automated sprint review."""
-    
-    # Collect sprint metrics
-    metrics = collect_sprint_metrics()
-    
-    # Generate sprint review report
-    review_report = generate_sprint_review_report(metrics)
-    
-    # Update product backlog based on feedback
-    update_product_backlog_from_review(review_report)
-    
-    # Plan next sprint
-    next_sprint_plan = plan_next_sprint(review_report)
-    
-    return review_report, next_sprint_plan
+# Code example removed for brevity
 
-# REQUIRED: Sprint retrospective automation
-def conduct_sprint_retrospective():
-    """Conduct automated sprint retrospective."""
-    
-    # Analyze sprint performance
-    performance_analysis = analyze_sprint_performance()
-    
-    # Identify improvement opportunities
-    improvements = identify_improvement_opportunities(performance_analysis)
-    
-    # Generate improvement actions
-    actions = generate_improvement_actions(improvements)
-    
-    # Implement improvements
-    implement_improvements(actions)
-    
-    return actions
-```
 
 ## Quality Assurance
 
 ### 1. Agile Compliance Validation
-```python
-# REQUIRED: Agile compliance validation
-def validate_agile_compliance() -> bool:
-    """Validate all agile practices are being followed."""
-    
-    checks = [
-        validate_product_backlog_current(),
-        validate_sprint_backlog_accurate(),
-        validate_user_stories_tracked(),
-        validate_definition_of_done_enforced(),
-        validate_sprint_goal_alignment(),
-        validate_velocity_tracking(),
-        validate_retrospective_actions_implemented()
-    ]
-    
-    return all(checks)
-```
+# Code example removed for brevity
+
 
 ### 2. Agile Metrics Tracking
-```python
-# REQUIRED: Agile metrics tracking
-class AgileMetricsTracker:
-    """Track key agile metrics."""
-    
-    def __init__(self):
-        self.velocity_tracker = VelocityTracker()
-        self.burndown_tracker = BurndownTracker()
-        self.quality_tracker = QualityTracker()
-        self.satisfaction_tracker = SatisfactionTracker()
-    
-    def track_sprint_metrics(self, sprint_id: str):
-        """Track comprehensive sprint metrics."""
-        return {
-            "velocity": self.velocity_tracker.get_velocity(sprint_id),
-            "burndown": self.burndown_tracker.get_burndown(sprint_id),
-            "quality": self.quality_tracker.get_quality_metrics(sprint_id),
-            "satisfaction": self.satisfaction_tracker.get_satisfaction(sprint_id)
-        }
-```
+# Code example removed for brevity
+
 
 ## Error Handling
 
 ### 1. Agile Artifact Errors
-```python
-# REQUIRED: Handle agile artifact errors
-class AgileArtifactError(Exception):
-    """Raised when agile artifacts are invalid or missing."""
-    pass
+# Code example removed for brevity
 
-def handle_agile_artifact_error(error: AgileArtifactError):
-    """Handle agile artifact errors."""
-    logger.error(f"Agile artifact error: {error}")
-    
-    # Attempt to recover
-    try:
-        recover_agile_artifacts()
-    except Exception as recovery_error:
-        logger.error(f"Failed to recover agile artifacts: {recovery_error}")
-        raise
-```
 
 ### 2. Sprint Alignment Errors
-```python
-# REQUIRED: Handle sprint alignment errors
-class SprintAlignmentError(Exception):
-    """Raised when work does not align with sprint goals."""
-    pass
+# Code example removed for brevity
 
-def handle_sprint_alignment_error(error: SprintAlignmentError):
-    """Handle sprint alignment errors."""
-    logger.error(f"Sprint alignment error: {error}")
-    
-    # Re-evaluate task alignment
-    task = extract_task_from_error(error)
-    realign_task_with_sprint_goal(task)
-```
 
 ## Documentation Requirements
 
 ### 1. Agile Process Documentation
-```markdown
-# REQUIRED: Document agile processes
-## Agile Development Process
-- **Sprint Planning**: [Process description]
-- **Daily Standups**: [Process description]
-- **Sprint Reviews**: [Process description]
-- **Retrospectives**: [Process description]
-- **Definition of Done**: [Criteria list]
-```
+# Code example removed for brevity
+
 
 ### 2. Agile Artifact Documentation
-```markdown
-# REQUIRED: Document agile artifacts
-## Agile Artifacts
-- **Product Backlog**: [Location and format]
-- **Sprint Backlog**: [Location and format]
-- **Burndown Charts**: [Location and format]
-- **Velocity Tracking**: [Location and format]
-```
+# Code example removed for brevity
+
 
 ## Benefits
 
@@ -703,117 +524,17 @@ def handle_sprint_alignment_error(error: SprintAlignmentError):
 
 ### 4. Sprint Document Validation
 **MANDATORY**: Validate sprint document compliance and completeness
-```python
-# REQUIRED: Sprint document validation
-def validate_sprint_documents(sprint_number: int) -> bool:
-    """Validate sprint documents meet organizational standards."""
-    
-    sprint_path = f"docs/agile/sprints/sprint_{sprint_number}"
-    
-    # Check core documents exist
-    core_documents = [
-        "backlog.md",
-        "progress.md", 
-        "planning.md",
-        "review.md",
-        "retrospective.md"
-    ]
-    
-    for doc in core_documents:
-        doc_path = f"{sprint_path}/{doc}"
-        if not os.path.exists(doc_path):
-            raise SprintDocumentError(f"Missing required document: {doc_path}")
-    
-    # Validate document content completeness
-    validate_document_content(sprint_path)
-    
-    # Check naming conventions
-    validate_naming_conventions(sprint_path)
-    
-    return True
+# Code example removed for brevity
 
-def validate_document_content(sprint_path: str):
-    """Validate that sprint documents contain required content."""
-    
-    # Validate backlog contains sprint goal and user stories
-    backlog_content = read_file(f"{sprint_path}/backlog.md")
-    if "Sprint Goal" not in backlog_content:
-        raise ContentValidationError("Sprint backlog missing sprint goal")
-    
-    # Validate progress contains burndown data
-    progress_content = read_file(f"{sprint_path}/progress.md")
-    if "Sprint Status Overview" not in progress_content:
-        raise ContentValidationError("Sprint progress missing status overview")
-    
-    # Additional content validations...
-```
 
 ### 5. Sprint Document Automation
 **MANDATORY**: Automate sprint document creation and updates
-```python
-# REQUIRED: Sprint automation
-def create_new_sprint_documents(sprint_number: int, sprint_goal: str):
-    """Automatically create new sprint folder and documents from templates."""
-    
-    sprint_path = f"docs/agile/sprints/sprint_{sprint_number}"
-    template_path = "docs/agile/sprints/templates"
-    
-    # Create sprint folder
-    os.makedirs(sprint_path, exist_ok=True)
-    
-    # Copy and customize templates
-    templates = [
-        "sprint_backlog_template.md",
-        "sprint_progress_template.md",
-        "sprint_planning_template.md", 
-        "sprint_review_template.md",
-        "sprint_retrospective_template.md"
-    ]
-    
-    for template in templates:
-        source = f"{template_path}/{template}"
-        target_name = template.replace("_template", "").replace("sprint_", "")
-        target = f"{sprint_path}/{target_name}"
-        
-        # Copy and replace placeholders
-        customize_template(source, target, sprint_number, sprint_goal)
-    
-    # Create daily_standups folder
-    os.makedirs(f"{sprint_path}/daily_standups", exist_ok=True)
+# Code example removed for brevity
 
-def customize_template(source: str, target: str, sprint_number: int, sprint_goal: str):
-    """Customize template with sprint-specific information."""
-    
-    with open(source, 'r') as f:
-        content = f.read()
-    
-    # Replace common placeholders
-    replacements = {
-        "{SPRINT_NUMBER}": str(sprint_number),
-        "{SPRINT_GOAL}": sprint_goal,
-        "{START_DATE}": get_sprint_start_date(sprint_number),
-        "{END_DATE}": get_sprint_end_date(sprint_number),
-        "{CURRENT_DATE}": datetime.now().strftime("%Y-%m-%d")
-    }
-    
-    for placeholder, value in replacements.items():
-        content = content.replace(placeholder, value)
-    
-    with open(target, 'w') as f:
-        f.write(content)
-```
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Development work and task execution
-- User story implementation and tracking
-- Sprint planning and management
-- Agile artifact maintenance
-- Process improvement activities
-- **Sprint document organization and maintenance**
-- **Sprint document template usage and customization**
-- **Sprint document validation and quality assurance**
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate correction and agile artifact updates.**
 
@@ -828,5 +549,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - [ ] Document quality meets project standards
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

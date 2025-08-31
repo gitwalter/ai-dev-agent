@@ -2,13 +2,13 @@
 name: Model Selection
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
+contexts: ['ARCHITECTURE', 'CODING', 'DEFAULT']
 category: "infrastructure"
 priority: "low"
 tags: ['infrastructure']
 tier: "2"
 ---
-
 # Model Selection Rule
 
 **CRITICAL**: Always use the standardized model selection approach for all LLM operations in this project.
@@ -280,13 +280,7 @@ def create_llm_with_fallback(primary_model, fallback_model="gemini-2.5-flash-lit
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- LLM model instantiation
-- Agent node configuration
-- Task complexity assessment
-- Model selection decisions
-- Performance optimization
-- Cost management
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate remediation.**
 

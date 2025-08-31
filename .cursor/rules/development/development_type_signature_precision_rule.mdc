@@ -1,14 +1,14 @@
 ---
 description: "Maintain absolute precision in typing, function signatures, and API usage - every type annotation, parameter, and return value must be exact and correct"
 category: "development-standards"
-priority: "critical"
-alwaysApply: true
+priority: "high"
+alwaysApply: false
+contexts: ['CODING', 'ARCHITECTURE', 'TESTING']
 globs: ["**/*.py", "**/*.ts", "**/*.js", "**/*.java", "**/*.cs"]
 tags: ["typing", "signatures", "apis", "precision", "quality", "god-in-details"]
 companion_rule: "RULE_DOCUMENT_EXCELLENCE.md"
-tier: "1"
+tier: "2"
 ---
-
 # Type Consciousness and API Signature Precision Rule
 
 **CRITICAL**: Maintain absolute precision in typing, function signatures, and API usage. God is in the details - every type annotation, parameter, and return value must be exact and correct.
@@ -656,267 +656,42 @@ class TestTypeIntegration:
 
 ### 1. Type Review Checklist
 **MANDATORY**: Apply this checklist during code reviews
-```yaml
-type_review_checklist:
-  function_signatures:
-    - [ ] All parameters have type annotations
-    - [ ] Return types are specified
-    - [ ] Generic types are properly parameterized
-    - [ ] Optional parameters use Optional[] or Union[..., None]
-    - [ ] Default values match parameter types
-  
-  api_usage:
-    - [ ] All API calls use exact parameter names
-    - [ ] Parameter types match API specifications
-    - [ ] Return types are properly handled
-    - [ ] Error types are correctly caught
-    - [ ] Async functions use proper async typing
-  
-  data_structures:
-    - [ ] Collection types specify element types
-    - [ ] Dictionary types specify key and value types
-    - [ ] Custom classes have typed attributes
-    - [ ] Protocol implementations match exactly
-    - [ ] TypedDict used for structured data
-  
-  error_handling:
-    - [ ] Exception types are specific
-    - [ ] Caught exceptions match raised types
-    - [ ] Error messages include type information
-    - [ ] Type guards are used for runtime checks
-    - [ ] Validation errors are typed
-  
-  testing:
-    - [ ] Type signatures are tested
-    - [ ] Runtime type validation is tested
-    - [ ] Type violations are tested
-    - [ ] Integration types are verified
-    - [ ] MyPy passes without warnings
-```
+# Code example removed for brevity
+
 
 ### 2. Type Violation Reporting
 **MANDATORY**: Report and fix all type violations immediately
-```python
-# CRITICAL TYPE VIOLATIONS - FIX IMMEDIATELY:
+# Code example removed for brevity
 
-# 1. Missing type annotations
-def process(data):  # ❌ CRITICAL: Missing types
-    pass
-
-def process(data: List[str]) -> ProcessingResult:  # ✅ CORRECT
-    pass
-
-# 2. Wrong parameter types
-llm = ChatGoogleGenerativeAI(model_name="gemini")  # ❌ CRITICAL: Wrong parameter name
-
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")  # ✅ CORRECT
-
-# 3. Type mismatches
-def get_user_id() -> int:
-    return "123"  # ❌ CRITICAL: Returns str, declared int
-
-def get_user_id() -> int:
-    return 123  # ✅ CORRECT
-
-# 4. Imprecise generic types
-items: list = []  # ❌ CRITICAL: Imprecise type
-
-items: List[ProcessingItem] = []  # ✅ CORRECT
-
-# 5. Wrong API signatures
-result = api.process(data, mode="strict")  # ❌ CRITICAL: Check exact API
-
-result = api.process(items=data, processing_mode=ProcessingMode.STRICT)  # ✅ CORRECT
-```
 
 ## Tools and Automation
 
 ### 1. Type Checking Automation
 **MANDATORY**: Automated type checking in CI/CD
-```yaml
-# .github/workflows/type-check.yml
-name: Type Checking
-on: [push, pull_request]
+# Code example removed for brevity
 
-jobs:
-  type-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-      
-      - name: Install dependencies
-        run: |
-          pip install mypy types-requests types-setuptools
-          pip install -r requirements.txt
-      
-      - name: Run MyPy
-        run: |
-          mypy --strict --show-error-codes --show-column-numbers .
-      
-      - name: Run Pyright
-        run: |
-          npm install -g pyright
-          pyright --stats
-      
-      - name: Type coverage report
-        run: |
-          mypy --html-report type-coverage-report .
-```
 
 ### 2. Runtime Type Validation
 **MANDATORY**: Runtime validation for critical functions
-```python
-# Type validation utility
-from typing import Any, get_type_hints, get_origin, get_args
-import inspect
+# Code example removed for brevity
 
-class TypeValidator:
-    """Runtime type validation utility."""
-    
-    @staticmethod
-    def validate_function_call(func, *args, **kwargs):
-        """Validate function call against type hints."""
-        sig = inspect.signature(func)
-        hints = get_type_hints(func)
-        
-        # Bind arguments
-        bound = sig.bind(*args, **kwargs)
-        bound.apply_defaults()
-        
-        # Validate each argument
-        for param_name, value in bound.arguments.items():
-            if param_name in hints:
-                expected_type = hints[param_name]
-                if not TypeValidator._check_type(value, expected_type):
-                    raise TypeError(
-                        f"Argument '{param_name}' expected {expected_type}, "
-                        f"got {type(value).__name__}: {repr(value)}"
-                    )
-    
-    @staticmethod
-    def validate_return_type(func, return_value):
-        """Validate function return type."""
-        hints = get_type_hints(func)
-        if 'return' in hints:
-            expected_type = hints['return']
-            if not TypeValidator._check_type(return_value, expected_type):
-                raise TypeError(
-                    f"Return value expected {expected_type}, "
-                    f"got {type(return_value).__name__}: {repr(return_value)}"
-                )
-        return return_value
-    
-    @staticmethod
-    def _check_type(value: Any, expected_type: Any) -> bool:
-        """Check if value matches expected type."""
-        # Handle basic types
-        if expected_type == type(value):
-            return True
-        
-        # Handle Union types
-        origin = get_origin(expected_type)
-        if origin is Union:
-            return any(TypeValidator._check_type(value, arg) for arg in get_args(expected_type))
-        
-        # Handle Optional (Union[T, None])
-        if expected_type == Optional[get_args(expected_type)[0]]:
-            if value is None:
-                return True
-            return TypeValidator._check_type(value, get_args(expected_type)[0])
-        
-        # Handle List, Dict, etc.
-        if origin is list and isinstance(value, list):
-            if get_args(expected_type):
-                element_type = get_args(expected_type)[0]
-                return all(TypeValidator._check_type(item, element_type) for item in value)
-            return True
-        
-        # Add more type checking logic as needed
-        return isinstance(value, expected_type)
-
-# Decorator for automatic validation
-def type_validated(func):
-    """Decorator to automatically validate types."""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        TypeValidator.validate_function_call(func, *args, **kwargs)
-        result = func(*args, **kwargs)
-        return TypeValidator.validate_return_type(func, result)
-    return wrapper
-```
 
 ## Enforcement
 
 ### 1. Pre-commit Hooks
 **MANDATORY**: Type checking in pre-commit hooks
-```bash
-#!/bin/sh
-# .git/hooks/pre-commit
+# Code example removed for brevity
 
-echo "Running type checks..."
-
-# Run MyPy
-mypy --strict --show-error-codes .
-if [ $? -ne 0 ]; then
-    echo "❌ MyPy type checking failed"
-    exit 1
-fi
-
-# Run Pyright
-pyright --stats
-if [ $? -ne 0 ]; then
-    echo "❌ Pyright type checking failed"
-    exit 1
-fi
-
-echo "✅ Type checking passed"
-```
 
 ### 2. IDE Configuration
 **MANDATORY**: Configure IDE for strict type checking
-```json
-// .vscode/settings.json
-{
-    "python.analysis.typeCheckingMode": "strict",
-    "python.analysis.autoImportCompletions": true,
-    "python.analysis.completeFunctionParens": true,
-    "python.linting.mypyEnabled": true,
-    "python.linting.mypyArgs": [
-        "--strict",
-        "--show-error-codes",
-        "--warn-unreachable",
-        "--warn-redundant-casts"
-    ],
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": true
-    }
-}
-```
+# Code example removed for brevity
+
 
 ### 3. Quality Gates
 **MANDATORY**: Type checking quality gates
-```yaml
-quality_gates:
-  type_coverage: ">= 95%"  # MyPy type coverage
-  mypy_errors: "0"         # Zero MyPy errors
-  pyright_errors: "0"      # Zero Pyright errors
-  runtime_type_errors: "0" # Zero runtime type validation failures
-  
-enforcement_levels:
-  blocking:
-    - "MyPy strict mode errors"
-    - "Missing type annotations on public APIs"
-    - "Wrong parameter types in API calls"
-    - "Return type mismatches"
-  
-  warning:
-    - "Incomplete type annotations on private methods"
-    - "Type: ignore comments without explanations"
-    - "Complex Union types that could be simplified"
-```
+# Code example removed for brevity
+
 
 ## Benefits
 
@@ -951,12 +726,6 @@ enforcement_levels:
 
 **"God is in the details - and the details are in the types."**
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Function definitions and calls
-- API usage and integration
-- Data structure definitions
-- Error handling and exceptions
-- Testing and validation
-- Code reviews and quality checks
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate remediation and precise type corrections.**

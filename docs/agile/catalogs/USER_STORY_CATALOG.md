@@ -31,6 +31,7 @@ This catalog provides a comprehensive view of all user stories across the entire
 | ID | Title | Priority | Points | Ready for Sprint | Dependencies | Notes |
 |----|-------|----------|--------|------------------|--------------|-------|
 | US-E0-009 | **Active Knowledge Extension and Research System** | HIGH | 8 | ✅ Sprint 2 | Context Awareness Rule | Proactive knowledge gathering and web research |
+| US-E0-010 | **Intelligent Context-Aware Cursor Rules Automation System** | CRITICAL | 13 | ✅ Sprint 0 | Core Rules Framework | Smart rule selection and application based on development context |
 
 ### **Epic 2: Agent Development & Integration**
 | ID | Title | Priority | Points | Ready for Sprint | Dependencies | Notes |

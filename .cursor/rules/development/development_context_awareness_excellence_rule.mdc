@@ -2,13 +2,13 @@
 description: "Always read context, README files, and documentation when working in any folder to ensure informed decision-making and maintain excellence standards"
 category: "development-standards"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['CODING', 'ARCHITECTURE', 'RESEARCH', 'DEFAULT']
 globs: ["**/*"]
 tags: ["context", "documentation", "excellence", "awareness", "quality"]
 companion_rule: "RULE_DOCUMENT_EXCELLENCE.md"
 tier: "2"
 ---
-
 # Context Awareness and Documentation Excellence Rule
 
 **CRITICAL**: Always read and understand the context, README files, and relevant documentation before working in any folder, directory, or codebase area. Context awareness is the foundation of excellence.
@@ -475,100 +475,19 @@ quality_metrics:
 ```
 
 #### **Context Quality Validation**
-```python
-# REQUIRED: Validate context quality meets standards
-def validate_context_quality(context: ContextAssessment) -> QualityResult:
-    """
-    Validate that context assessment meets quality standards.
-    
-    Args:
-        context: Context assessment to validate
-        
-    Returns:
-        Quality assessment and improvement recommendations
-    """
-    quality_checks = {
-        "completeness": calculate_completeness_score(context),
-        "accuracy": calculate_accuracy_score(context),
-        "currency": calculate_currency_score(context),
-        "depth": calculate_depth_score(context),
-        "actionability": calculate_actionability_score(context)
-    }
-    
-    overall_quality = sum(quality_checks.values()) / len(quality_checks)
-    
-    if overall_quality < 0.85:
-        return QualityResult(
-            passed=False,
-            score=overall_quality,
-            improvements_needed=identify_quality_improvements(quality_checks),
-            recommendation="Improve context assessment before proceeding"
-        )
-    
-    return QualityResult(
-        passed=True,
-        score=overall_quality,
-        recommendation="Context assessment meets quality standards"
-    )
-```
+# Code example removed for brevity
+
 
 ### 10. Integration with Excellence Rule
 **MANDATORY**: Seamless integration with Document Excellence standards
 
 #### **Excellence Alignment**
-```yaml
-excellence_integration:
-  context_documentation:
-    standard: "All context documentation must meet Document Excellence standards"
-    requirement: "Zero placeholder content, comprehensive coverage, professional quality"
-  
-  context_templates:
-    standard: "Context assessment templates must provide genuine value"
-    requirement: "Actionable guidance, realistic examples, measurable outcomes"
-  
-  context_accuracy:
-    standard: "Context understanding must be technically accurate and current"
-    requirement: "Validated against actual codebase, regularly updated"
-  
-  context_usability:
-    standard: "Context assessments must be immediately usable for decision-making"
-    requirement: "Clear recommendations, specific guidance, actionable insights"
-```
+# Code example removed for brevity
+
 
 #### **Quality Enforcement Integration**
-```python
-# REQUIRED: Integrate with Document Excellence quality enforcement
-def enforce_context_excellence(context: ContextAssessment) -> ExcellenceResult:
-    """
-    Enforce Document Excellence standards on context assessments.
-    
-    Args:
-        context: Context assessment to validate
-        
-    Returns:
-        Excellence compliance result
-    """
-    excellence_checks = [
-        # Document Excellence Rule compliance
-        validate_no_placeholder_content(context.documentation),
-        validate_professional_quality(context.documentation),
-        validate_comprehensive_coverage(context.assessment),
-        validate_actionable_guidance(context.recommendations),
-        validate_technical_accuracy(context.findings),
-        
-        # Context-specific excellence requirements
-        validate_implementation_readiness(context.patterns),
-        validate_integration_clarity(context.integration_points),
-        validate_constraint_identification(context.constraints),
-        validate_improvement_opportunities(context.opportunities)
-    ]
-    
-    return ExcellenceResult(
-        compliant=all(excellence_checks),
-        violations=identify_excellence_violations(excellence_checks),
-        recommendations=generate_excellence_recommendations(excellence_checks)
-    )
-```
+# Code example removed for brevity
+
 
 ## Benefits
 
@@ -627,12 +546,6 @@ def enforce_context_excellence(context: ContextAssessment) -> ExcellenceResult:
 
 **"Excellence without context is just expensive mediocrity."**
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- New development work in any folder
-- Code modifications and refactoring
-- Documentation updates and creation
-- Architecture and design decisions
-- Testing and validation activities
-- Integration and deployment planning
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule undermine excellence and require immediate remediation through comprehensive context assessment.**

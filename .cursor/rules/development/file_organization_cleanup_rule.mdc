@@ -2,12 +2,12 @@
 description: "Auto-generated description for file_organization_cleanup_rule.mdc"
 category: "development-standards"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['CODING', 'ARCHITECTURE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['development_standards']
 tier: "2"
 ---
-
 # File Organization and Cleanup Rule
 
 **CRITICAL**: Always maintain a clean, organized file structure by automatically deleting empty files and organizing code according to established patterns.
@@ -343,77 +343,25 @@ def check_file_organization_violations():
 
 ### 1. Creation Validation
 **MANDATORY**: Prevent creation of files in wrong locations
-```python
-def validate_file_creation(file_path: str) -> bool:
-    """Validate file creation location."""
-    # Prevent test files outside tests/
-    if file_path.startswith("test_") and not file_path.startswith("tests/"):
-        raise ValueError(f"Test file {file_path} must be in tests/ directory")
-    
-    # Prevent empty file creation
-    if os.path.getsize(file_path) == 0:
-        raise ValueError(f"Cannot create empty file: {file_path}")
-    
-    return True
-```
+# Code example removed for brevity
+
 
 ### 2. Move Validation
 **MANDATORY**: Validate file moves
-```python
-def validate_file_move(source: str, destination: str) -> bool:
-    """Validate file move operation."""
-    # Ensure proper directory structure
-    expected_dir = get_expected_directory(source)
-    if not destination.startswith(expected_dir):
-        raise ValueError(f"File {source} should be moved to {expected_dir}, not {destination}")
-    
-    return True
-```
+# Code example removed for brevity
+
 
 ## Cleanup Automation
 
 ### 1. Scheduled Cleanup
 **MANDATORY**: Run regular cleanup operations
-```python
-def scheduled_cleanup():
-    """Run scheduled file organization cleanup."""
-    try:
-        # Delete empty files
-        empty_count = delete_empty_files()
-        
-        # Remove temporary files
-        temp_count = remove_temp_files()
-        
-        # Organize misplaced files
-        moved_count = organize_misplaced_files()
-        
-        print(f"✅ Cleanup complete: {empty_count} empty, {temp_count} temp, {moved_count} moved")
-        
-    except Exception as e:
-        print(f"❌ Cleanup failed: {e}")
-        raise
-```
+# Code example removed for brevity
+
 
 ### 2. Interactive Cleanup
 **MANDATORY**: Provide interactive cleanup tools
-```python
-def interactive_cleanup():
-    """Interactive file organization cleanup."""
-    print("🧹 File Organization Cleanup")
-    print("=" * 30)
-    
-    # Show current state
-    report = generate_file_organization_report()
-    print(f"Empty files: {report['empty_files']}")
-    print(f"Misplaced files: {report['misplaced_files']}")
-    print(f"Temp files: {report['temp_files']}")
-    
-    # Ask for confirmation
-    if input("Run cleanup? (y/N): ").lower() == 'y':
-        scheduled_cleanup()
-    else:
-        print("Cleanup cancelled")
-```
+# Code example removed for brevity
+
 
 ## Benefits
 
@@ -425,44 +373,19 @@ def interactive_cleanup():
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- File creation and modification
-- Code reviews and commits
-- Repository maintenance
-- Development workflows
-- CI/CD pipelines
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate remediation and file reorganization.**
 
 ## Examples
 
 ### ✅ **CORRECT File Organization**
-```
-tests/
-├── test_workflow_integration.py     # Integration test
-├── unit/test_agent.py              # Unit test  
-└── mocks/mock_llm.py               # Mock utility
+# Code example removed for brevity
 
-agents/
-├── requirements_analyst.py         # Agent implementation
-└── base_agent.py                   # Base agent class
-
-utils/
-├── file_manager.py                 # Utility function
-└── structured_outputs.py          # Structured outputs
-```
 
 ### ❌ **INCORRECT File Organization**
-```
-# Empty files (should be deleted)
-empty_test.py                       # 0 bytes
-temp_file.tmp                       # 0 bytes
+# Code example removed for brevity
 
-# Misplaced files (should be moved)
-test_something.py                   # Should be in tests/
-agent_helper.py                     # Should be in agents/
-util_function.py                    # Should be in utils/
-```
 
 ## Remember
 

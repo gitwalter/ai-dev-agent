@@ -2,12 +2,12 @@
 description: "Auto-generated description for continuous_improvement_systematic_rule.mdc"
 category: "meta-rules"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 globs: ["**/*"]
 tags: ['meta_rules']
 tier: "2"
 ---
-
 # Continuous Improvement Systematic Rule
 
 **CRITICAL**: Systematically improve ALL processes, systems, and outcomes continuously. Never accept the status quo - always seek to make everything better, faster, more reliable, and more efficient.
@@ -692,12 +692,7 @@ def enforce_continuous_improvement_gates(process_name: str, process_data: dict) 
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Process execution and monitoring
-- Performance measurement and analysis
-- Improvement identification and implementation
-- Knowledge sharing and learning
-- Quality assessment and validation
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 ### Critical Checkpoints:
 - [ ] All processes measured systematically
@@ -717,13 +712,8 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 **Remember: Continuous improvement is not a one-time effort - it's a systematic, ongoing process that makes everything better every day.**
 description: Systematic continuous improvement across all processes
 globs: ["**/*.py", "**/*.md", "**/*.yml", "**/*.yaml"]
-alwaysApply: true
----
+alwaysApply: false
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
----
-description: "Auto-generated description"
-globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

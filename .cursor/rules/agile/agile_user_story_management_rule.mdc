@@ -2,12 +2,12 @@
 description: "Auto-generated description for agile_user_story_management_rule.mdc"
 category: "agile-methodology"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology', 'agile', 'project_management']
 tier: "2"
 ---
-
 # Agile User Story Management Rule
 
 **CRITICAL**: Always create, manage, and track user stories with clear acceptance criteria, story point estimation, and TDD integration. This rule ensures systematic user story management aligned with existing development philosophy.
@@ -507,13 +507,7 @@ class SprintBacklog:
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- User story creation and refinement
-- Backlog management and prioritization
-- Sprint planning and execution
-- Story status tracking and updates
-- Quality validation and acceptance testing
-- Velocity tracking and capacity planning
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations require immediate story refinement and process correction.**
 
@@ -528,5 +522,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Stakeholder Satisfaction**: Clear acceptance criteria and validation processes
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

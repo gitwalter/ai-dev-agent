@@ -1,10 +1,11 @@
 ---
-description: "Auto-generated description for development_core_principles_rule.mdc"
+description: "Core development principles and methodologies for systematic, high-quality development"
 category: "development-standards"
-priority: "critical"
-alwaysApply: true
+priority: "high"
+alwaysApply: false
+contexts: ["CODING", "ARCHITECTURE", "TESTING", "DEFAULT"]
 globs: ["**/*"]
-tags: ['development_standards']
+tags: ['development_standards', 'tdd', 'systematic_development']
 tier: "2"
 ---
 
@@ -564,130 +565,20 @@ class DocumentationCleaner:
 ```
 
 **Pre-Commit Documentation Check**:
-```python
-# ✅ CORRECT: Pre-commit documentation validation
-def validate_documentation_cleanliness():
-    """Validate documentation cleanliness before commit"""
-    cleaner = DocumentationCleaner()
-    
-    # Check for temporary files
-    temp_files = cleaner.find_temporary_files()
-    if temp_files:
-        raise DocumentationCleanlinessError(f"Temporary files found: {temp_files}")
-    
-    # Check file organization
-    misplaced_files = cleaner.find_misplaced_files()
-    if misplaced_files:
-        raise DocumentationOrganizationError(f"Misplaced files: {misplaced_files}")
-    
-    # Check index currency
-    if not cleaner.is_index_current():
-        raise DocumentationIndexError("Documentation index is not current")
-    
-    # Check for duplicates
-    duplicates = cleaner.find_duplicates()
-    if duplicates:
-        raise DocumentationDuplicateError(f"Duplicate files: {duplicates}")
-    
-    logger.info("Documentation cleanliness validation passed")
-```
+# Code example removed for brevity
+
 
 **Documentation Maintenance Schedule**:
-```python
-# ✅ CORRECT: Regular documentation maintenance
-class DocumentationMaintenance:
-    def __init__(self):
-        self.cleaner = DocumentationCleaner()
-    
-    def daily_cleanup(self):
-        """Daily documentation cleanup"""
-        # Quick cleanup of obvious temporary files
-        self.cleaner.remove_temporary_files()
-        
-        # Update index if files changed
-        if self.files_changed_today():
-            self.cleaner.update_documentation_index()
-    
-    def weekly_cleanup(self):
-        """Weekly comprehensive documentation cleanup"""
-        # Full cleanup process
-        self.cleaner.cleanup_documentation()
-        
-        # Validate structure
-        self.cleaner.validate_structure()
-        
-        # Generate cleanup report
-        self.generate_cleanup_report()
-    
-    def monthly_audit(self):
-        """Monthly documentation audit"""
-        # Comprehensive audit
-        audit_results = self.audit_documentation()
-        
-        # Remove outdated documentation
-        self.remove_outdated_docs(audit_results.outdated)
-        
-        # Update documentation standards
-        self.update_documentation_standards()
-```
+# Code example removed for brevity
+
 
 **Documentation Quality Gates**:
-```python
-# ✅ CORRECT: Documentation quality gates
-def documentation_quality_gates():
-    """Quality gates for documentation"""
-    gates = [
-        "no_temporary_files",
-        "proper_organization", 
-        "current_index",
-        "no_duplicates",
-        "valid_structure",
-        "clean_navigation"
-    ]
-    
-    for gate in gates:
-        if not check_gate(gate):
-            raise DocumentationQualityGateError(f"Failed quality gate: {gate}")
-    
-    logger.info("All documentation quality gates passed")
-```
+# Code example removed for brevity
+
 
 **Implementation Examples**:
-```python
-# ✅ CORRECT: Documentation file creation
-def create_documentation_file(file_type: str, title: str, content: str):
-    """Create documentation file in correct location"""
-    # Determine correct location
-    if file_type == "concept":
-        location = "docs/concepts/"
-    elif file_type == "guide":
-        location = "docs/guides/"
-    elif file_type == "analysis":
-        location = "docs/analysis/"
-    elif file_type == "architecture":
-        location = "docs/architecture/"
-    else:
-        raise ValueError(f"Unknown documentation type: {file_type}")
-    
-    # Create file in correct location
-    filename = f"{location}{title.lower().replace(' ', '_')}.md"
-    
-    with open(filename, 'w') as f:
-        f.write(content)
-    
-    # Update documentation index
-    update_documentation_index(filename)
-    
-    logger.info(f"Created documentation file: {filename}")
+# Code example removed for brevity
 
-# ❌ INCORRECT: Creating files in wrong location
-def create_documentation_file_wrong(title: str, content: str):
-    """WRONG: Creating files directly in docs/"""
-    filename = f"docs/{title}.md"  # WRONG: Should be in subdirectory
-    with open(filename, 'w') as f:
-        f.write(content)
-    # WRONG: No index update
-```
 
 **Documentation Cleanup Checklist**:
 - [ ] **No temporary files** in docs/ directory
@@ -712,22 +603,8 @@ def create_documentation_file_wrong(title: str, content: str):
 - Maintain sprint backlogs and velocity
 
 **Implementation**:
-```python
-# ✅ CORRECT: Task Management
-class TaskManager:
-    def update_task_status(self, task_id: str, status: str, progress: float):
-        """Update task status and progress"""
-        task = self.get_task(task_id)
-        task.status = status
-        task.progress = progress
-        task.last_updated = datetime.now()
-        
-        # Log progress
-        logger.info(f"Task {task_id}: {status} - {progress}% complete")
-        
-        # Update sprint metrics
-        self.update_sprint_metrics(task.sprint_id)
-```
+# Code example removed for brevity
+
 
 ### 14. Requirements Management ⭐
 **CRITICAL**: Track and validate requirements throughout development.
@@ -740,21 +617,8 @@ class TaskManager:
 - Maintain requirement traceability
 
 **Implementation**:
-```python
-# ✅ CORRECT: Requirements Management
-class RequirementsManager:
-    def validate_requirement(self, requirement: Requirement, implementation: Implementation):
-        """Validate that implementation meets requirement"""
-        # Check if requirement is implemented
-        if not self.is_requirement_implemented(requirement, implementation):
-            raise RequirementNotMetError(f"Requirement {requirement.id} not implemented")
-        
-        # Check if requirement is testable
-        if not self.is_requirement_testable(requirement):
-            raise RequirementNotTestableError(f"Requirement {requirement.id} not testable")
-        
-        return True
-```
+# Code example removed for brevity
+
 
 ## 🎯 **TIER 4: AUTOMATION AND OPTIMIZATION** ⭐
 **These rules ensure efficient, automated development processes**
@@ -770,35 +634,8 @@ class RequirementsManager:
 - Implement automated error detection and recovery
 
 **Implementation**:
-```python
-# ✅ CORRECT: Automation
-class DevelopmentAutomation:
-    def run_daily_startup(self):
-        """Automated daily development session startup"""
-        # Run tests
-        test_results = self.run_test_suite()
-        
-        # Check for errors
-        if test_results.has_failures():
-            self.fix_failing_tests(test_results)
-        
-        # Update documentation
-        self.update_documentation()
-        
-        # Generate status report
-        return self.generate_status_report()
-    
-    def run_daily_cleanup(self):
-        """Automated daily development session cleanup"""
-        # Clean temporary files
-        self.clean_temp_files()
-        
-        # Update task status
-        self.update_task_status()
-        
-        # Generate progress report
-        return self.generate_progress_report()
-```
+# Code example removed for brevity
+
 
 ### 16. Performance and Quality Optimization ⭐
 **CRITICAL**: Continuously optimize performance and quality.
@@ -811,25 +648,8 @@ class DevelopmentAutomation:
 - Track and improve quality metrics
 
 **Implementation**:
-```python
-# ✅ CORRECT: Performance Optimization
-class PerformanceOptimizer:
-    def optimize_critical_path(self, code_path: str):
-        """Optimize critical code path for performance"""
-        # Profile the code path
-        profile = self.profile_code(code_path)
-        
-        # Identify bottlenecks
-        bottlenecks = self.identify_bottlenecks(profile)
-        
-        # Apply optimizations
-        optimized_code = self.apply_optimizations(code_path, bottlenecks)
-        
-        # Validate optimization
-        self.validate_optimization(code_path, optimized_code)
-        
-        return optimized_code
-```
+# Code example removed for brevity
+
 
 ## 🎯 **TIER 5: CONTINUOUS IMPROVEMENT** ⭐
 **These rules ensure continuous learning and improvement**
@@ -845,31 +665,8 @@ class PerformanceOptimizer:
 - Apply learnings to future interactions
 
 **Implementation**:
-```python
-# ✅ CORRECT: Learning Management
-class LearningManager:
-    def record_insight(self, context: str, insight: str, outcome: str):
-        """Record learning insight for future use"""
-        learning = {
-            "context": context,
-            "insight": insight,
-            "outcome": outcome,
-            "timestamp": datetime.now(),
-            "applied": False
-        }
-        
-        self.insights_database.add(learning)
-        logger.info(f"Learning recorded: {insight}")
-    
-    def apply_learnings(self, current_context: str):
-        """Apply relevant learnings to current context"""
-        relevant_learnings = self.get_relevant_learnings(current_context)
-        
-        for learning in relevant_learnings:
-            if self.is_applicable(learning, current_context):
-                self.apply_learning(learning, current_context)
-                learning["applied"] = True
-```
+# Code example removed for brevity
+
 
 ## 📋 **RULE APPLICATION GUIDELINES**
 

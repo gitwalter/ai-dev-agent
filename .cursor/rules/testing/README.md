@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "testing-standards"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['testing_standards']
 tier: "2"

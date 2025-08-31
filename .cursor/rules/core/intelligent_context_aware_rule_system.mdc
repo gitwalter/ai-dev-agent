@@ -1,0 +1,420 @@
+---
+description: "Intelligent context-aware rule selection system that automatically detects development context and applies only relevant rules"
+category: "core-foundation"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['core_foundation', 'context_awareness', 'rule_selection']
+tier: "1"
+---
+
+
+# Intelligent Context-Aware Rule System
+
+**CRITICAL**: Automatically select and apply only the most relevant rules based on current development context, reducing cognitive overhead while maintaining excellence standards. This system serves as the foundation for future agent swarm coordination.
+
+## Description
+
+This rule implements intelligent, context-aware rule selection that automatically detects development context and applies only the most relevant rules. It reduces the active rule set from 39+ rules to 6-10 focused rules per session, achieving 75-85% efficiency improvement while maintaining quality standards.
+
+**Agent Swarm Foundation**: This system serves as the prototype for future agent swarm coordination, where context detection becomes agent selection and rule sets become agent behavioral DNA.
+
+## Core Requirements
+
+### 1. **Dual Context Detection System**
+**MANDATORY**: Support both automatic detection and explicit user control
+
+```yaml
+context_detection_modes:
+  automatic_detection:
+    method: "Pattern matching on user queries, files, and directory context"
+    confidence_threshold: 0.7
+    fallback: "DEFAULT mode if confidence < threshold"
+    
+  explicit_control:
+    method: "Keyword-based user intention signaling"
+    priority: "Always overrides automatic detection"
+    format: "@keyword at start of user message"
+    
+  hybrid_approach:
+    - "Check for explicit keywords first"
+    - "Fall back to automatic detection if no keywords"
+    - "Provide transparency on detection method used"
+```
+
+### 2. **Context Categories and Rule Sets**
+**MANDATORY**: Predefined contexts with optimized rule sets
+
+```yaml
+context_categories:
+  DEFAULT:
+    keywords: ["@default", "@all", "(no keyword)"]
+    auto_detect: ["general", "unclear", "mixed"]
+    rules: ["safety_first", "no_premature_victory", "boyscout", "context_awareness", "philosophy_separation"]
+    agent_future: "GeneralCoordinatorAgent"
+    
+  CODING:
+    keywords: ["@code", "@implement", "@build", "@develop"]
+    auto_detect: ["implement", "code", "function", "class", "*.py", "*.js", "*.ts", "src/"]
+    rules: ["safety_first", "tdd", "clean_code", "error_handling", "boyscout", "live_documentation"]
+    agent_future: "DeveloperAgent"
+    
+  ARCHITECTURE:
+    keywords: ["@design", "@architecture", "@system", "@structure"]
+    auto_detect: ["architecture", "design", "system", "structure", "pattern", "docs/architecture/"]
+    rules: ["safety_first", "foundational_development", "systematic_construction", "documentation_excellence", "technical_precision"]
+    agent_future: "ArchitectAgent"
+    
+  DEBUGGING:
+    keywords: ["@debug", "@troubleshoot", "@fix", "@solve"]
+    auto_detect: ["debug", "error", "bug", "issue", "problem", "failing", "logs/"]
+    rules: ["safety_first", "systematic_problem_solving", "no_silent_errors", "error_exposure", "test_monitoring"]
+    agent_future: "DebuggingAgent"
+    
+  TESTING:
+    keywords: ["@test", "@testing", "@qa", "@validate"]
+    auto_detect: ["test", "testing", "*test*.py", "pytest", "unittest", "tests/"]
+    rules: ["safety_first", "tdd", "test_monitoring", "no_failing_tests", "test_coverage", "quality_validation"]
+    agent_future: "QAAgent"
+    
+  AGILE:
+    keywords: ["@agile", "@sprint", "@story", "@backlog"]
+    auto_detect: ["sprint", "backlog", "story", "agile", "scrum", "docs/agile/"]
+    rules: ["safety_first", "agile_artifacts_maintenance", "live_documentation_updates", "sprint_management", "user_story_management"]
+    agent_future: "ScrumMasterAgent"
+    
+  GIT_OPERATIONS:
+    keywords: ["@git", "@commit", "@push", "@merge"]
+    auto_detect: ["git", "commit", "push", "merge", "pull request", "PR", ".git/"]
+    rules: ["safety_first", "automated_git_protection", "clean_commit_messages", "merge_validation", "deployment_safety"]
+    agent_future: "DevOpsAgent"
+    
+  DOCUMENTATION:
+    keywords: ["@docs", "@document", "@readme", "@guide"]
+    auto_detect: ["document", "docs", "readme", "guide", "manual", "*.md", "docs/"]
+    rules: ["safety_first", "documentation_excellence", "live_documentation_updates", "clear_communication", "user_experience"]
+    agent_future: "TechnicalWriterAgent"
+    
+  PERFORMANCE:
+    keywords: ["@optimize", "@performance", "@benchmark", "@speed"]
+    auto_detect: ["optimize", "performance", "speed", "efficiency", "benchmark", "profiling"]
+    rules: ["safety_first", "performance_monitoring", "benchmark_validation", "optimization_validation", "scalability_testing"]
+    agent_future: "PerformanceAgent"
+    
+  SECURITY:
+    keywords: ["@security", "@secure", "@vulnerability", "@audit"]
+    auto_detect: ["security", "secure", "vulnerability", "auth", "encryption", "audit"]
+    rules: ["safety_first", "security_vulnerability_assessment", "secure_coding", "penetration_testing", "compliance_validation"]
+    agent_future: "SecurityAgent"
+```
+
+### 3. **Context Detection Algorithm**
+**MANDATORY**: Simple, reliable pattern matching
+
+```python
+def detect_context(user_message, open_files, current_directory):
+    """
+    Detect development context using dual detection system.
+    
+    Args:
+        user_message: User's input message
+        open_files: List of currently open files
+        current_directory: Current working directory
+        
+    Returns:
+        ContextResult with detected context and confidence
+    """
+    
+    # Step 1: Check for explicit keywords (highest priority)
+    explicit_context = check_explicit_keywords(user_message)
+    if explicit_context:
+        return ContextResult(
+            context=explicit_context,
+            method="explicit_keyword",
+            confidence=1.0,
+            reasoning=f"User specified {explicit_context} with keyword"
+        )
+    
+    # Step 2: Automatic detection using pattern matching
+    context_scores = {}
+    
+    # Analyze user message
+    message_lower = user_message.lower()
+    for context, config in CONTEXT_CATEGORIES.items():
+        score = 0
+        for pattern in config["auto_detect"]:
+            if pattern in message_lower:
+                score += 2
+        context_scores[context] = score
+    
+    # Analyze open files
+    for file_path in open_files:
+        for context, config in CONTEXT_CATEGORIES.items():
+            for pattern in config["auto_detect"]:
+                if pattern in file_path.lower():
+                    context_scores[context] += 1
+    
+    # Analyze directory context
+    dir_lower = current_directory.lower()
+    for context, config in CONTEXT_CATEGORIES.items():
+        for pattern in config["auto_detect"]:
+            if pattern in dir_lower:
+                context_scores[context] += 1
+    
+    # Select best context
+    best_context = max(context_scores.items(), key=lambda x: x[1])
+    confidence = min(best_context[1] / 5.0, 1.0)  # Normalize to 0-1
+    
+    if confidence >= 0.7:
+        return ContextResult(
+            context=best_context[0],
+            method="auto_detected",
+            confidence=confidence,
+            reasoning=f"Auto-detected based on patterns (confidence: {confidence:.1f})"
+        )
+    else:
+        return ContextResult(
+            context="DEFAULT",
+            method="fallback",
+            confidence=0.5,
+            reasoning="Low confidence in detection, using DEFAULT mode"
+        )
+
+def check_explicit_keywords(message):
+    """Check for explicit @keywords in user message."""
+    message_lower = message.lower()
+    
+    keyword_map = {
+        "@code": "CODING", "@implement": "CODING", "@build": "CODING", "@develop": "CODING",
+        "@design": "ARCHITECTURE", "@architecture": "ARCHITECTURE", "@system": "ARCHITECTURE",
+        "@debug": "DEBUGGING", "@troubleshoot": "DEBUGGING", "@fix": "DEBUGGING", "@solve": "DEBUGGING",
+        "@test": "TESTING", "@testing": "TESTING", "@qa": "TESTING", "@validate": "TESTING",
+        "@agile": "AGILE", "@sprint": "AGILE", "@story": "AGILE", "@backlog": "AGILE",
+        "@git": "GIT_OPERATIONS", "@commit": "GIT_OPERATIONS", "@push": "GIT_OPERATIONS", "@merge": "GIT_OPERATIONS",
+        "@docs": "DOCUMENTATION", "@document": "DOCUMENTATION", "@readme": "DOCUMENTATION",
+        "@optimize": "PERFORMANCE", "@performance": "PERFORMANCE", "@benchmark": "PERFORMANCE",
+        "@security": "SECURITY", "@secure": "SECURITY", "@vulnerability": "SECURITY",
+        "@default": "DEFAULT", "@all": "DEFAULT"
+    }
+    
+    for keyword, context in keyword_map.items():
+        if keyword in message_lower:
+            return context
+    
+    return None
+```
+
+### 4. **Rule Application System**
+**MANDATORY**: Apply selected rules with transparency
+
+```python
+def apply_context_aware_rules(context_result):
+    """
+    Apply rules based on detected context.
+    
+    Args:
+        context_result: Result from context detection
+        
+    Returns:
+        RuleApplicationResult with active rules and metrics
+    """
+    
+    context = context_result.context
+    rule_config = CONTEXT_CATEGORIES[context]
+    active_rules = rule_config["rules"]
+    
+    # Calculate efficiency metrics
+    total_available_rules = 39  # Current total rule count
+    active_rule_count = len(active_rules)
+    efficiency_improvement = ((total_available_rules - active_rule_count) / total_available_rules) * 100
+    
+    # Log context detection and rule selection
+    print(f"🎯 **Context Detected**: {context}")
+    print(f"📋 **Detection Method**: {context_result.method}")
+    print(f"🔍 **Reasoning**: {context_result.reasoning}")
+    print(f"📊 **Rules Active**: {active_rule_count} rules loaded")
+    print(f"⚡ **Efficiency**: {efficiency_improvement:.0f}% reduction from full rule set")
+    print(f"🤖 **Future Agent**: {rule_config['agent_future']}")
+    print(f"📝 **Active Rules**: {', '.join(active_rules)}")
+    
+    return RuleApplicationResult(
+        context=context,
+        active_rules=active_rules,
+        total_rules_available=total_available_rules,
+        efficiency_improvement=efficiency_improvement,
+        agent_future=rule_config["agent_future"],
+        detection_confidence=context_result.confidence
+    )
+```
+
+### 5. **Agent Swarm Foundation**
+**MANDATORY**: Design for future agent swarm coordination
+
+```yaml
+agent_swarm_preparation:
+  rule_to_agent_mapping:
+    - "Each context category maps to future specialized agent"
+    - "Rule sets become agent behavioral DNA"
+    - "Context detection becomes agent selection logic"
+    - "Optimization patterns become swarm coordination intelligence"
+    
+  scalability_design:
+    - "Context detection scales from single AI to multi-agent orchestration"
+    - "Rule application scales from individual behavior to swarm coordination"
+    - "Efficiency improvements compound across agent swarm"
+    - "Learning and optimization scale to collective intelligence"
+    
+  coordination_protocols:
+    - "Shared context understanding across agents"
+    - "Inter-agent communication using same context categories"
+    - "Coordinated rule application for complex multi-agent tasks"
+    - "Swarm-wide optimization using same efficiency metrics"
+```
+
+### 6. **Performance and Efficiency**
+**MANDATORY**: Achieve significant efficiency improvements
+
+```yaml
+efficiency_targets:
+  rule_reduction: "75-85% reduction in active rules per session"
+  startup_performance: "50% faster session initialization"
+  cognitive_load: "80% reduction in rule complexity per task"
+  context_accuracy: "90%+ correct context detection"
+  
+efficiency_monitoring:
+  - "Track rule usage patterns and effectiveness"
+  - "Monitor context detection accuracy over time"
+  - "Measure performance improvements in real sessions"
+  - "Collect user satisfaction with focused rule sets"
+```
+
+### 7. **Learning and Optimization**
+**MANDATORY**: Continuous improvement of context detection
+
+```yaml
+learning_system:
+  pattern_recognition:
+    - "Learn from successful context detections"
+    - "Identify patterns that improve detection accuracy"
+    - "Adapt detection algorithms based on usage data"
+    - "Optimize rule sets based on effectiveness metrics"
+    
+  feedback_integration:
+    - "Collect feedback on context detection accuracy"
+    - "Learn from manual context corrections"
+    - "Improve auto-detection patterns over time"
+    - "Optimize rule combinations for better outcomes"
+```
+
+## Implementation Guidelines
+
+### 1. **Rule Metadata Modification**
+**CRITICAL**: To enable context-aware rule loading, modify rule metadata as follows:
+
+```yaml
+# OLD STRUCTURE (always loads)
+# NEW STRUCTURE (context-aware)
+```
+
+### 2. **Context-Specific Rule Categories**
+**MANDATORY**: Organize rules by context for proper loading:
+
+#### **Always Apply Rules (Tier 1)**
+- `safety_first_principle` - Always loaded for safety
+- `intelligent_context_aware_rule_system` - The system itself
+- `core_rule_application_framework` - Framework for rule application
+
+#### **Context-Dependent Rules (Tier 2)**
+- **CODING**: `xp_test_first_development_rule`, `development_core_principles_rule`
+- **DEBUGGING**: `development_systematic_problem_solving_rule`, `development_error_exposure_rule`
+- **AGILE**: `agile_artifacts_maintenance_rule`, `agile_sprint_management_rule`
+- **DOCUMENTATION**: `documentation_live_updates_rule`, `rule_document_excellence_rule`
+- **RESEARCH**: `development_context_awareness_excellence_rule`, `development_clear_communication_rule`
+
+### 3. **Session Startup Process**
+```yaml
+startup_sequence:
+  1_initialize: "Load intelligent context-aware rule system"
+  2_detect: "Analyze initial context from user query and environment"
+  3_select: "Choose appropriate rule set based on context"
+  4_apply: "Activate selected rules and provide transparency"
+  5_monitor: "Track context changes during session"
+  6_adapt: "Adjust rule set if context changes significantly"
+```
+
+### 2. **Context Change Handling**
+```yaml
+context_adaptation:
+  trigger_conditions:
+    - "User explicitly changes context with new @keyword"
+    - "File context changes significantly (different file types)"
+    - "Activity type changes (coding → debugging → documentation)"
+    
+  adaptation_process:
+    - "Detect context change"
+    - "Evaluate need for rule set adjustment"
+    - "Smoothly transition to new rule set"
+    - "Maintain continuity of ongoing work"
+```
+
+### 3. **Quality Assurance**
+```yaml
+quality_maintenance:
+  critical_rules_always_active:
+    - "safety_first_principle always included"
+    - "Core quality standards never compromised"
+    - "Essential safety checks always performed"
+    
+  context_validation:
+    - "Validate context detection accuracy"
+    - "Ensure appropriate rules for detected context"
+    - "Monitor for context detection failures"
+    - "Provide fallback to DEFAULT mode when uncertain"
+```
+
+## Benefits
+
+### **Immediate Benefits**
+- **75-85% Rule Reduction**: From 39 rules to 6-10 focused rules per session
+- **50% Faster Startup**: Reduced rule processing overhead
+- **Improved Focus**: Only relevant rules for current work
+- **Better Performance**: Less cognitive load, faster responses
+
+### **Strategic Benefits**
+- **Agent Swarm Foundation**: Architecture ready for multi-agent coordination
+- **Scalable Design**: Patterns that work for single AI and agent swarms
+- **Learning Capability**: System improves over time
+- **Future-Proof**: Designed for evolution to autonomous agent teams
+
+### **User Experience Benefits**
+- **Explicit Control**: @keywords for precise rule selection
+- **Intelligent Assistance**: Automatic context detection when needed
+- **Transparency**: Clear visibility into rule selection reasoning
+- **Flexibility**: Easy context switching during development
+
+## Enforcement
+
+This rule is **CONDITIONALLY APPLIED** based on context.
+
+**The intelligent context-aware rule system is the foundation for both current efficiency and future agent swarm coordination.**
+
+## Remember
+
+**"Context awareness enables precision."**
+
+**"Focused rules deliver better results than scattered rules."**
+
+**"Today's rule system is tomorrow's agent swarm DNA."**
+
+**"Efficiency improvements compound across the entire system."**
+
+This system transforms rule management from overwhelming complexity to intelligent precision, while laying the foundation for the future of autonomous software development.
+**"Context awareness enables precision."**
+
+**"Focused rules deliver better results than scattered rules."**
+
+**"Today's rule system is tomorrow's agent swarm DNA."**
+
+**"Efficiency improvements compound across the entire system."**
+
+This system transforms rule management from overwhelming complexity to intelligent precision, while laying the foundation for the future of autonomous software development.

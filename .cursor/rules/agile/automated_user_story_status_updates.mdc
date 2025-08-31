@@ -2,12 +2,12 @@
 description: "Auto-generated description for automated_user_story_status_updates.mdc"
 category: "agile-methodology"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology']
 tier: "2"
 ---
-
 # Automated User Story Status Updates Rule
 
 **CRITICAL**: Automate the comprehensive updating of user story status information and all related agile artifacts to ensure real-time accuracy and eliminate manual documentation lag.
@@ -494,12 +494,7 @@ When and how to manually override automation.
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- User story status updates
-- Agile artifact maintenance  
-- Project status reporting
-- Development workflow integration
-- Quality assurance processes
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate implementation of automation to eliminate manual status update lag.**
 

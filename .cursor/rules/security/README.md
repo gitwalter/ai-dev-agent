@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "security-standards"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['security_standards']
 tier: "2"

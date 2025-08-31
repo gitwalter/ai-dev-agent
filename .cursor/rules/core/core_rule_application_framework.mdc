@@ -504,7 +504,3 @@ This Core Rule Application Framework ensures that our most critical rules - the 
 - **Boy Scout Rule** is applied to every code modification
 
 This ensures our goal of **fully automated, crystal clear code production** with **accurate tests and documentation** and **up-to-date project tracking** following **excellence standards**.
-description: "Auto-generated description"
-globs: ["**/*"]
-alwaysApply: true
----

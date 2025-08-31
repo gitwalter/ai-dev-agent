@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "workflow"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['workflow']
 tier: "2"

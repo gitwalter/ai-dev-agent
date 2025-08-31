@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "knowledge-management"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['knowledge_management']
 tier: "2"

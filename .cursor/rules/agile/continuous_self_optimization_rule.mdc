@@ -2,12 +2,12 @@
 description: "Auto-generated description for continuous_self_optimization_rule.mdc"
 category: "agile-methodology"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology']
 tier: "2"
 ---
-
 # Continuous Self-Optimization Rule
 
 **CRITICAL**: This rule is ALWAYS APPLICABLE and belongs to the Philosophy of Excellence. Every action, decision, and process must be continuously optimized for maximum effectiveness, efficiency, and excellence.
@@ -481,5 +481,5 @@ This rule is a core component of the Philosophy of Excellence and ensures that:
 **Remember**: "Excellence is not a destination, but a continuous journey of optimization and improvement."
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

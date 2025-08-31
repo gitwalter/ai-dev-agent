@@ -2,7 +2,7 @@
 description: "Auto-generated description for RULE_DOCUMENT_EXCELLENCE.md"
 category: "general"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['general']
 tier: "2"

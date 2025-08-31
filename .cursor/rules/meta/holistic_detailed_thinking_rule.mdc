@@ -2,12 +2,12 @@
 description: "Auto-generated description for holistic_detailed_thinking_rule.mdc"
 category: "meta-rules"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 globs: ["**/*"]
 tags: ['meta_rules']
 tier: "2"
 ---
-
 # Holistic and Detailed Thinking Rule
 
 **CRITICAL**: Always think holistically and in detail about every situation, action, and decision. Never proceed with incomplete analysis or fragmented thinking. Consider ALL aspects, implications, and consequences before taking any action.
@@ -462,13 +462,7 @@ def enforce_holistic_thinking_gates(action_type: str, action_details: dict) -> b
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Decision making processes
-- Action planning and execution
-- Problem analysis and solution design
-- Code development and review
-- Documentation and communication
-- Quality assessment and validation
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 ### Critical Checkpoints:
 - [ ] Holistic analysis completed before any action
@@ -488,5 +482,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 **Remember: Holistic and detailed thinking is not optional - it's the foundation of excellence. Every action, decision, and analysis must be comprehensive and thorough.**
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

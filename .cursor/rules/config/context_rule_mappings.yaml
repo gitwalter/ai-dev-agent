@@ -1,0 +1,236 @@
+# Context-Aware Rule System Configuration
+# Maps development contexts to optimized rule sets
+# Foundation for future agent swarm coordination
+
+version: "1.0"
+system: "intelligent_context_aware_rule_system"
+total_available_rules: 39
+
+# Context Categories with Rule Mappings
+contexts:
+  DEFAULT:
+    description: "General development work or unclear context"
+    keywords: ["@default", "@all"]
+    auto_detect_patterns:
+      message: ["general", "help", "work", "project"]
+      files: []
+      directories: []
+    rules:
+      - "safety_first_principle"
+      - "no_premature_victory_declaration_rule"
+      - "boyscout_leave_cleaner_rule"
+      - "development_context_awareness_excellence_rule"
+      - "philosophy_software_separation_rule"
+    agent_future: "GeneralCoordinatorAgent"
+    priority: 1
+    
+  CODING:
+    description: "Feature implementation and code development"
+    keywords: ["@code", "@implement", "@build", "@develop"]
+    auto_detect_patterns:
+      message: ["implement", "code", "function", "class", "method", "feature", "algorithm"]
+      files: ["*.py", "*.js", "*.ts", "*.java", "*.cpp", "*.c", "*.go", "*.rs"]
+      directories: ["src/", "lib/", "app/", "components/"]
+    rules:
+      - "safety_first_principle"
+      - "xp_test_first_development_rule"
+      - "development_core_principles_rule"
+      - "error_handling_no_silent_errors_rule"
+      - "boyscout_leave_cleaner_rule"
+      - "documentation_live_updates_rule"
+    agent_future: "DeveloperAgent"
+    priority: 2
+    
+  ARCHITECTURE:
+    description: "System design and architecture work"
+    keywords: ["@design", "@architecture", "@system", "@structure"]
+    auto_detect_patterns:
+      message: ["architecture", "design", "system", "structure", "pattern", "framework"]
+      files: ["*architecture*", "*design*", "*.md"]
+      directories: ["docs/architecture/", "design/", "specs/"]
+    rules:
+      - "safety_first_principle"
+      - "development_foundational_development_rule"
+      - "carnap_constitutional_development_rule"
+      - "documentation_live_updates_rule"
+      - "development_type_signature_precision_rule"
+    agent_future: "ArchitectAgent"
+    priority: 2
+    
+  DEBUGGING:
+    description: "Problem solving and debugging"
+    keywords: ["@debug", "@troubleshoot", "@fix", "@solve"]
+    auto_detect_patterns:
+      message: ["debug", "error", "bug", "issue", "problem", "failing", "broken", "fix"]
+      files: ["*debug*", "*log*", "*error*"]
+      directories: ["logs/", "debug/"]
+    rules:
+      - "safety_first_principle"
+      - "development_systematic_problem_solving_rule"
+      - "error_handling_no_silent_errors_rule"
+      - "testing_test_monitoring_rule"
+      - "development_error_exposure_rule"
+    agent_future: "DebuggingAgent"
+    priority: 2
+    
+  TESTING:
+    description: "Testing and quality assurance"
+    keywords: ["@test", "@testing", "@qa", "@validate"]
+    auto_detect_patterns:
+      message: ["test", "testing", "qa", "quality", "validate", "verify"]
+      files: ["*test*", "*spec*", "test_*.py", "*_test.js"]
+      directories: ["tests/", "test/", "__tests__/", "spec/"]
+    rules:
+      - "safety_first_principle"
+      - "xp_test_first_development_rule"
+      - "testing_test_monitoring_rule"
+      - "no_failing_tests_rule"
+      - "quality_validation_rule"
+      - "development_comprehensive_test_pattern_rule"
+    agent_future: "QAAgent"
+    priority: 2
+    
+  AGILE:
+    description: "Agile project management and artifacts"
+    keywords: ["@agile", "@sprint", "@story", "@backlog"]
+    auto_detect_patterns:
+      message: ["sprint", "backlog", "story", "agile", "scrum", "standup", "retrospective"]
+      files: ["*sprint*", "*backlog*", "*story*", "*agile*"]
+      directories: ["docs/agile/", "agile/", "scrum/"]
+    rules:
+      - "safety_first_principle"
+      - "agile_artifacts_maintenance_rule"
+      - "documentation_live_updates_rule"
+      - "agile_sprint_management_rule"
+      - "agile_user_story_management_rule"
+    agent_future: "ScrumMasterAgent"
+    priority: 2
+    
+  GIT_OPERATIONS:
+    description: "Version control and deployment"
+    keywords: ["@git", "@commit", "@push", "@merge", "@deploy"]
+    auto_detect_patterns:
+      message: ["git", "commit", "push", "merge", "pull request", "PR", "deploy", "release"]
+      files: [".gitignore", "*.git*"]
+      directories: [".git/", ".github/"]
+    rules:
+      - "safety_first_principle"
+      - "automated_git_protection_rule"
+      - "development_clean_commit_messages_rule"
+      - "development_merge_validation_rule"
+      - "deployment_safety_rule"
+    agent_future: "DevOpsAgent"
+    priority: 2
+    
+  DOCUMENTATION:
+    description: "Documentation and technical writing work"
+    keywords: ["@docs", "@document", "@readme", "@guide"]
+    auto_detect_patterns:
+      message: ["document", "docs", "readme", "guide", "manual", "wiki", "knowledge"]
+      files: ["*.md", "README*", "*guide*", "*manual*"]
+      directories: ["docs/", "documentation/", "wiki/"]
+    rules:
+      - "safety_first_principle"
+      - "documentation_live_updates_rule"
+      - "rule_document_excellence_rule"
+      - "development_clear_communication_rule"
+      - "development_user_experience_rule"
+    agent_future: "TechnicalWriterAgent"
+    priority: 2
+    
+  RESEARCH:
+    description: "Research and analysis work"
+    keywords: ["@research", "@investigate", "@explore", "@analyze", "@study"]
+    auto_detect_patterns:
+      message: ["research", "find", "investigate", "explore", "compare", "analyze", "study", "look up"]
+      files: ["*research*", "*analysis*", "*investigation*"]
+      directories: ["research/", "analysis/", "investigation/"]
+    rules:
+      - "safety_first_principle"
+      - "documentation_live_updates_rule"
+      - "development_clear_communication_rule"
+      - "development_context_awareness_excellence_rule"
+      - "boyscout_leave_cleaner_rule"
+    agent_future: "ResearchAgent"
+    priority: 2
+    
+  PERFORMANCE:
+    description: "Performance optimization and monitoring"
+    keywords: ["@optimize", "@performance", "@benchmark", "@speed"]
+    auto_detect_patterns:
+      message: ["optimize", "performance", "speed", "efficiency", "benchmark", "profiling", "latency"]
+      files: ["*benchmark*", "*performance*", "*profile*"]
+      directories: ["benchmarks/", "performance/"]
+    rules:
+      - "safety_first_principle"
+      - "performance_monitoring_optimization_rule"
+      - "development_benchmark_validation_rule"
+      - "development_optimization_validation_rule"
+      - "development_scalability_testing_rule"
+    agent_future: "PerformanceAgent"
+    priority: 2
+    
+  SECURITY:
+    description: "Security and compliance work"
+    keywords: ["@security", "@secure", "@vulnerability", "@audit"]
+    auto_detect_patterns:
+      message: ["security", "secure", "vulnerability", "auth", "encryption", "audit", "compliance"]
+      files: ["*security*", "*auth*", "*encrypt*"]
+      directories: ["security/", "auth/"]
+    rules:
+      - "safety_first_principle"
+      - "security_vulnerability_assessment_rule"
+      - "security_streamlit_secrets_rule"
+      - "development_secure_coding_rule"
+      - "development_compliance_validation_rule"
+    agent_future: "SecurityAgent"
+    priority: 2
+
+# Detection Configuration
+detection:
+  confidence_threshold: 0.7
+  fallback_context: "DEFAULT"
+  keyword_priority: true  # Keywords always override auto-detection
+  
+  scoring_weights:
+    message_patterns: 2
+    file_patterns: 1
+    directory_patterns: 1
+    
+  normalization:
+    max_score: 5  # Normalize confidence to 0-1 range
+
+# Performance Targets
+performance_targets:
+  rule_reduction_percentage: 80  # Target 80% reduction in active rules
+  startup_improvement_percentage: 50  # Target 50% faster startup
+  context_accuracy_percentage: 90  # Target 90% accurate context detection
+  
+# Agent Swarm Preparation
+agent_swarm:
+  enabled: true
+  coordination_protocols:
+    - "shared_context_understanding"
+    - "inter_agent_communication"
+    - "coordinated_rule_application"
+    - "swarm_optimization"
+    
+  scalability_features:
+    - "context_to_agent_mapping"
+    - "rule_to_behavior_translation"
+    - "efficiency_compound_benefits"
+    - "collective_intelligence_learning"
+
+# Monitoring and Analytics
+monitoring:
+  track_context_accuracy: true
+  track_rule_effectiveness: true
+  track_performance_improvements: true
+  track_user_satisfaction: true
+  
+  metrics_collection:
+    - "context_detection_success_rate"
+    - "rule_application_efficiency"
+    - "session_startup_time"
+    - "user_override_frequency"
+    - "agent_swarm_readiness_score"

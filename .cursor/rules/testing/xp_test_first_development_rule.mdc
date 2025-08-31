@@ -2,12 +2,12 @@
 description: "Auto-generated description for xp_test_first_development_rule.mdc"
 category: "testing-standards"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['TESTING', 'CODING', 'AGILE']
 globs: ["**/*"]
 tags: ['testing_standards']
 tier: "2"
 ---
-
 # XP Test-First Development Rule
 
 **CRITICAL**: Always follow Extreme Programming test-first methodology with continuous refactoring and pair programming principles. This rule enhances the existing TDD philosophy with XP practices for maximum quality and efficiency.
@@ -418,13 +418,7 @@ class ContinuousRefactoring:
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- New feature development
-- Bug fixes and enhancements
-- Code refactoring and optimization
-- Legacy code modification
-- Performance improvements
-- Quality improvements
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations require immediate test creation and refactoring.**
 
@@ -439,5 +433,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Knowledge Sharing**: Improved team knowledge through pair programming
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

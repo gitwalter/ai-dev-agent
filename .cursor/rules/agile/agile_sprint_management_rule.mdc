@@ -2,12 +2,12 @@
 description: "Auto-generated description for agile_sprint_management_rule.mdc"
 category: "agile-methodology"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology', 'agile', 'project_management']
 tier: "2"
 ---
-
 # Agile Sprint Management Rule
 
 **CRITICAL**: Always follow Agile sprint methodology with 2-week iterations, daily standups, and continuous delivery principles. This rule integrates with the existing TDD philosophy and systematic problem-solving approach.
@@ -282,13 +282,7 @@ class SprintBacklog:
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Sprint planning and execution
-- Daily development activities
-- Story management and tracking
-- Velocity and capacity planning
-- Blocker resolution and escalation
-- Sprint review and retrospective
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations require immediate sprint adjustment and process improvement.**
 
@@ -303,5 +297,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 - **Stakeholder Satisfaction**: Regular demonstrations and feedback cycles
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

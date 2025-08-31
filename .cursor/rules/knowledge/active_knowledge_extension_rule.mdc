@@ -5,7 +5,8 @@ priority: "HIGH"
 category: "Knowledge"
 applies_to:
   - "**/*"
-alwaysApply: true
+alwaysApply: false
+contexts: ['RESEARCH', 'DEFAULT']
 enforcement: "MANDATORY"
 tags: ["knowledge", "research", "documentation", "web-search", "learning", "excellence"]
 companion_rules: 
@@ -14,7 +15,6 @@ companion_rules:
 globs: ["**/*"]
 tier: "2"
 ---
-
 # Active Knowledge Extension and Research Rule
 
 **CRITICAL**: When encountering any topic, technology, pattern, or domain concept that requires deeper understanding to solve a task optimally, proactively search project documentation first, then web resources, to gain comprehensive knowledge before proceeding.
@@ -412,221 +412,44 @@ def research_before_implementation(feature_spec: FeatureSpec) -> ResearchGuide:
 
 ### **Continuous Learning Integration**
 **MANDATORY**: Integrate research findings into continuous learning
-```python
-def integrate_research_into_learning(research_session: ResearchSession) -> None:
-    """
-    Integrate research findings into project learning and knowledge base.
-    
-    Args:
-        research_session: Completed research with findings
-    """
-    # Update project knowledge base
-    update_project_knowledge_base(research_session)
-    
-    # Create reusable patterns
-    extract_reusable_patterns(research_session)
-    
-    # Update development guidelines
-    update_development_guidelines(research_session)
-    
-    # Share valuable insights
-    share_valuable_insights(research_session)
-```
+# Code example removed for brevity
+
 
 ## 9. Research Tools and Methods
 
 ### **Documentation Search Tools**
 **MANDATORY**: Use systematic search approaches
-```bash
-# Project documentation search
-find docs/ -name "*.md" -exec grep -l "search_term" {} \;
-grep -r "concept" docs/ --include="*.md"
-find . -name "README*" -exec grep -l "topic" {} \;
+# Code example removed for brevity
 
-# Code pattern search  
-grep -r "implementation_pattern" src/ --include="*.py"
-find . -name "*.py" -exec grep -l "class.*Pattern" {} \;
-```
 
 ### **Web Research Strategy**
 **MANDATORY**: Follow systematic web research approach
-```yaml
-web_research_sequence:
-  1_official_documentation:
-    - "Search official documentation sites"
-    - "Check API references and guides"
-    - "Review migration guides and changelogs"
-    
-  2_authoritative_sources:
-    - "Search recognized technical authorities"
-    - "Check industry standard organizations"
-    - "Review academic and research papers"
-    
-  3_community_sources:
-    - "Stack Overflow for practical solutions"
-    - "GitHub for implementation examples"
-    - "Technical blogs from recognized experts"
-    
-  4_validation_sources:
-    - "Cross-reference findings across sources"
-    - "Check for recent updates or changes"
-    - "Validate with community feedback"
-```
+# Code example removed for brevity
+
 
 ## 10. Research Quality Gates
 
 ### **Research Completion Criteria**
 **MANDATORY**: Meet these criteria before ending research
-```python
-def verify_research_completion(research_topic: str, findings: List[KnowledgeItem]) -> bool:
-    """
-    Verify research meets completion criteria.
-    
-    Args:
-        research_topic: Topic being researched
-        findings: Research findings collected
-        
-    Returns:
-        True if research complete, False if more research needed
-    """
-    completion_criteria = [
-        # Understanding criteria
-        can_explain_fundamental_concepts(research_topic, findings),
-        can_identify_best_practices(research_topic, findings),
-        can_recognize_common_pitfalls(research_topic, findings),
-        
-        # Application criteria
-        can_implement_recommended_approach(research_topic, findings),
-        can_handle_error_scenarios(research_topic, findings),
-        can_optimize_for_performance(research_topic, findings),
-        
-        # Quality criteria
-        can_test_implementation(research_topic, findings),
-        can_document_approach(research_topic, findings),
-        can_maintain_solution(research_topic, findings)
-    ]
-    
-    return all(completion_criteria)
-```
+# Code example removed for brevity
+
 
 ### **Knowledge Confidence Assessment**
 **MANDATORY**: Assess confidence before proceeding
-```python
-@dataclass
-class KnowledgeConfidence:
-    """Assessment of knowledge confidence for a topic."""
-    topic: str
-    understanding_level: float  # 0.0 to 1.0
-    implementation_confidence: float  # 0.0 to 1.0
-    risk_awareness: float  # 0.0 to 1.0
-    best_practices_knowledge: float  # 0.0 to 1.0
-    overall_confidence: float  # 0.0 to 1.0
+# Code example removed for brevity
 
-def assess_knowledge_confidence(topic: str, research_findings: List[KnowledgeItem]) -> KnowledgeConfidence:
-    """Assess confidence level for proceeding with implementation."""
-    
-    confidence = KnowledgeConfidence(
-        topic=topic,
-        understanding_level=assess_understanding_level(research_findings),
-        implementation_confidence=assess_implementation_confidence(research_findings),
-        risk_awareness=assess_risk_awareness(research_findings),
-        best_practices_knowledge=assess_best_practices_knowledge(research_findings),
-        overall_confidence=0.0
-    )
-    
-    # Calculate overall confidence
-    confidence.overall_confidence = (
-        confidence.understanding_level * 0.3 +
-        confidence.implementation_confidence * 0.3 +
-        confidence.risk_awareness * 0.2 +
-        confidence.best_practices_knowledge * 0.2
-    )
-    
-    return confidence
-
-# MANDATORY: Only proceed if confidence >= 0.8
-def proceed_with_implementation(confidence: KnowledgeConfidence) -> bool:
-    """Determine if knowledge is sufficient to proceed."""
-    return confidence.overall_confidence >= 0.8
-```
 
 ## 11. Research Documentation Requirements
 
 ### **Research Log Format**
 **MANDATORY**: Document all research sessions
-```markdown
-# Research Log Entry
+# Code example removed for brevity
 
-**Topic**: [Research topic]
-**Date**: [Research date]
-**Trigger**: [What triggered the research need]
-**Context**: [Task context requiring research]
-
-## Research Questions
-1. [Specific question 1]
-2. [Specific question 2]
-
-## Project Documentation Searched
-- [x] README files reviewed
-- [x] docs/ folder searched  
-- [x] Existing code patterns analyzed
-- [x] Test files examined
-- [x] Configuration files reviewed
-
-## Web Resources Consulted
-1. **[Source 1]** - [URL] - [Key findings]
-2. **[Source 2]** - [URL] - [Key findings]
-
-## Key Findings
-### Understanding Gained
-- [Key insight 1]
-- [Key insight 2]
-
-### Best Practices Identified
-- [Best practice 1 with rationale]
-- [Best practice 2 with rationale]
-
-### Risks and Pitfalls
-- [Risk 1 with mitigation]
-- [Risk 2 with mitigation]
-
-## Implementation Recommendations
-- [Specific recommendation 1]
-- [Specific recommendation 2]
-
-## Confidence Assessment
-- **Understanding Level**: [0-100%]
-- **Implementation Confidence**: [0-100%]
-- **Overall Confidence**: [0-100%]
-
-## Action Taken
-- [How findings were applied to the task]
-```
 
 ### **Knowledge Base Updates**
 **MANDATORY**: Update project knowledge base with valuable findings
-```python
-def update_project_knowledge_base(research_session: ResearchSession) -> None:
-    """
-    Update project knowledge base with research findings.
-    
-    Args:
-        research_session: Research session with findings
-    """
-    if research_session.value_score > 0.7:  # Only store valuable knowledge
-        # Create knowledge entry
-        knowledge_entry = create_knowledge_entry(research_session)
-        
-        # Store in appropriate location
-        knowledge_file = Path(f"docs/knowledge/{research_session.topic.replace(' ', '_')}.md")
-        store_knowledge_entry(knowledge_entry, knowledge_file)
-        
-        # Update knowledge index
-        update_knowledge_index(knowledge_entry)
-        
-        # Create cross-references
-        create_knowledge_cross_references(knowledge_entry)
-```
+# Code example removed for brevity
+
 
 ## 12. Benefits
 
@@ -710,14 +533,6 @@ def update_project_knowledge_base(research_session: ResearchSession) -> None:
 
 **"Understanding before implementation."**
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Technology and framework usage
-- Complex domain concept implementation
-- Performance and optimization decisions
-- Security and compliance requirements
-- Architecture and design decisions
-- Integration and API usage
-- Error handling and edge case management
-- Best practice identification and application
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate research before proceeding with implementation.**

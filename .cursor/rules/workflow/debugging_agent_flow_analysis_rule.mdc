@@ -2,22 +2,13 @@
 description: "Auto-generated description for debugging_agent_flow_analysis_rule.mdc"
 category: "workflow"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEBUGGING', 'CODING', 'TESTING']
 globs: ["**/*"]
 tags: ['workflow']
 tier: "2"
 ---
-
 # Agent Flow Analysis Rule
-
----
-description: "Agent workflow debugging using logs/agent.log as primary source for comprehensive flow analysis"
-category: "debugging"
-priority: "critical"
-alwaysApply: true
-globs: ["**/*.py", "logs/**/*.log", "workflow/**/*.py"]
-tags: ["debugging", "agent-flow", "log-analysis", "workflow", "troubleshooting"]
----
 
 # Agent Flow Analysis Rule
 
@@ -847,5 +838,5 @@ This rule is **CRITICAL** and must be followed for all:
 **Violations of this rule require immediate remediation and debugging capability restoration.**
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

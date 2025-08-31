@@ -2,7 +2,7 @@
 description: "Auto-generated description for FILE_ORGANIZATION_SACRED_RULE.md"
 category: "general"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['general']
 tier: "2"

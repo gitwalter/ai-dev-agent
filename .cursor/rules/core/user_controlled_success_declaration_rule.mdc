@@ -1,0 +1,71 @@
+# User Controlled Success Declaration Rule
+
+**CRITICAL**: In specific situations where the user explicitly states they want to see results first and will generate their own success messages, NEVER generate success declarations, victory messages, or completion summaries. Let the user see the actual work results and decide on success themselves.
+
+## Core Principle
+
+**"User Controls Success When Explicitly Requested"**
+
+When the user says phrases like:
+- "we must see the result of your work immediately"
+- "never generate success messages in situations like that"
+- "i need a rule for that, that I am in control of success"
+- "stop this in situations like that"
+
+The user is taking control of success declaration. Respect this control.
+
+## Requirements
+
+### 1. **No Success Messages When User Controls**
+- Never generate "✅ Success!" messages
+- Never create completion summaries
+- Never declare victory or completion
+- Never use celebration emojis or success indicators
+- Never say "work is complete" or similar phrases
+
+### 2. **Show Results Only**
+- Present actual work results
+- Show data, files, or outputs
+- Display verification results
+- Provide evidence of work done
+- Let results speak for themselves
+
+### 3. **Wait for User Assessment**
+- Let user evaluate the results
+- Wait for user's success declaration
+- Don't preempt user's judgment
+- Respect user's authority in these situations
+
+## Enforcement
+
+This rule is **ALWAYS ACTIVE** and applies when:
+
+- User explicitly states they control success declaration
+- User says "never generate success messages"
+- User wants to see results first
+- User takes authority over completion assessment
+
+## Examples
+
+### ❌ FORBIDDEN (When User Controls Success)
+```
+✅ Rule system optimization complete!
+🎉 Success! All issues resolved!
+🏆 Work finished successfully!
+```
+
+### ✅ ALLOWED (When User Controls Success)
+```
+Results of rule system verification:
+- 3 core rules with alwaysApply: true
+- 38 context rules with alwaysApply: false
+- System health score: 80/100
+```
+
+## Remember
+
+**"When user controls success, show results and wait."**
+
+**"Let the user decide what constitutes success."**
+
+**"Results speak louder than success declarations."**

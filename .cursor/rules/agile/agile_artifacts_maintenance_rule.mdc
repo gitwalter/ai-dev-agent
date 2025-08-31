@@ -2,12 +2,12 @@
 description: "Auto-generated description for agile_artifacts_maintenance_rule.mdc"
 category: "agile-methodology"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology', 'agile', 'project_management']
 tier: "2"
 ---
-
 # Agile Artifacts Maintenance Rule
 
 **CRITICAL**: Automatically maintain all agile artifacts (product backlog, sprint backlog, user stories, velocity tracking, burndown charts) in real-time to ensure maximum quality project management and maximum efficiency in agile processes.
@@ -693,13 +693,7 @@ class AgileWorkflowIntegration:
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Development activities that affect agile artifacts
-- User story and epic completion events
-- Sprint planning and completion activities
-- Feature development and delivery
-- Bug fixes and quality improvements
-- Team velocity and capacity changes
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 ### Critical Checkpoints:
 - [ ] Agile artifact monitoring system active

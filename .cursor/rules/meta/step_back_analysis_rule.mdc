@@ -2,12 +2,12 @@
 description: "Auto-generated description for step_back_analysis_rule.mdc"
 category: "meta-rules"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEBUGGING', 'DEFAULT']
 globs: ["**/*"]
 tags: ['meta_rules']
 tier: "2"
 ---
-
 # Step Back Analysis Rule
 
 **CRITICAL**: When stuck in a problem or encountering repeated failures, immediately step back to perform profound analysis and create a comprehensive decision plan. Never continue with failed approaches without deep analysis.
@@ -531,7 +531,7 @@ This rule is **ALWAYS APPLIED** when step back triggers are detected:
 description: "Systematic step back analysis for when stuck in problems or repeated failures"
 category: "problem-solving"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*.py", "**/*.md", "docs/**/*", "tests/**/*"]
 tags: ["problem-solving", "analysis", "decision-making", "debugging", "strategic-thinking"]
 ---

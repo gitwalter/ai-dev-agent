@@ -2,12 +2,12 @@
 description: "Auto-generated description for agile_manifesto_principles_rule.mdc"
 category: "agile-methodology"
 priority: "high"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology', 'agile', 'project_management']
 tier: "2"
 ---
-
 # Agile Manifesto Principles Rule
 
 **CRITICAL**: All development activities must strictly adhere to the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html) as the foundational guidelines for all work.
@@ -58,51 +58,6 @@ def implement_technology_first(feature: str):
 - **Customer Feedback Integration**: Automated collection and integration of customer feedback
 - **Value Metrics Tracking**: Automated measurement of customer value delivery
 
----
-
-### **Principle 2: Welcome Changing Requirements**
-**"Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage."**
-
-#### **Implementation Requirements**
-```python
-# MANDATORY: Change adaptation mechanisms
-def embrace_requirement_change(change_request: dict) -> dict:
-    """Process requirement changes as opportunities, not obstacles."""
-    
-    # Change assessment
-    impact_analysis = analyze_change_impact(change_request)
-    customer_value = assess_customer_value_increase(change_request)
-    
-    # Welcome change if it increases customer value
-    if customer_value > 0:
-        return implement_change_immediately(change_request, impact_analysis)
-    else:
-        return evaluate_change_benefits(change_request)
-
-# CORRECT: Change-embracing process
-def implement_adaptive_planning():
-    """Implement planning that embraces change."""
-    # 1. Short iteration cycles
-    # 2. Flexible architecture
-    # 3. Minimal documentation
-    # 4. Rapid prototyping
-    # 5. Customer collaboration
-    pass
-
-# INCORRECT: Change-resistant process
-def implement_rigid_planning():
-    """Implement planning that resists change."""
-    # This violates Principle 2
-    pass
-```
-
-#### **Automation Requirements**
-- **Change Impact Assessment**: Automated analysis of requirement changes
-- **Rapid Adaptation Workflows**: Automated processes for implementing changes
-- **Flexible Planning Tools**: Automated planning that adapts to changes
-
----
-
 ### **Principle 3: Frequent Software Delivery**
 **"Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale."**
 
@@ -145,51 +100,6 @@ def implement_quarterly_delivery():
 - **Automated Deployment**: Push-button deployment capabilities
 - **Delivery Metrics**: Automated tracking of delivery frequency
 
----
-
-### **Principle 4: Daily Collaboration Between Business and Development**
-**"Business people and developers must work together daily throughout the project."**
-
-#### **Implementation Requirements**
-```python
-# MANDATORY: Daily collaboration mechanisms
-def ensure_daily_collaboration() -> bool:
-    """Ensure daily collaboration between business and development."""
-    
-    collaboration_activities = [
-        "Daily stakeholder communication",
-        "Requirement clarification sessions",
-        "Progress demonstrations", 
-        "Feedback collection and integration",
-        "Priority alignment discussions"
-    ]
-    
-    return all(activity_completed_today(activity) for activity in collaboration_activities)
-
-# CORRECT: Daily business collaboration
-def implement_daily_business_collaboration():
-    """Implement daily collaboration with business stakeholders."""
-    # 1. Daily standup with stakeholders
-    # 2. Requirement clarification sessions
-    # 3. Progress demonstrations
-    # 4. Feedback integration
-    # 5. Priority discussions
-    pass
-
-# INCORRECT: Isolated development
-def implement_isolated_development():
-    """Implement development isolated from business."""
-    # This violates Principle 4
-    pass
-```
-
-#### **Automation Requirements**
-- **Stakeholder Communication**: Automated progress reporting to business
-- **Feedback Collection**: Automated systems for collecting business feedback
-- **Collaboration Scheduling**: Automated scheduling of collaboration sessions
-
----
-
 ### **Principle 5: Motivated Individuals and Trust**
 **"Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done."**
 
@@ -230,51 +140,6 @@ def implement_micromanagement():
 - **Autonomous Decision Tools**: Tools that enable team decision-making
 - **Resource Provisioning**: Automated provisioning of necessary resources
 - **Learning Platform**: Automated access to learning resources
-
----
-
-### **Principle 6: Face-to-Face Communication**
-**"The most efficient and effective method of conveying information to and within a development team is face-to-face conversation."**
-
-#### **Implementation Requirements**
-```python
-# MANDATORY: Direct communication prioritization
-def prioritize_direct_communication() -> bool:
-    """Prioritize face-to-face and direct communication."""
-    
-    communication_hierarchy = [
-        "Face-to-face conversation",      # Highest priority
-        "Video calls with interaction",   # High priority
-        "Voice calls with discussion",    # Medium priority
-        "Real-time chat with context",    # Lower priority
-        "Asynchronous messages"           # Lowest priority
-    ]
-    
-    return use_highest_priority_communication_available(communication_hierarchy)
-
-# CORRECT: Direct communication emphasis
-def implement_direct_communication():
-    """Implement direct communication practices."""
-    # 1. Daily face-to-face standups
-    # 2. Pair programming sessions
-    # 3. Collaborative design sessions
-    # 4. Direct problem-solving discussions
-    # 5. Immediate clarification conversations
-    pass
-
-# INCORRECT: Documentation-heavy communication
-def implement_documentation_heavy_communication():
-    """Implement communication through extensive documentation."""
-    # This violates Principle 6
-    pass
-```
-
-#### **Automation Requirements**
-- **Meeting Facilitation**: Tools that facilitate effective face-to-face meetings
-- **Communication Scheduling**: Automated scheduling of direct communication
-- **Collaboration Spaces**: Digital spaces that simulate face-to-face interaction
-
----
 
 ### **Principle 7: Working Software as Primary Progress Measure**
 **"Working software is the primary measure of progress."**
@@ -324,60 +189,6 @@ def track_documentation_progress():
 - **Working Software Validation**: Automated validation of software functionality
 - **Progress Dashboards**: Real-time dashboards showing working software progress
 - **Deployment Metrics**: Automated tracking of deployment-ready features
-
----
-
-### **Principle 8: Sustainable Development Pace**
-**"Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely."**
-
-#### **Implementation Requirements**
-```python
-# MANDATORY: Sustainable pace maintenance
-def maintain_sustainable_pace() -> bool:
-    """Maintain sustainable development pace for team health."""
-    
-    sustainability_metrics = {
-        "work_hours_per_week": get_average_work_hours(),
-        "overtime_frequency": calculate_overtime_frequency(),
-        "team_satisfaction": measure_team_satisfaction(),
-        "burnout_indicators": assess_burnout_risk(),
-        "velocity_consistency": measure_velocity_consistency()
-    }
-    
-    # Validate sustainable pace
-    max_work_hours = 40  # Standard work week
-    max_overtime_frequency = 0.1  # 10% maximum
-    min_satisfaction = 7.0  # 7/10 minimum
-    
-    return (
-        sustainability_metrics["work_hours_per_week"] <= max_work_hours and
-        sustainability_metrics["overtime_frequency"] <= max_overtime_frequency and
-        sustainability_metrics["team_satisfaction"] >= min_satisfaction
-    )
-
-# CORRECT: Sustainable pace implementation
-def implement_sustainable_pace():
-    """Implement sustainable development practices."""
-    # 1. Respect work-life balance
-    # 2. Avoid overtime as standard practice
-    # 3. Monitor team health indicators
-    # 4. Maintain consistent velocity
-    # 5. Prevent burnout through pace management
-    pass
-
-# INCORRECT: Unsustainable pace (crunch mode)
-def implement_crunch_mode():
-    """Implement unsustainable high-pressure development."""
-    # This violates Principle 8
-    pass
-```
-
-#### **Automation Requirements**
-- **Pace Monitoring**: Automated monitoring of work pace and team health
-- **Velocity Tracking**: Automated tracking of sustainable velocity
-- **Health Dashboards**: Real-time dashboards showing team sustainability metrics
-
----
 
 ### **Principle 9: Technical Excellence and Good Design**
 **"Continuous attention to technical excellence and good design enhances agility."**
@@ -437,59 +248,6 @@ def implement_quick_and_dirty_development():
 - **Technical Debt Monitoring**: Automated tracking of technical debt
 - **Performance Monitoring**: Automated performance testing and monitoring
 
----
-
-### **Principle 10: Simplicity - Maximizing Work Not Done**
-**"Simplicity--the art of maximizing the amount of work not done--is essential."**
-
-#### **Implementation Requirements**
-```python
-# MANDATORY: Simplicity and minimalism focus
-def maximize_work_not_done() -> dict:
-    """Focus on simplicity and eliminating unnecessary work."""
-    
-    simplicity_assessment = {
-        "feature_necessity": assess_feature_necessity(),
-        "code_complexity": measure_code_complexity(),
-        "process_overhead": calculate_process_overhead(),
-        "documentation_necessity": assess_documentation_necessity(),
-        "meeting_efficiency": measure_meeting_efficiency()
-    }
-    
-    # Simplicity improvements
-    improvements = {
-        "unnecessary_features": identify_unnecessary_features(),
-        "code_simplification": identify_simplification_opportunities(),
-        "process_reduction": identify_process_reduction_opportunities(),
-        "documentation_reduction": identify_documentation_reduction()
-    }
-    
-    return implement_simplicity_improvements(improvements)
-
-# CORRECT: Simplicity-focused development
-def implement_simplicity_focus():
-    """Implement development with simplicity as core principle."""
-    # 1. Minimal viable product approach
-    # 2. Eliminate unnecessary features
-    # 3. Simplify complex processes
-    # 4. Reduce documentation overhead
-    # 5. Focus on essential work only
-    pass
-
-# INCORRECT: Over-engineering approach
-def implement_over_engineering():
-    """Implement complex solutions for simple problems."""
-    # This violates Principle 10
-    pass
-```
-
-#### **Automation Requirements**
-- **Complexity Analysis**: Automated detection of unnecessary complexity
-- **Feature Usage Tracking**: Automated tracking of feature usage to identify unnecessary features
-- **Process Optimization**: Automated identification of process inefficiencies
-
----
-
 ### **Principle 11: Self-Organizing Teams**
 **"The best architectures, requirements, and designs emerge from self-organizing teams."**
 
@@ -541,64 +299,6 @@ def implement_command_and_control():
 - **Decision Tracking**: Automated tracking of team decisions and outcomes
 - **Collaboration Tools**: Tools that facilitate team self-organization
 - **Autonomy Metrics**: Automated measurement of team autonomy and effectiveness
-
----
-
-### **Principle 12: Regular Reflection and Adaptation**
-**"At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly."**
-
-#### **Implementation Requirements**
-```python
-# MANDATORY: Regular reflection and improvement
-def conduct_regular_reflection() -> dict:
-    """Conduct regular team reflection and adaptation sessions."""
-    
-    reflection_frequency = 14  # days (every 2 weeks minimum)
-    
-    reflection_activities = {
-        "retrospective_meetings": schedule_retrospectives(reflection_frequency),
-        "process_analysis": analyze_current_processes(),
-        "improvement_identification": identify_improvement_opportunities(),
-        "adaptation_implementation": implement_process_adaptations(),
-        "effectiveness_measurement": measure_improvement_effectiveness()
-    }
-    
-    # Reflection outcomes
-    outcomes = {
-        "identified_improvements": collect_improvement_ideas(),
-        "implemented_changes": track_implemented_changes(),
-        "effectiveness_metrics": measure_change_effectiveness(),
-        "team_learning": document_team_learning()
-    }
-    
-    return {
-        "activities": reflection_activities,
-        "outcomes": outcomes
-    }
-
-# CORRECT: Regular reflection implementation
-def implement_regular_reflection():
-    """Implement regular reflection and adaptation practices."""
-    # 1. Sprint retrospectives
-    # 2. Process improvement sessions
-    # 3. Team learning discussions
-    # 4. Adaptation implementation
-    # 5. Effectiveness measurement
-    pass
-
-# INCORRECT: Process stagnation
-def maintain_static_processes():
-    """Maintain processes without reflection or adaptation."""
-    # This violates Principle 12
-    pass
-```
-
-#### **Automation Requirements**
-- **Retrospective Scheduling**: Automated scheduling of reflection sessions
-- **Improvement Tracking**: Automated tracking of improvements and their effectiveness
-- **Learning Documentation**: Automated documentation of team learning and insights
-
----
 
 ## **INTEGRATION WITH EXISTING RULES**
 
@@ -698,14 +398,7 @@ def validate_agile_manifesto_compliance() -> dict:
 
 ## **ENFORCEMENT**
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Development activities and processes
-- Team interactions and collaboration
-- Progress measurement and reporting
-- Process improvement and adaptation
-- Technical decision making
-- Customer interaction and feedback
-- Quality assurance and validation
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of any Agile Manifesto principle require immediate correction and process adjustment.**
 
@@ -725,5 +418,5 @@ This rule is **ALWAYS APPLIED** and must be followed for all:
 
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

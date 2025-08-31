@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "quality-standards"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['quality_standards']
 tier: "2"

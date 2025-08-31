@@ -2,12 +2,12 @@
 description: "Auto-generated description for boyscout_leave_cleaner_rule.mdc"
 category: "core-foundation"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 globs: ["**/*"]
 tags: ['core_foundation']
 tier: "2"
 ---
-
 # Boy Scout Rule - Leave the Codebase Cleaner Than You Found It
 
 **CRITICAL**: Always leave the codebase, documentation, and project structure in a better state than when you started working on it. If you see something that can be improved, fix it immediately.
@@ -469,65 +469,19 @@ def monitor_quality_trends():
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Code reviews and development work
-- Documentation updates
-- File operations and organization
-- Testing and quality assurance
-- Bug fixes and feature development
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **The Boy Scout Rule is a mindset: Always leave things better than you found them.**
 
 ## Examples
 
 ### ✅ **CORRECT Boy Scout Behavior**
-```python
-# Task: Add new validation function
-def validate_email(email: str) -> bool:
-    """Validate email address format."""
-    import re
-    
-    # Boy Scout improvement: Extract regex to constant
-    EMAIL_PATTERN = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    
-    if not email or not isinstance(email, str):
-        return False
-    
-    return re.match(EMAIL_PATTERN, email.strip()) is not None
+# Code example removed for brevity
 
-# While here, noticed this function needed improvement too:
-def validate_phone(phone: str) -> bool:
-    """Validate phone number format."""
-    # Boy Scout: Fixed poor naming and added documentation
-    # OLD: def check_phone(p):
-    
-    if not phone or not isinstance(phone, str):
-        return False
-    
-    # Boy Scout: Extracted magic number
-    MIN_PHONE_LENGTH = 10
-    cleaned_phone = re.sub(r'[^\d]', '', phone)
-    
-    return len(cleaned_phone) >= MIN_PHONE_LENGTH
-```
 
 ### ❌ **INCORRECT - Ignoring Boy Scout Opportunities**
-```python
-# Task: Add new validation function
-def validate_email(email):  # No type hints
-    import re  # Should be at module level
-    if email:  # Poor validation
-        return "@" in email  # Weak validation logic
-    return False
+# Code example removed for brevity
 
-# Ignored these obvious issues in same file:
-def check_phone(p):  # Poor naming
-    return len(p) > 9  # Magic number, no validation
-
-def process_data(data):  # No docstring
-    # TODO: fix this function  # Ignored TODO
-    return data
-```
 
 ## Remember
 

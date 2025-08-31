@@ -2,7 +2,7 @@
 description: "Auto-generated description for PROPOSED_ORGANIZATION_STRUCTURE.md"
 category: "general"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['general']
 tier: "2"

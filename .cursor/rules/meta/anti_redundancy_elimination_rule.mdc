@@ -2,12 +2,12 @@
 description: "Auto-generated description for anti_redundancy_elimination_rule.mdc"
 category: "meta-rules"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 globs: ["**/*"]
 tags: ['meta_rules']
 tier: "2"
 ---
-
 # Anti-Redundancy Elimination Rule
 
 **CRITICAL**: Systematically eliminate all forms of redundancy across code, rules, documentation, processes, and data. Redundancy is technical debt that reduces maintainability and increases complexity.
@@ -481,12 +481,7 @@ jobs:
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Code development and refactoring
-- Rule creation and modification
-- Documentation writing and updates
-- Process design and implementation
-- Data modeling and storage
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Zero tolerance for redundancy means exactly that - no exceptions.**
 

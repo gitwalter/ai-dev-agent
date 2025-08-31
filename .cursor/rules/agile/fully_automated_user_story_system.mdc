@@ -2,12 +2,12 @@
 description: "Auto-generated description for fully_automated_user_story_system.mdc"
 category: "agile-methodology"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['AGILE', 'DEFAULT']
 globs: ["**/*"]
 tags: ['agile_methodology']
 tier: "2"
 ---
-
 # Fully Automated User Story System Rule
 
 **CRITICAL**: User story creation, management, and updates must be 100% automated with zero manual intervention. All agile artifacts must be automatically synchronized and updated in real-time.
@@ -697,15 +697,10 @@ def validate_zero_manual_intervention() -> bool:
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- User story creation and management
-- Agile artifact updates and synchronization
-- Progress tracking and reporting
-- Sprint management and planning
-- Development workflow automation
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 **Violations of this rule require immediate automation implementation and system optimization.**
 description: "Auto-generated description"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

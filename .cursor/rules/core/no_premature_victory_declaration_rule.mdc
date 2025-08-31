@@ -2,12 +2,12 @@
 description: "Auto-generated description for no_premature_victory_declaration_rule.mdc"
 category: "core-foundation"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 globs: ["**/*"]
 tags: ['core_foundation']
 tier: "2"
 ---
-
 # No Premature Victory Declaration Rule
 
 **CRITICAL**: Never declare success, completion, or victory until ALL verification steps are completed and ALL tests are passing with evidence. Always output concise, progress-relevant information only.
@@ -297,15 +297,7 @@ def enforce_validation_before_completion(task: str):
 
 ## Enforcement
 
-This rule is **ALWAYS APPLIED** and must be followed for all:
-- Feature development claims
-- Bug fix declarations  
-- System status reports
-- Performance improvement claims
-- Integration success statements
-- Deployment readiness assertions
-- **ALL progress communication and status updates**
-- **ALL user interactions and responses**
+This rule is **CONDITIONALLY APPLIED** based on context.
 
 ### Compliance Checklist
 - [ ] No success claims without concrete evidence
@@ -351,5 +343,5 @@ This rule is **CRITICAL** and must be followed for all development work, testing
 
 description: Prevents premature success declarations and enforces concise progress-focused communication
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 ---

@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "core-foundation"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['core_foundation']
 tier: "2"

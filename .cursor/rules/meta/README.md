@@ -2,7 +2,7 @@
 description: "Auto-generated description for README.md"
 category: "meta-rules"
 priority: "low"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['meta_rules']
 tier: "2"

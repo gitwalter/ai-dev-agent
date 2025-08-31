@@ -5,13 +5,13 @@ priority: "CRITICAL"
 category: "Meta-Governance"
 applies_to:
   - "**/*"
-alwaysApply: true
+alwaysApply: false
+contexts: ['DEFAULT']
 enforcement: "MANDATORY"
 globs: ["**/*"]
 tags: ['meta_rules']
 tier: "2"
 ---
-
 # Meta-Rule: Systematic Rule Application Coordination
 
 **CRITICAL**: This meta-rule governs the systematic application, sequencing, and coordination of ALL other development rules to prevent rule violations, scattered work, and incomplete implementations.
@@ -569,101 +569,12 @@ def escalate_to_systematic_restart() -> None:
 ## Implementation Requirements
 
 ### **Rule Application Tools**
-```python
-# REQUIRED: Tools for systematic rule application
-class SystematicRuleApplicator:
-    """
-    Tools for systematic application of development rules.
-    """
-    
-    def __init__(self, task_context: dict):
-        self.task_context = task_context
-        self.applicable_rules = self._identify_applicable_rules(task_context)
-        self.rule_sequence = self._determine_rule_sequence(self.applicable_rules)
-        self.completion_criteria = self._define_completion_criteria()
-    
-    def apply_rules_systematically(self) -> SystematicResult:
-        """Apply all applicable rules in proper sequence."""
-        
-        results = {}
-        
-        # Apply Foundation Rules first
-        for rule in self.rule_sequence['foundation']:
-            result = self._apply_single_rule(rule)
-            results[rule] = result
-            if not result.success:
-                return self._handle_rule_failure(rule, result)
-        
-        # Apply Disciplinary Rules
-        for rule in self.rule_sequence['disciplinary']:
-            result = self._apply_single_rule(rule)
-            results[rule] = result
-            if not result.success:
-                return self._handle_rule_failure(rule, result)
-        
-        # Apply Technical Standards
-        for rule in self.rule_sequence['technical']:
-            result = self._apply_single_rule(rule)
-            results[rule] = result
-            if not result.success:
-                return self._handle_rule_failure(rule, result)
-        
-        # Validate complete compliance
-        compliance_result = self._validate_complete_compliance(results)
-        
-        return SystematicResult(
-            rule_results=results,
-            compliance=compliance_result,
-            evidence=self._generate_evidence(results)
-        )
-```
+# Code example removed for brevity
+
 
 ### **Rule Application Monitoring**
-```python
-# REQUIRED: Monitor rule application quality
-class RuleApplicationMonitor:
-    """
-    Monitor and track rule application quality and compliance.
-    """
-    
-    def track_rule_application(self, session: WorkSession) -> RuleMetrics:
-        """Track quality metrics for rule application."""
-        
-        metrics = RuleMetrics()
-        
-        # Foundation rule compliance
-        metrics.foundation_compliance = self._measure_foundation_compliance(session)
-        
-        # Rule sequence adherence  
-        metrics.sequence_adherence = self._measure_sequence_adherence(session)
-        
-        # Completion thoroughness
-        metrics.completion_thoroughness = self._measure_completion_thoroughness(session)
-        
-        # Evidence quality
-        metrics.evidence_quality = self._measure_evidence_quality(session)
-        
-        return metrics
-    
-    def generate_improvement_recommendations(self, metrics: RuleMetrics) -> List[str]:
-        """Generate recommendations for improving rule application."""
-        
-        recommendations = []
-        
-        if metrics.foundation_compliance < 0.95:
-            recommendations.append("Improve foundation rule application consistency")
-        
-        if metrics.sequence_adherence < 0.90:
-            recommendations.append("Follow rule application sequence more systematically")
-        
-        if metrics.completion_thoroughness < 0.85:
-            recommendations.append("Complete ALL aspects of applicable rules")
-        
-        if metrics.evidence_quality < 0.90:
-            recommendations.append("Provide higher quality evidence for rule compliance")
-        
-        return recommendations
-```
+# Code example removed for brevity
+
 
 ## Benefits of Systematic Rule Application
 
