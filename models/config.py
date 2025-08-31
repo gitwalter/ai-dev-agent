@@ -38,6 +38,7 @@ class GeminiConfig(BaseModel):
 class AgentConfig(BaseModel):
     """Configuration for individual agents."""
     
+    agent_id: str = Field(..., description="Unique identifier for the agent")
     name: str
     description: str
     enabled: bool = True

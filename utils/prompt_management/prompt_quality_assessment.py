@@ -83,7 +83,7 @@ class PromptQualityAssessor:
     Automated prompt quality assessment system.
     """
     
-    def __init__(self, db_path: str = "prompt_quality.db"):
+    def __init__(self, db_path: str = "prompts/analytics/prompt_quality.db"):
         """Initialize the quality assessor."""
         self.db_path = db_path
         self._init_database()
@@ -820,6 +820,6 @@ class PromptQualityAssessor:
 
 
 # Factory function
-def get_quality_assessor(db_path: str = "prompt_quality.db") -> PromptQualityAssessor:
+def get_quality_assessor(db_path: str = "prompts/analytics/prompt_quality.db") -> PromptQualityAssessor:
     """Get a quality assessor instance."""
     return PromptQualityAssessor(db_path)

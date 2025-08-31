@@ -1,9 +1,9 @@
-# Auto-reload trigger: 1756624930
+# Auto-reload trigger: 1756647524
 # Context-Aware Rules (Working System)
-# Context: DEBUGGING
-# Total Rules: 8
-# Generated from: @debug Fix the system issues...
-# Timestamp: 31.08.2025 09:22
+# Context: DOCUMENTATION
+# Total Rules: 7
+# Generated from: @docs history test...
+# Timestamp: 31.08.2025 15:38
 
 
 # === safety_first_principle ===
@@ -1343,29 +1343,34 @@ tier: "1"
 
 # Streamlined Git Operations Rule
 
-**CRITICAL**: In standard development situations, execute only `git commit` and `git push` commands. Avoid unnecessary git status checks, staging commands, or other git operations unless explicitly requested.
+**CRITICAL**: In standard development situations, execute the proven three-command sequence: `git add .`, `git commit`, and `git push`. Avoid unnecessary git status checks or other git operations unless explicitly requested.
 
 ## Core Principle
 
-**"Commit and Push Only - Keep It Simple"**
+**"Add, Commit, Push - The Proven Workflow"**
 
-When the user requests git operations for standard development workflow, execute only the essential commands: commit and push. This reduces command overhead and streamlines the development process.
+When the user requests git operations for standard development workflow, execute the proven three-command sequence: `git add .`, `git commit`, and `git push`. This ensures all changes are captured and reduces command overhead while maintaining reliability.
 
 ## Standard Git Workflow
 
 ### 1. **Standard Commit and Push Sequence**
 **REQUIRED for standard situations:**
 ```bash
+git add .
 git commit -m "descriptive commit message"
 git push
 ```
 
+**PROVEN SUCCESSFUL WORKFLOW:**
+- `git add .` - Stage all changes (IDE staging may be incomplete)
+- `git commit -m "message"` - Commit with descriptive message
+- `git push` - Push to remote repository
+
 **FORBIDDEN in standard situations:**
-- `git status` (unless explicitly requested)
-- `git add .` (assume files are already staged by IDE)
-- `git branch` checks
-- `git log` reviews
-- Multiple git commands in sequence
+- `git status` (unless explicitly requested for diagnostics)
+- `git branch` checks (unless troubleshooting)
+- `git log` reviews (unless explicitly requested)
+- Multiple status checks between commands
 
 ### 2. **When to Use Standard Workflow**
 **Apply streamlined approach when:**
@@ -1412,25 +1417,27 @@ git push
 
 ### 1. **Command Execution**
 ```python
-# REQUIRED: Streamlined approach
+# REQUIRED: Proven successful approach
 def standard_git_workflow(commit_message):
+    run_command("git add .")
     run_command(f"git commit -m '{commit_message}'")
     run_command("git push")
 
-# FORBIDDEN: Verbose approach
+# FORBIDDEN: Verbose approach with unnecessary commands
 def verbose_git_workflow():
-    run_command("git status")  # Unnecessary
-    run_command("git add .")   # Assume already staged
+    run_command("git status")  # Unnecessary unless debugging
+    run_command("git add .")   
     run_command("git status")  # Redundant
     run_command("git commit -m 'message'")
     run_command("git status")  # Unnecessary
     run_command("git push")
+    run_command("git status")  # Excessive
 ```
 
 ### 2. **Context Detection**
 **Standard situations:**
 - User in normal development flow
-- Files already staged by IDE
+- Files may need staging (IDE staging can be incomplete)
 - No git issues mentioned
 - Routine commit and push request
 
@@ -1528,1487 +1535,444 @@ This rule is **ALWAYS ACTIVE** and applies to:
 
 **"Commit and push - that's it. Keep git simple."**
 
-**"Let the IDE handle staging, we handle committing."**
+**"Always stage, commit, and push - the proven three-step workflow."**
 
-**"Two commands, not twenty."**
+**"Three commands that work: add, commit, push."**
 
 
-# === error_handling_no_silent_errors_rule ===
+# === documentation_live_updates_rule ===
 ---
-description: "Never use silent error handling, mock fallbacks, or placeholder data that masks real parsing failures. All errors must be exposed and addressed properly."
+description: "All documentation must be updated immediately when any relevant changes occur. Documentation debt is not permitted."
 category: "quality-standards"
 priority: "high"
 alwaysApply: false
-contexts: ["DEBUGGING", "CODING", "TESTING", "DEFAULT"]
+contexts: ["DOCUMENTATION", "CODING", "ARCHITECTURE", "AGILE"]
 globs: ["**/*"]
-tags: ["error-handling", "quality", "reliability", "debugging"]
+tags: ["documentation", "quality", "maintenance", "excellence"]
 tier: "2"
 ---
 
-# No Silent Errors and Mock Fallbacks Rule
+# Live Documentation Updates Rule
 
-**CRITICAL**: Never use silent error handling, mock fallbacks, or placeholder data that masks real parsing failures. All errors must be exposed and addressed properly to ensure system reliability and quality.
+**CRITICAL**: All documentation must be updated immediately when any relevant changes occur. Documentation debt is not permitted.
 
-## Core Requirements
-
-### 1. Error Exposure Requirements
-**MANDATORY**: All errors must be exposed, never silenced
-```python
-# CORRECT: Expose errors immediately
-try:
-    result = parser.parse(response)
-    return result
-except Exception as e:
-    logger.error(f"Parsing failed: {e}")
-    raise OutputParserException(f"Failed to parse response: {e}")
-
-# INCORRECT: Silent error handling with fallbacks
-try:
-    result = parser.parse(response)
-    return result
-except Exception as e:
-    logger.warning(f"Parsing failed, using fallback: {e}")
-    return get_fallback_data()  # NEVER DO THIS
-```
-
-### 2. Fallback Prohibition
-**FORBIDDEN**: Mock fallbacks, placeholder data, or silent error recovery
-```python
-# FORBIDDEN: Mock fallback data
-def _get_fallback_data(self):
-    return {
-        "status": "completed",
-        "message": "Fallback data used",
-        "data": {}  # Empty/mock data
-    }
-
-# FORBIDDEN: Silent error handling
-except Exception as e:
-    logger.warning(f"Error occurred: {e}")
-    return {}  # Silent failure
-```
-
-### 3. Error Propagation Requirements
-
-#### **Immediate Error Exposure**
-```python
-# MANDATORY: Always raise exceptions for parsing failures
-def parse_response(self, response: str) -> Dict[str, Any]:
-    try:
-        # Primary parsing attempt
-        return self._primary_parse(response)
-    except Exception as e:
-        # Log the error and re-raise
-        self.logger.error(f"Primary parsing failed: {e}")
-        raise OutputParserException(f"Failed to parse response: {e}")
-```
-
-#### **No Graceful Degradation**
-```python
-# FORBIDDEN: Graceful degradation with fallbacks
-def parse_with_fallbacks(self, response: str):
-    try:
-        return self._primary_parse(response)
-    except Exception as e:
-        try:
-            return self._secondary_parse(response)  # FORBIDDEN
-        except Exception as e2:
-            return self._get_fallback_data()  # FORBIDDEN
-```
-
-### 4. Error Handling Standards
-
-#### **Exception Types**
-```python
-# MANDATORY: Use specific exception types
-class OutputParserException(Exception):
-    """Raised when output parsing fails."""
-    pass
-
-class ValidationException(Exception):
-    """Raised when data validation fails."""
-    pass
-
-class FormatException(Exception):
-    """Raised when output format is invalid."""
-    pass
-```
-
-#### **Error Context Requirements**
-```python
-# MANDATORY: Include context in error messages
-def parse_response(self, response: str, agent_type: str) -> Dict[str, Any]:
-    try:
-        return self._parse(response)
-    except Exception as e:
-        error_msg = f"Parsing failed for {agent_type}: {e}. Response: {response[:200]}..."
-        raise OutputParserException(error_msg)
-```
-
-### 5. Logging Requirements
-
-#### **Error Logging Standards**
-```python
-# MANDATORY: Comprehensive error logging
-import logging
-
-logger = logging.getLogger(__name__)
-
-def parse_response(self, response: str) -> Dict[str, Any]:
-    try:
-        return self._parse(response)
-    except Exception as e:
-        logger.error(f"Parsing failed: {e}")
-        logger.error(f"Response content: {response}")
-        logger.error(f"Agent type: {self.agent_type}")
-        logger.error(f"Parser configuration: {self.config}")
-        raise  # Re-raise the exception
-```
-
-#### **No Warning-Only Logging**
-```python
-# FORBIDDEN: Warning-only logging for errors
-except Exception as e:
-    logger.warning(f"Parsing failed, continuing with fallback: {e}")  # FORBIDDEN
-    return fallback_data
-
-# CORRECT: Error logging with exception raising
-except Exception as e:
-    logger.error(f"Parsing failed: {e}")
-    raise OutputParserException(f"Parsing failed: {e}")
-```
-
-### 6. Testing Requirements
-
-#### **Error Testing**
-```python
-# MANDATORY: Test error conditions
-def test_parsing_failure_exposure():
-    """Test that parsing failures are properly exposed."""
-    parser = OutputParser()
-    
-    # Test with invalid response
-    with pytest.raises(OutputParserException):
-        parser.parse("invalid response")
-    
-    # Test with malformed JSON
-    with pytest.raises(OutputParserException):
-        parser.parse('{"incomplete": json')
-    
-    # Test with missing required fields
-    with pytest.raises(ValidationException):
-        parser.parse('{"partial": "data"}')
-```
-
-#### **No Fallback Testing**
-```python
-# FORBIDDEN: Test fallback mechanisms
-def test_fallback_mechanism():  # FORBIDDEN
-    parser = OutputParser()
-    result = parser.parse("invalid response")
-    assert result == fallback_data  # FORBIDDEN
-
-# CORRECT: Test error exposure
-def test_error_exposure():
-    parser = OutputParser()
-    with pytest.raises(OutputParserException):
-        parser.parse("invalid response")
-```
-
-### 7. Agent Integration Requirements
-
-#### **Agent Error Handling**
-```python
-# MANDATORY: Agents must fail on parsing errors
-def execute(self, state: Dict[str, Any]) -> Dict[str, Any]:
-    try:
-        response = await self._generate_response(state)
-        parsed_response = self.parser.parse(response)
-        return self._update_state(state, parsed_response)
-    except OutputParserException as e:
-        # Log the error and fail the agent
-        self.logger.error(f"Agent {self.name} failed due to parsing error: {e}")
-        raise AgentExecutionException(f"Agent {self.name} failed: {e}")
-```
-
-#### **No Agent Fallbacks**
-```python
-# FORBIDDEN: Agent fallback mechanisms
-def execute(self, state: Dict[str, Any]) -> Dict[str, Any]:
-    try:
-        response = await self._generate_response(state)
-        parsed_response = self.parser.parse(response)
-        return self._update_state(state, parsed_response)
-    except Exception as e:
-        # FORBIDDEN: Agent fallback
-        return self._get_fallback_state(state)  # NEVER DO THIS
-```
-
-### 8. Workflow Integration Requirements
-
-#### **Workflow Error Propagation**
-```python
-# MANDATORY: Workflow must fail on agent errors
-async def execute_workflow(self, state: Dict[str, Any]) -> Dict[str, Any]:
-    for agent in self.agents:
-        try:
-            state = await agent.execute(state)
-        except AgentExecutionException as e:
-            # Log and fail the entire workflow
-            self.logger.error(f"Workflow failed due to agent error: {e}")
-            raise WorkflowExecutionException(f"Workflow failed: {e}")
-    
-    return state
-```
-
-#### **No Workflow Fallbacks**
-```python
-# FORBIDDEN: Workflow fallback mechanisms
-async def execute_workflow(self, state: Dict[str, Any]) -> Dict[str, Any]:
-    for agent in self.agents:
-        try:
-            state = await agent.execute(state)
-        except Exception as e:
-            # FORBIDDEN: Workflow fallback
-            state = self._get_fallback_state(state)  # NEVER DO THIS
-            continue  # NEVER DO THIS
-    
-    return state
-```
-
-### 9. Configuration Requirements
-
-#### **Parser Configuration**
-```python
-# MANDATORY: Configure parsers to fail on errors
-class OutputParser:
-    def __init__(self, fail_on_error: bool = True):
-        self.fail_on_error = True  # Always true, no option to disable
-        self.allow_fallbacks = False  # Always false
-        self.silent_errors = False  # Always false
-```
-
-#### **No Fallback Configuration**
-# Code example removed for brevity
-
-
-### 10. Code Review Requirements
-
-#### **Mandatory Checks**
-- [ ] No fallback data or mock responses
-- [ ] No silent error handling
-- [ ] All exceptions are properly raised
-- [ ] Error logging is comprehensive
-- [ ] No graceful degradation mechanisms
-- [ ] No placeholder or default data
-
-#### **Forbidden Patterns**
-# Code example removed for brevity
-
-
-### 11. Implementation Guidelines
-
-#### **Error Handling Template**
-# Code example removed for brevity
-
-
-#### **Agent Error Handling Template**
-# Code example removed for brevity
-
-
-### 12. Benefits
-
-- **Improved Reliability**: No hidden failures or silent errors
-- **Better Debugging**: All errors are exposed and logged
-- **Quality Assurance**: Forces proper error handling and validation
-- **System Transparency**: Clear visibility into all failures
-- **Maintenance**: Easier to identify and fix issues
-
-### 13. Enforcement
-
-This rule is **CONDITIONALLY APPLIED** based on context.
-
-**Violations of this rule require immediate remediation and removal of all fallback mechanisms.**
-
-### 14. Migration Guide
-
-#### **Removing Existing Fallbacks**
-1. **Identify Fallback Code**: Find all fallback mechanisms
-2. **Replace with Exceptions**: Convert fallbacks to proper exceptions
-3. **Update Error Handling**: Ensure all errors are properly logged and raised
-4. **Update Tests**: Remove fallback tests, add error exposure tests
-5. **Update Documentation**: Remove references to fallback mechanisms
-
-#### **Example Migration**
-# Code example removed for brevity
-
-
-**Remember**: The goal is to expose all errors, not hide them. This ensures system reliability and forces proper error handling and validation.
-
-
-
-# === testing_test_monitoring_rule ===
----
-description: "Auto-generated description for testing_test_monitoring_rule.mdc"
-category: "testing-standards"
-priority: "high"
-alwaysApply: false
-contexts: ['TESTING', 'CODING', 'DEBUGGING']
-globs: ["**/*"]
-tags: ['testing_standards', 'testing', 'validation']
-tier: "2"
----
-# Test Monitoring Rule
-
-# Test Monitoring Rule
-
-**CRITICAL**: Implement automated test monitoring with immediate error detection and systematic bug fixing workflow to maintain zero failing tests policy.
+## Description
+This rule enforces real-time documentation updates whenever changes are made to code, architecture, processes, rules, configurations, or any other documented elements. Documentation must always reflect the current state of the system.
 
 ## Core Requirements
 
-### 1. Automated Test Monitoring
-**MANDATORY**: Monitor all test executions automatically with immediate error detection.
+### 1. Immediate Update Obligation
+**MANDATORY**: Update documentation within the same work session as the change
+# Code example removed for brevity
 
-**Monitoring Requirements**:
-- **Real-time Monitoring**: Monitor test execution in real-time
-- **Immediate Error Detection**: Detect and report errors immediately
-- **Comprehensive Logging**: Log all test execution details
-- **Performance Tracking**: Track test execution time and performance
-- **Failure Analysis**: Analyze test failures for root causes
 
-**Implementation**:
-```python
-# ✅ CORRECT: Automated Test Monitoring
-import pytest
-import time
-import logging
-from typing import Dict, List, Optional
-from datetime import datetime
-import subprocess
-import sys
+### 2. Documentation Triggers
+**MANDATORY**: Update documentation when ANY of these events occur:
+# Code example removed for brevity
 
-class TestMonitor:
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.test_results = {}
-        self.failure_analysis = FailureAnalyzer()
-        self.alert_system = AlertSystem()
-        self.performance_tracker = PerformanceTracker()
-    
-    def monitor_test_execution(self, test_path: str = None) -> TestExecutionReport:
-        """Monitor test execution with comprehensive tracking"""
-        start_time = time.time()
-        execution_report = TestExecutionReport()
-        
-        try:
-            # Run tests with monitoring
-            test_results = self.run_tests_with_monitoring(test_path)
-            
-            # Analyze results
-            execution_report = self.analyze_test_results(test_results)
-            
-            # Check for failures
-            if execution_report.has_failures():
-                self.handle_test_failures(execution_report)
-            
-            # Track performance
-            execution_time = time.time() - start_time
-            self.performance_tracker.record_execution(test_path, execution_time, execution_report)
-            
-            return execution_report
-            
-        except Exception as e:
-            self.logger.error(f"Test monitoring failed: {e}")
-            execution_report.add_error(f"Monitoring error: {e}")
-            return execution_report
-    
-    def run_tests_with_monitoring(self, test_path: str = None) -> Dict:
-        """Run tests with comprehensive monitoring"""
-        cmd = ["python", "-m", "pytest"]
-        
-        if test_path:
-            cmd.append(test_path)
-        
-        # Add monitoring options
-        cmd.extend([
-            "--tb=short",  # Short traceback format
-            "--strict-markers",  # Strict marker validation
-            "--disable-warnings",  # Disable warnings for cleaner output
-            "--durations=10",  # Show 10 slowest tests
-            "--maxfail=1",  # Stop on first failure
-            "-v"  # Verbose output
-        ])
-        
-        try:
-            # Run tests with real-time output capture
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                bufsize=1,
-                universal_newlines=True
-            )
-            
-            # Monitor output in real-time
-            test_output = []
-            while True:
-                output = process.stdout.readline()
-                if output == '' and process.poll() is not None:
-                    break
-                if output:
-                    test_output.append(output.strip())
-                    # Check for immediate failures
-                    if self.detect_immediate_failure(output):
-                        self.alert_system.send_immediate_alert(f"Test failure detected: {output}")
-            
-            # Get return code
-            return_code = process.poll()
-            
-            return {
-                "return_code": return_code,
-                "output": test_output,
-                "success": return_code == 0
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Test execution failed: {e}")
-            return {
-                "return_code": -1,
-                "output": [f"Test execution error: {e}"],
-                "success": False
-            }
-    
-    def detect_immediate_failure(self, output_line: str) -> bool:
-        """Detect immediate test failures in output"""
-        failure_indicators = [
-            "FAILED",
-            "ERROR",
-            "AssertionError",
-            "Exception:",
-            "Traceback (most recent call last):"
-        ]
-        
-        return any(indicator in output_line for indicator in failure_indicators)
-    
-    def analyze_test_results(self, test_results: Dict) -> TestExecutionReport:
-        """Analyze test execution results"""
-        report = TestExecutionReport()
-        
-        if not test_results["success"]:
-            # Parse failures from output
-            failures = self.parse_failures_from_output(test_results["output"])
-            report.add_failures(failures)
-            
-            # Analyze failure patterns
-            failure_analysis = self.failure_analysis.analyze_failures(failures)
-            report.add_failure_analysis(failure_analysis)
-        
-        # Parse test statistics
-        stats = self.parse_test_statistics(test_results["output"])
-        report.add_statistics(stats)
-        
-        return report
-    
-    def parse_failures_from_output(self, output: List[str]) -> List[TestFailure]:
-        """Parse test failures from pytest output"""
-        failures = []
-        current_failure = None
-        
-        for line in output:
-            if "FAILED" in line or "ERROR" in line:
-                # Start of new failure
-                if current_failure:
-                    failures.append(current_failure)
-                
-                current_failure = TestFailure(
-                    test_name=self.extract_test_name(line),
-                    failure_type="FAILED" if "FAILED" in line else "ERROR",
-                    error_message=line
-                )
-            elif current_failure and line.strip():
-                # Add to current failure details
-                current_failure.add_detail(line)
-        
-        # Add last failure
-        if current_failure:
-            failures.append(current_failure)
-        
-        return failures
-    
-    def extract_test_name(self, line: str) -> str:
-        """Extract test name from failure line"""
-        # Look for test file and function name
-        import re
-        
-        # Pattern: test_file.py::test_function
-        pattern = r'([^:]+)::([^:]+)'
-        match = re.search(pattern, line)
-        
-        if match:
-            return f"{match.group(1)}::{match.group(2)}"
-        
-        return "unknown_test"
-```
 
-### 2. Immediate Error Detection and Alerting
-**MANDATORY**: Implement immediate error detection with instant alerting and response.
+### 3. Documentation Types and Update Requirements
+**MANDATORY**: Keep ALL documentation types current
 
-**Error Detection Requirements**:
-- **Instant Detection**: Detect errors as they occur
-- **Immediate Alerting**: Send alerts immediately upon error detection
-- **Error Classification**: Classify errors by severity and type
-- **Context Preservation**: Preserve error context for analysis
-- **Escalation Procedures**: Escalate critical errors automatically
+#### Code Documentation
+# Code example removed for brevity
 
-**Implementation**:
-```python
-# ✅ CORRECT: Immediate Error Detection
-class ErrorDetector:
-    def __init__(self):
-        self.alert_system = AlertSystem()
-        self.error_classifier = ErrorClassifier()
-        self.context_preserver = ContextPreserver()
-        self.escalation_manager = EscalationManager()
-    
-    def detect_and_alert(self, error: Exception, context: Dict = None) -> None:
-        """Detect error and send immediate alert"""
-        # Classify error
-        error_classification = self.error_classifier.classify_error(error)
-        
-        # Preserve context
-        error_context = self.context_preserver.preserve_context(error, context)
-        
-        # Create alert
-        alert = Alert(
-            type="test_failure",
-            severity=error_classification.severity,
-            message=str(error),
-            context=error_context,
-            timestamp=datetime.now()
-        )
-        
-        # Send immediate alert
-        self.alert_system.send_alert(alert)
-        
-        # Check for escalation
-        if error_classification.severity == "critical":
-            self.escalation_manager.escalate_error(alert)
 
-class AlertSystem:
-    def __init__(self):
-        self.alert_channels = {
-            "console": ConsoleAlertChannel(),
-            "log": LogAlertChannel(),
-            "email": EmailAlertChannel(),
-            "slack": SlackAlertChannel()
-        }
-    
-    def send_alert(self, alert: Alert) -> bool:
-        """Send alert through all configured channels"""
-        success = True
-        
-        for channel_name, channel in self.alert_channels.items():
-            try:
-                channel.send(alert)
-            except Exception as e:
-                logging.error(f"Failed to send alert through {channel_name}: {e}")
-                success = False
-        
-        return success
-    
-    def send_immediate_alert(self, message: str) -> None:
-        """Send immediate alert for critical issues"""
-        alert = Alert(
-            type="immediate",
-            severity="high",
-            message=message,
-            timestamp=datetime.now()
-        )
-        
-        # Send to console immediately
-        self.alert_channels["console"].send(alert)
-        
-        # Send to other channels
-        self.send_alert(alert)
+#### API Documentation
+# Code example removed for brevity
+json
+{
+  "current_field": "string",
+  "new_field": "integer"  // Added: 2024-01-15
+}
+# Code example removed for brevity
+json
+{
+  "status": "success",
+  "data": {
+    "updated_structure": "current_format"
+  }
+}
+# Code example removed for brevity
 
-class ErrorClassifier:
-    def classify_error(self, error: Exception) -> ErrorClassification:
-        """Classify error by severity and type"""
-        error_type = type(error).__name__
-        error_message = str(error)
-        
-        # Determine severity
-        severity = self.determine_severity(error_type, error_message)
-        
-        # Determine category
-        category = self.determine_category(error_type, error_message)
-        
-        return ErrorClassification(
-            severity=severity,
-            category=category,
-            error_type=error_type,
-            error_message=error_message
-        )
-    
-    def determine_severity(self, error_type: str, error_message: str) -> str:
-        """Determine error severity"""
-        critical_errors = [
-            "AssertionError",
-            "ImportError",
-            "ModuleNotFoundError",
-            "SyntaxError",
-            "IndentationError"
-        ]
-        
-        high_errors = [
-            "ValueError",
-            "TypeError",
-            "AttributeError",
-            "KeyError",
-            "IndexError"
-        ]
-        
-        if error_type in critical_errors:
-            return "critical"
-        elif error_type in high_errors:
-            return "high"
-        else:
-            return "medium"
-    
-    def determine_category(self, error_type: str, error_message: str) -> str:
-        """Determine error category"""
-        if "test" in error_message.lower():
-            return "test_failure"
-        elif "import" in error_message.lower():
-            return "import_error"
-        elif "syntax" in error_message.lower():
-            return "syntax_error"
-        elif "assertion" in error_message.lower():
-            return "assertion_failure"
-        else:
-            return "general_error"
-```
 
-### 3. Systematic Bug Fixing Workflow
-**MANDATORY**: Implement systematic bug fixing workflow for immediate error resolution.
+#### Architecture Documentation
+# Code example removed for brevity
+mermaid
+graph TD
+    A[Client] --> B[API Gateway]
+    B --> C[Auth Service - Updated]
+    B --> D[User Service - New]
+# Code example removed for brevity
 
-**Bug Fixing Requirements**:
-- **Root Cause Analysis**: Analyze failures for root causes
-- **Automated Fixes**: Apply automated fixes where possible
-- **Manual Intervention**: Escalate to manual intervention when needed
-- **Fix Validation**: Validate fixes before deployment
-- **Prevention Measures**: Implement measures to prevent recurrence
 
-**Implementation**:
-```python
-# ✅ CORRECT: Systematic Bug Fixing
-class BugFixer:
-    def __init__(self):
-        self.root_cause_analyzer = RootCauseAnalyzer()
-        self.automated_fixer = AutomatedFixer()
-        self.fix_validator = FixValidator()
-        self.prevention_manager = PreventionManager()
-    
-    def fix_test_failures(self, failures: List[TestFailure]) -> FixReport:
-        """Systematically fix test failures"""
-        fix_report = FixReport()
-        
-        for failure in failures:
-            try:
-                # Analyze root cause
-                root_cause = self.root_cause_analyzer.analyze_failure(failure)
-                
-                # Attempt automated fix
-                if root_cause.is_automatically_fixable():
-                    fix_result = self.automated_fixer.apply_fix(failure, root_cause)
-                    
-                    if fix_result.success:
-                        # Validate fix
-                        validation_result = self.fix_validator.validate_fix(failure)
-                        
-                        if validation_result.success:
-                            fix_report.add_successful_fix(failure, fix_result)
-                        else:
-                            fix_report.add_failed_validation(failure, validation_result)
-                    else:
-                        fix_report.add_failed_fix(failure, fix_result)
-                else:
-                    # Escalate to manual intervention
-                    fix_report.add_manual_intervention_needed(failure, root_cause)
-                
-                # Implement prevention measures
-                prevention_measures = self.prevention_manager.create_prevention_measures(failure, root_cause)
-                fix_report.add_prevention_measures(failure, prevention_measures)
-                
-            except Exception as e:
-                fix_report.add_error(failure, f"Bug fixing error: {e}")
-        
-        return fix_report
+### 4. Documentation Standards
+**MANDATORY**: Follow these update standards
 
-class RootCauseAnalyzer:
-    def analyze_failure(self, failure: TestFailure) -> RootCause:
-        """Analyze test failure for root cause"""
-        # Analyze error message
-        error_patterns = self.analyze_error_patterns(failure.error_message)
-        
-        # Analyze test context
-        context_analysis = self.analyze_test_context(failure)
-        
-        # Analyze recent changes
-        change_analysis = self.analyze_recent_changes(failure)
-        
-        # Determine root cause
-        root_cause = self.determine_root_cause(error_patterns, context_analysis, change_analysis)
-        
-        return root_cause
-    
-    def analyze_error_patterns(self, error_message: str) -> List[ErrorPattern]:
-        """Analyze error message for patterns"""
-        patterns = []
-        
-        # Check for common error patterns
-        if "AssertionError" in error_message:
-            patterns.append(ErrorPattern("assertion_failure", "Test assertion failed"))
-        
-        if "ImportError" in error_message:
-            patterns.append(ErrorPattern("import_error", "Module import failed"))
-        
-        if "AttributeError" in error_message:
-            patterns.append(ErrorPattern("attribute_error", "Object attribute access failed"))
-        
-        if "TypeError" in error_message:
-            patterns.append(ErrorPattern("type_error", "Type mismatch or incorrect usage"))
-        
-        return patterns
-    
-    def determine_root_cause(self, error_patterns: List[ErrorPattern], 
-                           context_analysis: Dict, change_analysis: Dict) -> RootCause:
-        """Determine root cause from analysis"""
-        # Prioritize by pattern severity
-        if any(p.pattern_type == "import_error" for p in error_patterns):
-            return RootCause("dependency_issue", "Missing or incorrect dependency")
-        
-        if any(p.pattern_type == "assertion_failure" for p in error_patterns):
-            return RootCause("test_logic_error", "Test logic or expectation error")
-        
-        if any(p.pattern_type == "attribute_error" for p in error_patterns):
-            return RootCause("api_change", "API or interface change")
-        
-        # Check for recent changes
-        if change_analysis.get("recent_changes"):
-            return RootCause("recent_change", "Recent code change caused regression")
-        
-        return RootCause("unknown", "Unknown root cause")
+#### Version Information
+# Code example removed for brevity
 
-class AutomatedFixer:
-    def apply_fix(self, failure: TestFailure, root_cause: RootCause) -> FixResult:
-        """Apply automated fix for test failure"""
-        try:
-            if root_cause.cause_type == "dependency_issue":
-                return self.fix_dependency_issue(failure)
-            
-            elif root_cause.cause_type == "test_logic_error":
-                return self.fix_test_logic(failure)
-            
-            elif root_cause.cause_type == "api_change":
-                return self.fix_api_change(failure)
-            
-            else:
-                return FixResult(success=False, message="No automated fix available")
-                
-        except Exception as e:
-            return FixResult(success=False, message=f"Fix application failed: {e}")
-    
-    def fix_dependency_issue(self, failure: TestFailure) -> FixResult:
-        """Fix dependency-related issues"""
-        # Check if it's a missing import
-        if "ImportError" in failure.error_message:
-            # Try to add missing import
-            missing_module = self.extract_missing_module(failure.error_message)
-            if missing_module:
-                return self.add_missing_import(failure.test_file, missing_module)
-        
-        return FixResult(success=False, message="Dependency fix not implemented")
-    
-    def fix_test_logic(self, failure: TestFailure) -> FixResult:
-        """Fix test logic issues"""
-        # This would require more sophisticated analysis
-        # For now, return manual intervention needed
-        return FixResult(success=False, message="Test logic fix requires manual intervention")
-```
 
-### 4. Performance Tracking and Optimization
-**MANDATORY**: Track test performance and optimize for faster execution.
+#### Change Tracking
+# Code example removed for brevity
 
-**Performance Requirements**:
-- **Execution Time Tracking**: Track test execution times
-- **Performance Regression Detection**: Detect performance regressions
-- **Test Parallelization**: Optimize test execution with parallelization
-- **Resource Usage Monitoring**: Monitor resource usage during tests
-- **Performance Optimization**: Optimize slow tests
 
-**Implementation**:
-```python
-# ✅ CORRECT: Performance Tracking
-class PerformanceTracker:
-    def __init__(self):
-        self.performance_database = PerformanceDatabase()
-        self.regression_detector = RegressionDetector()
-        self.optimizer = TestOptimizer()
-    
-    def record_execution(self, test_path: str, execution_time: float, 
-                        report: TestExecutionReport) -> None:
-        """Record test execution performance"""
-        performance_record = PerformanceRecord(
-            test_path=test_path,
-            execution_time=execution_time,
-            test_count=report.get_test_count(),
-            failure_count=report.get_failure_count(),
-            timestamp=datetime.now()
-        )
-        
-        # Store performance record
-        self.performance_database.store_record(performance_record)
-        
-        # Check for performance regressions
-        regression = self.regression_detector.check_regression(performance_record)
-        if regression:
-            self.alert_system.send_alert(Alert(
-                type="performance_regression",
-                severity="medium",
-                message=f"Performance regression detected: {regression.description}"
-            ))
-    
-    def optimize_test_execution(self, test_path: str) -> OptimizationResult:
-        """Optimize test execution performance"""
-        # Analyze current performance
-        performance_data = self.performance_database.get_performance_data(test_path)
-        
-        # Identify optimization opportunities
-        opportunities = self.optimizer.identify_opportunities(performance_data)
-        
-        # Apply optimizations
-        optimization_result = self.optimizer.apply_optimizations(test_path, opportunities)
-        
-        return optimization_result
+### 5. Documentation Validation
+**MANDATORY**: Validate documentation accuracy
 
-class RegressionDetector:
-    def check_regression(self, performance_record: PerformanceRecord) -> Optional[Regression]:
-        """Check for performance regression"""
-        # Get historical performance data
-        historical_data = self.performance_database.get_historical_data(
-            performance_record.test_path, 
-            days=7
-        )
-        
-        if not historical_data:
-            return None
-        
-        # Calculate baseline
-        baseline_execution_time = self.calculate_baseline(historical_data)
-        
-        # Check for regression
-        if performance_record.execution_time > baseline_execution_time * 1.5:
-            return Regression(
-                test_path=performance_record.test_path,
-                current_time=performance_record.execution_time,
-                baseline_time=baseline_execution_time,
-                degradation_percentage=(
-                    (performance_record.execution_time - baseline_execution_time) / 
-                    baseline_execution_time * 100
-                )
-            )
-        
-        return None
-    
-    def calculate_baseline(self, historical_data: List[PerformanceRecord]) -> float:
-        """Calculate performance baseline"""
-        if not historical_data:
-            return 0.0
-        
-        # Use median for baseline to avoid outliers
-        execution_times = [record.execution_time for record in historical_data]
-        execution_times.sort()
-        
-        n = len(execution_times)
-        if n % 2 == 0:
-            median = (execution_times[n//2 - 1] + execution_times[n//2]) / 2
-        else:
-            median = execution_times[n//2]
-        
-        return median
-```
+#### Accuracy Verification
+# Code example removed for brevity
 
-# Bottom-Up Testing Rule
 
-**CRITICAL**: Always follow the Bottom-Up Testing methodology when running larger test suites. Test individual components in isolation first, fix issues at the lowest level, and only then run the complete test suite.
+#### Link Verification
+# Code example removed for brevity
 
-## Core Bottom-Up Testing Requirements
 
-### 1. Test Isolation First
-**MANDATORY**: Always test individual components in isolation before running complete test suites.
+### 6. Automated Documentation Updates
+**MANDATORY**: Implement automation where possible
 
-**Isolation Testing Process**:
-- **Individual Test Execution**: Run each test method/function in isolation
-- **Component-Level Testing**: Test individual classes, modules, or functions separately
-- **Dependency Isolation**: Mock external dependencies to isolate the component under test
-- **Single Responsibility Testing**: Test one specific functionality at a time
-- **Clear Test Boundaries**: Define clear boundaries for what each test covers
+#### Code Comment Extraction
+# Code example removed for brevity
 
-**Implementation**:
-```python
-# ✅ CORRECT: Bottom-Up Testing Approach
-class BottomUpTestRunner:
-    def __init__(self):
-        self.test_monitor = TestMonitor()
-        self.isolation_results = {}
-        self.integration_results = {}
-    
-    def run_bottom_up_tests(self, test_suite_path: str) -> TestExecutionReport:
-        """Execute tests using bottom-up methodology"""
-        execution_report = TestExecutionReport()
-        
-        # Step 1: Identify individual test components
-        test_components = self.identify_test_components(test_suite_path)
-        
-        # Step 2: Test each component in isolation
-        for component in test_components:
-            isolation_result = self.test_component_in_isolation(component)
-            self.isolation_results[component] = isolation_result
-            
-            # Fix issues at component level
-            if isolation_result.has_failures():
-                self.fix_component_issues(component, isolation_result)
-                # Re-test after fixes
-                isolation_result = self.test_component_in_isolation(component)
-                self.isolation_results[component] = isolation_result
-        
-        # Step 3: Only run complete suite after all components pass
-        if self.all_components_passing():
-            integration_result = self.run_complete_test_suite(test_suite_path)
-            self.integration_results[test_suite_path] = integration_result
-            execution_report.add_integration_result(integration_result)
-        else:
-            execution_report.add_error("Cannot run integration tests - component failures exist")
-        
-        return execution_report
-    
-    def test_component_in_isolation(self, component: str) -> TestResult:
-        """Test a single component in complete isolation"""
-        # Mock all external dependencies
-        with patch_all_dependencies(component):
-            # Run only this component's tests
-            result = self.run_isolated_tests(component)
-            return result
-    
-    def fix_component_issues(self, component: str, test_result: TestResult) -> None:
-        """Fix issues found in component testing"""
-        for failure in test_result.get_failures():
-            # Apply targeted fixes for this specific component
-            fix = self.analyze_and_fix_failure(component, failure)
-            if fix:
-                self.apply_fix(component, fix)
-```
 
-### 2. Component-Level Testing Strategy
+#### Schema Documentation
+# Code example removed for brevity
 
-**Individual Component Testing**:
-```python
-# ✅ CORRECT: Component Isolation Testing
-def test_individual_component():
-    """Test a single component in isolation"""
-    # 1. Mock all external dependencies
-    with patch('external.dependency') as mock_dep:
-        with patch('another.dependency') as mock_dep2:
-            
-            # 2. Set up isolated test environment
-            isolated_config = create_isolated_config()
-            
-            # 3. Test the component
-            component = Component(isolated_config)
-            result = component.execute(test_input)
-            
-            # 4. Verify results
-            assert result.is_valid()
-            assert result.contains_expected_data()
-            
-            # 5. Verify no external calls were made
-            mock_dep.assert_not_called()
-            mock_dep2.assert_not_called()
-```
 
-### 3. Progressive Integration Testing
+### 7. Documentation Review Process
+**MANDATORY**: Review documentation changes
 
-**Integration Testing Process**:
-```python
-# ✅ CORRECT: Progressive Integration
-class ProgressiveIntegrationTester:
-    def run_progressive_integration(self, components: List[str]) -> TestResult:
-        """Run integration tests progressively"""
-        result = TestResult()
-        
-        # Start with smallest integration
-        for i in range(1, len(components) + 1):
-            component_group = components[:i]
-            
-            # Test this group of components
-            group_result = self.test_component_group(component_group)
-            
-            if group_result.has_failures():
-                # Fix issues at this integration level
-                self.fix_integration_issues(component_group, group_result)
-                # Re-test after fixes
-                group_result = self.test_component_group(component_group)
-            
-            result.add_group_result(component_group, group_result)
-            
-            # Only continue if this group passes
-            if group_result.has_failures():
-                break
-        
-        return result
-```
+#### Pre-Commit Validation
+# Code example removed for brevity
 
-### 4. Error Handling and Fixing
 
-**Component-Level Error Handling**:
-```python
-# ✅ CORRECT: Component Error Handling
-def handle_component_error(component: str, error: Exception) -> FixResult:
-    """Handle errors at component level"""
-    # 1. Analyze the error
-    error_analysis = analyze_error(component, error)
-    
-    # 2. Identify the root cause
-    root_cause = identify_root_cause(error_analysis)
-    
-    # 3. Apply targeted fix
-    fix = create_targeted_fix(component, root_cause)
-    
-    # 4. Apply the fix
-    fix_result = apply_fix(component, fix)
-    
-    # 5. Verify the fix
-    verification_result = verify_fix(component, fix)
-    
-    return FixResult(
-        component=component,
-        error=error,
-        fix_applied=fix,
-        fix_successful=verification_result.is_successful()
-    )
-```
+#### Documentation Completeness Check
+# Code example removed for brevity
 
-### 5. Test Execution Workflow
 
-**Bottom-Up Test Execution**:
-```python
-# ✅ CORRECT: Bottom-Up Workflow
-def execute_bottom_up_testing(test_suite: str) -> TestExecutionReport:
-    """Execute tests using bottom-up methodology"""
-    
-    # Phase 1: Component Isolation Testing
-    print("Phase 1: Testing individual components in isolation...")
-    component_results = {}
-    
-    for component in get_test_components(test_suite):
-        print(f"  Testing component: {component}")
-        result = test_component_in_isolation(component)
-        component_results[component] = result
-        
-        if result.has_failures():
-            print(f"  ❌ Component {component} has failures - fixing...")
-            fix_result = fix_component_issues(component, result)
-            if fix_result.is_successful():
-                print(f"  ✅ Component {component} fixed successfully")
-                # Re-test after fix
-                result = test_component_in_isolation(component)
-                component_results[component] = result
-            else:
-                print(f"  ❌ Failed to fix component {component}")
-                return TestExecutionReport(error=f"Component {component} cannot be fixed")
-        else:
-            print(f"  ✅ Component {component} passed")
-    
-    # Phase 2: Integration Testing
-    print("Phase 2: Running integration tests...")
-    if all_components_passing(component_results):
-        integration_result = run_integration_tests(test_suite)
-        return TestExecutionReport(
-            component_results=component_results,
-            integration_result=integration_result
-        )
-    else:
-        return TestExecutionReport(
-            error="Cannot run integration tests - component failures exist",
-            component_results=component_results
-        )
-```
+### 8. Documentation Organization
+**MANDATORY**: Maintain organized documentation structure
 
-## Integration Failure Protocol
+#### File Structure
+# Code example removed for brevity
 
-### **CRITICAL: Integration Fails → Units First Rule**
-**MANDATORY**: When integration tests fail, immediately fall back to unit testing approach.
 
-```python
-# ✅ CORRECT: Integration Failure Protocol
-class IntegrationFailureProtocol:
-    """Handle integration test failures with systematic unit-first approach."""
-    
-    def handle_integration_failure(self, integration_result: TestResult) -> RecoveryResult:
-        """Execute systematic recovery from integration failures."""
-        
-        print("🚨 INTEGRATION TESTS FAILED - EXECUTING UNIT-FIRST PROTOCOL")
-        print("=" * 60)
-        
-        # Step 1: Immediately stop integration testing
-        self.stop_integration_testing()
-        
-        # Step 2: Identify all components involved in failure
-        failed_components = self.extract_failed_components(integration_result)
-        print(f"📋 Identified {len(failed_components)} components involved in failure")
-        
-        # Step 3: Test each component in complete isolation
-        component_results = {}
-        for component in failed_components:
-            print(f"\n🔍 Testing component in isolation: {component}")
-            
-            # Complete isolation with all dependencies mocked
-            isolation_result = self.test_component_in_complete_isolation(component)
-            component_results[component] = isolation_result
-            
-            if isolation_result.has_failures():
-                print(f"❌ Component {component} has unit-level failures")
-                
-                # Fix at unit level immediately
-                unit_fix_result = self.fix_unit_level_issues(component, isolation_result)
-                
-                if unit_fix_result.successful:
-                    print(f"✅ Component {component} unit issues fixed")
-                    # Re-test in isolation
-                    isolation_result = self.test_component_in_complete_isolation(component)
-                    component_results[component] = isolation_result
-                else:
-                    print(f"❌ Failed to fix unit issues in {component}")
-                    return RecoveryResult(
-                        success=False,
-                        message=f"Cannot fix unit-level issues in {component}",
-                        failed_component=component
-                    )
-            else:
-                print(f"✅ Component {component} passes in isolation")
-        
-        # Step 4: Progressive integration testing
-        print(f"\n🔄 Starting progressive integration...")
-        progressive_result = self.run_progressive_integration(failed_components)
-        
-        if progressive_result.successful:
-            print("✅ Progressive integration successful - issue resolved")
-            return RecoveryResult(success=True, method="unit_first_recovery")
-        else:
-            print("❌ Progressive integration still failing")
-            return RecoveryResult(
-                success=False,
-                message="Integration issues persist after unit fixes",
-                requires_step_back_analysis=True
-            )
-    
-    def test_component_in_complete_isolation(self, component: str) -> TestResult:
-        """Test component with ALL external dependencies mocked."""
-        
-        # Identify all external dependencies
-        dependencies = self.identify_external_dependencies(component)
-        
-        # Mock every single external dependency
-        with ExternalDependencyMocker(dependencies) as mocker:
-            # Create isolated test environment
-            isolated_env = self.create_completely_isolated_environment(component)
-            
-            # Run only this component's tests
-            result = self.run_component_tests_only(component, isolated_env)
-            
-            # Verify no external calls were made
-            mocker.verify_no_external_calls()
-            
-            return result
-    
-    def run_progressive_integration(self, components: List[str]) -> ProgressiveResult:
-        """Run progressive integration starting with smallest groups."""
-        
-        # Start with pairs of components
-        for i in range(len(components) - 1):
-            for j in range(i + 1, len(components)):
-                component_pair = [components[i], components[j]]
-                
-                print(f"  Testing pair: {component_pair}")
-                pair_result = self.test_component_pair(component_pair)
-                
-                if pair_result.has_failures():
-                    print(f"  ❌ Pair {component_pair} failed - fixing integration")
-                    fix_result = self.fix_pair_integration_issues(component_pair, pair_result)
-                    
-                    if not fix_result.successful:
-                        return ProgressiveResult(
-                            successful=False,
-                            failed_at_level="pair",
-                            failed_components=component_pair
-                        )
-        
-        # Then test larger groups progressively
-        for group_size in range(3, len(components) + 1):
-            groups = self.generate_component_groups(components, group_size)
-            
-            for group in groups:
-                print(f"  Testing group of {group_size}: {group}")
-                group_result = self.test_component_group(group)
-                
-                if group_result.has_failures():
-                    print(f"  ❌ Group {group} failed at size {group_size}")
-                    fix_result = self.fix_group_integration_issues(group, group_result)
-                    
-                    if not fix_result.successful:
-                        return ProgressiveResult(
-                            successful=False,
-                            failed_at_level=f"group_of_{group_size}",
-                            failed_components=group
-                        )
-        
-        return ProgressiveResult(successful=True)
+#### Cross-References
+# Code example removed for brevity
 
-# ✅ CORRECT: Integration-to-Unit Fallback Workflow
-def integration_to_unit_fallback_workflow(test_suite: str) -> TestExecutionReport:
-    """Systematic fallback from integration to unit testing."""
-    
-    execution_report = TestExecutionReport()
-    
-    try:
-        # Step 1: Attempt integration tests first
-        print("🚀 Attempting integration tests...")
-        integration_result = run_integration_tests(test_suite)
-        
-        if integration_result.successful:
-            print("✅ Integration tests passed")
-            execution_report.add_integration_success(integration_result)
-            return execution_report
-        
-        # Step 2: Integration failed - execute fallback protocol
-        print("❌ Integration tests failed - executing unit-first fallback")
-        
-        failure_protocol = IntegrationFailureProtocol()
-        recovery_result = failure_protocol.handle_integration_failure(integration_result)
-        
-        if recovery_result.success:
-            print("✅ Recovery successful via unit-first approach")
-            execution_report.add_recovery_success(recovery_result)
-        else:
-            print("❌ Recovery failed - requires step back analysis")
-            execution_report.add_recovery_failure(recovery_result)
-            
-            # Trigger step back analysis for profound problem analysis
-            if recovery_result.requires_step_back_analysis:
-                step_back_result = execute_step_back_protocol({
-                    'problem_context': 'integration_testing_failure',
-                    'failed_components': recovery_result.failed_component,
-                    'step_back_reason': 'unit_first_recovery_failed'
-                })
-                execution_report.add_step_back_analysis(step_back_result)
-        
-        return execution_report
-        
-    except Exception as e:
-        execution_report.add_error(f"Fallback workflow failed: {e}")
-        return execution_report
 
-# ✅ CORRECT: Automated Integration-Unit Testing Decision
-class AutomatedTestingDecision:
-    """Automatically decide between integration-first vs unit-first testing."""
-    
-    def decide_testing_approach(self, context: Dict[str, Any]) -> TestingApproach:
-        """Decide optimal testing approach based on context."""
-        
-        # Analyze recent test history
-        recent_failures = self.analyze_recent_test_failures()
-        
-        # Check component complexity
-        component_complexity = self.assess_component_complexity(context)
-        
-        # Check integration complexity
-        integration_complexity = self.assess_integration_complexity(context)
-        
-        # Decision logic
-        if recent_failures.has_frequent_integration_failures():
-            return TestingApproach(
-                primary="unit_first",
-                reasoning="Recent integration failures suggest unit-first approach"
-            )
-        
-        elif component_complexity.is_high() or integration_complexity.is_high():
-            return TestingApproach(
-                primary="unit_first", 
-                reasoning="High complexity suggests unit-first approach"
-            )
-        
-        elif context.get('new_feature') or context.get('major_changes'):
-            return TestingApproach(
-                primary="unit_first",
-                reasoning="New features/major changes benefit from unit-first approach"
-            )
-        
-        else:
-            return TestingApproach(
-                primary="integration_first",
-                fallback="unit_first",
-                reasoning="Stable system allows integration-first with unit fallback"
-            )
-```
+### 9. Documentation Quality Standards
+**MANDATORY**: Maintain high documentation quality
 
-### **Integration Failure Escalation Matrix**
+#### Clarity Requirements
+# Code example removed for brevity
+bash
+   pip install python-oauth2 python-jwt
+   # Code example removed for brevity
+bash
+   export OAUTH_CLIENT_ID="your_client_id"
+   export OAUTH_CLIENT_SECRET="your_client_secret"
+   # Code example removed for brevity
+python
+   from auth import OAuthHandler
+   
+   handler = OAuthHandler(
+       client_id=os.getenv("OAUTH_CLIENT_ID"),
+       client_secret=os.getenv("OAUTH_CLIENT_SECRET"),
+       redirect_uri="http://localhost:8000/callback"  # New parameter
+   )
+   # Code example removed for brevity
 
-```python
-# ✅ CORRECT: Escalation matrix for integration failures
-class IntegrationFailureEscalation:
-    """Escalation matrix for handling different types of integration failures."""
-    
-    ESCALATION_MATRIX = {
-        "unit_passes_integration_fails": {
-            "approach": "progressive_integration",
-            "focus": "interface_boundaries",
-            "escalation_time": "15_minutes"
-        },
-        "unit_fails_integration_fails": {
-            "approach": "unit_first_mandatory",
-            "focus": "component_isolation", 
-            "escalation_time": "immediate"
-        },
-        "intermittent_integration_failures": {
-            "approach": "environmental_analysis",
-            "focus": "timing_and_state",
-            "escalation_time": "30_minutes"
-        },
-        "performance_integration_failures": {
-            "approach": "performance_unit_testing",
-            "focus": "resource_constraints",
-            "escalation_time": "45_minutes"
-        },
-        "dependency_integration_failures": {
-            "approach": "dependency_isolation",
-            "focus": "external_services",
-            "escalation_time": "20_minutes"
-        }
-    }
-    
-    def escalate_failure(self, failure_type: str, context: Dict[str, Any]) -> EscalationResult:
-        """Escalate integration failure based on type and context."""
-        
-        if failure_type not in self.ESCALATION_MATRIX:
-            failure_type = "unit_fails_integration_fails"  # Default to most conservative
-        
-        escalation_config = self.ESCALATION_MATRIX[failure_type]
-        
-        # Execute escalation approach
-        if escalation_config["approach"] == "unit_first_mandatory":
-            return self.execute_mandatory_unit_first(context)
-        elif escalation_config["approach"] == "progressive_integration":
-            return self.execute_progressive_integration(context)
-        # ... other approaches
-        
-        return EscalationResult(success=False, message="Unknown escalation approach")
-```
 
-## Integration with Development Workflow
+#### Accuracy Requirements
+# Code example removed for brevity
 
-### Pre-Commit Test Monitoring
-```python
-# ✅ CORRECT: Pre-Commit Integration
-class PreCommitTestMonitor:
-    def __init__(self):
-        self.test_monitor = TestMonitor()
-        self.bug_fixer = BugFixer()
-    
-    def run_pre_commit_tests(self) -> bool:
-        """Run tests before commit with monitoring"""
-        # Run tests with monitoring
-        execution_report = self.test_monitor.monitor_test_execution()
-        
-        # Check for failures
-        if execution_report.has_failures():
-            # Attempt to fix failures
-            fix_report = self.bug_fixer.fix_test_failures(execution_report.get_failures())
-            
-            # If fixes were successful, run tests again
-            if fix_report.has_successful_fixes():
-                execution_report = self.test_monitor.monitor_test_execution()
-        
-        # Return success only if no failures
-        return not execution_report.has_failures()
-```
 
-### Continuous Test Monitoring
-```python
-# ✅ CORRECT: Continuous Monitoring
-class ContinuousTestMonitor:
-    def __init__(self):
-        self.test_monitor = TestMonitor()
-        self.scheduler = TestScheduler()
-    
-    def start_continuous_monitoring(self) -> None:
-        """Start continuous test monitoring"""
-        while True:
-            try:
-                # Run scheduled tests
-                scheduled_tests = self.scheduler.get_scheduled_tests()
-                
-                for test_path in scheduled_tests:
-                    execution_report = self.test_monitor.monitor_test_execution(test_path)
-                    
-                    # Handle any failures
-                    if execution_report.has_failures():
-                        self.handle_continuous_failures(execution_report)
-                
-                # Wait for next cycle
-                time.sleep(300)  # Check every 5 minutes
-                
-            except Exception as e:
-                logging.error(f"Continuous monitoring error: {e}")
-                time.sleep(60)  # Wait 1 minute before retrying
-```
+### 10. Documentation Metrics and Monitoring
+**MANDATORY**: Track documentation health
+
+#### Coverage Metrics
+# Code example removed for brevity
+
+
+#### Freshness Tracking
+# Code example removed for brevity
+
+
+### 11. Integration with Development Workflow
+**MANDATORY**: Integrate documentation into development process
+
+#### Pull Request Requirements
+# Code example removed for brevity
+
+
+#### CI/CD Integration
+# Code example removed for brevity
+
+
+### 12. Emergency Documentation Procedures
+**MANDATORY**: Handle urgent documentation needs
+
+#### Hotfix Documentation
+# Code example removed for brevity
+
+
+#### Documentation Debt Recovery
+# Code example removed for brevity
+
+
+### 1. Automated Enforcement
+# Code example removed for brevity
+
+
+### 2. Code Review Requirements
+- [ ] All code changes have corresponding documentation updates
+- [ ] Documentation accurately reflects implementation
+- [ ] Examples work as written
+- [ ] Links are valid and current
+- [ ] Change history is updated
+
+### 3. Quality Gates
+- [ ] Documentation coverage ≥ 90%
+- [ ] No documentation older than 30 days from related code
+- [ ] All examples execute successfully
+- [ ] No broken internal links
+- [ ] Changelog updated with all changes
 
 ## Benefits
 
-### Immediate Error Detection
-- **Real-time Monitoring**: Detect errors as they occur
-- **Instant Alerting**: Immediate notification of failures
-- **Rapid Response**: Quick identification and resolution of issues
+- **Improved Onboarding**: New team members have current documentation
+- **Reduced Support Burden**: Accurate docs reduce questions
+- **Better Maintenance**: Clear documentation aids debugging
+- **Compliance**: Audit requirements met with current documentation
+- **Knowledge Preservation**: Institutional knowledge captured and maintained
 
-### Automated Bug Fixing
-- **Systematic Approach**: Systematic approach to bug fixing
-- **Automated Fixes**: Apply fixes automatically where possible
-- **Prevention Measures**: Implement measures to prevent recurrence
+## Monitoring
 
-### Performance Optimization
-- **Performance Tracking**: Track and optimize test performance
-- **Regression Detection**: Detect performance regressions early
-- **Continuous Improvement**: Continuously improve test efficiency
+### Success Metrics:
+- Documentation coverage percentage
+- Average documentation age relative to code
+- Number of documentation-related support tickets
+- Time to resolve documentation issues
+- Developer satisfaction with documentation quality
 
-### Quality Assurance
-- **Zero Failing Tests**: Maintain zero failing tests policy
-- **Quality Gates**: Ensure code quality through test monitoring
-- **Reliability**: Improve system reliability through comprehensive testing
+### Failure Indicators:
+- Documentation coverage below 90%
+- Documentation older than 30 days from related code changes
+- Broken or outdated examples
+- Increasing support tickets about undocumented features
+- Developer complaints about stale documentation
 
-## Enforcement
+# Live Documentation Updates Rule
 
-This rule is **CRITICAL** and must be followed for all:
-- Test execution and monitoring
-- Error detection and alerting
-- Bug fixing and resolution
-- Performance optimization
-- Quality assurance processes
+**CRITICAL**: All documentation must be updated immediately when any relevant changes occur. Documentation debt is not permitted.
 
-**Violations of this rule require immediate remediation and test monitoring restoration.**
-description: "Auto-generated description"
-globs: ["**/*"]
-alwaysApply: false
----
+## Description
+This rule enforces real-time documentation updates whenever changes are made to code, architecture, processes, rules, configurations, or any other documented elements. Documentation must always reflect the current state of the system.
+
+## Core Requirements
+
+### 1. Immediate Update Obligation
+**MANDATORY**: Update documentation within the same work session as the change
+# Code example removed for brevity
+
+
+### 2. Documentation Triggers
+**MANDATORY**: Update documentation when ANY of these events occur:
+# Code example removed for brevity
+
+
+### 3. Documentation Types and Update Requirements
+**MANDATORY**: Keep ALL documentation types current
+
+#### Code Documentation
+# Code example removed for brevity
+
+
+#### API Documentation
+# Code example removed for brevity
+json
+{
+  "current_field": "string",
+  "new_field": "integer"  // Added: 2024-01-15
+}
+# Code example removed for brevity
+json
+{
+  "status": "success",
+  "data": {
+    "updated_structure": "current_format"
+  }
+}
+# Code example removed for brevity
+
+
+#### Architecture Documentation
+# Code example removed for brevity
+mermaid
+graph TD
+    A[Client] --> B[API Gateway]
+    B --> C[Auth Service - Updated]
+    B --> D[User Service - New]
+# Code example removed for brevity
+
+
+### 4. Documentation Standards
+**MANDATORY**: Follow these update standards
+
+#### Version Information
+# Code example removed for brevity
+
+
+#### Change Tracking
+# Code example removed for brevity
+
+
+### 5. Documentation Validation
+**MANDATORY**: Validate documentation accuracy
+
+#### Accuracy Verification
+# Code example removed for brevity
+
+
+#### Link Verification
+# Code example removed for brevity
+
+
+### 6. Automated Documentation Updates
+**MANDATORY**: Implement automation where possible
+
+#### Code Comment Extraction
+# Code example removed for brevity
+
+
+#### Schema Documentation
+# Code example removed for brevity
+
+
+### 7. Documentation Review Process
+**MANDATORY**: Review documentation changes
+
+#### Pre-Commit Validation
+# Code example removed for brevity
+
+
+#### Documentation Completeness Check
+# Code example removed for brevity
+
+
+### 8. Documentation Organization
+**MANDATORY**: Maintain organized documentation structure
+
+#### File Structure
+# Code example removed for brevity
+
+
+#### Cross-References
+# Code example removed for brevity
+
+
+### 9. Documentation Quality Standards
+**MANDATORY**: Maintain high documentation quality
+
+#### Clarity Requirements
+# Code example removed for brevity
+bash
+   pip install python-oauth2 python-jwt
+   # Code example removed for brevity
+bash
+   export OAUTH_CLIENT_ID="your_client_id"
+   export OAUTH_CLIENT_SECRET="your_client_secret"
+   # Code example removed for brevity
+python
+   from auth import OAuthHandler
+   
+   handler = OAuthHandler(
+       client_id=os.getenv("OAUTH_CLIENT_ID"),
+       client_secret=os.getenv("OAUTH_CLIENT_SECRET"),
+       redirect_uri="http://localhost:8000/callback"  # New parameter
+   )
+   # Code example removed for brevity
+
+
+#### Accuracy Requirements
+# Code example removed for brevity
+
+
+### 10. Documentation Metrics and Monitoring
+**MANDATORY**: Track documentation health
+
+#### Coverage Metrics
+# Code example removed for brevity
+
+
+#### Freshness Tracking
+# Code example removed for brevity
+
+
+### 11. Integration with Development Workflow
+**MANDATORY**: Integrate documentation into development process
+
+#### Pull Request Requirements
+# Code example removed for brevity
+
+
+#### CI/CD Integration
+# Code example removed for brevity
+
+
+### 12. Emergency Documentation Procedures
+**MANDATORY**: Handle urgent documentation needs
+
+#### Hotfix Documentation
+# Code example removed for brevity
+
+
+#### Documentation Debt Recovery
+# Code example removed for brevity
+
+
+### 1. Automated Enforcement
+# Code example removed for brevity
+
+
+### 2. Code Review Requirements
+- [ ] All code changes have corresponding documentation updates
+- [ ] Documentation accurately reflects implementation
+- [ ] Examples work as written
+- [ ] Links are valid and current
+- [ ] Change history is updated
+
+### 3. Quality Gates
+- [ ] Documentation coverage ≥ 90%
+- [ ] No documentation older than 30 days from related code
+- [ ] All examples execute successfully
+- [ ] No broken internal links
+- [ ] Changelog updated with all changes
+
+## Benefits
+
+- **Improved Onboarding**: New team members have current documentation
+- **Reduced Support Burden**: Accurate docs reduce questions
+- **Better Maintenance**: Clear documentation aids debugging
+- **Compliance**: Audit requirements met with current documentation
+- **Knowledge Preservation**: Institutional knowledge captured and maintained
+
+## Monitoring
+
+### Success Metrics:
+- Documentation coverage percentage
+- Average documentation age relative to code
+- Number of documentation-related support tickets
+- Time to resolve documentation issues
+- Developer satisfaction with documentation quality
+
+### Failure Indicators:
+- Documentation coverage below 90%
+- Documentation older than 30 days from related code changes
+- Broken or outdated examples
+- Increasing support tickets about undocumented features
+- Developer complaints about stale documentation
+
 
 

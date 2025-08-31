@@ -97,11 +97,11 @@ contexts:
     
   AGILE:
     description: "Agile project management and artifacts"
-    keywords: ["@agile", "@sprint", "@story", "@backlog"]
+    keywords: ["@agile", "@sprint", "@story", "@backlog", "@team", "@staff", "@epic", "@user", "@us"]
     auto_detect_patterns:
-      message: ["sprint", "backlog", "story", "agile", "scrum", "standup", "retrospective"]
-      files: ["*sprint*", "*backlog*", "*story*", "*agile*"]
-      directories: ["docs/agile/", "agile/", "scrum/"]
+      message: ["sprint", "backlog", "story", "agile", "scrum", "standup", "retrospective", "epic", "team", "staff", "organize", "user story", "us-", "epic-", "velocity", "planning", "estimation", "ceremony", "artifact", "acceptance criteria", "definition of done", "product owner", "scrum master", "stakeholder", "automation", "story points", "burndown", "kanban", "expert team", "staffing", "specialized team", "automation", "framework"]
+      files: ["*sprint*", "*backlog*", "*story*", "*agile*", "*epic*", "*US-*", "*user_story*", "*planning*", "*retrospective*", "*velocity*", "*team*", "*staff*"]
+      directories: ["docs/agile/", "agile/", "scrum/", "docs/agile/sprints/", "docs/agile/catalogs/", "docs/agile/core/", "docs/agile/planning/", "docs/agile/templates/", "utils/agile/"]
     rules:
       - "safety_first_principle"
       - "unhackable_ethical_dna_security_rule"
@@ -109,6 +109,11 @@ contexts:
       - "documentation_live_updates_rule"
       - "agile_sprint_management_rule"
       - "agile_user_story_management_rule"
+      - "automated_user_story_status_updates"
+      - "fully_automated_user_story_system"
+      - "agile_development_rule"
+      - "agile_manifesto_principles_rule"
+      - "continuous_self_optimization_rule"
     agent_future: "ScrumMasterAgent"
     priority: 2
     

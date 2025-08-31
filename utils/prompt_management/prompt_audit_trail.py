@@ -127,7 +127,7 @@ class PromptAuditTrail:
     Comprehensive audit trail system for prompt changes.
     """
     
-    def __init__(self, db_path: str = "prompt_audit.db"):
+    def __init__(self, db_path: str = "prompts/analytics/prompt_audit.db"):
         """Initialize the audit trail system."""
         self.db_path = db_path
         self._init_database()
@@ -927,6 +927,6 @@ class PromptAuditTrail:
 
 
 # Factory function
-def get_audit_trail_system(db_path: str = "prompt_audit.db") -> PromptAuditTrail:
+def get_audit_trail_system(db_path: str = "prompts/analytics/prompt_audit.db") -> PromptAuditTrail:
     """Get an audit trail system instance."""
     return PromptAuditTrail(db_path)
