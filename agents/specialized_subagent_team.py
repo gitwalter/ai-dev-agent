@@ -94,6 +94,7 @@ class BaseSpecializedAgent(ABC):
         
         # INNER PRINCIPLES: Directory structure rules embedded in agent DNA
         self.directory_structure_principles = self._initialize_directory_principles()
+        self.date_validation_principles = self._initialize_date_validation_principles()
         
     def _initialize_directory_principles(self) -> Dict[str, str]:
         """Initialize core directory structure principles as inner agent DNA"""
@@ -242,6 +243,73 @@ class BaseSpecializedAgent(ABC):
             'task_completion_rate': 1.0,  # Completed task
             'collaboration_effectiveness': len(task_result.collaboration_needs)
         })
+    def _initialize_date_validation_principles(self) -> Dict[str, Any]:
+        """Initialize agile date validation principles as agent DNA"""
+        from datetime import datetime, timedelta
+        
+        return {
+            "current_date": datetime.now(),
+            "date_format": "%Y-%m-%d",
+            "max_future_days": 90,
+            "max_past_days": 365,
+            "sprint_2_start": datetime.now() - timedelta(days=14),
+            "sprint_2_end": datetime.now() + timedelta(days=7),
+            "validation_rules": {
+                "creation_dates_in_past": True,
+                "update_dates_current": True,
+                "due_dates_near_future": True,
+                "standard_format_required": True,
+                "sprint_consistency_required": True
+            }
+        }
+    
+    def validate_agile_dates(self, content: str) -> Tuple[bool, List[str]]:
+        """Validate all dates in agile content"""
+        import re
+        from datetime import datetime
+        
+        violations = []
+        date_pattern = r'(\d{4}-\d{2}-\d{2})'
+        current_date = datetime.now()
+        
+        # Find all dates in content
+        for match in re.finditer(date_pattern, content):
+            date_str = match.group(1)
+            try:
+                date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+                days_diff = (date_obj - current_date).days
+                
+                # Check for unrealistic dates
+                if days_diff > 90:
+                    violations.append(f"Future date too far: {date_str}")
+                elif days_diff < -365:
+                    violations.append(f"Past date too old: {date_str}")
+                    
+            except ValueError:
+                violations.append(f"Invalid date format: {date_str}")
+        
+        return len(violations) == 0, violations
+    
+    def apply_realistic_dates(self, content: str) -> str:
+        """Apply realistic dates to agile content"""
+        from datetime import datetime, timedelta
+        
+        current_date = datetime.now()
+        
+        # Replace common date placeholders with realistic dates
+        replacements = {
+            "YYYY-MM-DD": current_date.strftime("%Y-%m-%d"),
+            "CURRENT_DATE": current_date.strftime("%Y-%m-%d"),
+            "SPRINT_2_START": (current_date - timedelta(days=14)).strftime("%Y-%m-%d"),
+            "SPRINT_2_END": (current_date + timedelta(days=7)).strftime("%Y-%m-%d"),
+            "RECENT_PAST": (current_date - timedelta(days=7)).strftime("%Y-%m-%d"),
+            "NEAR_FUTURE": (current_date + timedelta(days=14)).strftime("%Y-%m-%d")
+        }
+        
+        for placeholder, realistic_date in replacements.items():
+            content = content.replace(placeholder, realistic_date)
+            
+        return content
 
 class ArchitectAgent(BaseSpecializedAgent):
     """@architect - System architecture and design leadership"""
