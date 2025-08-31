@@ -22,8 +22,8 @@ from pathlib import Path
 from datetime import datetime
 
 from utils.prompt_management import (
-    PromptEngineeringSystem,
-    get_prompt_engineering_system,
+    PromptManagementSystem,
+    get_prompt_management_system,
     TemplateType,
     TemplateStatus,
     OptimizationStrategy,
@@ -46,7 +46,7 @@ class TestPromptEngineeringSystem:
     def system(self, temp_dir):
         """Create prompt engineering system with temporary directory."""
         # Override default directories
-        system = PromptEngineeringSystem()
+        system = PromptManagementSystem()
         system.template_system.templates_dir = Path(temp_dir) / "templates"
         system.optimizer.cache_dir = Path(temp_dir) / "cache"
         system.ab_testing.tests_dir = Path(temp_dir) / "ab_tests"
