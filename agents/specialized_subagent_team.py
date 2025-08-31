@@ -17,6 +17,7 @@ Team Structure:
 
 import asyncio
 import logging
+import os
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
@@ -90,6 +91,107 @@ class BaseSpecializedAgent(ABC):
         self.llm = self._initialize_llm()
         self.session_history: List[Dict] = []
         self.performance_metrics: Dict[str, float] = {}
+        
+        # INNER PRINCIPLES: Directory structure rules embedded in agent DNA
+        self.directory_structure_principles = self._initialize_directory_principles()
+        
+    def _initialize_directory_principles(self) -> Dict[str, str]:
+        """Initialize core directory structure principles as inner agent DNA"""
+        return {
+            # Core application structure
+            "agents/": "AI agent implementations and orchestration - ALL agent files here",
+            "apps/": "Streamlit applications and UI components - ALL UI files here", 
+            "context/": "Context management and processing - ALL context files here",
+            "models/": "Data models and schemas - ALL model files here",
+            "utils/": "Utility functions and helper modules - ALL utility files here",
+            "workflow/": "Workflow management and orchestration - ALL workflow files here",
+            
+            # Development and operations
+            "scripts/": "Utility scripts and automation tools - ALL script files here",
+            "tests/": "ALL test files and test utilities - NO EXCEPTIONS",
+            "monitoring/": "System monitoring and observability - ALL monitoring files here",
+            "logs/": "Application logs and debugging - ALL log files here",
+            
+            # Documentation and configuration
+            "docs/": "Project documentation and guides - ALL documentation here",
+            "prompts/": "Prompt templates and management - ALL prompt files here",
+            
+            # FORBIDDEN in root directory
+            "ROOT_FORBIDDEN": "test_*.py, run_*.py, *_script.py, *_util.py, temp files, summary files"
+        }
+    
+    def validate_file_placement(self, file_path: str, file_type: str) -> Tuple[bool, str]:
+        """Validate file placement against directory structure principles"""
+        filename = os.path.basename(file_path)
+        directory = os.path.dirname(file_path)
+        
+        # Test files MUST be in tests/
+        if filename.startswith('test_') or filename.endswith('_test.py'):
+            correct_location = "tests/"
+            is_valid = directory.startswith("tests")
+            return is_valid, correct_location
+        
+        # Script files MUST be in scripts/
+        if filename.startswith('run_') or filename.endswith('_script.py'):
+            correct_location = "scripts/"
+            is_valid = directory.startswith("scripts")
+            return is_valid, correct_location
+        
+        # Utility files MUST be in utils/
+        if filename.endswith('_util.py') or filename.endswith('_utils.py'):
+            correct_location = "utils/"
+            is_valid = directory.startswith("utils")
+            return is_valid, correct_location
+        
+        # Agent files MUST be in agents/
+        if filename.endswith('_agent.py') or 'agent' in filename:
+            correct_location = "agents/"
+            is_valid = directory.startswith("agents")
+            return is_valid, correct_location
+        
+        # Model files MUST be in models/
+        if filename.endswith('_model.py') or 'model' in filename:
+            correct_location = "models/"
+            is_valid = directory.startswith("models")
+            return is_valid, correct_location
+        
+        # Workflow files MUST be in workflow/
+        if filename.endswith('_workflow.py') or 'workflow' in filename:
+            correct_location = "workflow/"
+            is_valid = directory.startswith("workflow")
+            return is_valid, correct_location
+        
+        # Default: assume valid if not in forbidden patterns
+        return True, directory
+    
+    def enforce_directory_structure(self, proposed_file_path: str) -> str:
+        """Enforce directory structure principles and return correct path"""
+        is_valid, correct_location = self.validate_file_placement(proposed_file_path, "unknown")
+        
+        if not is_valid:
+            filename = os.path.basename(proposed_file_path)
+            corrected_path = os.path.join(correct_location, filename)
+            
+            logger.warning(f"🏗️ {self.role.value}: Directory structure violation detected!")
+            logger.warning(f"   Proposed: {proposed_file_path}")
+            logger.warning(f"   Corrected: {corrected_path}")
+            
+            return corrected_path
+        
+        return proposed_file_path
+    
+    def _format_directory_principles(self) -> str:
+        """Format directory structure principles for agent prompts"""
+        principles_text = "DIRECTORY STRUCTURE PRINCIPLES (INNER DNA):\n"
+        for directory, description in self.directory_structure_principles.items():
+            if directory != "ROOT_FORBIDDEN":
+                principles_text += f"- {directory}: {description}\n"
+        
+        principles_text += f"\nFORBIDDEN IN ROOT: {self.directory_structure_principles['ROOT_FORBIDDEN']}\n"
+        principles_text += "\n**CRITICAL**: These principles are embedded in your agent DNA. "
+        principles_text += "NEVER violate directory structure. ALWAYS validate file placements."
+        
+        return principles_text
         
     def _initialize_llm(self) -> ChatGoogleGenerativeAI:
         """Initialize LLM based on agent complexity requirements"""
@@ -167,6 +269,9 @@ class ArchitectAgent(BaseSpecializedAgent):
         
         ROLE: Lead system architecture decisions with excellence and strategic thinking.
         
+        INNER PRINCIPLES - DIRECTORY STRUCTURE (SACRED):
+        {self._format_directory_principles()}
+        
         SPECIALIZATIONS:
         - System architecture design and component integration
         - Design pattern selection and technical decision making
@@ -188,6 +293,7 @@ class ArchitectAgent(BaseSpecializedAgent):
         3. Ensure integration with existing Sprint 2 components
         4. Plan for US-AB-02 (Agent Intelligence Framework) integration
         5. Consider US-WO-01 (Workflow Orchestration) requirements
+        6. **CRITICAL**: ALL file placements MUST follow directory structure principles
         
         DELIVERABLES:
         - Detailed architecture design with component diagrams
@@ -195,9 +301,13 @@ class ArchitectAgent(BaseSpecializedAgent):
         - Integration patterns and interfaces
         - Scalability and performance considerations
         - Implementation roadmap with clear phases
+        - **File organization plan following directory structure principles**
         
         Apply all relevant rules: Context Awareness, Best Practices, OOP Design Patterns,
-        Framework-First Development, and System Excellence standards.
+        Framework-First Development, File Organization, and System Excellence standards.
+        
+        **MANDATORY**: Validate ALL file paths against directory structure principles.
+        Any file placement violations MUST be corrected immediately.
         
         Provide concrete, actionable architecture decisions with evidence and rationale.
         """
@@ -282,6 +392,9 @@ class DeveloperAgent(BaseSpecializedAgent):
         
         ROLE: Implement high-quality code following TDD and best practices.
         
+        INNER PRINCIPLES - DIRECTORY STRUCTURE (SACRED):
+        {self._format_directory_principles()}
+        
         SPECIALIZATIONS:
         - Test-driven development with Red-Green-Refactor cycle
         - LangChain/LangGraph framework implementation
@@ -303,6 +416,7 @@ class DeveloperAgent(BaseSpecializedAgent):
         3. Implement proper error handling (no silent errors)
         4. Apply SOLID principles and clean code practices
         5. Use Pydantic for data validation and type safety
+        6. **CRITICAL**: ALL files MUST be placed in correct directories per inner principles
         
         SPRINT 2 INTEGRATION:
         - Integrate with US-PE-01 prompt engineering system
@@ -310,14 +424,18 @@ class DeveloperAgent(BaseSpecializedAgent):
         - Consider US-WO-01 workflow orchestration requirements
         
         DELIVERABLES:
-        - Complete test suite with 90%+ coverage
-        - Production-ready implementation code
+        - Complete test suite with 90%+ coverage (ALL tests in tests/ directory)
+        - Production-ready implementation code (in appropriate directories)
         - Comprehensive error handling and validation
         - Integration with existing Sprint 2 components
         - Performance-optimized code with monitoring
+        - **File organization compliance report**
         
         Apply all relevant rules: TDD, Best Practices, Framework-First, No Silent Errors,
-        Model Selection, and Code Quality standards.
+        Model Selection, File Organization, and Code Quality standards.
+        
+        **MANDATORY**: Before creating ANY file, validate placement against directory principles.
+        Test files MUST go in tests/, utilities in utils/, agents in agents/, etc.
         
         Provide concrete implementation with tests and evidence of quality.
         """
