@@ -20,7 +20,7 @@
 ### **🎯 Agile & Project Management Documentation**
 
 #### **Epic Level Documentation**
-- `docs/agile/catalogs/EPIC_OVERVIEW.md` - ✅ **Current** - Master epic tracking with accurate completion status
+- `docs/agile/catalogs/epic-overview.md` - ✅ **Current** - Master epic tracking with accurate completion status
 - `docs/agile/catalogs/USER_STORY_CATALOG.md` - ✅ **Current** - Complete user story index including Epic 0 stories
 
 #### **Sprint Documentation**

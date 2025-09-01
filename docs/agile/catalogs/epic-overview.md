@@ -6,6 +6,38 @@
 
 ## 📊 **Epic Progress Dashboard**
 
+### **EPIC-FORMAL-PRINCIPLES: Formal Principles Excellence System** 🆕 **STRATEGIC**
+**Status**: 📋 **PLANNED**  
+**Priority**: STRATEGIC  
+**Target Completion**: Sprint 5-9 (20 weeks)  
+**Business Value**: Unhackable formal principles system with mathematical rigor and continuous optimization
+
+| Phase | Component Areas | Story Points | Status | Duration |
+|-------|----------------|--------------|--------|----------|
+| Phase 1 | Formal System Foundation | 89-144 | 📋 Planned | 4-6 weeks |
+| Phase 2 | Continuous Validation System | 55-89 | 📋 Planned | 3-4 weeks |
+| Phase 3 | Refinement & Optimization Engine | 89-144 | 📋 Planned | 4-5 weeks |
+| Phase 4 | Integration & Deployment | 34-55 | 📋 Planned | 2-3 weeks |
+| **Total** | **4 phases** | **267-432 points** | **Planned** | **20 weeks** |
+
+**Key Deliverables**:
+- 🎯 Logical axiom system with formal proof validation (US-FORMAL-001)
+- 🎯 Formal inference engine for automated reasoning (US-FORMAL-002)
+- 🎯 Automated principle compliance checking (US-VALID-001)
+- 🎯 Evidence-based principle refinement system (US-REFINE-001)
+- 🎯 Machine learning optimization engine (US-REFINE-002)
+- 🎯 Seamless workflow integration (US-DEPLOY-001)
+
+**Strategic Impact**: Creates mathematical foundation for systematic development excellence with continuous self-validation and optimization
+
+**Success Metrics**:
+- 100% mathematical consistency maintained
+- 25%+ improvement in development efficiency
+- 90%+ team satisfaction with formal system
+- 99.9% system reliability and uptime
+
+---
+
 ### **Epic 6: Full Cursor Automation & Intelligent Workflow Orchestration** 🆕
 **Status**: 📋 Planned  
 **Target Completion**: Sprint 3-4  
@@ -244,7 +276,7 @@
 - [Cross-Sprint Tracking](CROSS_SPRINT_TRACKING.md) - Dependencies and relationships
 
 ### **Planning Documents**
-- [Epic Breakdown](../planning/epic_breakdown.md) - Original epic planning
+- [Epic Breakdown](../planning/epic-breakdown.md) - Original epic planning
 - [Product Backlog](../planning/product_backlog.md) - Prioritized backlog
 - [Release Planning](../planning/release_planning.md) - Release timeline
 

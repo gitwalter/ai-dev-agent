@@ -28,7 +28,7 @@ The AI-Dev-Agent system has been successfully transformed from a waterfall-based
 
 ### **Strategic Planning Documents**
 1. **[Product Backlog](../planning/product_backlog.md)** - 8 Epics, 45+ User Stories, ROI-prioritized
-2. **[Epic Breakdown](../planning/epic_breakdown.md)** - High-level feature planning with business justification
+2. **[Epic Breakdown](../planning/epic-breakdown.md)** - High-level feature planning with business justification
 3. **[Updated Roadmap](../planning/updated_roadmap.md)** - 5 releases over 20 weeks, value-driven
 4. **[Release Planning](../planning/release_planning.md)** - Comprehensive release strategy and success metrics
 
@@ -321,7 +321,7 @@ current_status:
 5. **Follow Rules**: [Agile Cursor Rules](agile_cursor_rules.md) - Development automation
 
 ### **Leadership Dashboard**
-- **Strategic View**: [Epic Breakdown](../planning/epic_breakdown.md) + [Release Planning](../planning/release_planning.md)
+- **Strategic View**: [Epic Breakdown](../planning/epic-breakdown.md) + [Release Planning](../planning/release_planning.md)
 - **Operational View**: [Agile Workflow](agile_workflow.md) + [Automation Framework](../automation/automation_framework.md)
 - **Quality View**: [Definition of Done](definition_of_done.md) + Quality Metrics
 - **Progress View**: Sprint Planning + Real-time Dashboards

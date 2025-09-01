@@ -167,7 +167,7 @@ Based on current velocity (1.6 pts/day):
 
 ### **Other Catalogs**
 - [User Story Catalog](USER_STORY_CATALOG.md) - All user stories
-- [Epic Overview](EPIC_OVERVIEW.md) - Epic progress
+- [Epic Overview](epic-overview.md) - Epic progress
 - [Task Catalog](TASK_CATALOG.md) - Detailed tasks
 - [Cross-Sprint Tracking](CROSS_SPRINT_TRACKING.md) - Dependencies
 

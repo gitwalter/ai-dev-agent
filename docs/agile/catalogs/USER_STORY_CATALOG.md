@@ -142,12 +142,12 @@ This catalog provides a comprehensive view of all user stories across the entire
 - [Sprint Templates](../sprints/templates/)
 
 ### **Planning Documents**
-- [Epic Breakdown](../planning/epic_breakdown.md)
+- [Epic Breakdown](../planning/epic-breakdown.md)
 - [Product Backlog](../planning/product_backlog.md)
 - [Release Planning](../planning/release_planning.md)
 
 ### **Other Catalogs**
-- [Epic Overview](EPIC_OVERVIEW.md)
+- [Epic Overview](epic-overview.md)
 - [Sprint Summary](SPRINT_SUMMARY.md)
 - [Task Catalog](TASK_CATALOG.md)
 - [Cross-Sprint Tracking](CROSS_SPRINT_TRACKING.md)

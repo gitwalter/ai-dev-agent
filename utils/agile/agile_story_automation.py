@@ -442,7 +442,7 @@ class AgileStoryAutomation:
     
     def _update_epic_overview(self, story: UserStory, action: str) -> None:
         """Update epic overview with new story."""
-        epic_path = self.catalogs_path / "EPIC_OVERVIEW.md"
+        epic_path = self.catalogs_path / "epic-overview.md"
         print(f"📝 Updated Epic Overview for {story.epic} epic")
     
     def _create_story_file(self, story: UserStory) -> None:

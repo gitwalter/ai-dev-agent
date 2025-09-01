@@ -23,7 +23,7 @@ This directory contains our **lightning-fast agile framework** with embedded qua
 
 ### **🗂️ Central Catalogs** (`catalogs/`) - **NEW**
 - **[User Story Catalog](catalogs/USER_STORY_CATALOG.md)** - Master index of all user stories across sprints
-- **[Epic Overview](catalogs/EPIC_OVERVIEW.md)** - Cross-sprint epic progress tracking  
+- **[Epic Overview](catalogs/epic-overview.md)** - Cross-sprint epic progress tracking  
 - **[Sprint Summary](catalogs/SPRINT_SUMMARY.md)** - Cross-sprint status and metrics dashboard
 - **[Task Catalog](catalogs/TASK_CATALOG.md)** - Comprehensive task tracking across all sprints
 - **[Cross-Sprint Tracking](catalogs/CROSS_SPRINT_TRACKING.md)** - Dependencies and relationships
@@ -41,6 +41,9 @@ This directory contains our **lightning-fast agile framework** with embedded qua
 - **[Sprint Templates](sprints/templates/)** - Templates for creating new sprints
 
 ### **Core Agile Concepts** (`core/`)
+- **[Formal Organization Rules](../rules/core/formal_organization_rules.md)** - **FOUNDATIONAL** - Mathematical and philosophical system basis
+- **[Mathematical System Foundation](../mathematics/formal_system_mathematics.md)** - **MATHEMATICAL** - Rigorous mathematical formalization of complete architecture
+- **[Universal Naming Conventions](../guides/development/universal_naming_conventions_reference.md)** - **MANDATORY** - Complete artifact naming system
 - [Agile Workflow](core/agile_workflow.md) - Sprint-based development process
 - [Agile Cursor Rules](core/agile_cursor_rules.md) - Cursor rules for agile development
 - **[Agile Meeting Rules](core/agile_meeting_rules.md)** - Complete governance for all agile meetings
@@ -51,12 +54,12 @@ This directory contains our **lightning-fast agile framework** with embedded qua
 
 ### **High-Level Planning** (`planning/`) - **CLEANED**
 - [Product Backlog](planning/product_backlog.md) - References catalog, high-level priorities
-- [Epic Breakdown](planning/epic_breakdown.md) - High-level feature groupings and themes
+- [Epic Breakdown](planning/epic-breakdown.md) - High-level feature groupings and themes
 - [Updated Roadmap](planning/updated_roadmap.md) - Agile-driven development roadmap
 - [Release Planning](planning/release_planning.md) - Release goals and roadmap
 - [User Stories](planning/user_stories.md) - Master user story list (references catalog)
 - [Story Estimation](planning/story_estimation.md) - Story point estimation guidelines
-- [EPIC Utils Folder Reorganization](planning/EPIC_Utils_Folder_Reorganization.md) - Utils folder restructuring plan
+- [EPIC Utils Folder Reorganization](planning/epic-utils-folder-reorganization.md) - Utils folder restructuring plan
 
 ### **Execution and Tracking** (`execution/`)
 - [Velocity Tracking](execution/velocity_tracking.md) - Team velocity and capacity planning
@@ -153,7 +156,7 @@ sprints/
 ### **🗂️ Start with Central Catalogs (Overview)**
 1. **[User Story Catalog](catalogs/USER_STORY_CATALOG.md)** - Master index of all user stories across sprints
 2. **[Sprint Summary](catalogs/SPRINT_SUMMARY.md)** - Cross-sprint status dashboard and metrics
-3. **[Epic Overview](catalogs/EPIC_OVERVIEW.md)** - Epic progress tracking across multiple sprints
+3. **[Epic Overview](catalogs/epic-overview.md)** - Epic progress tracking across multiple sprints
 
 ### **🚀 Current Sprint Focus (Sprint 1)**
 4. **[Sprint 1 Complete Package](sprints/sprint_1/)** - All Sprint 1 artifacts in one location

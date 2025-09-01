@@ -445,7 +445,7 @@ The system uses two complementary methods to determine which rules to apply:
 
 ### **Getting Help**
 
-1. **Check the Keyword Reference Guide**: [Complete reference](.cursor/rules/KEYWORD_REFERENCE_GUIDE.md)
+1. **Check the Keyword Reference Guide**: [Complete reference](../../rules/cursor/KEYWORD_REFERENCE_GUIDE.md)
 2. **Review Context Detection**: [Intelligent Context Detector](utils/rule_system/intelligent_context_detector.py)
 3. **Check Configuration**: [Context Rule Mappings](.cursor/rules/config/context_rule_mappings.yaml)
 4. **Contact Support**: Reach out to the development team

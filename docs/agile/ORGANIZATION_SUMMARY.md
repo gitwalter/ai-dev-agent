@@ -17,12 +17,12 @@ docs/agile/
 │   └── definition_of_done.md          # Quality criteria for completed work
 ├── planning/                           # Planning-related documents
 │   ├── product_backlog.md             # Prioritized list of features and user stories
-│   ├── epic_breakdown.md              # High-level feature groupings and themes
+│   ├── epic-breakdown.md              # High-level feature groupings and themes
 │   ├── updated_roadmap.md             # Agile-driven development roadmap
 │   ├── release_planning.md            # Release goals and roadmap
 │   ├── user_stories.md                # Detailed user stories with acceptance criteria
 │   ├── story_estimation.md            # Story point estimation guidelines
-│   └── EPIC_Utils_Folder_Reorganization.md # Utils folder restructuring plan
+│   └── epic-utils-folder-reorganization.md # Utils folder restructuring plan
 ├── execution/                          # Execution and tracking documents
 │   ├── velocity_tracking.md           # Team velocity and capacity planning
 │   ├── continuous_integration.md      # CI/CD in agile context
@@ -63,12 +63,12 @@ docs/agile/
 
 #### **Planning Documents** (`planning/`)
 - `product_backlog.md` → `planning/product_backlog.md`
-- `epic_breakdown.md` → `planning/epic_breakdown.md`
+- `epic-breakdown.md` → `planning/epic-breakdown.md`
 - `updated_roadmap.md` → `planning/updated_roadmap.md`
 - `release_planning.md` → `planning/release_planning.md`
 - `user_stories.md` → `planning/user_stories.md`
 - `story_estimation.md` → `planning/story_estimation.md`
-- `EPIC_Utils_Folder_Reorganization.md` → `planning/EPIC_Utils_Folder_Reorganization.md`
+- `epic-utils-folder-reorganization.md` → `planning/epic-utils-folder-reorganization.md`
 
 #### **Execution Documents** (`execution/`)
 - `velocity_tracking.md` → `execution/velocity_tracking.md`

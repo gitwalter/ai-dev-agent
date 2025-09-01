@@ -8,7 +8,7 @@
 - [Documentation Guide](README.md) - How to navigate and contribute to documentation
 
 ### **Intelligent Context-Aware Rule System** 🎯 **NEW**
-- **[Keyword Reference Guide](.cursor/rules/KEYWORD_REFERENCE_GUIDE.md)** - **COMPLETE** - Complete reference for all @keywords and context detection
+- **[Keyword Reference Guide](rules/cursor/KEYWORD_REFERENCE_GUIDE.md)** - **COMPLETE** - Complete reference for all @keywords and context detection
 - **[Intelligent Context-Aware Rule System](.cursor/rules/core/intelligent_context_aware_rule_system.mdc)** - **IMPLEMENTED** - Core rule for automated context detection and rule selection
 - **[Context Rule Mappings](.cursor/rules/config/context_rule_mappings.yaml)** - **CONFIGURED** - YAML configuration for context-to-rule mappings
 - **[Intelligent Context Detector](utils/rule_system/intelligent_context_detector.py)** - **IMPLEMENTED** - Python implementation of context detection system
@@ -26,7 +26,7 @@
 - **[Agile Rules Index](agile/core/agile_rules_index.md)** - **NEW** - Central index of all agile rules and guidelines
 - **[Meeting Rule Implementation Guide](agile/core/meeting_rule_implementation_guide.md)** - **NEW** - Step-by-step implementation instructions
 - [Product Backlog](agile/planning/product_backlog.md) - Prioritized user stories and business value
-- [Epic Breakdown](agile/planning/epic_breakdown.md) - High-level feature planning and ROI
+- [Epic Breakdown](agile/planning/epic-breakdown.md) - High-level feature planning and ROI
 - [Updated Roadmap](agile/planning/updated_roadmap.md) - Agile-driven development roadmap
 - [Release Planning](agile/planning/release_planning.md) - Comprehensive release planning
 - [Agile Workflow](agile/core/agile_workflow.md) - Sprint-based development process
@@ -34,8 +34,13 @@
 - [Definition of Done](agile/core/definition_of_done.md) - Quality criteria and standards
 
 ### **Development Rules and Standards**
+- **[Formal Organization Rules](rules/core/formal_organization_rules.md)** - **CRITICAL** - Mathematical and philosophical foundation for systematic development
+- **[Mathematical System Foundation](mathematics/formal_system_mathematics.md)** - **FOUNDATIONAL** - Rigorous mathematical formalization of complete onion architecture
+- **[Universal Naming Conventions Reference](guides/development/universal_naming_conventions_reference.md)** - **ESSENTIAL** - Complete naming system for all artifact types
+- [Universal Naming Convention Enforcement](rules/core/universal_naming_convention_enforcement_rule.md) - **MANDATORY** - Automated naming validation system
+- [Boy Scout + Naming Workflow](guides/development/naming_boyscout_workflow_guide.md) - **INTEGRATED** - Continuous improvement with naming excellence
 - [Boy Scout Principle Rule](.cursor/rules/boyscout_principle_rule.mdc) - **UPDATED** - Proactive code quality and maintenance principles
-- **[Rule Application Strategy](.cursor/rules/RULE_APPLICATION_STRATEGY.md)** - **NEW** - Comprehensive strategy for rule application and optimization
+- **[Rule Application Strategy](rules/cursor/RULE_APPLICATION_STRATEGY.md)** - **NEW** - Comprehensive strategy for rule application and optimization
 
 ### **Implementation Guides**
 - [Development Roadmap](guides/implementation/roadmap.md) - Historical technical roadmap (see Agile section above for current)
@@ -55,6 +60,13 @@
 - [Migration Concepts](concepts/migration/) - System migration strategies and approaches
 
 ## 🔧 **Technical Documentation**
+
+### **Mathematical Foundations** 🧮 **NEW**
+- **[Formal System Mathematics](mathematics/formal_system_mathematics.md)** - **FOUNDATIONAL** - Complete mathematical formalization of 12-layer onion architecture
+- **[Mathematical System Foundation](utils/validation/mathematical_system_foundation.py)** - **IMPLEMENTED** - Mathematical validation system with divine constants, ethical formalization, and harmonic integration
+- **[Formal System Compliant Agent](agents/formal_system_compliant_agent.py)** - **MANDATORY** - Base class ensuring mathematical validation for all agents
+- **[Mathematical Foundation Tests](tests/test_mathematical_system_foundation.py)** - **COMPREHENSIVE** - Complete test suite for mathematical validation (≥95% coverage)
+- **[Formal System Agent Tests](tests/test_formal_system_compliant_agent.py)** - **COMPREHENSIVE** - Tests for agent integration with mathematical validation
 
 ### **Development Guides**
 - [Development Setup](guides/development/development_setup.md) - Environment setup and configuration
@@ -128,7 +140,7 @@
 1. **System Overview**: Start with [System Architecture](architecture/overview/system_diagram.md)
 2. **Implementation**: Follow [Development Roadmap](guides/implementation/roadmap.md)
 3. **Concepts**: Read [Dual-Mode Workflow Concept](concepts/dual_mode_workflow_concept.md) and [Prompt Engineering Concept](concepts/prompt_engineering_concept.md)
-4. **Rule System**: Review [Keyword Reference Guide](.cursor/rules/KEYWORD_REFERENCE_GUIDE.md) for context-aware development
+4. **Rule System**: Review [Keyword Reference Guide](rules/cursor/KEYWORD_REFERENCE_GUIDE.md) for context-aware development
 
 ### **Development Workflow**
 1. **Setup**: Follow [Development Setup](guides/development/development_setup.md)

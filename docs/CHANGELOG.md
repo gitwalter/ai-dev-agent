@@ -10,7 +10,7 @@
 
 ### Changed
 - **Streamlined Git Operations Rule** (`.cursor/rules/core/streamlined_git_operations_rule.mdc`): Updated core principle to "Add, Commit, Push - The Proven Workflow"
-- **Keyword Reference Guide** (`.cursor/rules/KEYWORD_REFERENCE_GUIDE.md`): Updated @git context description to reflect new three-step workflow
+- **Keyword Reference Guide** (`docs/rules/cursor/KEYWORD_REFERENCE_GUIDE.md`): Updated @git context description to reflect new three-step workflow
 - **Product Backlog** (`docs/agile/planning/product_backlog.md`): Added US-CORE-003 with complete implementation details and completion status
 - **Velocity Tracking** (`docs/agile/execution/velocity_tracking.md`): Updated sprint metrics to include US-CORE-003 completion (26 total points)
 

@@ -8,8 +8,19 @@ This document serves as the central index for all agile rules and guidelines in 
 
 ## 🎯 **TIER 1: CRITICAL AGILE RULES (Always Apply)**
 
+### **Foundational System Rules**
+1. **[Formal Organization Rules](../../rules/core/formal_organization_rules.md)** - **CRITICAL** - Mathematical and philosophical foundation
+   - Syntactical Rules (naming, organization, documentation)
+   - Semantical Rules (meaning, purpose, consistency)
+   - Agent Behavior Rules (validation, compliance, improvement)
+   - Mathematical and Philosophical Foundation
+2. **[Universal Naming Conventions](../../guides/development/universal_naming_conventions_reference.md)** - **MANDATORY** - Complete artifact naming system
+   - ALL artifact type patterns (agile, code, tests, docs, config, data, infrastructure)
+   - Fowler/Carnap/Quine philosophical foundation
+   - Boy Scout Rule integration for continuous improvement
+
 ### **Development Rules**
-1. **[Agile Cursor Rules](agile_cursor_rules.md)** - Core development principles
+3. **[Agile Cursor Rules](agile_cursor_rules.md)** - Core development principles
    - Sprint-Focused Development
    - Continuous Integration & Delivery
    - Customer Collaboration & Feedback
@@ -18,7 +29,7 @@ This document serves as the central index for all agile rules and guidelines in 
    - Minimal Viable Product (MVP) Focus
 
 ### **Meeting Rules**  
-2. **[Agile Meeting Rules](agile_meeting_rules.md)** - Complete meeting governance
+4. **[Agile Meeting Rules](agile_meeting_rules.md)** - Complete meeting governance
    - Daily Standup Rules
    - Sprint Planning Rules
    - Sprint Review Rules
@@ -29,8 +40,8 @@ This document serves as the central index for all agile rules and guidelines in 
    - Emergency Meeting Rules
 
 ### **Quality Rules**
-3. **[Definition of Done](definition_of_done.md)** - Quality standards
-4. **[Test Failure Tracking Rule](TEST_FAILURE_TRACKING_RULE.md)** - Test quality enforcement
+5. **[Definition of Done](definition_of_done.md)** - Quality standards
+6. **[Test Failure Tracking Rule](TEST_FAILURE_TRACKING_RULE.md)** - Test quality enforcement
 
 ---
 
@@ -43,7 +54,7 @@ This document serves as the central index for all agile rules and guidelines in 
 
 ### **Planning Rules**
 1. **[Product Backlog Management](../planning/product_backlog.md)** - Backlog governance
-2. **[Epic Breakdown](../planning/epic_breakdown.md)** - Epic planning standards
+2. **[Epic Breakdown](../planning/epic-breakdown.md)** - Epic planning standards
 3. **[User Story Guidelines](../planning/user_stories.md)** - Story creation rules
 4. **[Story Estimation](../planning/story_estimation.md)** - Estimation standards
 

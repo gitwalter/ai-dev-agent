@@ -133,7 +133,7 @@ The previous git workflow assumed IDE staging was complete, leading to incomplet
 
 **Technical Implementation:**
 - **Core Rule**: `.cursor/rules/core/streamlined_git_operations_rule.mdc` - Updated with proven three-step workflow
-- **Documentation**: `.cursor/rules/KEYWORD_REFERENCE_GUIDE.md` - Updated @git context description and workflow
+- **Documentation**: `docs/rules/cursor/KEYWORD_REFERENCE_GUIDE.md` - Updated @git context description and workflow
 - **Integration**: Seamless integration with context-aware rule system and @git keyword activation
 - **Testing**: Proven through successful execution and commit/push operations
 

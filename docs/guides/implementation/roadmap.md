@@ -8,7 +8,7 @@
 
 📋 **[PRODUCT BACKLOG](../../agile/planning/product_backlog.md)** - Prioritized user stories and business value focus
 
-🏗️ **[EPIC BREAKDOWN](../../agile/planning/epic_breakdown.md)** - High-level feature planning and ROI analysis
+🏗️ **[EPIC BREAKDOWN](../../agile/planning/epic-breakdown.md)** - High-level feature planning and ROI analysis
 
 📅 **[RELEASE PLANNING](../../agile/planning/release_planning.md)** - Comprehensive release planning and success metrics
 
