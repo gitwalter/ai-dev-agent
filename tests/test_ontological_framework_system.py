@@ -23,7 +23,7 @@ from datetime import datetime
 utils_path = Path(__file__).parent.parent / "utils"
 sys.path.append(str(utils_path))
 
-from context.ontological_framework_system import (
+from utils.context.ontological_framework_system import (
     OntologicalFramework,
     LanguageSystem,
     MeaningStructure, 

@@ -13,7 +13,7 @@ This document provides comprehensive implementation guidance for the **Agile Str
 ### **Core Implementation Files**
 ```yaml
 Rule_System_Integration:
-  primary_rule: ".cursor/rules/agile_strategic_coordination_rule.mdc"
+  primary_rule: ".cursor/rules/agile/agile_strategic_coordination_rule.mdc"
   documentation: "docs/agile/rules/AGILE_STRATEGIC_COORDINATION_IMPLEMENTATION.md"
   architecture: "docs/agile/core/AGILE_COORDINATION_SYSTEM.md"
   
