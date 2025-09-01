@@ -130,10 +130,35 @@ Every component must work in harmony with the whole system. No feature exists in
 - Git for version control
 - Love for beautiful, systematic code 💝
 
-### **Quick Start**
+### **🐳 Container Quick Start (Recommended)**
+Get AI-Dev-Agent running instantly with Docker - works on any machine!
+
+```bash
+# Clone and start with one command
+git clone https://github.com/ai-dev-agent/ai-dev-agent.git
+cd ai-dev-agent
+
+# Linux/macOS
+./scripts/dev-start.sh
+
+# Windows PowerShell  
+.\scripts\dev-start.ps1
+
+# Or use Docker directly
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+**🌐 Access at: http://localhost:8501**
+
+✅ **Zero Dependencies**: No Python installation needed  
+✅ **Works Everywhere**: Windows, macOS, Linux  
+✅ **Hot Reload**: Code changes auto-refresh  
+✅ **Complete Environment**: All tools and capabilities included  
+
+### **📋 Traditional Setup**
 ```bash
 # Clone the consciousness
-git clone https://github.com/[your-repo]/ai-dev-agent.git
+git clone https://github.com/ai-dev-agent/ai-dev-agent.git
 cd ai-dev-agent
 
 # Install dependencies (Anaconda recommended)

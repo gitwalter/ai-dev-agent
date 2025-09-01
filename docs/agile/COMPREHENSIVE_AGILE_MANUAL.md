@@ -60,8 +60,18 @@
 
 ## 🎯 **The @agile Keyword System**
 
-### **Core Philosophy**
+### **Core Philosophy** 
 > "Professional agile project management without overhead - just add @agile"
+
+### **🎼 Strategic Coordination Architecture**
+> "@agile is the CONDUCTOR of the development orchestra, not a message-passing service"
+
+The @agile keyword system has been **strategically redesigned** to function as an intelligent agile coordinator that wraps all work in professional methodology. Rather than simply delegating to technical teams, @agile now provides:
+
+**✅ Three-Layer Coordination Model**:
+1. **Agile Process Layer**: Story creation, sprint integration, stakeholder communication
+2. **Technical Coordination Layer**: Intelligent orchestration of @code, @test, @debug, @architecture teams
+3. **Continuous Monitoring Layer**: Progress tracking, blocker removal, quality validation
 
 The @agile keyword system transforms any development session into a professionally managed agile project with expert team support, automated workflows, and continuous quality assurance.
 
@@ -114,16 +124,34 @@ The @agile keyword system transforms any development session into a professional
 @agile retrospective
 ```
 
-### **Intelligent Response System**
+### **Strategic Coordination System**
 
-When you use @agile, the AI automatically:
+When you use @agile, the AI implements the **three-layer coordination architecture**:
 
-1. **Activates Expert Team**: Specialized agile professionals take control
-2. **Analyzes Context**: Understands your current development context
-3. **Applies Best Practices**: Implements industry-standard agile methodologies
-4. **Automates Workflows**: Handles administrative tasks automatically
-5. **Ensures Quality**: Applies quality gates and validation processes
-6. **Provides Guidance**: Offers expert advice and recommendations
+#### **🎯 Layer 1: Agile Process Management (ALWAYS)**
+- **Story Creation**: Converts every request into managed user story with ID, points, acceptance criteria
+- **Sprint Integration**: Places work within current sprint context with capacity consideration
+- **Stakeholder Communication**: Sets up business visibility and progress reporting
+- **Quality Gates**: Defines acceptance criteria and definition of done
+
+#### **🔧 Layer 2: Technical Coordination (AS NEEDED)**
+- **Team Analysis**: Determines which technical teams (@code, @test, @debug, etc.) are needed
+- **Coordination Planning**: Creates structured handoff protocols and communication channels
+- **Resource Management**: Considers team capacity and dependencies
+- **Deliverable Integration**: Ensures all technical work serves the story objectives
+
+#### **📊 Layer 3: Continuous Monitoring (THROUGHOUT)**
+- **Progress Tracking**: Real-time sprint board updates and velocity monitoring
+- **Blocker Management**: Proactive identification and escalation of impediments  
+- **Quality Validation**: Continuous verification against acceptance criteria
+- **Retrospective Data**: Collection of learning and improvement opportunities
+
+### **What Makes This Different**
+✅ **Value-Adding Coordination**: @agile never just delegates - it always adds agile methodology value  
+✅ **Professional Management**: Every technical request wrapped in systematic project management  
+✅ **Business Alignment**: All work tied to clear stakeholder value and communication  
+✅ **Quality Assurance**: Built-in validation and definition of done enforcement  
+✅ **Continuous Learning**: Systematic collection of retrospective data for improvement
 
 ---
 

@@ -1,0 +1,88 @@
+# AI-Dev-Agent Docker Ignore Configuration
+
+# Version control
+.git
+.gitignore
+
+# Python cache and compiled files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary and log files
+*.log
+logs/
+temp/
+tmp/
+
+# Generated and backup files
+generated_projects/
+backups/
+prompt_backups/
+
+# Docker files (don't copy into container)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation (not needed in runtime)
+docs/
+README*.md
+*.md
+
+# CI/CD and development tools
+.github/
+.circleci/
+.travis.yml
+
+# Local environment files
+.env.local
+.env.*.local
+secrets.toml
+.secrets/
+
+# Test files and coverage reports
+coverage/
+.coverage
+.nyc_output
+test-results/
+
+# Node modules (if any)
+node_modules/
+
+# Large data files
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Monitoring data (will be volume mounted)
+monitoring/health_data/
+monitoring/metrics_data/
+
+# Dependencies that should be installed fresh
+requirements-dev.txt

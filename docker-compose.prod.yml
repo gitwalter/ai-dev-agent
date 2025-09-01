@@ -1,0 +1,41 @@
+# AI-Dev-Agent Production Environment
+version: '3.8'
+
+services:
+  ai-dev-agent:
+    image: ai-dev-agent/system:latest
+    ports:
+      - "8501:8501"
+    volumes:
+      - ai_dev_agent_data:/app/data
+      - ai_dev_agent_logs:/app/logs
+      - ai_dev_agent_generated:/app/generated
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - PYTHONPATH=/app
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_ENABLE_CORS=false
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+volumes:
+  ai_dev_agent_data:
+    driver: local
+  ai_dev_agent_logs:
+    driver: local
+  ai_dev_agent_generated:
+    driver: local

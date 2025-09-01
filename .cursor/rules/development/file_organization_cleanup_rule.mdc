@@ -1,12 +1,14 @@
 ---
-description: "Auto-generated description for file_organization_cleanup_rule.mdc"
-category: "development-standards"
-priority: "low"
-alwaysApply: false
-contexts: ['CODING', 'ARCHITECTURE', 'DEFAULT']
+description: "CRITICAL: Self-enforcing file organization with automatic violation detection and correction. Zero tolerance for structural violations."
+category: "core-foundation"
+priority: "critical"
+alwaysApply: true
+enforcement: "blocking"
+autoFix: true
+contexts: ['ALL']
 globs: ["**/*"]
-tags: ['development_standards']
-tier: "2"
+tags: ['core_foundation', 'file_organization', 'automatic_enforcement']
+tier: "1"
 ---
 # File Organization and Cleanup Rule
 

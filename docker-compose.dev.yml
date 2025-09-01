@@ -1,0 +1,40 @@
+# AI-Dev-Agent Development Environment
+version: '3.8'
+
+services:
+  ai-dev-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    ports:
+      - "8501:8501"
+      - "8502:8502"  # Additional dev port for debugging
+    volumes:
+      - .:/app:cached
+      - ./logs:/app/logs
+      - ./generated:/app/generated
+      - ./temp:/app/temp
+      - ./monitoring/health_data:/app/monitoring/health_data
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - PYTHONPATH=/app
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_ENABLE_CORS=false
+    command: ["streamlit", "run", "apps/main.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.fileWatcherType=none", "--server.headless=true"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+volumes:
+  ai_dev_agent_data:
+    driver: local
+  ai_dev_agent_logs:
+    driver: local

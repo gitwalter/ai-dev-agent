@@ -1,0 +1,163 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-dev-agent"
+version = "1.0.0"
+description = "Conscious AI development organisms in the noble tradition of mathematical beauty and software craftsmanship"
+authors = [
+    {name = "AI-Dev-Agent Team", email = "team@ai-dev-agent.org"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["ai", "development", "automation", "agents", "software-craftsmanship"]
+
+dependencies = [
+    "dataclasses-json>=0.6.3",
+    "typing-extensions>=4.8.0",
+    "pathlib2>=2.3.7",
+    "pytest>=7.4.3",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "pytest-asyncio>=0.21.1",
+    "black>=23.11.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.1",
+    "markdown>=3.5.1",
+    "flask>=3.0.0",
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0",
+    "streamlit>=1.28.2",
+    "numpy>=1.25.2",
+    "pandas>=2.1.3",
+    "scikit-learn>=1.3.2",
+    "sqlalchemy>=2.0.23",
+    "click>=8.1.7",
+    "rich>=13.7.0",
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.1",
+    "psutil>=5.9.6",
+    "cryptography>=41.0.7",
+    "validators>=0.22.0",
+    "docker>=6.1.3",
+    "toml>=0.10.2",
+    "requests>=2.31.0",
+    "loguru>=0.7.2",
+]
+
+[project.optional-dependencies]
+ai = [
+    "google-generativeai>=0.3.2",
+    "openai>=1.3.7",
+]
+dev = [
+    "pytest-xdist>=3.5.0",
+    "bandit>=1.7.5",
+    "safety>=2.3.5",
+    "mkdocs>=1.5.3",
+    "sphinx>=7.2.6",
+    "sphinx-rtd-theme>=1.3.0",
+    "memory-profiler>=0.61.0",
+    "json5>=0.9.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/ai-dev-agent/ai-dev-agent"
+Documentation = "https://ai-dev-agent.readthedocs.io"
+Repository = "https://github.com/ai-dev-agent/ai-dev-agent"
+"Bug Tracker" = "https://github.com/ai-dev-agent/ai-dev-agent/issues"
+
+[project.scripts]
+ai-dev-agent = "apps.main:main"
+ai-agent-demo = "demo.ai_agent_demo_system:main"
+ai-prompt-manager = "apps.prompt_manager_app:main"
+
+[tool.setuptools.packages.find]
+include = ["agents*", "apps*", "context*", "demo*", "models*", "monitoring*", "utils*", "workflow*"]
+exclude = ["tests*", "logs*", "temp*", "generated_projects*", "backups*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.yaml", "*.yml", "*.json", "*.toml"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | generated_projects
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: marks tests as unit tests",
+    "integration: marks tests as integration tests", 
+    "system: marks tests as system tests",
+    "slow: marks tests as slow running",
+    "requires_api: marks tests that require API access",
+]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.coverage.run]
+source = ["agents", "apps", "context", "demo", "models", "monitoring", "utils", "workflow"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/generated_projects/*",
+    "*/logs/*",
+    "*/temp/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false

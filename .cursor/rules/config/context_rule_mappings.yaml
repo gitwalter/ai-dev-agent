@@ -17,6 +17,7 @@ contexts:
       directories: []
     rules:
       - "safety_first_principle"
+      - "hybrid_bio_machine_research_first_principle"
       - "unhackable_ethical_dna_security_rule"
       - "no_premature_victory_declaration_rule"
       - "boyscout_leave_cleaner_rule"
@@ -34,6 +35,7 @@ contexts:
       directories: ["src/", "lib/", "app/", "components/"]
     rules:
       - "safety_first_principle"
+      - "hybrid_bio_machine_research_first_principle"
       - "unhackable_ethical_dna_security_rule"
       - "xp_test_first_development_rule"
       - "development_core_principles_rule"

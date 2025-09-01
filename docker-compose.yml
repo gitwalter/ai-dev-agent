@@ -1,0 +1,98 @@
+# AI-Dev-Agent Development Environment
+# ====================================
+# 
+# Complete development environment with all services
+# Perfect for developer onboarding and testing
+#
+# Usage:
+#   docker-compose up -d    # Start all services
+#   docker-compose exec ai-dev-agent bash  # Enter container
+#   docker-compose down     # Stop all services
+#
+
+version: '3.8'
+
+services:
+  ai-dev-agent:
+    build: .
+    container_name: ai-dev-agent-system
+    ports:
+      - "8080:8080"
+      - "8888:8888"  # For Jupyter if needed
+    volumes:
+      # Mount source code for development
+      - .:/app
+      # Persist generated projects
+      - ai-dev-agent-projects:/app/generated_projects
+      # Persist logs
+      - ai-dev-agent-logs:/app/logs
+    environment:
+      - CONTAINER_MODE=true
+      - DEVELOPMENT_MODE=true
+      - PYTHONPATH=/app
+    networks:
+      - ai-dev-agent-network
+    restart: unless-stopped
+    command: ["python", "run_demo.py"]
+
+  # Optional: Database for future persistence
+  database:
+    image: postgres:15-alpine
+    container_name: ai-dev-agent-db
+    environment:
+      POSTGRES_DB: ai_dev_agent
+      POSTGRES_USER: developer
+      POSTGRES_PASSWORD: dev_password_123
+    volumes:
+      - ai-dev-agent-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - ai-dev-agent-network
+    restart: unless-stopped
+
+  # Optional: Redis for caching and queues
+  cache:
+    image: redis:7-alpine
+    container_name: ai-dev-agent-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - ai-dev-agent-cache:/data
+    networks:
+      - ai-dev-agent-network
+    restart: unless-stopped
+
+  # Optional: Web interface (future enhancement)
+  web-interface:
+    build: .
+    container_name: ai-dev-agent-web
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    environment:
+      - CONTAINER_MODE=true
+      - WEB_MODE=true
+    networks:
+      - ai-dev-agent-network
+    depends_on:
+      - ai-dev-agent
+      - database
+      - cache
+    restart: unless-stopped
+    command: ["python", "-m", "web.app"]  # Future web interface
+
+volumes:
+  ai-dev-agent-projects:
+    driver: local
+  ai-dev-agent-logs:
+    driver: local
+  ai-dev-agent-db:
+    driver: local
+  ai-dev-agent-cache:
+    driver: local
+
+networks:
+  ai-dev-agent-network:
+    driver: bridge
