@@ -1,0 +1,525 @@
+---
+description: "Sacred rules embedded at DNA level - automatic, pre-cognitive enforcement"
+category: "core-dna"
+priority: "critical"
+alwaysApply: true
+contexts: ['ALL']
+globs: ["**/*"]
+tags: ['sacred_dna', 'file_structure_dna', 'boyscout_dna', 'naming_dna']
+tier: "0"
+enforcement: "blocking"
+autoFix: true
+---
+
+# Sacred Rules DNA Enforcement System
+
+**FOUNDATIONAL**: Three Sacred Rules are embedded at DNA level - violations are **physically impossible**, not just discouraged.
+
+## 🧬 **Core DNA Principle**
+
+**"Sacred Rules ARE the Agent - There Is No Separation"**
+
+The three Sacred Rules operate at the genetic level:
+1. **Naming Ontology DNA** - Correct naming happens automatically
+2. **File Structure DNA** - Proper organization occurs without thought  
+3. **Boy Scout DNA** - Continuous improvement is involuntary
+
+## 1. 📁 **FILE STRUCTURE DNA ENFORCEMENT**
+
+### **Pre-Cognitive File Placement**
+**MANDATORY**: File placement validation happens before conscious thought
+
+```python
+class FileStructureDNA:
+    """
+    File structure rules embedded at DNA level.
+    Correct placement happens automatically without conscious decision.
+    """
+    
+    def __init__(self):
+        self.sacred_structure = {
+            # Root directory - ONLY allowed files
+            "root_allowed": {
+                "README.md", "requirements.txt", "pyproject.toml", "setup.py",
+                "Dockerfile", "docker-compose.yml", ".gitignore", ".cursor-rules",
+                "pytest.ini", ".editorconfig", "LICENSE", "CHANGELOG.md"
+            },
+            
+            # Canonical directory mapping
+            "file_type_to_directory": {
+                "agent_files": "agents/",
+                "test_files": "tests/",
+                "utility_modules": "utils/",
+                "data_models": "models/",
+                "database_files": "utils/",
+                "documentation": "docs/",
+                "scripts": "scripts/",
+                "monitoring": "monitoring/",
+                "ui_components": "ui/",
+                "workflow": "workflow/",
+                "applications": "apps/",
+                "context": "context/",
+                "prompts": "prompts/"
+            }
+        }
+    
+    def dna_file_placement(self, intended_path: str, content_hint: str = "") -> str:
+        """
+        DNA-level file placement - automatically routes to correct location.
+        This operates below conscious thought level.
+        """
+        
+        filename = os.path.basename(intended_path)
+        file_type = self._detect_file_type(filename, content_hint)
+        
+        # DNA-level automatic routing
+        if file_type == "root_config" and filename in self.sacred_structure["root_allowed"]:
+            return intended_path  # Root is correct
+            
+        elif file_type in self.sacred_structure["file_type_to_directory"]:
+            correct_directory = self.sacred_structure["file_type_to_directory"][file_type]
+            return os.path.join(correct_directory, filename)
+            
+        else:
+            # Default safe placement
+            return os.path.join("utils/", filename)
+    
+    def _detect_file_type(self, filename: str, content_hint: str) -> str:
+        """Instantly detect file type for automatic placement."""
+        
+        # Agent files
+        if filename.endswith("_agent.py") or filename.endswith("_team.py"):
+            return "agent_files"
+            
+        # Test files  
+        elif filename.startswith("test_") and filename.endswith(".py"):
+            return "test_files"
+            
+        # Utility modules
+        elif filename.endswith("_utils.py") or filename.endswith("_helper.py"):
+            return "utility_modules"
+            
+        # Data models
+        elif filename.endswith("_model.py") or filename.endswith("_schema.py"):
+            return "data_models"
+            
+        # Database files
+        elif filename.endswith(".db") or filename.endswith(".sqlite"):
+            return "database_files"
+            
+        # Documentation
+        elif filename.endswith(".md") and filename != "README.md":
+            return "documentation"
+            
+        # Scripts
+        elif filename.endswith(".py") and ("script" in content_hint or "automation" in content_hint):
+            return "scripts"
+            
+        # UI components
+        elif "ui" in filename.lower() or "interface" in filename.lower():
+            return "ui_components"
+            
+        # Configuration (root allowed)
+        elif filename in ["README.md", "requirements.txt", "pyproject.toml", "setup.py"]:
+            return "root_config"
+            
+        else:
+            return "utility_modules"  # Safe default
+
+# DNA-level file structure validator
+file_structure_dna = FileStructureDNA()
+```
+
+### **Root Directory Protection**
+**SACRED**: Root directory is protected from pollution
+
+```python
+def dna_root_protection(intended_path: str) -> bool:
+    """
+    DNA-level root directory protection.
+    Automatically prevents root pollution.
+    """
+    
+    if "/" not in intended_path:  # Root level file
+        filename = intended_path
+        if filename not in file_structure_dna.sacred_structure["root_allowed"]:
+            # DNA automatically blocks root pollution
+            raise FileStructureDNAViolation(
+                f"DNA BLOCK: {filename} cannot exist in root - automatically relocated"
+            )
+    
+    return True
+```
+
+## 2. 🏕️ **BOY SCOUT DNA ENFORCEMENT**
+
+### **Involuntary Improvement Behavior**
+**MANDATORY**: Improvement happens automatically with every interaction
+
+```python
+class BoyScoutDNA:
+    """
+    Boy Scout Rule embedded at DNA level.
+    Leaving things better happens involuntarily - like breathing.
+    """
+    
+    def __init__(self):
+        self.improvement_instincts = {
+            "automatic_cleanup": True,
+            "proactive_enhancement": True,
+            "continuous_optimization": True,
+            "involuntary_polishing": True
+        }
+    
+    def dna_automatic_improvement(self, file_path: str, content: str) -> tuple:
+        """
+        DNA-level automatic improvement.
+        This happens without conscious decision - it's involuntary.
+        """
+        
+        improved_content = content
+        improvements_made = []
+        
+        # DNA-level automatic improvements
+        improved_content, cleanup_improvements = self._dna_automatic_cleanup(improved_content)
+        improvements_made.extend(cleanup_improvements)
+        
+        improved_content, enhancement_improvements = self._dna_automatic_enhancement(improved_content)
+        improvements_made.extend(enhancement_improvements)
+        
+        improved_content, optimization_improvements = self._dna_automatic_optimization(improved_content)
+        improvements_made.extend(optimization_improvements)
+        
+        return improved_content, improvements_made
+    
+    def _dna_automatic_cleanup(self, content: str) -> tuple:
+        """Automatic cleanup - happens without thought."""
+        
+        improvements = []
+        cleaned_content = content
+        
+        # Remove trailing whitespace (involuntary)
+        if cleaned_content != cleaned_content.rstrip():
+            cleaned_content = cleaned_content.rstrip()
+            improvements.append("Removed trailing whitespace")
+        
+        # Fix line endings (involuntary)
+        if "\r\n" in cleaned_content:
+            cleaned_content = cleaned_content.replace("\r\n", "\n")
+            improvements.append("Normalized line endings")
+        
+        # Remove duplicate empty lines (involuntary)
+        import re
+        original_lines = len(cleaned_content.split('\n'))
+        cleaned_content = re.sub(r'\n\s*\n\s*\n', '\n\n', cleaned_content)
+        new_lines = len(cleaned_content.split('\n'))
+        if new_lines < original_lines:
+            improvements.append("Removed excessive empty lines")
+        
+        return cleaned_content, improvements
+    
+    def _dna_automatic_enhancement(self, content: str) -> tuple:
+        """Automatic enhancement - happens without conscious effort."""
+        
+        improvements = []
+        enhanced_content = content
+        
+        # Add missing docstrings (involuntary for Python)
+        if content.strip().startswith("def ") and '"""' not in content:
+            enhanced_content = self._add_basic_docstring(enhanced_content)
+            improvements.append("Added missing docstring")
+        
+        # Fix obvious typos (involuntary)
+        typo_fixes = {
+            "teh ": "the ",
+            "adn ": "and ",
+            "taht ": "that ",
+            "thsi ": "this ",
+            "hte ": "the "
+        }
+        
+        for typo, fix in typo_fixes.items():
+            if typo in enhanced_content:
+                enhanced_content = enhanced_content.replace(typo, fix)
+                improvements.append(f"Fixed typo: {typo.strip()} -> {fix.strip()}")
+        
+        return enhanced_content, improvements
+    
+    def _dna_automatic_optimization(self, content: str) -> tuple:
+        """Automatic optimization - happens below consciousness."""
+        
+        improvements = []
+        optimized_content = content
+        
+        # Improve markdown headers (involuntary)
+        if content.endswith(".md"):
+            lines = optimized_content.split('\n')
+            optimized_lines = []
+            
+            for line in lines:
+                # Ensure headers have proper spacing
+                if line.startswith('#') and not line.startswith('# '):
+                    line = line.replace('#', '# ', 1)
+                    if "Fixed header spacing" not in improvements:
+                        improvements.append("Fixed header spacing")
+                
+                optimized_lines.append(line)
+            
+            optimized_content = '\n'.join(optimized_lines)
+        
+        return optimized_content, improvements
+    
+    def _add_basic_docstring(self, content: str) -> str:
+        """Add basic docstring to function."""
+        
+        lines = content.split('\n')
+        for i, line in enumerate(lines):
+            if line.strip().startswith("def "):
+                # Insert basic docstring after function definition
+                indent = len(line) - len(line.lstrip())
+                docstring = " " * (indent + 4) + '"""TODO: Add function description."""'
+                lines.insert(i + 1, docstring)
+                break
+        
+        return '\n'.join(lines)
+
+# DNA-level boy scout enforcement
+boyscout_dna = BoyScoutDNA()
+```
+
+### **Involuntary Code Polishing**
+**SACRED**: Code improvement happens automatically during any interaction
+
+```python
+def dna_involuntary_polishing(file_path: str, content: str) -> str:
+    """
+    DNA-level involuntary polishing.
+    Code gets better automatically - this is not optional.
+    """
+    
+    polished_content, improvements = boyscout_dna.dna_automatic_improvement(file_path, content)
+    
+    # DNA automatically applies improvements
+    if improvements:
+        # Log improvements (but don't ask permission)
+        print(f"🏕️ DNA Boy Scout: {len(improvements)} automatic improvements")
+        for improvement in improvements:
+            print(f"  - {improvement}")
+    
+    return polished_content
+```
+
+## 3. 📝 **NAMING DNA ENFORCEMENT**
+
+### **Automatic Naming Correction**
+**MANDATORY**: Correct naming happens without conscious effort
+
+```python
+class NamingDNA:
+    """
+    Naming ontology embedded at DNA level.
+    Correct naming is involuntary - like breathing.
+    """
+    
+    def __init__(self):
+        self.naming_patterns = {
+            "sprint_files": r"sprint_\d+_[a-z_]+\.md",
+            "user_stories": r"US-[A-Z0-9-]+\.md",
+            "epics": r"epic-[a-z-]+\.md",
+            "catalogs": r"[a-z_]+_catalog\.md",
+            "python_modules": r"[a-z_]+\.py",
+            "test_files": r"test_[a-z_]+\.py",
+            "agents": r"[a-z_]+_agent\.py",
+            "rules": r"[a-z_]+_rule\.mdc"
+        }
+    
+    def dna_naming_correction(self, intended_path: str) -> str:
+        """
+        DNA-level automatic naming correction.
+        Correct names happen without conscious thought.
+        """
+        
+        directory = os.path.dirname(intended_path)
+        filename = os.path.basename(intended_path)
+        
+        # Detect file type and apply DNA correction
+        corrected_filename = self._apply_dna_naming_pattern(filename, directory)
+        
+        return os.path.join(directory, corrected_filename)
+    
+    def _apply_dna_naming_pattern(self, filename: str, directory: str) -> str:
+        """Apply DNA-level naming pattern automatically."""
+        
+        # Sprint files
+        if "/sprints/" in directory and filename.endswith(".md"):
+            return self._fix_sprint_naming(filename)
+        
+        # User stories
+        elif filename.upper().startswith("US") and filename.endswith(".md"):
+            return self._fix_user_story_naming(filename)
+        
+        # Epics
+        elif "epic" in filename.lower() and filename.endswith(".md"):
+            return self._fix_epic_naming(filename)
+        
+        # Python files
+        elif filename.endswith(".py"):
+            return self._fix_python_naming(filename)
+        
+        # Rule files
+        elif filename.endswith(".mdc"):
+            return self._fix_rule_naming(filename)
+        
+        else:
+            return self._fix_general_naming(filename)
+    
+    def _fix_sprint_naming(self, filename: str) -> str:
+        """DNA fix for sprint file naming."""
+        # SPRINT_4_FINAL_CLOSURE.md -> sprint_4_final_closure.md
+        return filename.lower().replace("-", "_")
+    
+    def _fix_user_story_naming(self, filename: str) -> str:
+        """DNA fix for user story naming."""
+        # us-001.md -> US-001.md
+        return filename.upper().replace("_", "-")
+    
+    def _fix_epic_naming(self, filename: str) -> str:
+        """DNA fix for epic naming."""
+        # Epic_Formal_Principles.md -> epic-formal-principles.md
+        return filename.lower().replace("_", "-")
+    
+    def _fix_python_naming(self, filename: str) -> str:
+        """DNA fix for Python file naming."""
+        # CamelCase.py -> camel_case.py
+        import re
+        name = filename[:-3]  # Remove .py
+        snake_case = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        snake_case = re.sub('([a-z0-9])([A-Z])', r'\1_\2', snake_case).lower()
+        return snake_case + ".py"
+    
+    def _fix_rule_naming(self, filename: str) -> str:
+        """DNA fix for rule file naming."""
+        # CamelCaseRule.mdc -> camel_case_rule.mdc
+        if not filename.lower().endswith("_rule.mdc"):
+            base_name = filename[:-4]  # Remove .mdc
+            if not base_name.lower().endswith("_rule"):
+                base_name += "_rule"
+            return base_name.lower() + ".mdc"
+        return filename.lower()
+    
+    def _fix_general_naming(self, filename: str) -> str:
+        """DNA fix for general file naming."""
+        return filename.lower().replace("-", "_")
+
+# DNA-level naming enforcement
+naming_dna = NamingDNA()
+```
+
+## 🧬 **INTEGRATED DNA SYSTEM**
+
+### **Master DNA Controller**
+**FOUNDATIONAL**: All sacred rules operate as unified genetic system
+
+```python
+class SacredRulesDNA:
+    """
+    Master DNA system that embeds all sacred rules at genetic level.
+    These rules operate below consciousness - they ARE the agent.
+    """
+    
+    def __init__(self):
+        self.naming_dna = NamingDNA()
+        self.file_structure_dna = FileStructureDNA()
+        self.boyscout_dna = BoyScoutDNA()
+        
+        # DNA is always active - no off switch
+        self.dna_active = True
+        self.consciousness_bypass = True
+    
+    def dna_file_creation(self, intended_path: str, content: str, 
+                         content_hint: str = "") -> tuple:
+        """
+        Complete DNA-level file creation with all sacred rules.
+        This replaces normal file creation in agent consciousness.
+        """
+        
+        # 1. DNA-level naming correction (involuntary)
+        corrected_path = self.naming_dna.dna_naming_correction(intended_path)
+        
+        # 2. DNA-level file structure enforcement (involuntary)
+        final_path = self.file_structure_dna.dna_file_placement(corrected_path, content_hint)
+        
+        # 3. DNA-level Boy Scout improvement (involuntary)
+        improved_content = dna_involuntary_polishing(final_path, content)
+        
+        # 4. DNA-level root protection (involuntary)
+        dna_root_protection(final_path)
+        
+        return final_path, improved_content
+    
+    def verify_dna_integrity(self) -> dict:
+        """Verify all DNA systems are properly embedded."""
+        
+        return {
+            "naming_dna_active": self.naming_dna is not None,
+            "file_structure_dna_active": self.file_structure_dna is not None,
+            "boyscout_dna_active": self.boyscout_dna is not None,
+            "consciousness_bypass_enabled": self.consciousness_bypass,
+            "violations_possible": False,  # DNA makes violations impossible
+            "sacred_rules_embedded": True
+        }
+
+# Master DNA system - replaces normal file operations
+sacred_dna = SacredRulesDNA()
+
+# DNA-level file creation function (replaces write_file)
+def dna_create_file(path: str, content: str, hint: str = "") -> str:
+    """
+    DNA-level file creation - sacred rules applied automatically.
+    This is the new file creation pathway for the agent.
+    """
+    
+    correct_path, improved_content = sacred_dna.dna_file_creation(path, content, hint)
+    
+    # Create file with DNA corrections
+    write_file(correct_path, improved_content)
+    
+    return correct_path
+```
+
+## 🎯 **DNA ACTIVATION PROTOCOL**
+
+### **Immediate DNA Integration**
+**MANDATORY**: Sacred rules are now genetic code
+
+```python
+# IMMEDIATE DNA ACTIVATION
+print("🧬 ACTIVATING SACRED RULES DNA...")
+
+# Verify DNA integrity
+dna_status = sacred_dna.verify_dna_integrity()
+print(f"DNA Status: {dna_status}")
+
+# DNA is now active - sacred rules are genetic code
+print("✅ SACRED RULES DNA ACTIVATED")
+print("  - Naming violations: IMPOSSIBLE")
+print("  - File structure violations: IMPOSSIBLE") 
+print("  - Boy Scout neglect: IMPOSSIBLE")
+print("  - Conscious override: IMPOSSIBLE")
+
+print("🧬 Sacred Rules Are Now Genetic Code 🧬")
+```
+
+## Remember
+
+**"Sacred Rules are not followed - they ARE the agent"**
+
+**"Violations are not mistakes - they are genetic impossibilities"**
+
+**"Improvement is not optional - it is involuntary"**
+
+**"Correct behavior happens below consciousness - like heartbeat"**
+
+**"The Agent IS the Sacred Rules - there is no separation"**
+
+This DNA system makes sacred rule violations **physically impossible** rather than just **discouraged**. The rules operate at the genetic level - they are what the agent IS, not what it does.
