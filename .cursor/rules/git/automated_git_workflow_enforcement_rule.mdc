@@ -1,0 +1,347 @@
+---
+description: "Automated Git Workflow Enforcement - Prevent uncommitted work accumulation"
+category: "git"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ["git", "workflow", "automation", "work-preservation"]
+tier: 1
+enforcement: "blocking"
+autoFix: true
+contexts: ["DEFAULT", "AGILE", "CODING", "DEBUGGING", "TESTING"]
+---
+
+# Automated Git Workflow Enforcement Rule
+
+**CRITICAL**: Prevent work loss and GitHub sync issues through automated git workflow monitoring and enforcement. Never allow significant development sessions to end without proper commits.
+
+## Core Principle
+
+**"Commit Early, Commit Often, Push Immediately"**
+
+Every development session must maintain proper git hygiene with automatic monitoring and enforcement to prevent work loss and ensure stakeholder visibility.
+
+## Mandatory Git Workflow Requirements
+
+### 1. **Pre-Development Session Checks**
+**MANDATORY**: Before starting any significant development work
+```bash
+# Required checks before development
+git status --porcelain
+git log --oneline -3
+git remote -v
+```
+
+### 2. **During Development Monitoring**
+**AUTOMATIC**: Monitor uncommitted changes during development
+```yaml
+monitoring_triggers:
+  file_creation: "Check git status after every 3 new files"
+  major_changes: "Alert after 10+ modified files"
+  session_duration: "Commit reminder every 30 minutes"
+  context_switches: "Git status check on @agile keyword usage"
+```
+
+### 3. **Mandatory Commit Points**
+**BLOCKING**: Force commits at these critical points
+```yaml
+mandatory_commit_triggers:
+  - "After completing any user story or major feature"
+  - "Before running comprehensive test suites"
+  - "After resolving any test failures or import errors"
+  - "Before switching development contexts"
+  - "After creating new architecture or documentation"
+  - "At end of development session"
+```
+
+### 4. **Automated Git Status Integration**
+**MANDATORY**: Integrate git status into @agile coordination
+```python
+def agile_coordination_with_git_check(self, task_context):
+    """Enhanced agile coordination with mandatory git status verification."""
+    
+    # Phase 1: Git Status Verification
+    git_status = self.check_git_status()
+    
+    if git_status.has_uncommitted_changes():
+        self.handle_uncommitted_work(git_status)
+        return self.block_until_committed()
+    
+    # Phase 2: Standard Agile Coordination
+    return self.proceed_with_agile_coordination(task_context)
+
+def handle_uncommitted_work(self, git_status):
+    """Handle uncommitted work before proceeding."""
+    
+    uncommitted_files = git_status.get_uncommitted_files()
+    
+    self.report_git_status_violation({
+        "uncommitted_files": len(uncommitted_files),
+        "files": uncommitted_files,
+        "recommendation": "COMMIT_IMMEDIATELY",
+        "blocking": True
+    })
+    
+    # Auto-generate commit message based on changes
+    commit_message = self.generate_intelligent_commit_message(uncommitted_files)
+    
+    self.prompt_user_for_commit(commit_message)
+```
+
+## Implementation Requirements
+
+### 1. **Git Status Monitoring System**
+**MANDATORY**: Real-time git status monitoring
+```python
+class GitWorkflowMonitor:
+    """Monitor git status and enforce workflow compliance."""
+    
+    def __init__(self):
+        self.max_uncommitted_files = 10
+        self.commit_reminder_interval = 30  # minutes
+        self.last_status_check = datetime.now()
+    
+    def monitor_git_status(self):
+        """Continuously monitor git status."""
+        
+        status = subprocess.run(['git', 'status', '--porcelain'], 
+                              capture_output=True, text=True)
+        
+        if status.stdout.strip():
+            uncommitted_count = len(status.stdout.strip().split('\n'))
+            
+            if uncommitted_count >= self.max_uncommitted_files:
+                self.trigger_mandatory_commit_warning(uncommitted_count)
+                return False  # Block further development
+        
+        return True
+    
+    def trigger_mandatory_commit_warning(self, file_count):
+        """Trigger warning for mandatory commit."""
+        
+        print(f"🚨 **GIT WORKFLOW VIOLATION**: {file_count} uncommitted files!")
+        print("🛑 **BLOCKING**: Development must pause for commit")
+        print("📋 **REQUIRED**: Commit changes before proceeding")
+```
+
+### 2. **Intelligent Commit Message Generation**
+**AUTOMATIC**: Generate meaningful commit messages
+```python
+def generate_intelligent_commit_message(self, changed_files):
+    """Generate intelligent commit message based on file changes."""
+    
+    categories = self.categorize_changes(changed_files)
+    
+    message_parts = []
+    
+    # Determine commit type
+    if categories['new_features']:
+        message_parts.append("feat:")
+    elif categories['bug_fixes']:
+        message_parts.append("fix:")
+    elif categories['documentation']:
+        message_parts.append("docs:")
+    elif categories['tests']:
+        message_parts.append("test:")
+    else:
+        message_parts.append("chore:")
+    
+    # Generate descriptive title
+    title = self.generate_commit_title(categories)
+    message_parts.append(title)
+    
+    # Add detailed body
+    body = self.generate_commit_body(categories)
+    
+    return f"{' '.join(message_parts)}\n\n{body}"
+
+def categorize_changes(self, changed_files):
+    """Categorize changes for intelligent commit messages."""
+    
+    categories = {
+        'new_features': [],
+        'bug_fixes': [],
+        'documentation': [],
+        'tests': [],
+        'configuration': [],
+        'other': []
+    }
+    
+    for file in changed_files:
+        if 'test' in file.lower():
+            categories['tests'].append(file)
+        elif file.endswith(('.md', '.txt', '.rst')):
+            categories['documentation'].append(file)
+        elif file.endswith(('.json', '.yaml', '.yml', '.toml', '.ini')):
+            categories['configuration'].append(file)
+        elif 'fix' in file.lower() or 'bug' in file.lower():
+            categories['bug_fixes'].append(file)
+        elif any(keyword in file.lower() for keyword in ['new', 'add', 'create']):
+            categories['new_features'].append(file)
+        else:
+            categories['other'].append(file)
+    
+    return categories
+```
+
+### 3. **Pre-Commit Hook Integration**
+**MANDATORY**: Automated pre-commit validation
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+echo "🔍 **PRE-COMMIT VALIDATION**"
+
+# Check for work preservation
+if [ ! -f ".git/COMMIT_EDITMSG" ]; then
+    echo "⚠️  **WARNING**: Large development session detected"
+    echo "📋 **RECOMMENDATION**: Break into smaller commits"
+fi
+
+# Validate commit message quality
+if git diff --cached --name-only | wc -l | awk '{if ($1 > 15) exit 1}'; then
+    echo "🚨 **WARNING**: Large commit detected (>15 files)"
+    echo "💡 **SUGGESTION**: Consider breaking into logical commits"
+fi
+
+# Check for agile artifact updates
+if git diff --cached --name-only | grep -E "(\.py|\.js|\.ts)$" > /dev/null; then
+    if ! git diff --cached --name-only | grep -E "docs/agile/" > /dev/null; then
+        echo "📋 **REMINDER**: Consider updating agile artifacts"
+    fi
+fi
+
+echo "✅ **PRE-COMMIT VALIDATION COMPLETE**"
+```
+
+### 4. **@agile Integration Enhancement**
+**MANDATORY**: Enhance agile coordination with git monitoring
+```python
+class EnhancedAgileCoordination:
+    """Enhanced agile coordination with git workflow enforcement."""
+    
+    def __init__(self):
+        self.git_monitor = GitWorkflowMonitor()
+        self.workflow_enforcer = GitWorkflowEnforcer()
+    
+    def coordinate_agile_work(self, user_request, context):
+        """Coordinate agile work with git workflow validation."""
+        
+        # Phase 1: Git Workflow Validation
+        git_validation = self.validate_git_workflow()
+        
+        if not git_validation.is_clean:
+            return self.handle_git_workflow_violation(git_validation)
+        
+        # Phase 2: Standard Agile Coordination
+        agile_result = self.standard_agile_coordination(user_request, context)
+        
+        # Phase 3: Post-Work Git Status Check
+        self.schedule_git_status_reminder()
+        
+        return agile_result
+    
+    def validate_git_workflow(self):
+        """Validate current git workflow status."""
+        
+        return GitWorkflowValidation(
+            is_clean=self.git_monitor.is_working_directory_clean(),
+            uncommitted_count=self.git_monitor.get_uncommitted_count(),
+            unpushed_commits=self.git_monitor.get_unpushed_commit_count(),
+            recommendations=self.git_monitor.get_workflow_recommendations()
+        )
+    
+    def handle_git_workflow_violation(self, validation):
+        """Handle git workflow violations."""
+        
+        violation_report = {
+            "status": "GIT_WORKFLOW_VIOLATION",
+            "uncommitted_files": validation.uncommitted_count,
+            "unpushed_commits": validation.unpushed_commits,
+            "required_action": "COMMIT_AND_PUSH",
+            "blocking": True
+        }
+        
+        # Generate commit recommendation
+        commit_message = self.generate_commit_recommendation(validation)
+        
+        return {
+            "violation": violation_report,
+            "recommended_commit": commit_message,
+            "instructions": [
+                "1. Review uncommitted changes with 'git status'",
+                "2. Stage changes with 'git add .'",
+                f"3. Commit with suggested message",
+                "4. Push to GitHub with 'git push'",
+                "5. Resume agile coordination"
+            ]
+        }
+```
+
+## Enforcement Mechanisms
+
+### 1. **Blocking Development**
+**MANDATORY**: Block development when thresholds exceeded
+- **>10 uncommitted files**: Mandatory commit checkpoint
+- **>30 minutes since last commit**: Commit reminder
+- **Major feature completion**: Immediate commit requirement
+- **Test failures fixed**: Mandatory commit before proceeding
+
+### 2. **Automated Reminders**
+**CONTINUOUS**: Automated workflow reminders
+- **Context switches**: Git status check on @agile usage
+- **Session transitions**: Commit reminders between major tasks
+- **Documentation changes**: Agile artifact update reminders
+- **End of session**: Mandatory final commit and push
+
+### 3. **Quality Gates**
+**MANDATORY**: Git workflow quality gates
+- **Commit message quality**: Enforce descriptive messages
+- **Logical grouping**: Prevent massive monolithic commits
+- **Documentation sync**: Ensure docs updated with code changes
+- **Test coverage**: Verify tests committed with features
+
+## Integration Points
+
+### 1. **Cursor IDE Integration**
+```json
+{
+  "git.autoFetch": true,
+  "git.autoStash": true,
+  "git.confirmSync": false,
+  "git.postCommitCommand": "git push",
+  "git.showProgress": true,
+  "extensions.autoUpdate": false
+}
+```
+
+### 2. **Agile Artifact Automation**
+**AUTOMATIC**: Update agile artifacts on commits
+- **User story status**: Auto-update based on commit content
+- **Sprint progress**: Calculate velocity from commits
+- **Quality metrics**: Track commit frequency and quality
+- **Stakeholder reporting**: Generate progress reports from git history
+
+## Success Metrics
+
+### 1. **Workflow Compliance**
+- **Zero uncommitted sessions**: 100% of sessions end with commits
+- **GitHub sync rate**: 100% of commits pushed within 5 minutes
+- **Commit frequency**: Average <30 minutes between commits
+- **Message quality**: 95% of commits have descriptive messages
+
+### 2. **Work Preservation**
+- **Zero work loss incidents**: No lost development work
+- **100% stakeholder visibility**: All work visible on GitHub
+- **Instant backup**: All commits immediately available remotely
+- **Recovery capability**: Complete development history preserved
+
+## Remember
+
+**"Never lose work, never surprise stakeholders"**
+
+**"Commit early, commit often, push immediately"**
+
+**"Git workflow hygiene is agile excellence"**
+
+This rule ensures systematic prevention of the GitHub sync issue through automated monitoring and enforcement.

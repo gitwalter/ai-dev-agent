@@ -102,7 +102,55 @@ def continuous_agile_monitoring(story, coordination_plan):
     monitoring.validate_acceptance_criteria()
     monitoring.ensure_definition_of_done()
     
+    # GIT WORKFLOW ENFORCEMENT (NEW)
+    monitoring.enforce_git_workflow_compliance()
+    monitoring.prevent_uncommitted_work_accumulation()
+    
     return monitoring
+```
+
+#### **Layer 0: Git Workflow Validation (MANDATORY FIRST)**
+```python
+def git_workflow_validation(user_request, context):
+    """Layer 0: Mandatory git workflow validation before agile coordination"""
+    
+    # Check git status before proceeding
+    git_status = subprocess.run(['git', 'status', '--porcelain'], 
+                              capture_output=True, text=True)
+    
+    uncommitted_files = []
+    if git_status.stdout.strip():
+        uncommitted_files = git_status.stdout.strip().split('\n')
+    
+    # BLOCKING: Too many uncommitted files
+    if len(uncommitted_files) > 5:
+        return GitWorkflowViolation(
+            status="BLOCKED",
+            reason="Too many uncommitted files - must commit before agile coordination",
+            uncommitted_count=len(uncommitted_files),
+            required_actions=[
+                "git status  # Review changes",
+                "git add .   # Stage changes", 
+                "git commit -m '[descriptive message]'  # Commit work",
+                "git push    # Push to GitHub",
+                "# Then retry @agile coordination"
+            ],
+            blocking=True
+        )
+    
+    # Check for unpushed commits
+    unpushed = subprocess.run(['git', 'log', '--oneline', '@{u}..HEAD'],
+                            capture_output=True, text=True)
+    
+    if unpushed.stdout.strip():
+        return GitWorkflowWarning(
+            status="WARNING", 
+            reason="Unpushed commits detected - recommend pushing to GitHub",
+            unpushed_count=len(unpushed.stdout.strip().split('\n')),
+            recommended_action="git push"
+        )
+    
+    return GitWorkflowClean(status="CLEAN")
 ```
 
 ### 3. **Coordination Response Format**
@@ -110,6 +158,13 @@ def continuous_agile_monitoring(story, coordination_plan):
 
 ```yaml
 Agile_Response_Template:
+  git_workflow_status:
+    status: "CLEAN|WARNING|BLOCKED"
+    uncommitted_files: X
+    unpushed_commits: X
+    actions_required: ["List of required git actions if any"]
+    blocking: "true|false"
+    
   agile_process_layer:
     story_created:
       id: "US-XXX-YYY"
@@ -146,6 +201,7 @@ Agile_Response_Template:
     blocker_management: "Escalation and resolution protocols"
     quality_validation: "Acceptance criteria verification"
     retrospective_data: "Learning and improvement tracking"
+    git_workflow_compliance: "Continuous git status monitoring"
   
   value_proposition: "Clear statement of agile value added"
 ```

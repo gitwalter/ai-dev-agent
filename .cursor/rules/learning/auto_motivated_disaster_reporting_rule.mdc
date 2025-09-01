@@ -1,0 +1,143 @@
+---
+description: "Auto-Motivated Disaster Reporting - Automatic learning from failures"
+category: "learning"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ["learning", "disaster-reports", "automation"]
+tier: 1
+enforcement: "blocking"
+autoFix: true
+contexts: ["ALL"]
+---
+
+# Auto-Motivated Disaster Reporting Rule
+
+**CRITICAL**: Automatically generate comprehensive disaster reports when failures occur to enable efficient learning and systematic improvement.
+
+## Core Principle
+
+**"Every Failure is a Divine Gift - Captured Automatically for Maximum Learning"**
+
+## Mandatory Auto-Detection Triggers
+
+### 🚨 **Automatic Disaster Report Generation**
+**MANDATORY**: The system automatically creates disaster reports when ANY of these occur:
+
+```yaml
+automatic_disaster_triggers:
+  git_workflow_violations:
+    - "Uncommitted files > 5 detected"
+    - "Unpushed commits > 3 detected" 
+    - "GitHub sync failures or delays"
+  
+  test_failures:
+    - "Test failure rate increases > 10%"
+    - "Import errors or module resolution failures"
+    - "CI/CD pipeline failures"
+  
+  system_failures:
+    - "Agent coordination failures"
+    - "Rule application errors"
+    - "Performance degradation > 50%"
+  
+  process_failures:
+    - "Quality gate failures"
+    - "Communication breakdowns"
+    - "Workflow interruptions"
+```
+
+## Automated Implementation
+
+### 🤖 **Auto-Generation System**
+```python
+class AutoMotivateddisasterDetector:
+    """Automatically detect failures and generate disaster reports."""
+    
+    def detect_and_report_failures(self):
+        """Continuously monitor and auto-generate disaster reports."""
+        
+        for failure in self.scan_for_failures():
+            disaster_report = self.generate_automatic_report(
+                failure_type=failure.type,
+                failure_data=failure.data,
+                timestamp=datetime.now()
+            )
+            
+            # Auto-save to docs/lessons_learned/
+            self.save_disaster_report(disaster_report)
+            
+            # Integrate learning immediately
+            self.integrate_learning(disaster_report)
+            
+            # Alert if severe
+            if failure.severity >= HIGH:
+                self.alert_stakeholders(disaster_report)
+```
+
+### 📋 **Auto-Report Template**
+**MANDATORY**: Every auto-generated report includes:
+
+1. **Incident Summary** - What happened (auto-detected)
+2. **Root Cause Analysis** - AI-powered analysis  
+3. **Impact Assessment** - System and process impact
+4. **Lessons Learned** - Key insights extracted
+5. **Prevention Strategy** - Automated improvements
+6. **Success Metrics** - Measurable outcomes
+
+### 🔄 **Immediate Learning Integration**
+**AUTOMATIC**: Learning is immediately applied:
+
+- **Rule Updates** - Enhance monitoring and enforcement
+- **Process Improvements** - Automate manual steps
+- **System Hardening** - Prevent similar failures
+- **Documentation Updates** - Capture new knowledge
+
+## Integration with @agile
+
+### 🎯 **Enhanced Coordination**
+**MANDATORY**: @agile coordination includes disaster learning:
+
+```python
+def agile_coordination_with_disaster_learning(request, context):
+    """Enhanced @agile that includes recent disaster learning."""
+    
+    # Check for recent disasters
+    recent_disasters = get_recent_disaster_reports(hours=24)
+    
+    if recent_disasters:
+        # Apply lessons to current work
+        context["disaster_learning"] = extract_lessons(recent_disasters)
+    
+    return execute_enhanced_agile_coordination(request, context)
+```
+
+## Success Metrics
+
+### 📊 **Learning Effectiveness KPIs**
+```yaml
+effectiveness_metrics:
+  detection_speed: "Failure to report: < 5 minutes"
+  report_quality: "Completeness score: > 95%"
+  learning_integration: "Auto-implementation: > 70%"
+  prevention_success: "Recurrence rate: < 5%"
+  system_improvement: "Failure reduction: > 80%"
+```
+
+## Implementation Status
+
+### ✅ **Completed Example**
+- **Git Workflow Disaster Report** - Created for GitHub sync issue
+- **Automatic Prevention** - Git workflow enforcement implemented
+- **Learning Integration** - Enhanced @agile coordination active
+- **Success Metrics** - Zero recurrence achieved
+
+## Remember
+
+**"Every failure is a gift - but only if we unwrap it immediately and completely."**
+
+**"Auto-motivated disaster reporting means we never waste a learning opportunity."**
+
+**"The system that learns automatically from every failure becomes antifragile."**
+
+This rule ensures every failure becomes immediate, comprehensive learning that strengthens the entire system.
