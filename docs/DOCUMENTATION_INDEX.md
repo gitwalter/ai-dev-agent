@@ -61,12 +61,18 @@
 
 ## 🔧 **Technical Documentation**
 
-### **Mathematical Foundations** 🧮 **NEW**
-- **[Formal System Mathematics](mathematics/formal_system_mathematics.md)** - **FOUNDATIONAL** - Complete mathematical formalization of 12-layer onion architecture
-- **[Mathematical System Foundation](utils/validation/mathematical_system_foundation.py)** - **IMPLEMENTED** - Mathematical validation system with divine constants, ethical formalization, and harmonic integration
-- **[Formal System Compliant Agent](agents/formal_system_compliant_agent.py)** - **MANDATORY** - Base class ensuring mathematical validation for all agents
-- **[Mathematical Foundation Tests](tests/test_mathematical_system_foundation.py)** - **COMPREHENSIVE** - Complete test suite for mathematical validation (≥95% coverage)
-- **[Formal System Agent Tests](tests/test_formal_system_compliant_agent.py)** - **COMPREHENSIVE** - Tests for agent integration with mathematical validation
+### **Foundation-Practical Architecture** 🧄 **NEW PARADIGM**
+- **[Foundation-Practical Onion Architecture](architecture/foundation_practical_onion_architecture.md)** - **REVOLUTIONARY** - 8-layer architecture with proper ontological clustering (2 Foundation + 6 Practical)
+- **[Foundation-Practical System](utils/validation/foundation_practical_onion_system.py)** - **IMPLEMENTED** - Complete validation system with foundation and practical layers
+- **[Foundation-Practical Compliant Agent](agents/foundation_practical_compliant_agent.py)** - **MANDATORY** - Enhanced agent base class with 8-layer validation
+- **[Foundation-Practical Tests](tests/test_foundation_practical_onion_system.py)** - **COMPREHENSIVE** - Complete test suite for 8-layer architecture (≥95% coverage)
+- **[Simplified Onion Architecture](architecture/simplified_onion_architecture.md)** - **EVOLUTION** - Improved clustering from 12 fragmented layers to 8 logical layers
+
+### **Mathematical Foundations** 🧮 **INTEGRATED**
+- **[Formal System Mathematics](mathematics/formal_system_mathematics.md)** - **FOUNDATIONAL** - Mathematical formalization integrated into Foundation Layer 0
+- **[Mathematical System Foundation](utils/validation/mathematical_system_foundation.py)** - **LEGACY** - Original mathematical validation (superseded by Foundation-Practical)
+- **[Formal System Compliant Agent](agents/formal_system_compliant_agent.py)** - **LEGACY** - Original agent base class (superseded by Foundation-Practical)
+- **[Mathematical Foundation Tests](tests/test_mathematical_system_foundation.py)** - **LEGACY** - Original test suite (superseded by Foundation-Practical tests)
 
 ### **Development Guides**
 - [Development Setup](guides/development/development_setup.md) - Environment setup and configuration

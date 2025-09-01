@@ -41,8 +41,9 @@ This directory contains our **lightning-fast agile framework** with embedded qua
 - **[Sprint Templates](sprints/templates/)** - Templates for creating new sprints
 
 ### **Core Agile Concepts** (`core/`)
+- **[Foundation-Practical Architecture](../architecture/foundation_practical_onion_architecture.md)** - **REVOLUTIONARY** - 8-layer onion architecture with proper ontological clustering
 - **[Formal Organization Rules](../rules/core/formal_organization_rules.md)** - **FOUNDATIONAL** - Mathematical and philosophical system basis
-- **[Mathematical System Foundation](../mathematics/formal_system_mathematics.md)** - **MATHEMATICAL** - Rigorous mathematical formalization of complete architecture
+- **[Mathematical System Foundation](../mathematics/formal_system_mathematics.md)** - **INTEGRATED** - Mathematical formalization integrated into Foundation Layer 0
 - **[Universal Naming Conventions](../guides/development/universal_naming_conventions_reference.md)** - **MANDATORY** - Complete artifact naming system
 - [Agile Workflow](core/agile_workflow.md) - Sprint-based development process
 - [Agile Cursor Rules](core/agile_cursor_rules.md) - Cursor rules for agile development
