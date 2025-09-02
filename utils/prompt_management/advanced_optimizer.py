@@ -107,6 +107,7 @@ class AdvancedPromptOptimizer:
         
         # Database setup
         self.db_path = self.optimization_dir / "optimization.db"
+        self._connection = None
         self._init_database()
         
         # ML models
@@ -123,6 +124,19 @@ class AdvancedPromptOptimizer:
         self.performance_metrics: Dict[str, List[float]] = {}
         
         logger.info(f"Advanced Prompt Optimizer initialized at {self.optimization_dir}")
+    
+    def close(self):
+        """Explicitly close database connection."""
+        if self._connection:
+            try:
+                self._connection.close()
+                self._connection = None
+            except Exception:
+                pass
+    
+    def __del__(self):
+        """Ensure connection is closed on deletion."""
+        self.close()
     
     def _init_database(self):
         """Initialize the optimization database."""

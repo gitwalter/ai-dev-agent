@@ -10,6 +10,7 @@ import asyncio
 import sys
 import os
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 
 # Add project root to path for proper imports
 project_root = Path(__file__).parent.parent.parent
@@ -51,10 +52,10 @@ class TestTestGenerator:
                 temperature=0.1
             )
             
-            # Setup Gemini client
+            # Setup Gemini client using real Streamlit secrets
             api_key = st.secrets.get("GEMINI_API_KEY")
             if not api_key:
-                pytest.skip("No API key found")
+                pytest.skip("No API key found in Streamlit secrets")
                 
             genai.configure(api_key=api_key)
             client = genai.GenerativeModel('gemini-2.5-flash-lite')

@@ -33,7 +33,18 @@ class TestPromptAnalytics:
         temp_dir = tempfile.mkdtemp()
         analytics = PromptAnalytics(analytics_dir=temp_dir)
         yield analytics
-        shutil.rmtree(temp_dir)
+        # Explicitly close database connections before cleanup
+        analytics.close()
+        try:
+            shutil.rmtree(temp_dir)
+        except PermissionError:
+            # On Windows, wait a moment and try again
+            import time
+            time.sleep(0.1)
+            try:
+                shutil.rmtree(temp_dir)
+            except PermissionError:
+                pass  # Best effort cleanup
     
     @pytest.fixture
     def sample_metrics(self):

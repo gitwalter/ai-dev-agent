@@ -32,12 +32,24 @@ class TestAdvancedPromptOptimizer:
         """Create temporary directory for testing."""
         temp_dir = tempfile.mkdtemp()
         yield temp_dir
-        shutil.rmtree(temp_dir)
+        # Enhanced cleanup for Windows database locking issues
+        try:
+            shutil.rmtree(temp_dir)
+        except PermissionError:
+            import time
+            time.sleep(0.1)
+            try:
+                shutil.rmtree(temp_dir)
+            except PermissionError:
+                pass  # Best effort cleanup
     
     @pytest.fixture
     def optimizer(self, temp_dir):
         """Create optimizer instance for testing."""
-        return AdvancedPromptOptimizer(optimization_dir=temp_dir)
+        optimizer = AdvancedPromptOptimizer(optimization_dir=temp_dir)
+        yield optimizer
+        # Explicitly close database connections before cleanup
+        optimizer.close()
     
     @pytest.fixture
     def sample_context(self):
@@ -447,12 +459,24 @@ class TestAdvancedOptimizationIntegration:
         """Create temporary directory for testing."""
         temp_dir = tempfile.mkdtemp()
         yield temp_dir
-        shutil.rmtree(temp_dir)
+        # Enhanced cleanup for Windows database locking issues
+        try:
+            shutil.rmtree(temp_dir)
+        except PermissionError:
+            import time
+            time.sleep(0.1)
+            try:
+                shutil.rmtree(temp_dir)
+            except PermissionError:
+                pass  # Best effort cleanup
     
     @pytest.fixture
     def optimizer(self, temp_dir):
         """Create optimizer instance for testing."""
-        return AdvancedPromptOptimizer(optimization_dir=temp_dir)
+        optimizer = AdvancedPromptOptimizer(optimization_dir=temp_dir)
+        yield optimizer
+        # Explicitly close database connections before cleanup
+        optimizer.close()
     
     def test_integration_with_template_system(self, optimizer, temp_dir):
         """Test integration with template system."""
@@ -561,12 +585,24 @@ class TestAdvancedOptimizationPerformance:
         """Create temporary directory for testing."""
         temp_dir = tempfile.mkdtemp()
         yield temp_dir
-        shutil.rmtree(temp_dir)
+        # Enhanced cleanup for Windows database locking issues
+        try:
+            shutil.rmtree(temp_dir)
+        except PermissionError:
+            import time
+            time.sleep(0.1)
+            try:
+                shutil.rmtree(temp_dir)
+            except PermissionError:
+                pass  # Best effort cleanup
     
     @pytest.fixture
     def optimizer(self, temp_dir):
         """Create optimizer instance for testing."""
-        return AdvancedPromptOptimizer(optimization_dir=temp_dir)
+        optimizer = AdvancedPromptOptimizer(optimization_dir=temp_dir)
+        yield optimizer
+        # Explicitly close database connections before cleanup
+        optimizer.close()
     
     def test_optimization_speed(self, optimizer):
         """Test optimization speed for performance targets."""

@@ -111,7 +111,21 @@ class PromptAnalytics:
         
         # Database for analytics data
         self.db_path = self.analytics_dir / "analytics.db"
+        self._connection = None
         self._init_database()
+    
+    def close(self):
+        """Explicitly close database connection."""
+        if self._connection:
+            try:
+                self._connection.close()
+                self._connection = None
+            except Exception:
+                pass
+    
+    def __del__(self):
+        """Ensure connection is closed on deletion."""
+        self.close()
     
     def _init_database(self):
         """Initialize the analytics database."""
