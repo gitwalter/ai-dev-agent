@@ -2,7 +2,7 @@
 description: "Unhackable Ethical DNA Security Policy - Open Source Transparency Strategy"
 category: "security-standards"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 contexts: ['SECURITY', 'ARCHITECTURE', 'ETHICAL', 'DEFAULT']
 globs: ["**/*"]
 tags: ['security_standards', 'ethical_ai', 'unhackable_security', 'open_source']

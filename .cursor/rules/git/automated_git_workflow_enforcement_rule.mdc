@@ -2,7 +2,7 @@
 description: "Automated Git Workflow Enforcement - Prevent uncommitted work accumulation"
 category: "git"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ["git", "workflow", "automation", "work-preservation"]
 tier: 1

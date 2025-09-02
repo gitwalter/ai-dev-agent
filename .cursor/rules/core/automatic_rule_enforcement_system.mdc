@@ -1,14 +1,30 @@
 ---
-description: "Self-enforcing rule system with automatic detection, correction, and prevention of violations. Zero tolerance enforcement for critical standards."
-category: "core-foundation"
-priority: "critical"
-alwaysApply: true
-enforcement: "blocking"
-autoFix: true
-contexts: ['ALL']
-globs: ["**/*"]
-tags: ['core_foundation', 'automatic_enforcement', 'rule_system']
-tier: "1"
+alwaysApply: false
+autoFix: false
+category: meta-type_3
+contexts:
+- META
+dependencies:
+- formal_rule_system_framework
+description: System-Wide Rule Enforcement - type_3 layer rule
+enforcement: blocking
+formalLayer: type_3
+globs:
+- '**/*'
+languageGames:
+- enforcement_coordination
+- system_governance
+linguisticFramework: meta
+logicalType: 3
+priority: critical
+tags:
+- type_3
+- meta
+- type_3
+- priority_1
+- enforcement_coordination
+- system_governance
+tier: '1'
 ---
 
 # Automatic Rule Enforcement System
@@ -32,7 +48,7 @@ Every critical rule must have:
 enforcement_levels:
   BLOCKING:
     priority: "critical"
-    alwaysApply: true
+    alwaysApply: false
     enforcement: "blocking" 
     autoFix: true
     tolerance: "zero"
@@ -56,7 +72,7 @@ enforcement_levels:
 ```yaml
   WARNING:
     priority: "high"
-    alwaysApply: true
+    alwaysApply: false
     enforcement: "warning"
     autoFix: false
     tolerance: "low"

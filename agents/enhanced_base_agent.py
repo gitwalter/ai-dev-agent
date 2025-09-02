@@ -37,8 +37,8 @@ class EnhancedBaseAgent(BaseAgent):
     rule compliance. This is a CRITICAL system requirement.
     """
     
-    def __init__(self, name: str = "enhanced_base_agent", role: str = "Base Agent with File Organization"):
-        super().__init__(name, role)
+    def __init__(self, config, gemini_client=None):
+        super().__init__(config, gemini_client)
         
         # Initialize file organization enforcer
         self.file_enforcer = FileOrganizationEnforcer()

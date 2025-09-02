@@ -57,7 +57,7 @@ This rule is **ALWAYS ACTIVE** and applies when:
 ### ✅ ALLOWED (When User Controls Success)
 ```
 Results of rule system verification:
-- 3 core rules with alwaysApply: true
+- 3 core rules with alwaysApply: false
 - 38 context rules with alwaysApply: false
 - System health score: 80/100
 ```

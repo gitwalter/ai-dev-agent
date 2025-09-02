@@ -2,7 +2,7 @@
 description: "Dynamic Rule Loading Optimization - Situation-specific rule loading for token efficiency"
 category: "meta"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ["optimization", "tokens", "dynamic-loading", "context-awareness", "performance"]
 tier: 1

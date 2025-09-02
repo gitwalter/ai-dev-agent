@@ -2,7 +2,7 @@
 description: "Research-first principle with clear detection criteria for when research is needed across all agents"
 category: "core-foundation"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['core_foundation', 'research', 'knowledge_management', 'efficiency']
 tier: "1"

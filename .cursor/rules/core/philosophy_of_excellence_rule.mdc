@@ -222,7 +222,7 @@ This rule embodies our unwavering commitment to creating software that makes the
 ---
 description: "Core values: love, passion, dedication, and optimization"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
 priority: "CRITICAL"
 category: "core"
 ---

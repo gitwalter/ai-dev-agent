@@ -2,7 +2,7 @@
 description: "Sacred rules embedded at DNA level - automatic, pre-cognitive enforcement"
 category: "core-dna"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 contexts: ['ALL']
 globs: ["**/*"]
 tags: ['sacred_dna', 'file_structure_dna', 'boyscout_dna', 'naming_dna']

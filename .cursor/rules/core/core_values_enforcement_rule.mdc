@@ -1,14 +1,30 @@
 ---
-description: "Core Values Enforcement - Mathematical Beauty, Technical Excellence, Moral/Spiritual Integrity"
-category: "core"
-priority: "critical"
 alwaysApply: true
-globs: ["**/*"]
-tags: ["values", "beauty", "excellence", "integrity", "moral", "spiritual"]
-tier: 1
-enforcement: "blocking"
 autoFix: true
-contexts: ["ALL"]
+category: foundational-axiomatic
+contexts:
+- ALL
+dependencies:
+- no_premature_victory_declaration_rule
+description: Quality Excellence Principle - axiomatic layer rule
+enforcement: blocking
+formalLayer: axiomatic
+globs:
+- '**/*'
+languageGames:
+- quality_assurance
+- excellence_coordination
+linguisticFramework: foundational
+logicalType: 0
+priority: critical
+tags:
+- axiomatic
+- foundational
+- type_0
+- priority_1
+- quality_assurance
+- excellence_coordination
+tier: '1'
 ---
 
 # Core Values Enforcement Rule

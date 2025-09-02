@@ -1,12 +1,30 @@
 ---
-description: "Scientific verification and evidence-based success validation with zero tolerance for unverified claims"
-category: "core-foundation"
-priority: "critical"
 alwaysApply: true
-contexts: ['DEFAULT', 'CODING', 'TESTING', 'DEBUGGING', 'ARCHITECTURE', 'AGILE', 'DOCUMENTATION']
-globs: ["**/*"]
-tags: ['core_foundation', 'scientific_rigor', 'formal_verification', 'always_active']
-tier: "1"
+autoFix: true
+category: foundational-axiomatic
+contexts:
+- ALL
+dependencies:
+- safety_first_principle
+description: Evidence-Based Success Validation - axiomatic layer rule
+enforcement: blocking
+formalLayer: axiomatic
+globs:
+- '**/*'
+languageGames:
+- evidence_validation
+- truth_verification
+linguisticFramework: foundational
+logicalType: 0
+priority: critical
+tags:
+- axiomatic
+- foundational
+- type_0
+- priority_1
+- evidence_validation
+- truth_verification
+tier: '1'
 ---
 # Scientific Verification and Evidence-Based Success Rule
 

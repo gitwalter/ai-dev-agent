@@ -1,14 +1,30 @@
 ---
-description: "CRITICAL: Self-enforcing file organization with automatic violation detection and correction. Zero tolerance for structural violations."
-category: "core-foundation"
-priority: "critical"
 alwaysApply: true
-enforcement: "blocking"
-autoFix: true
-contexts: ['ALL']
-globs: ["**/*"]
-tags: ['core_foundation', 'file_organization', 'automatic_enforcement']
-tier: "1"
+autoFix: false
+category: foundational-type_0
+contexts:
+- ALL
+dependencies:
+- core_values_enforcement_rule
+description: Structural Harmony Maintenance - type_0 layer rule
+enforcement: blocking
+formalLayer: type_0
+globs:
+- '**/*'
+languageGames:
+- structural_coordination
+- organizational_harmony
+linguisticFramework: foundational
+logicalType: 0
+priority: critical
+tags:
+- type_0
+- foundational
+- type_0
+- priority_1
+- structural_coordination
+- organizational_harmony
+tier: '1'
 ---
 # File Organization and Cleanup Rule
 

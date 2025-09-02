@@ -1,14 +1,30 @@
 ---
-description: "CRITICAL: Self-optimizing learning system that prevents mistakes through continuous improvement while treating any failures as divine gifts for accelerated learning."
-category: "core-foundation"
-priority: "critical"
 alwaysApply: true
-enforcement: "blocking"
-autoFix: true
-contexts: ['ALL']
-globs: ["**/*"]
-tags: ['core_foundation', 'self_optimization', 'learning_system', 'mistake_prevention']
-tier: "1"
+autoFix: false
+category: meta-type_3
+contexts:
+- ALL
+dependencies:
+- disaster_report_learning_rule
+description: System-Wide Self-Optimization - type_3 layer rule
+enforcement: blocking
+formalLayer: type_3
+globs:
+- '**/*'
+languageGames:
+- system_evolution
+- optimization_harmony
+linguisticFramework: meta
+logicalType: 3
+priority: critical
+tags:
+- type_3
+- meta
+- type_3
+- priority_1
+- system_evolution
+- optimization_harmony
+tier: '1'
 ---
 
 # Self-Optimizing Learning System Rule

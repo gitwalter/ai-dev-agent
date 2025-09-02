@@ -1,12 +1,30 @@
 ---
-description: "Auto-generated description for agile_artifacts_maintenance_rule.mdc"
-category: "agile-methodology"
-priority: "high"
 alwaysApply: false
-contexts: ['AGILE', 'DEFAULT']
-globs: ["**/*"]
-tags: ['agile_methodology', 'agile', 'project_management']
-tier: "2"
+autoFix: false
+category: agile-type_1
+contexts:
+- AGILE
+dependencies:
+- agile_strategic_coordination_rule
+description: Agile Artifact Maintenance Set - type_1 layer rule
+enforcement: warning
+formalLayer: type_1
+globs:
+- '**/*'
+languageGames:
+- artifact_coordination
+- documentation_harmony
+linguisticFramework: agile
+logicalType: 1
+priority: medium
+tags:
+- type_1
+- agile
+- type_1
+- priority_3
+- artifact_coordination
+- documentation_harmony
+tier: '3'
 ---
 # Agile Artifacts Maintenance Rule
 

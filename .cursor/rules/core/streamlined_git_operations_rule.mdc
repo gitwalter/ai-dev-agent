@@ -1,11 +1,30 @@
 ---
-description: "Streamlined git operations - execute only commit and push in standard situations"
-category: "core-foundation"
-priority: "critical"
-alwaysApply: true
-globs: ["**/*"]
-tags: ['core_foundation', 'git_operations', 'streamlined']
-tier: "1"
+alwaysApply: false
+autoFix: false
+category: git-type_0
+contexts:
+- GIT
+dependencies:
+- safety_first_principle
+description: Streamlined Git Operations - type_0 layer rule
+enforcement: warning
+formalLayer: type_0
+globs:
+- '**/*'
+languageGames:
+- version_control_coordination
+- workflow_harmony
+linguisticFramework: git
+logicalType: 0
+priority: high
+tags:
+- type_0
+- git
+- type_0
+- priority_2
+- version_control_coordination
+- workflow_harmony
+tier: '2'
 ---
 
 # Streamlined Git Operations Rule

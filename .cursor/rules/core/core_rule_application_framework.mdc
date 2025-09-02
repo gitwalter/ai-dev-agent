@@ -2,7 +2,7 @@
 description: "Auto-generated description for core_rule_application_framework.mdc"
 category: "core-foundation"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['core_foundation']
 tier: "2"

@@ -2,7 +2,7 @@
 description: "Enforce scientific, rational communication without emotional decorations or marketing language"
 category: "core-foundation"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['core_foundation', 'communication', 'scientific']
 tier: "1"

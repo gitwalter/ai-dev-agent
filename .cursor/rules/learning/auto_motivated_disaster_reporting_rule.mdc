@@ -2,7 +2,7 @@
 description: "Auto-Motivated Disaster Reporting - Automatic learning from failures"
 category: "learning"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ["learning", "disaster-reports", "automation"]
 tier: 1

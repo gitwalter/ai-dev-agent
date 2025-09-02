@@ -1,14 +1,30 @@
 ---
-description: "Intelligent Context-Aware Rule System - Dynamic rule loading with 75-85% token reduction"
-category: "meta-core"
-priority: "critical"
-alwaysApply: true
-contexts: ['ALL']
-globs: ["**/*"]
-tags: ['intelligent_detection', 'dynamic_loading', 'token_optimization', 'context_awareness']
-tier: "0"
-enforcement: "automatic"
-autoFix: true
+alwaysApply: false
+autoFix: false
+category: meta-type_2
+contexts:
+- ALL
+dependencies:
+- formal_rule_system_framework
+description: Context-Aware Rule Selection - type_2 layer rule
+enforcement: blocking
+formalLayer: type_2
+globs:
+- '**/*'
+languageGames:
+- meta_coordination
+- intelligent_selection
+linguisticFramework: meta
+logicalType: 2
+priority: critical
+tags:
+- type_2
+- meta
+- type_2
+- priority_1
+- meta_coordination
+- intelligent_selection
+tier: '1'
 ---
 
 # Intelligent Context-Aware Rule System

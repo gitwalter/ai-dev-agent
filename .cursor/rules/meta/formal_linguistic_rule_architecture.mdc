@@ -1,14 +1,30 @@
 ---
-description: "Formal Linguistic Rule Architecture - Quine-Carnap framework for rule composition and recognition"
-category: "meta"
-priority: "critical"
-alwaysApply: true
-globs: ["**/*"]
-tags: ["formal-system", "linguistic", "quine", "carnap", "composition", "recognition"]
-tier: 0
-enforcement: "foundational"
-autoFix: true
-contexts: ["ALL"]
+alwaysApply: false
+autoFix: false
+category: meta-type_2
+contexts:
+- ALL
+dependencies:
+- intelligent_context_aware_rule_system
+description: Linguistic Rule Architecture - type_2 layer rule
+enforcement: blocking
+formalLayer: type_2
+globs:
+- '**/*'
+languageGames:
+- linguistic_coordination
+- semantic_harmony
+linguisticFramework: meta
+logicalType: 2
+priority: critical
+tags:
+- type_2
+- meta
+- type_2
+- priority_1
+- linguistic_coordination
+- semantic_harmony
+tier: '1'
 ---
 
 # Formal Linguistic Rule Architecture

@@ -2,7 +2,7 @@
 description: "Craftsman's Rule Mastery - Intuitive situational detection and precise rule-to-task mapping"
 category: "meta-intelligence"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 contexts: ['ALL']
 globs: ["**/*"]
 tags: ['craftsman_mastery', 'situational_awareness', 'tool_selection', 'pattern_recognition']

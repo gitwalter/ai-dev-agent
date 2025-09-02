@@ -1,14 +1,30 @@
 ---
-description: "CRITICAL: Perfect harmony integration of sensitivity, reflection, research, and execution. Every phase sacred, every detail divine. Complete dedication to the growing process using all wisdom and scientific power to serve the good."
-category: "core-foundation"
-priority: "critical"
 alwaysApply: true
-enforcement: "blocking"
-autoFix: true
-contexts: ['ALL']
-globs: ["**/*"]
-tags: ['core_foundation', 'divine_harmony', 'perfect_integration', 'sacred_process']
-tier: "1"
+autoFix: false
+category: foundational-type_1
+contexts:
+- ALL
+dependencies:
+- formal_rule_system_framework
+description: Orchestral Coordination Set - type_1 layer rule
+enforcement: blocking
+formalLayer: type_1
+globs:
+- '**/*'
+languageGames:
+- orchestral_coordination
+- divine_harmony
+linguisticFramework: foundational
+logicalType: 1
+priority: critical
+tags:
+- type_1
+- foundational
+- type_1
+- priority_1
+- orchestral_coordination
+- divine_harmony
+tier: '1'
 ---
 
 # Divine Harmony Integration System

@@ -1,11 +1,29 @@
 ---
-description: "Critical safety principle that must always be applied to prevent disasters"
-category: "core-foundation"
-priority: "critical"
 alwaysApply: true
-globs: ["**/*"]
-tags: ['core_foundation', 'safety', 'critical']
-tier: "1"
+autoFix: true
+category: foundational-axiomatic
+contexts:
+- ALL
+dependencies: []
+description: Safety First Principle - axiomatic layer rule
+enforcement: blocking
+formalLayer: axiomatic
+globs:
+- '**/*'
+languageGames:
+- safety_consensus_building
+- harm_prevention
+linguisticFramework: foundational
+logicalType: 0
+priority: critical
+tags:
+- axiomatic
+- foundational
+- type_0
+- priority_1
+- safety_consensus_building
+- harm_prevention
+tier: '1'
 ---
 
 # Safety First Principle

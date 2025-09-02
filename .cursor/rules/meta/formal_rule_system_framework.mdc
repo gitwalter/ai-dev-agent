@@ -1,14 +1,29 @@
 ---
-description: "CRITICAL meta-rule establishing the cursor rule system as a formal system with axioms, inference rules, syntax, semantics, and systematic application procedures"
-category: "meta-foundation"
-priority: "critical"
-alwaysApply: true
-globs: ["**/*"]
-tags: ['meta_foundation', 'formal_system', 'rule_framework', 'consistency', 'completeness']
-tier: "1"
-enforcement: "blocking"
+alwaysApply: false
 autoFix: true
-contexts: ['ALL']
+category: foundational-axiomatic
+contexts:
+- ALL
+dependencies: []
+description: Logical Consistency Principle - axiomatic layer rule
+enforcement: blocking
+formalLayer: axiomatic
+globs:
+- '**/*'
+languageGames:
+- consistency_validation
+- logical_coherence
+linguisticFramework: foundational
+logicalType: 1
+priority: critical
+tags:
+- axiomatic
+- foundational
+- type_1
+- priority_1
+- consistency_validation
+- logical_coherence
+tier: '1'
 ---
 
 # Formal Rule System Framework

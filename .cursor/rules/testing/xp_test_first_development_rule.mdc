@@ -1,12 +1,31 @@
 ---
-description: "Auto-generated description for xp_test_first_development_rule.mdc"
-category: "testing-standards"
-priority: "high"
 alwaysApply: false
-contexts: ['TESTING', 'CODING', 'AGILE']
-globs: ["**/*"]
-tags: ['testing_standards']
-tier: "2"
+autoFix: false
+category: test-type_0
+contexts:
+- TESTING
+- TDD
+dependencies:
+- no_premature_victory_declaration_rule
+description: Test-Driven Development - type_0 layer rule
+enforcement: warning
+formalLayer: type_0
+globs:
+- '**/*'
+languageGames:
+- test_coordination
+- validation_harmony
+linguisticFramework: test
+logicalType: 0
+priority: high
+tags:
+- type_0
+- test
+- type_0
+- priority_2
+- test_coordination
+- validation_harmony
+tier: '2'
 ---
 # XP Test-First Development Rule
 

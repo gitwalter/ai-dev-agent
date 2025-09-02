@@ -1,14 +1,30 @@
 ---
-description: "Agile Strategic Coordination Rule - @agile as conductor, not delegator"
-category: "agile"
-priority: "critical"
-alwaysApply: true
-globs: ["**/*"]
-tags: ["agile", "coordination", "project-management", "strategic-orchestrator"]
-tier: 1
-enforcement: "blocking"
+alwaysApply: false
 autoFix: false
-contexts: ["AGILE", "DEFAULT"]
+category: agile-type_0
+contexts:
+- AGILE
+dependencies:
+- safety_first_principle
+description: Agile Strategic Coordination - type_0 layer rule
+enforcement: warning
+formalLayer: type_0
+globs:
+- '**/*'
+languageGames:
+- stakeholder_coordination
+- value_delivery
+linguisticFramework: agile
+logicalType: 0
+priority: high
+tags:
+- type_0
+- agile
+- type_0
+- priority_2
+- stakeholder_coordination
+- value_delivery
+tier: '2'
 ---
 
 # Agile Strategic Coordination Rule

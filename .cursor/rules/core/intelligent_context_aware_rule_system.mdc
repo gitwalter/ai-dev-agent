@@ -2,7 +2,7 @@
 description: "Intelligent context-aware rule selection system that automatically detects development context and applies only relevant rules"
 category: "core-foundation"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 globs: ["**/*"]
 tags: ['core_foundation', 'context_awareness', 'rule_selection']
 tier: "1"

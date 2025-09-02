@@ -2,7 +2,7 @@
 description: "DNA-level naming enforcement that prevents violations before they occur"
 category: "core-dna"
 priority: "critical"
-alwaysApply: true
+alwaysApply: false
 contexts: ['ALL']
 globs: ["**/*"]
 tags: ['naming_dna', 'ontology_enforcement', 'pre_cognitive']

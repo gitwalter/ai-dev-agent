@@ -1,12 +1,31 @@
 ---
-description: "Core development principles and methodologies for systematic, high-quality development"
-category: "development-standards"
-priority: "high"
 alwaysApply: false
-contexts: ["CODING", "ARCHITECTURE", "TESTING", "DEFAULT"]
-globs: ["**/*"]
-tags: ['development_standards', 'tdd', 'systematic_development']
-tier: "2"
+autoFix: false
+category: code-type_0
+contexts:
+- CODING
+- DEVELOPMENT
+dependencies:
+- core_values_enforcement_rule
+description: Code Development Excellence - type_0 layer rule
+enforcement: warning
+formalLayer: type_0
+globs:
+- '**/*'
+languageGames:
+- code_quality_coordination
+- development_harmony
+linguisticFramework: code
+logicalType: 0
+priority: high
+tags:
+- type_0
+- code
+- type_0
+- priority_2
+- code_quality_coordination
+- development_harmony
+tier: '2'
 ---
 
 # Optimized Development Rules for AI Development Agent

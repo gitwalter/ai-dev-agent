@@ -1,12 +1,30 @@
 ---
-description: "All documentation must be updated immediately when any relevant changes occur. Documentation debt is not permitted."
-category: "quality-standards"
-priority: "high"
 alwaysApply: false
-contexts: ["DOCUMENTATION", "CODING", "ARCHITECTURE", "AGILE"]
-globs: ["**/*"]
-tags: ["documentation", "quality", "maintenance", "excellence"]
-tier: "2"
+autoFix: false
+category: docs-type_0
+contexts:
+- DOCUMENTATION
+dependencies:
+- core_values_enforcement_rule
+description: Live Documentation Updates - type_0 layer rule
+enforcement: warning
+formalLayer: type_0
+globs:
+- '**/*'
+languageGames:
+- documentation_coordination
+- knowledge_harmony
+linguisticFramework: docs
+logicalType: 0
+priority: high
+tags:
+- type_0
+- docs
+- type_0
+- priority_2
+- documentation_coordination
+- knowledge_harmony
+tier: '2'
 ---
 
 # Live Documentation Updates Rule
