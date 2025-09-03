@@ -179,11 +179,11 @@ class AgileTemplateManager:
             'SPRINT_LENGTH': str(project_config.get('sprint_length_days', 14)),
             'METHODOLOGY': project_config.get('methodology', 'Scrum'),
             
-            # Vibe context integration
-            'VIBE_INTENSITY': vibe_context.get('intensity', 'focused').title(),
-            'COMMUNICATION_STYLE': vibe_context.get('communication_style', 'collaborative').title(),
-            'QUALITY_FOCUS': vibe_context.get('quality_focus', 'craft').title(),
-            'ENERGY_LEVEL': vibe_context.get('intensity', 'focused').title(),
+            # Vibe context integration  
+            'VIBE_INTENSITY': getattr(vibe_context, 'primary_emotion', 'focused').title(),
+            'COMMUNICATION_STYLE': getattr(vibe_context, 'communication_style', 'collaborative').title(),
+            'QUALITY_FOCUS': getattr(vibe_context, 'quality_focus', 'craft').title(),
+            'ENERGY_LEVEL': getattr(vibe_context, 'energy_level', 'focused').title(),
             
             # Agile ceremony timing adapted to vibe
             'STANDUP_DURATION': self._get_vibe_adjusted_duration('standup', vibe_context),
@@ -202,10 +202,10 @@ class AgileTemplateManager:
         
         return variables
     
-    def _get_vibe_adjusted_duration(self, ceremony: str, vibe_context: Dict[str, Any]) -> str:
+    def _get_vibe_adjusted_duration(self, ceremony: str, vibe_context) -> str:
         """Get vibe-adjusted ceremony durations."""
         
-        intensity = vibe_context.get('intensity', 'focused')
+        intensity = getattr(vibe_context, 'primary_emotion', 'focused')
         
         base_durations = {
             'standup': {'calm': '10 min', 'focused': '15 min', 'energetic': '20 min', 'passionate': '25 min', 'urgent': '30 min'},
@@ -216,10 +216,10 @@ class AgileTemplateManager:
         
         return base_durations.get(ceremony, {}).get(intensity, '60 min')
     
-    def _get_feedback_frequency(self, vibe_context: Dict[str, Any]) -> str:
+    def _get_feedback_frequency(self, vibe_context) -> str:
         """Get feedback frequency based on vibe context."""
         
-        intensity = vibe_context.get('intensity', 'focused')
+        intensity = getattr(vibe_context, 'primary_emotion', 'focused')
         
         frequencies = {
             'calm': 'Weekly',

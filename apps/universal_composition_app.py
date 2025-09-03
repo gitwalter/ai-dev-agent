@@ -2319,10 +2319,13 @@ def create_vibe_agile_project(project_name, project_description, vibe_intensity,
     try:
         # Create vibe context
         vibe_context = VibeContext(
-            intensity=getattr(VibeIntensity, vibe_intensity.upper()) if vibe_intensity.upper() in VibeIntensity.__members__ else VibeIntensity.FOCUSED,
+            primary_emotion=vibe_intensity,
+            energy_level=vibe_intensity,
             communication_style=communication_style,
-            quality_focus=quality_focus,
-            timeline_preference=timeline_preference
+            collaboration_preference="team-focused",  # Default value
+            risk_tolerance="moderate",  # Default value
+            innovation_appetite="balanced",  # Default value
+            quality_focus=quality_focus
         )
         
         # Project configuration
@@ -2346,18 +2349,21 @@ def create_vibe_agile_project(project_name, project_description, vibe_intensity,
             result['project_id'] = project_id
             
             # Set up first human interaction checkpoint
-            if 'next_human_interaction' in result and result['next_human_interaction']:
+            if 'next_human_interaction' in result and result.get('next_human_interaction'):
                 next_interaction = result['next_human_interaction']
-                if isinstance(next_interaction, dict) and 'phase' in next_interaction:
-                    phase = next_interaction['phase']
+                
+                # Handle different types of next_interaction structure
+                if isinstance(next_interaction, dict):
+                    phase = next_interaction.get('phase', 'inception')
+                elif isinstance(next_interaction, str):
+                    phase = next_interaction
                 else:
-                    # Fallback to inception phase if structure is different
-                    phase = 'inception'
+                    phase = 'inception'  # Default fallback
                 
                 st.session_state.active_interaction = {
                     'project_id': project_id,
                     'phase': phase,
-                    'vibe_context': result['vibe_context']
+                    'vibe_context': result.get('vibe_context', {})
                 }
             
             # Add to session state
