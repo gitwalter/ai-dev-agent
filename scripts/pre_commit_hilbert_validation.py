@@ -9,7 +9,15 @@ RESULT: Continuous mathematical beauty and systematic excellence
 
 import sys
 import subprocess
+import os
 from pathlib import Path
+
+# Fix Windows console encoding for emoji support
+if os.name == 'nt':  # Windows
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 from hilbert_consistency_validator import HilbertConsistencyValidator
 
 
