@@ -36,6 +36,14 @@ except ImportError:
     get_template_manager = None
     TEMPLATE_MANAGER_AVAILABLE = False
 
+# Import agile artifacts agent for quality assurance
+try:
+    from .agile_artifacts_agent import get_agile_artifacts_agent
+    AGILE_AGENT_AVAILABLE = True
+except ImportError:
+    get_agile_artifacts_agent = None
+    AGILE_AGENT_AVAILABLE = False
+
 class AgilePhase(Enum):
     """Agile development phases with human interaction points."""
     INCEPTION = "inception"
@@ -114,6 +122,15 @@ class VibeAgileFusionEngine:
         
         # Initialize feedback system
         feedback_config = self._initialize_feedback_system(project_name, vibe_context)
+        
+        # Quality assurance with agile artifacts agent
+        if AGILE_AGENT_AVAILABLE:
+            try:
+                agile_agent = get_agile_artifacts_agent()
+                agile_agent.sync_with_cursor_agent()  # Sync the new project
+                print("✅ Agile artifacts agent synchronized with new project")
+            except Exception as e:
+                print(f"⚠️ Agile agent sync warning: {e}")
         
         return {
             'project_name': project_name,

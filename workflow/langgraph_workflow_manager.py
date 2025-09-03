@@ -13,10 +13,6 @@ import re
 try:
     from langgraph.graph import StateGraph, END, START
     from langgraph.checkpoint.memory import MemorySaver
-    from langchain_core.output_parsers import PydanticOutputParser
-    from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
-    from langchain_core.prompts import PromptTemplate
-    from langchain_core.runnables import RunnablePassthrough
     from langchain_google_genai import ChatGoogleGenerativeAI
     from pydantic import BaseModel, Field
     LANGGRAPH_AVAILABLE = True
@@ -29,9 +25,6 @@ except ImportError as e:
     END = None
     START = None
     MemorySaver = None
-    PydanticOutputParser = None
-    PromptTemplate = None
-    RunnablePassthrough = None
 
 from utils.structured_outputs import (
     RequirementsAnalysisOutput, ArchitectureDesignOutput, CodeGenerationOutput,

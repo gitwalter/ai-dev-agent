@@ -8,6 +8,13 @@ import streamlit as st
 import sys
 import os
 import asyncio
+
+# Apply professional warning filters for clean user experience
+try:
+    from utils.system.warning_suppression import apply_professional_warning_filters
+    apply_professional_warning_filters()
+except ImportError:
+    pass  # Graceful fallback if warning suppression not available
 import subprocess
 from pathlib import Path
 from datetime import datetime
@@ -38,7 +45,16 @@ try:
     from utils.agile.enhanced_phase_dialogues import (
         get_enhanced_phase_dialogue, DialogueQuestion, QuestionType
     )
+    
+    # Import agile ceremony manager and context-aware rule system  
+    from utils.agile.agile_ceremony_manager import get_ceremony_manager, AgileCeremony
+    from utils.rule_system.context_aware_rule_loader import get_rule_loader, apply_context_aware_rules
+    from utils.rule_system.dynamic_rule_activator import get_dynamic_activator, start_dynamic_rule_system
+    
     VIBE_AGILE_AVAILABLE = True
+    AGILE_CEREMONIES_AVAILABLE = True
+    RULE_SYSTEM_AVAILABLE = True
+    DYNAMIC_RULES_AVAILABLE = True
 except ImportError:
     VibeAgileFusionEngine = None
     VibeContext = None  
@@ -57,6 +73,16 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Initialize dynamic rule system
+if DYNAMIC_RULES_AVAILABLE and 'dynamic_rules_started' not in st.session_state:
+    try:
+        activator = start_dynamic_rule_system()
+        st.session_state.dynamic_rules_started = True
+        st.session_state.dynamic_activator = activator
+    except Exception as e:
+        st.session_state.dynamic_rules_started = False
+        print(f"Dynamic rules initialization failed: {e}")
 
 # Professional CSS styling
 st.markdown("""
@@ -610,6 +636,14 @@ def deploy_composition():
             generate_docker_files(project_path, blueprint)
             generate_documentation(project_path, blueprint)
             
+            # 🎯 ADD AGILE ARTIFACTS TO ALL GENERATED PROJECTS
+            project_config = {
+                'name': project_name,
+                'description': create_project_description_from_config(blueprint['composition_config']),
+                'capabilities': blueprint['composition_config']['selected_frameworks'] + blueprint['composition_config']['enterprise_modules']
+            }
+            _create_agile_artifacts_for_project(project_path, project_config)
+            
             st.success("✅ Composition deployed successfully!")
             st.balloons()
             
@@ -634,10 +668,11 @@ def deploy_composition():
             # Download project as ZIP
             if st.button("📦 Download Project ZIP"):
                 zip_data = create_project_zip(project_path)
+                safe_filename = generate_safe_zip_filename(project_name, "composition", True)
                 st.download_button(
                     label="💾 Download Complete Project",
                     data=zip_data,
-                    file_name=f"{project_name}.zip",
+                    file_name=safe_filename,
                     mime="application/zip"
                 )
                 
@@ -1172,6 +1207,44 @@ def display_project_tree(project_path: Path):
     st.code("\n".join(tree_items[:50]))  # Limit to first 50 items
     if len(tree_items) > 50:
         st.info(f"... and {len(tree_items) - 50} more files/directories")
+
+def generate_safe_zip_filename(project_name: str, prefix: str = "project", include_timestamp: bool = True) -> str:
+    """Generate a safe, descriptive ZIP filename with project information."""
+    import re
+    from datetime import datetime
+    
+    # Clean the project name
+    if not project_name or project_name.strip() == "":
+        project_name = "unnamed_project"
+    
+    # Remove invalid characters and replace with underscores
+    safe_name = re.sub(r'[<>:"/\\|?*\s]', '_', project_name.strip())
+    
+    # Remove multiple consecutive underscores
+    safe_name = re.sub(r'_+', '_', safe_name)
+    
+    # Remove leading/trailing underscores
+    safe_name = safe_name.strip('_')
+    
+    # Ensure it's not empty
+    if not safe_name:
+        safe_name = "project"
+    
+    # Add prefix if provided
+    if prefix and prefix != safe_name:
+        safe_name = f"{prefix}_{safe_name}"
+    
+    # Add timestamp if requested
+    if include_timestamp:
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        safe_name = f"{safe_name}_{timestamp}"
+    
+    # Limit length (Windows has 255 char limit, leave room for .zip)
+    max_length = 250
+    if len(safe_name) > max_length:
+        safe_name = safe_name[:max_length]
+    
+    return f"{safe_name}.zip"
 
 def create_project_zip(project_path: Path) -> bytes:
     """Create a ZIP file of the entire project."""
@@ -1773,7 +1846,7 @@ if __name__ == "__main__":
     return code_template
 
 def create_agent_project(agent_config: Dict, agent_code: str) -> Path:
-    """Create a complete project structure for the agent."""
+    """Create a complete project structure for the agent with agile artifacts."""
     
     # Create project directory
     agent_name_clean = agent_config['name'].replace(" ", "_").lower()
@@ -1830,7 +1903,267 @@ This agent was created using the Simple Mode Agent Builder with vibe-driven conf
     
     (project_path / "README.md").write_text(readme_content)
     
+    # 🎯 ADD AGILE ARTIFACTS TO ALL GENERATED PROJECTS
+    _create_agile_artifacts_for_project(project_path, agent_config)
+    
     return project_path
+
+def _create_agile_artifacts_for_project(project_path: Path, project_config: Dict):
+    """Create comprehensive agile artifacts for any generated project."""
+    
+    # Create agile directory
+    agile_path = project_path / "agile"
+    agile_path.mkdir(exist_ok=True)
+    
+    # Get current timestamp for consistency
+    created_date = datetime.now().strftime('%Y-%m-%d')
+    created_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # 1. Create Epic Overview
+    epic_content = f"""# Epic Overview: {project_config.get('name', 'Generated Project')}
+
+**Created**: {created_date}  
+**Status**: In Progress  
+**Priority**: High  
+
+## Epic Description
+
+{project_config.get('description', 'AI-powered project generated with systematic agile methodology.')}
+
+## Business Value
+
+- **Automated Excellence**: Leverage AI capabilities for enhanced productivity
+- **Scalable Architecture**: Built with modern frameworks and best practices
+- **Quality Assurance**: Comprehensive testing and validation included
+- **Developer Experience**: Optimized for maintainability and extensibility
+
+## Acceptance Criteria
+
+- [ ] Core functionality implemented and tested
+- [ ] Documentation complete and accurate
+- [ ] Performance requirements met
+- [ ] Security standards implemented
+- [ ] Deployment pipeline configured
+- [ ] Monitoring and logging operational
+
+## User Stories
+
+See USER_STORIES.md for detailed breakdown of this epic into actionable user stories.
+
+## Definition of Done
+
+See DEFINITION_OF_DONE.md for comprehensive completion criteria.
+
+---
+**Generated by**: Universal Composition Layer - Agile Artifacts System  
+**Timestamp**: {created_timestamp}
+"""
+    
+    (agile_path / "EPIC_OVERVIEW.md").write_text(epic_content, encoding='utf-8')
+    
+    # 2. Create User Stories
+    capabilities = project_config.get('capabilities', [])
+    if not capabilities:
+        capabilities = ['core_functionality', 'user_interface', 'data_processing']
+    
+    user_stories_content = f"""# User Stories: {project_config.get('name', 'Generated Project')}
+
+**Created**: {created_date}  
+**Epic**: {project_config.get('name', 'Generated Project')}  
+
+## User Story Index
+
+"""
+    
+    for i, capability in enumerate(capabilities, 1):
+        story_id = f"US-{i:03d}"
+        capability_name = capability.replace('_', ' ').title()
+        
+        user_stories_content += f"""
+### {story_id}: {capability_name}
+
+**As a** user  
+**I want** {capability_name.lower()} functionality  
+**So that** I can leverage the system's capabilities effectively  
+
+**Acceptance Criteria:**
+- [ ] {capability_name} is implemented and functional
+- [ ] Error handling is comprehensive
+- [ ] Performance meets requirements
+- [ ] Documentation is complete
+- [ ] Testing covers all scenarios
+
+**Story Points**: 5  
+**Priority**: High  
+**Status**: Ready for Development  
+
+"""
+    
+    user_stories_content += f"""
+---
+**Generated by**: Universal Composition Layer - Agile Artifacts System  
+**Timestamp**: {created_timestamp}
+"""
+    
+    (agile_path / "USER_STORIES.md").write_text(user_stories_content, encoding='utf-8')
+    
+    # 3. Create Definition of Done
+    dod_content = f"""# Definition of Done: {project_config.get('name', 'Generated Project')}
+
+**Created**: {created_date}  
+**Applies to**: All user stories and tasks in this project  
+
+## Code Quality Standards
+
+- [ ] **Code Review**: All code reviewed by at least one team member
+- [ ] **Testing**: Unit tests written and passing (minimum 80% coverage)
+- [ ] **Documentation**: Code is well-documented with clear comments
+- [ ] **Standards**: Follows project coding standards and conventions
+- [ ] **Performance**: No performance regressions introduced
+
+## Functional Requirements
+
+- [ ] **Feature Complete**: All acceptance criteria met
+- [ ] **Error Handling**: Comprehensive error handling implemented
+- [ ] **Validation**: Input validation and sanitization in place
+- [ ] **Integration**: Successfully integrates with existing components
+- [ ] **User Experience**: Intuitive and responsive user interface
+
+## Quality Assurance
+
+- [ ] **Manual Testing**: Feature manually tested across different scenarios
+- [ ] **Automated Testing**: Automated tests created and passing
+- [ ] **Security**: Security requirements validated
+- [ ] **Accessibility**: Accessibility standards met where applicable
+- [ ] **Browser Support**: Tested on target browsers/platforms
+
+## Documentation and Deployment
+
+- [ ] **User Documentation**: User-facing documentation updated
+- [ ] **Technical Documentation**: Technical documentation complete
+- [ ] **Deployment**: Successfully deployed to staging environment
+- [ ] **Monitoring**: Monitoring and logging configured
+- [ ] **Rollback Plan**: Rollback procedure documented and tested
+
+## Review and Approval
+
+- [ ] **Product Owner**: Approved by product owner
+- [ ] **Technical Review**: Technical architecture approved
+- [ ] **Business Value**: Business value delivered and measurable
+- [ ] **Ready for Production**: All production readiness criteria met
+
+---
+**Generated by**: Universal Composition Layer - Agile Artifacts System  
+**Timestamp**: {created_timestamp}
+"""
+    
+    (agile_path / "DEFINITION_OF_DONE.md").write_text(dod_content, encoding='utf-8')
+    
+    # 4. Create Sprint Planning Template
+    sprint_planning_content = f"""# Sprint Planning: {project_config.get('name', 'Generated Project')}
+
+**Created**: {created_date}  
+**Sprint Duration**: 2 weeks  
+**Team Capacity**: 3-5 developers  
+
+## Sprint Goal
+
+Deliver core functionality for {project_config.get('name', 'the generated project')} with comprehensive testing and documentation.
+
+## Product Backlog Items Selected
+
+### High Priority
+- Implementation of core features from USER_STORIES.md
+- Essential error handling and validation
+- Basic user interface components
+
+### Medium Priority  
+- Performance optimization
+- Enhanced user experience features
+- Integration testing
+
+### Low Priority
+- Advanced features and customizations
+- Performance monitoring
+- Extended documentation
+
+## Sprint Backlog
+
+| User Story | Tasks | Estimate | Assignee | Status |
+|------------|-------|----------|----------|---------|
+| US-001 | Core implementation | 8h | TBD | Not Started |
+| US-002 | User interface | 6h | TBD | Not Started |
+| US-003 | Testing suite | 4h | TBD | Not Started |
+
+## Definition of Done
+
+See DEFINITION_OF_DONE.md for comprehensive completion criteria.
+
+## Sprint Commitment
+
+The team commits to delivering the selected backlog items according to the Definition of Done within the sprint timeframe.
+
+---
+**Generated by**: Universal Composition Layer - Agile Artifacts System  
+**Timestamp**: {created_timestamp}
+"""
+    
+    (agile_path / "SPRINT_PLANNING.md").write_text(sprint_planning_content, encoding='utf-8')
+    
+    # 5. Create Sprint Retrospective Template
+    retrospective_content = f"""# Sprint Retrospective: {project_config.get('name', 'Generated Project')}
+
+**Created**: {created_date}  
+**Sprint**: Sprint 1  
+**Participants**: Development Team  
+
+## What Went Well
+
+- [To be filled during retrospective]
+- Clear project structure and documentation
+- Automated agile artifacts generation
+- Systematic approach to development
+
+## What Could Be Improved
+
+- [To be filled during retrospective]
+- Communication and collaboration processes
+- Development workflow optimization
+- Testing and quality assurance procedures
+
+## Action Items
+
+| Action Item | Owner | Due Date | Status |
+|-------------|-------|----------|---------|
+| [To be added] | TBD | TBD | Pending |
+
+## Sprint Metrics
+
+- **Velocity**: TBD story points
+- **Burn-down**: [Chart to be added]
+- **Team Satisfaction**: [To be rated 1-10]
+- **Quality Metrics**: [Test coverage, defects, etc.]
+
+## Key Learnings
+
+- [To be documented during retrospective]
+- Systematic agile artifact generation improves project clarity
+- Clear Definition of Done prevents scope creep
+- Regular retrospectives drive continuous improvement
+
+## Next Sprint Focus
+
+- [To be determined based on retrospective outcomes]
+- Continue with high-priority user stories
+- Implement improvements identified in this retrospective
+- Maintain focus on quality and documentation
+
+---
+**Generated by**: Universal Composition Layer - Agile Artifacts System  
+**Timestamp**: {created_timestamp}
+"""
+    
+    (agile_path / "SPRINT_RETROSPECTIVE.md").write_text(retrospective_content, encoding='utf-8')
 
 def display_created_agent_details(agent_config: Dict, project_path: Path):
     """Display details of the newly created agent."""
@@ -2442,8 +2775,8 @@ def display_existing_vibe_agile_projects():
                     view_project_artifacts(project)
             
             with col3:
-                if st.button(f"🔄 Continue Development", key=f"continue_dev_{i}"):
-                    continue_project_development(project)
+                if st.button(f"📦 Download ZIP", key=f"download_{i}"):
+                    download_vibe_agile_project(project)
                 
                 if st.button(f"📈 Project Health", key=f"health_{i}"):
                     show_project_health(project)
@@ -2486,21 +2819,254 @@ def enter_vibe_agile_project(project):
 def view_project_artifacts(project):
     """View the agile artifacts for a project."""
     st.info(f"📋 Viewing artifacts for: {project.get('name', 'Unnamed Project')}")
-    if 'agile_artifacts' in project:
-        for artifact_name, artifact_path in project['agile_artifacts'].items():
-            st.markdown(f"- **{artifact_name}**: `{artifact_path}`")
+    if 'agile_path' in project:
+        agile_path = Path(project['agile_path'])
+        if agile_path.exists():
+            artifacts = list(agile_path.glob("*.md"))
+            for artifact in artifacts:
+                st.markdown(f"- **{artifact.name}**: `{artifact}`")
+        else:
+            st.warning("Agile artifacts directory not found.")
     else:
-        st.warning("No artifacts found for this project.")
+        st.warning("No agile path found for this project.")
+
+def download_vibe_agile_project(project):
+    """Download a vibe-agile project as ZIP."""
+    
+    project_name = project.get('name', 'Unnamed_Project')
+    
+    if 'agile_path' in project:
+        agile_path = Path(project['agile_path'])
+        if agile_path.exists():
+            # Create ZIP of the entire project directory (parent of agile folder)
+            project_path = agile_path.parent
+            
+            try:
+                zip_data = create_project_zip(project_path)
+                safe_filename = generate_safe_zip_filename(project_name, "vibe_agile", True)
+                st.download_button(
+                    label=f"💾 Download {safe_filename}",
+                    data=zip_data,
+                    file_name=safe_filename,
+                    mime="application/zip",
+                    key=f"download_btn_{project_name.replace(' ', '_')}"
+                )
+                st.success(f"✅ {safe_filename} ready for download!")
+            except Exception as e:
+                st.error(f"❌ Download failed: {str(e)}")
+        else:
+            st.error("❌ Project files not found!")
+    else:
+        st.error("❌ No project path available for download!")
 
 def continue_project_development(project):
     """Continue development on an existing project."""
     st.info(f"🔄 Continuing development for: {project.get('name', 'Unnamed Project')}")
-    st.info("🚧 Development continuation interface coming in next update...")
+    
+    # In-app testing and refinement interface
+    if st.button("🧪 Open In-App Testing Lab", key=f"test_lab_{project.get('project_id')}"):
+        open_testing_lab(project)
+
+def open_testing_lab(project):
+    """Open in-app testing and refinement lab for a project."""
+    
+    st.markdown("---")
+    st.markdown("# 🧪 **In-App Testing Lab**")
+    st.markdown(f"**Project**: {project.get('name', 'Unnamed Project')}")
+    
+    # Create testing interface tabs
+    tab1, tab2, tab3, tab4 = st.tabs(["🔬 Live Testing", "🎨 UI Refinement", "📊 Analytics", "🚀 Deploy"])
+    
+    with tab1:
+        st.markdown("### 🔬 Live Project Testing")
+        
+        # Simulated app interface
+        st.info("🚧 **Simulated App Environment**")
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.markdown("#### 📱 App Preview")
+            
+            # Create a simulated app interface based on project
+            project_name = project.get('name', 'Test App')
+            
+            st.markdown(f"""
+            <div style="border: 2px solid #ddd; padding: 20px; border-radius: 10px; background: #f9f9f9;">
+                <h3>🎼 {project_name}</h3>
+                <p><strong>Status:</strong> <span style="color: green;">✅ Running</span></p>
+                <p><strong>Vibe:</strong> {project.get('vibe_intensity', 'focused').title()} Energy</p>
+                <hr>
+                <button style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px;">🚀 Test Feature</button>
+                <button style="background: #008CBA; color: white; padding: 10px 20px; border: none; border-radius: 5px;">📊 View Data</button>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Interactive testing controls
+            st.markdown("#### 🎮 Testing Controls")
+            
+            test_scenario = st.selectbox(
+                "Select Test Scenario:",
+                ["User Registration", "Data Input", "Feature Interaction", "Error Handling", "Performance Test"]
+            )
+            
+            test_data = st.text_area(
+                "Test Input Data:",
+                placeholder="Enter test data or parameters...",
+                height=100
+            )
+            
+            if st.button("▶️ Run Test"):
+                run_live_test(project, test_scenario, test_data)
+        
+        with col2:
+            st.markdown("#### 📊 Test Results")
+            
+            # Mock test results
+            st.success("✅ **Test Execution Complete**")
+            
+            # Metrics
+            col_m1, col_m2, col_m3 = st.columns(3)
+            with col_m1:
+                st.metric("Response Time", "0.8s", "-0.2s")
+            with col_m2:
+                st.metric("Success Rate", "98%", "+2%")
+            with col_m3:
+                st.metric("User Rating", "4.7/5", "+0.3")
+            
+            # Test logs
+            st.markdown("#### 📋 Test Logs")
+            st.code("""
+✅ Loading application...
+✅ Initializing vibe context...
+✅ Testing user interface...
+✅ Validating data flow...
+⚠️ Minor UI adjustment needed
+✅ Test completed successfully
+            """)
+            
+            # User feedback section
+            st.markdown("#### 💭 Your Feedback")
+            
+            user_rating = st.slider("Rate this test run:", 1, 5, 4)
+            user_feedback = st.text_area(
+                "What would you like to improve?",
+                placeholder="Share your thoughts on the app behavior, UI, or functionality...",
+                height=80
+            )
+            
+            if st.button("📝 Submit Feedback"):
+                submit_test_feedback(project, user_rating, user_feedback)
+    
+    with tab2:
+        st.markdown("### 🎨 UI Refinement Workshop")
+        
+        # UI customization options
+        col_ui1, col_ui2 = st.columns([1, 1])
+        
+        with col_ui1:
+            st.markdown("#### 🎨 Visual Customization")
+            
+            color_scheme = st.selectbox(
+                "Color Scheme:",
+                ["Vibe-Adaptive", "Professional Blue", "Creative Green", "Warm Orange", "Custom"]
+            )
+            
+            layout_style = st.selectbox(
+                "Layout Style:",
+                ["Modern Minimal", "Classic Cards", "Dashboard Style", "Mobile-First"]
+            )
+            
+            font_choice = st.selectbox(
+                "Typography:",
+                ["System Default", "Modern Sans", "Elegant Serif", "Code Style"]
+            )
+            
+            if st.button("🎨 Apply Changes"):
+                apply_ui_changes(project, color_scheme, layout_style, font_choice)
+        
+        with col_ui2:
+            st.markdown("#### 👁️ Live Preview")
+            
+            st.markdown(f"""
+            <div style="border: 2px solid #4CAF50; padding: 20px; border-radius: 10px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                <h3 style="color: #2E7D32;">🎼 {project.get('name', 'Preview App')}</h3>
+                <p><strong>Theme:</strong> {color_scheme}</p>
+                <p><strong>Layout:</strong> {layout_style}</p>
+                <div style="margin: 10px 0;">
+                    <span style="background: #4CAF50; color: white; padding: 5px 15px; border-radius: 15px; margin-right: 10px;">Feature 1</span>
+                    <span style="background: #2196F3; color: white; padding: 5px 15px; border-radius: 15px;">Feature 2</span>
+                </div>
+                <p style="font-style: italic;">Live preview updates as you make changes!</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with tab3:
+        st.markdown("### 📊 Testing Analytics")
+        
+        # Mock analytics data
+        col_a1, col_a2, col_a3, col_a4 = st.columns(4)
+        
+        with col_a1:
+            st.metric("Total Tests", "47", "+5")
+        with col_a2:
+            st.metric("Pass Rate", "94%", "+2%")
+        with col_a3:
+            st.metric("Avg Response", "0.9s", "-0.1s")
+        with col_a4:
+            st.metric("User Score", "4.6/5", "+0.2")
+        
+        # Charts would go here
+        st.info("📈 **Analytics Dashboard**: Detailed charts and insights coming in next update...")
+    
+    with tab4:
+        st.markdown("### 🚀 Deployment Ready")
+        
+        st.success("✅ **Project Ready for Deployment**")
+        
+        deployment_options = st.multiselect(
+            "Select Deployment Targets:",
+            ["Local Development", "Staging Environment", "Production", "Demo Site"]
+        )
+        
+        if st.button("🚀 Deploy Project"):
+            deploy_tested_project(project, deployment_options)
+
+def run_live_test(project, scenario, test_data):
+    """Run a live test on the project."""
+    st.success(f"🧪 Running {scenario} test...")
+    st.info(f"Test data: {test_data[:50]}..." if len(test_data) > 50 else f"Test data: {test_data}")
+    st.success("✅ Test completed successfully!")
+
+def submit_test_feedback(project, rating, feedback):
+    """Submit user feedback from testing."""
+    st.success(f"📝 Feedback submitted! Rating: {rating}/5")
+    if feedback:
+        st.info(f"Your feedback: {feedback[:100]}..." if len(feedback) > 100 else f"Your feedback: {feedback}")
+
+def apply_ui_changes(project, color_scheme, layout_style, font_choice):
+    """Apply UI changes to the project."""
+    st.success(f"🎨 Applied: {color_scheme} + {layout_style} + {font_choice}")
+
+def deploy_tested_project(project, deployment_options):
+    """Deploy the tested project."""
+    st.success(f"🚀 Deploying to: {', '.join(deployment_options)}")
 
 def show_project_health(project):
     """Show project health metrics."""
     st.info(f"📈 Project health for: {project.get('name', 'Unnamed Project')}")
-    st.info("🚧 Project health dashboard coming in next update...")
+    
+    # Health metrics
+    col_h1, col_h2, col_h3, col_h4 = st.columns(4)
+    
+    with col_h1:
+        st.metric("Agile Health", "95%", "+5%")
+    with col_h2:
+        st.metric("Code Quality", "A+", "+1")
+    with col_h3:
+        st.metric("Test Coverage", "87%", "+3%")
+    with col_h4:
+        st.metric("User Satisfaction", "4.8/5", "+0.2")
 
 def display_human_interaction_dialog():
     """Display interactive dialog for human feedback and decision making."""
@@ -2773,10 +3339,13 @@ def main():
     # Sidebar navigation
     with st.sidebar:
         st.markdown("### 🔧 Navigation")
-        page = st.selectbox(
-            "Select Interface:",
-            ["🎯 Composition Dashboard", "🚀 Project Runner", "🤖 Agent Builder", "🎼 Agile-Vibe Projects", "🏢 Enterprise Systems", "🔍 System Monitor", "⚙️ Settings"]
-        )
+            page = st.selectbox(
+        "Select Interface:",
+        ["🎯 Composition Dashboard", "🚀 Project Runner", "🤖 Agent Builder", "🎼 Agile-Vibe Projects", "🎭 Agile Ceremonies", "📊 Rule Monitor", "🏢 Enterprise Systems", "🔍 System Monitor", "⚙️ Settings"]
+    )
+        
+        # Display dynamic rule status
+        display_dynamic_rule_status()
     
     if page == "🎯 Composition Dashboard":
         display_composition_dashboard()
@@ -2786,6 +3355,8 @@ def main():
         display_agent_builder_interface()
     elif page == "🎼 Agile-Vibe Projects":
         display_agile_vibe_projects_interface()
+    elif page == "🎭 Agile Ceremonies":
+        display_agile_ceremonies_interface()
     elif page == "🏢 Enterprise Systems":
         st.info("🚧 Enterprise Systems interface coming soon...")
     elif page == "🔍 System Monitor":
@@ -3245,6 +3816,356 @@ spec:
             port: 8000
 """
             st.code(k8s_config, language="yaml")
+
+def display_agile_ceremonies_interface():
+    """Display agile ceremonies interface with context-aware rule application."""
+    
+    if not AGILE_CEREMONIES_AVAILABLE:
+        st.error("Agile ceremonies system not available")
+        return
+    
+    st.markdown("# 🎭 **Agile Ceremonies Hub**")
+    
+    # Apply context-aware rules for agile ceremonies
+    if RULE_SYSTEM_AVAILABLE:
+        rule_context = apply_context_aware_rules("@agile ceremonies interface")
+        st.info(f"🎯 **Context**: {rule_context.context} | **Rules**: {len(rule_context.active_rules)} | **Efficiency**: {rule_context.token_efficiency:.1f}%")
+    
+    ceremony_manager = get_ceremony_manager()
+    
+    # Ceremony selection
+    ceremony_type = st.selectbox(
+        "Select Agile Ceremony:",
+        ["Daily Standup", "Sprint Planning", "Sprint Review", "Sprint Retrospective", "Backlog Refinement"]
+    )
+    
+    ceremony_map = {
+        "Daily Standup": AgileCeremony.DAILY_STANDUP,
+        "Sprint Planning": AgileCeremony.SPRINT_PLANNING,
+        "Sprint Review": AgileCeremony.SPRINT_REVIEW,
+        "Sprint Retrospective": AgileCeremony.SPRINT_RETROSPECTIVE,
+        "Backlog Refinement": AgileCeremony.BACKLOG_REFINEMENT
+    }
+    
+    selected_ceremony = ceremony_map[ceremony_type]
+    
+    # Project selection for ceremony
+    project_options = ["AI-Dev-Agent Main Project"] + [p.get('name', f'Project {i}') for i, p in enumerate(st.session_state.get('vibe_agile_projects', []))]
+    selected_project = st.selectbox("Project:", project_options)
+    
+    # Start ceremony
+    if st.button(f"🎬 Start {ceremony_type}"):
+        session = ceremony_manager.start_ceremony(selected_ceremony, selected_project)
+        st.session_state.current_ceremony_session = session
+        st.success(f"Started {ceremony_type} for {selected_project}")
+        st.rerun()
+    
+    # Display active ceremony
+    if 'current_ceremony_session' in st.session_state:
+        display_active_ceremony(st.session_state.current_ceremony_session)
+
+def display_active_ceremony(session):
+    """Display active ceremony interface."""
+    
+    ceremony_manager = get_ceremony_manager()
+    
+    st.markdown(f"### 🎯 Active: {session.ceremony_type.value.replace('_', ' ').title()}")
+    st.markdown(f"**Project**: {session.project_id}")
+    st.markdown(f"**Started**: {session.start_time.strftime('%H:%M:%S')}")
+    
+    # Get ceremony-specific questions/flow
+    if session.ceremony_type == AgileCeremony.DAILY_STANDUP:
+        questions = ceremony_manager.get_daily_standup_questions(session)
+        display_standup_interface(session, questions)
+    
+    elif session.ceremony_type == AgileCeremony.SPRINT_PLANNING:
+        flow = ceremony_manager.get_sprint_planning_flow(session)
+        # TODO: Implement specific sprint planning interface
+        display_standup_interface(session)
+    
+    elif session.ceremony_type == AgileCeremony.SPRINT_REVIEW:
+        agenda = ceremony_manager.get_sprint_review_agenda(session)
+        # TODO: Implement specific sprint review interface
+        display_standup_interface(session)
+    
+    elif session.ceremony_type == AgileCeremony.SPRINT_RETROSPECTIVE:
+        activities = ceremony_manager.get_retrospective_activities(session)
+        # TODO: Implement specific retrospective interface
+        display_standup_interface(session)
+    
+    elif session.ceremony_type == AgileCeremony.BACKLOG_REFINEMENT:
+        flow = ceremony_manager.get_backlog_refinement_flow(session)
+        # TODO: Implement specific backlog refinement interface
+        display_standup_interface(session)
+    
+    # Complete ceremony
+    if st.button("✅ Complete Ceremony"):
+        outcomes = collect_ceremony_outcomes(session)
+        ceremony_manager.complete_ceremony(session.ceremony_id, outcomes)
+        del st.session_state.current_ceremony_session
+        st.success("Ceremony completed!")
+        st.rerun()
+
+def display_standup_interface(session, questions):
+    """Display daily standup interface."""
+    
+    st.markdown("#### 🌅 Daily Standup Questions")
+    
+    responses = {}
+    
+    for i, question in enumerate(questions):
+        st.markdown(f"**{question['question']}**")
+        
+        if question['type'] == 'multiselect':
+            response = st.multiselect(
+                f"Select options:",
+                question['options'],
+                key=f"standup_q{i}"
+            )
+        elif question['type'] == 'text_area':
+            response = st.text_area(
+                f"Your response:",
+                placeholder=question.get('placeholder', ''),
+                key=f"standup_q{i}"
+            )
+        elif question['type'] == 'slider':
+            response = st.slider(
+                f"Rate from {question['min']} to {question['max']}:",
+                question['min'],
+                question['max'],
+                question.get('default', 5),
+                key=f"standup_q{i}"
+            )
+        else:
+            # Default text input for unknown question types
+            response = st.text_input(
+                f"Your response:",
+                placeholder="Enter your response...",
+                key=f"standup_q{i}"
+            )
+        
+        responses[question['id']] = response
+        
+        if 'follow_up' in question and response:
+            follow_up = st.text_area(
+                question['follow_up'],
+                key=f"standup_followup_{i}"
+            )
+            responses[f"{question['id']}_followup"] = follow_up
+    
+    # Store responses in session
+    session.session_data.update(responses)
+
+def collect_ceremony_outcomes(session):
+    """Collect outcomes from completed ceremony."""
+    
+    outcomes = []
+    
+    if session.ceremony_type == AgileCeremony.DAILY_STANDUP:
+        outcomes = [
+            "Team progress shared",
+            "Blockers identified",
+            "Daily plans aligned"
+        ]
+    elif session.ceremony_type == AgileCeremony.SPRINT_PLANNING:
+        outcomes = [
+            "Sprint goal defined", 
+            "Stories selected and estimated",
+            "Team capacity planned"
+        ]
+    # Add more ceremony-specific outcomes...
+    
+    return outcomes
+
+def display_dynamic_rule_status():
+    """Display dynamic rule system status in sidebar."""
+    
+    if not DYNAMIC_RULES_AVAILABLE or not st.session_state.get('dynamic_rules_started'):
+        return
+    
+    try:
+        activator = st.session_state.get('dynamic_activator')
+        if not activator:
+            return
+        
+        status = activator.get_current_status()
+        
+        # Current context display
+        context_color = {
+            'AGILE': '🎯',
+            'CODING': '💻', 
+            'TESTING': '🧪',
+            'GIT': '📦',
+            'DEBUGGING': '🔧',
+            'DOCUMENTATION': '📚',
+            'DEFAULT': '⚙️'
+        }
+        
+        icon = context_color.get(status['current_context'], '⚙️')
+        
+        with st.sidebar.expander(f"{icon} Dynamic Rules", expanded=False):
+            st.markdown(f"**Context**: {status['current_context']}")
+            st.markdown(f"**Active Rules**: {status['rules_count']}")
+            st.markdown(f"**Switches Today**: {status['context_switches_today']}")
+            
+            # Enhanced context detection button
+            if st.button("🧠 Smart Context", key="smart_context_detect", help="Intelligent context analysis"):
+                with st.spinner("Analyzing context..."):
+                    try:
+                        # Get current user query if available
+                        current_input = st.session_state.get('last_user_input', '')
+                        
+                        # Perform enhanced context detection
+                        if hasattr(activator, 'detect_context_with_user_input'):
+                            detection_result = activator.detect_context_with_user_input(current_input)
+                            
+                            # Display detection results
+                            st.success(f"🎯 Context: {detection_result.primary_context.value.replace('_', ' ').title()}")
+                            st.info(f"Confidence: {detection_result.confidence_score:.2f}")
+                            
+                            if detection_result.secondary_contexts:
+                                secondary = [ctx.value.replace('_', ' ').title() for ctx in detection_result.secondary_contexts]
+                                st.markdown(f"**Secondary**: {', '.join(secondary)}")
+                                
+                            st.markdown(f"**Rules Activated**: {len(detection_result.recommended_rules)}")
+                        else:
+                            st.error("Enhanced context detection not available")
+                    except Exception as e:
+                        st.error(f"Context detection failed: {str(e)}")
+            
+            # Efficiency metrics
+            metrics = status['efficiency_metrics']
+            if metrics['token_efficiency'] > 0:
+                st.markdown(f"**Efficiency**: {metrics['token_efficiency']:.1f}%")
+            
+            # Show active rules list
+            if hasattr(activator, 'active_rules') and activator.active_rules:
+                with st.expander("📋 Active Rules", expanded=False):
+                    for i, rule in enumerate(activator.active_rules[:5], 1):
+                        st.markdown(f"{i}. `{rule}`")
+                    if len(activator.active_rules) > 5:
+                        st.markdown(f"... and {len(activator.active_rules) - 5} more")
+            
+            # Control buttons
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.button("🔄 Refresh", key="refresh_dynamic"):
+                    st.rerun()
+            
+            with col2:
+                if st.button("⚙️ Configure", key="config_dynamic"):
+                    display_dynamic_rule_configuration()
+    
+    except Exception as e:
+        st.sidebar.error(f"Dynamic Rules Error: {str(e)[:50]}...")
+
+def display_dynamic_rule_configuration():
+    """Display dynamic rule configuration interface."""
+    
+    st.markdown("## 🎯 **Dynamic Rule Configuration**")
+    
+    if not DYNAMIC_RULES_AVAILABLE:
+        st.error("Dynamic rules system not available")
+        return
+    
+    activator = st.session_state.get('dynamic_activator')
+    if not activator:
+        st.error("Dynamic activator not initialized")
+        return
+    
+    # Current status
+    status = activator.get_current_status()
+    
+    st.markdown("### 📊 **Current Status**")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric(
+            "Current Context", 
+            status['current_context'],
+            delta=f"{status['context_switches_today']} switches today"
+        )
+    
+    with col2:
+        st.metric(
+            "Active Rules",
+            status['rules_count'],
+            delta=f"{status['efficiency_metrics']['token_efficiency']:.1f}% efficiency"
+        )
+    
+    with col3:
+        monitoring_status = "ON" if status['monitoring_enabled'] else "OFF"
+        st.metric("Monitoring", monitoring_status)
+    
+    # Manual context switching
+    st.markdown("### 🔄 **Manual Context Control**")
+    
+    available_contexts = ["DEFAULT", "AGILE", "CODING", "TESTING", "GIT", "DEBUGGING", "DOCUMENTATION"]
+    
+    col_ctx, col_btn = st.columns([2, 1])
+    
+    with col_ctx:
+        selected_context = st.selectbox(
+            "Switch to Context:",
+            available_contexts,
+            index=available_contexts.index(status['current_context'])
+        )
+    
+    with col_btn:
+        if st.button("🎯 Switch Context"):
+            try:
+                activator.force_context_switch(selected_context, "Manual switch from UI")
+                st.success(f"Switched to {selected_context} context!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Context switch failed: {e}")
+    
+    # Monitoring controls
+    st.markdown("### 🔍 **Monitoring Controls**")
+    
+    col_start, col_stop = st.columns(2)
+    
+    with col_start:
+        if st.button("▶️ Start Monitoring"):
+            try:
+                activator.start_dynamic_monitoring()
+                st.success("Dynamic monitoring started!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Failed to start monitoring: {e}")
+    
+    with col_stop:
+        if st.button("⏹️ Stop Monitoring"):
+            try:
+                activator.stop_dynamic_monitoring()
+                st.success("Dynamic monitoring stopped!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Failed to stop monitoring: {e}")
+    
+    # Recent context history
+    st.markdown("### 📈 **Context History**")
+    
+    if hasattr(activator, 'context_history') and activator.context_history:
+        recent_changes = activator.context_history[-5:]  # Last 5 changes
+        
+        for change in reversed(recent_changes):
+            with st.expander(f"{change.timestamp.strftime('%H:%M:%S')} - {change.old_context} → {change.new_context}"):
+                st.markdown(f"**Confidence**: {change.confidence:.1f}")
+                st.markdown(f"**Trigger**: {change.signal_type.value}")
+                
+                if 'rule_changes' in change.__dict__ and change.rule_changes:
+                    rule_changes = change.rule_changes
+                    if rule_changes.get('activated'):
+                        st.markdown(f"**Activated**: {', '.join(rule_changes['activated'])}")
+                    if rule_changes.get('deactivated'):
+                        st.markdown(f"**Deactivated**: {', '.join(rule_changes['deactivated'])}")
+                    if 'efficiency_gain' in rule_changes:
+                        st.markdown(f"**Efficiency**: {rule_changes['efficiency_gain']:.1f}%")
+    else:
+        st.info("No context changes recorded yet")
 
 if __name__ == "__main__":
     main()

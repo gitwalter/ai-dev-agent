@@ -4,7 +4,7 @@
 
 version: "1.0"
 system: "intelligent_context_aware_rule_system"
-total_available_rules: 39
+total_available_rules: 40
 
 # Context Categories with Rule Mappings
 contexts:
@@ -17,6 +17,7 @@ contexts:
       directories: []
     rules:
       - "safety_first_principle"
+      - "temporal_trust_rule"
       - "hybrid_bio_machine_research_first_principle"
       - "unhackable_ethical_dna_security_rule"
       - "no_premature_victory_declaration_rule"
@@ -106,6 +107,7 @@ contexts:
       directories: ["docs/agile/", "agile/", "scrum/", "docs/agile/sprints/", "docs/agile/catalogs/", "docs/agile/core/", "docs/agile/planning/", "docs/agile/templates/", "utils/agile/"]
     rules:
       - "safety_first_principle"
+      - "temporal_trust_rule"
       - "unhackable_ethical_dna_security_rule"
       - "agile_artifacts_maintenance_rule"
       - "documentation_live_updates_rule"

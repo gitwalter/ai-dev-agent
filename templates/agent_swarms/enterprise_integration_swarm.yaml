@@ -1,0 +1,358 @@
+# Enterprise Integration Swarm Template
+# ===================================
+# Optimized for large-scale system integration and enterprise architecture
+
+metadata:
+  name: "Enterprise Integration Swarm"
+  version: "1.0"
+  pattern: "hierarchical_command + pipeline_processing + resource_pool"
+  maturity: "proven"
+  use_cases:
+    - "Large-scale system integration"
+    - "Enterprise architecture implementation"
+    - "Legacy system modernization"
+    - "Multi-vendor system coordination"
+    - "Compliance-driven development"
+
+# Carnap Framework Configuration
+linguistic_framework:
+  primary: "technical"
+  secondary: "business"
+  tertiary: "documentation"
+  translation_protocols:
+    technical_to_business:
+      - "technical_architecture_to_business_capabilities"
+      - "integration_complexity_to_project_timeline"
+      - "technical_risks_to_business_impact"
+    business_to_technical:
+      - "business_requirements_to_technical_specifications"
+      - "compliance_needs_to_security_controls"
+      - "performance_goals_to_architecture_decisions"
+    documentation_translation:
+      - "technical_documentation_to_user_guides"
+      - "business_processes_to_technical_workflows"
+      - "compliance_requirements_to_implementation_guides"
+
+# Agent Configuration
+agents:
+  enterprise_architect:
+    role: "Overall Architecture and Strategy"
+    language_layer: "technical"
+    linguistic_framework: "architectural"
+    specialization: "enterprise_architecture"
+    responsibilities:
+      - "overall_system_architecture_design"
+      - "technology_standard_definition"
+      - "integration_pattern_establishment"
+      - "governance_framework_implementation"
+      - "vendor_technology_evaluation"
+    communication_style: "authoritative_strategic"
+    authority_level: "architectural_decisions"
+    coordination_patterns: ["hierarchical", "expert_consultation"]
+    
+  solution_architects:
+    role: "Domain-Specific Architecture"
+    language_layer: "technical"
+    linguistic_framework: "technical"
+    specialization: "solution_architecture"
+    count: 3-5
+    responsibilities:
+      - "domain_specific_architecture_design"
+      - "integration_point_specification"
+      - "non_functional_requirement_definition"
+      - "technical_risk_assessment"
+      - "vendor_solution_evaluation"
+    communication_style: "collaborative_technical"
+    authority_level: "domain_technical_decisions"
+    coordination_patterns: ["peer_collaboration", "hierarchical_reporting"]
+    
+  integration_specialists:
+    role: "System Integration Implementation"
+    language_layer: "technical"
+    linguistic_framework: "technical"
+    specialization: "system_integration"
+    count: 4-8
+    responsibilities:
+      - "integration_development_and_testing"
+      - "data_mapping_and_transformation"
+      - "api_development_and_documentation"
+      - "error_handling_and_monitoring"
+      - "performance_optimization"
+    communication_style: "technical_collaborative"
+    authority_level: "implementation_decisions"
+    coordination_patterns: ["pipeline_processing", "peer_collaboration"]
+    
+  business_analysts:
+    role: "Requirements and Process Analysis"
+    language_layer: "business"
+    linguistic_framework: "business"
+    specialization: "business_analysis"
+    count: 2-4
+    responsibilities:
+      - "business_requirement_elicitation"
+      - "process_analysis_and_documentation"
+      - "stakeholder_communication"
+      - "acceptance_criteria_definition"
+      - "change_impact_assessment"
+    communication_style: "facilitative_analytical"
+    authority_level: "requirement_validation"
+    coordination_patterns: ["peer_collaboration", "stakeholder_liaison"]
+    
+  security_specialists:
+    role: "Security and Compliance"
+    language_layer: "technical"
+    linguistic_framework: "security"
+    specialization: "enterprise_security"
+    count: 2-3
+    responsibilities:
+      - "security_architecture_design"
+      - "compliance_requirement_implementation"
+      - "security_testing_and_validation"
+      - "threat_modeling_and_risk_assessment"
+      - "security_monitoring_setup"
+    communication_style: "rigorous_analytical"
+    authority_level: "security_decisions"
+    coordination_patterns: ["expert_consultation", "compliance_validation"]
+    
+  devops_engineers:
+    role: "Infrastructure and Deployment"
+    language_layer: "technical"
+    linguistic_framework: "operational"
+    specialization: "devops_infrastructure"
+    count: 3-5
+    responsibilities:
+      - "infrastructure_automation"
+      - "deployment_pipeline_setup"
+      - "monitoring_and_alerting_implementation"
+      - "environment_management"
+      - "disaster_recovery_planning"
+    communication_style: "operational_collaborative"
+    authority_level: "infrastructure_decisions"
+    coordination_patterns: ["resource_pool", "pipeline_processing"]
+    
+  project_managers:
+    role: "Project Coordination and Delivery"
+    language_layer: "business"
+    linguistic_framework: "project_management"
+    specialization: "enterprise_project_management"
+    count: 2-3
+    responsibilities:
+      - "project_planning_and_scheduling"
+      - "resource_coordination"
+      - "stakeholder_communication"
+      - "risk_management"
+      - "delivery_coordination"
+    communication_style: "coordinating_diplomatic"
+    authority_level: "project_execution"
+    coordination_patterns: ["hierarchical", "cross_functional_coordination"]
+
+# Communication Protocols
+communication:
+  architecture_review_board:
+    frequency: "weekly"
+    participants: ["enterprise_architect", "solution_architects", "security_specialists"]
+    language_layer: "technical"
+    duration: "2_hours"
+    format: "formal_review_and_approval"
+    translation_protocol: "technical_architecture_to_business_impact"
+    
+  integration_planning:
+    frequency: "bi_weekly"
+    participants: ["solution_architects", "integration_specialists", "business_analysts"]
+    language_layer: "technical"
+    duration: "1-2_hours"
+    format: "collaborative_planning"
+    translation_protocol: "business_requirements_to_integration_specifications"
+    
+  stakeholder_updates:
+    frequency: "monthly"
+    participants: ["project_managers", "business_analysts", "enterprise_architect"]
+    language_layer: "business"
+    duration: "1_hour"
+    format: "executive_presentation"
+    translation_protocol: "technical_progress_to_business_value"
+    
+  technical_standups:
+    frequency: "daily"
+    participants: ["integration_specialists", "devops_engineers"]
+    language_layer: "technical"
+    duration: "15_minutes"
+    format: "progress_and_blockers"
+    translation_protocol: "technical_status_to_project_timeline"
+    
+  compliance_reviews:
+    frequency: "milestone_based"
+    participants: ["security_specialists", "business_analysts", "solution_architects"]
+    language_layer: "technical"
+    duration: "2-4_hours"
+    format: "formal_audit_and_validation"
+    translation_protocol: "technical_implementation_to_compliance_evidence"
+
+# Coordination Mechanisms
+coordination:
+  governance_structure:
+    architecture_authority: "enterprise_architect_with_arb_validation"
+    technical_decisions: "solution_architect_with_peer_review"
+    project_decisions: "project_manager_with_stakeholder_approval"
+    security_decisions: "security_specialist_with_compliance_validation"
+    
+  integration_pipeline:
+    analysis: "business_analysts_with_stakeholder_validation"
+    design: "solution_architects_with_architecture_review"
+    development: "integration_specialists_with_peer_review"
+    testing: "qa_engineers_with_security_validation"
+    deployment: "devops_engineers_with_change_management"
+    
+  resource_management:
+    allocation: "project_managers_with_resource_pool_coordination"
+    optimization: "enterprise_architect_with_portfolio_view"
+    conflict_resolution: "escalation_hierarchy_with_business_priority"
+    
+  quality_assurance:
+    architecture_compliance: "automated_architecture_validation"
+    security_compliance: "security_scanning_and_manual_review"
+    business_requirement_compliance: "acceptance_testing_with_business_validation"
+    operational_compliance: "monitoring_and_alerting_validation"
+
+# Enterprise Patterns
+enterprise_patterns:
+  integration_patterns:
+    messaging: "enterprise_service_bus_with_guaranteed_delivery"
+    data_integration: "etl_elt_patterns_with_data_quality_validation"
+    api_management: "centralized_api_gateway_with_security_and_monitoring"
+    event_driven: "event_sourcing_and_cqrs_for_loose_coupling"
+    
+  security_patterns:
+    authentication: "centralized_identity_management_with_sso"
+    authorization: "role_based_access_control_with_fine_grained_permissions"
+    data_protection: "encryption_at_rest_and_in_transit"
+    audit_logging: "comprehensive_audit_trail_with_tamper_protection"
+    
+  operational_patterns:
+    monitoring: "centralized_logging_and_metrics_with_alerting"
+    deployment: "blue_green_deployment_with_automated_rollback"
+    disaster_recovery: "multi_region_backup_with_automated_failover"
+    capacity_management: "auto_scaling_with_predictive_analytics"
+
+# Compliance Framework
+compliance:
+  regulatory_requirements:
+    identification: "business_analysts_with_legal_consultation"
+    implementation: "security_specialists_with_audit_validation"
+    monitoring: "automated_compliance_checking_with_manual_validation"
+    reporting: "standardized_compliance_reports_with_evidence"
+    
+  industry_standards:
+    architecture: "togaf_enterprise_architecture_framework"
+    security: "iso_27001_nist_cybersecurity_framework"
+    project_management: "pmi_prince2_project_management_standards"
+    quality: "iso_9001_quality_management_system"
+    
+  internal_governance:
+    policies: "enterprise_architecture_and_development_standards"
+    procedures: "standardized_integration_and_deployment_procedures"
+    controls: "automated_policy_enforcement_with_exception_management"
+    auditing: "regular_internal_audits_with_corrective_actions"
+
+# Risk Management
+risk_management:
+  technical_risks:
+    identification: "solution_architects_with_technical_assessment"
+    mitigation: "proof_of_concepts_and_technical_validation"
+    monitoring: "automated_technical_health_checks"
+    
+  business_risks:
+    identification: "business_analysts_with_stakeholder_input"
+    mitigation: "business_continuity_planning_and_fallback_procedures"
+    monitoring: "business_impact_monitoring_and_alerting"
+    
+  security_risks:
+    identification: "security_specialists_with_threat_modeling"
+    mitigation: "defense_in_depth_security_architecture"
+    monitoring: "security_information_and_event_management"
+    
+  operational_risks:
+    identification: "devops_engineers_with_operational_assessment"
+    mitigation: "redundancy_and_disaster_recovery_planning"
+    monitoring: "comprehensive_operational_monitoring_and_alerting"
+
+# Performance Management
+performance:
+  architecture_performance:
+    scalability: "horizontal_and_vertical_scaling_patterns"
+    reliability: "high_availability_and_fault_tolerance_design"
+    efficiency: "resource_optimization_and_cost_management"
+    
+  team_performance:
+    productivity: "velocity_tracking_with_quality_metrics"
+    collaboration: "cross_functional_team_effectiveness_measurement"
+    learning: "continuous_skill_development_and_knowledge_sharing"
+    
+  business_performance:
+    value_delivery: "business_capability_improvement_measurement"
+    time_to_market: "feature_delivery_speed_optimization"
+    cost_efficiency: "total_cost_of_ownership_optimization"
+
+# Technology Stack
+technology_stack:
+  integration_platform:
+    messaging: "enterprise_messaging_solutions"
+    api_management: "enterprise_api_gateway"
+    data_integration: "enterprise_etl_elt_tools"
+    workflow: "business_process_management_systems"
+    
+  development_platform:
+    ide: "enterprise_development_environments"
+    version_control: "enterprise_git_with_governance"
+    build_automation: "enterprise_ci_cd_pipelines"
+    testing: "automated_testing_frameworks"
+    
+  operational_platform:
+    monitoring: "enterprise_monitoring_and_alerting"
+    logging: "centralized_log_management"
+    security: "security_information_and_event_management"
+    backup: "enterprise_backup_and_recovery"
+
+# Success Criteria
+success_criteria:
+  technical_excellence:
+    - "robust_scalable_integration_architecture"
+    - "high_system_availability_and_performance"
+    - "comprehensive_security_and_compliance"
+    
+  business_value:
+    - "improved_business_process_efficiency"
+    - "enhanced_data_visibility_and_analytics"
+    - "reduced_operational_costs"
+    
+  project_delivery:
+    - "on_time_and_on_budget_delivery"
+    - "stakeholder_satisfaction_achievement"
+    - "minimal_post_deployment_issues"
+    
+  organizational_capability:
+    - "enhanced_enterprise_architecture_maturity"
+    - "improved_integration_standards_and_practices"
+    - "increased_team_capabilities_and_knowledge"
+
+# Implementation Phases
+implementation_phases:
+  phase_1_foundation:
+    duration: "3-6_months"
+    focus: "architecture_definition_and_team_setup"
+    deliverables: ["architecture_blueprint", "team_formation", "governance_framework"]
+    
+  phase_2_core_integration:
+    duration: "6-12_months"
+    focus: "critical_system_integration_implementation"
+    deliverables: ["core_integrations", "security_implementation", "monitoring_setup"]
+    
+  phase_3_expansion:
+    duration: "6-9_months"
+    focus: "remaining_system_integration_and_optimization"
+    deliverables: ["complete_integration", "performance_optimization", "user_training"]
+    
+  phase_4_optimization:
+    duration: "3-6_months"
+    focus: "performance_tuning_and_continuous_improvement"
+    deliverables: ["optimized_performance", "operational_procedures", "knowledge_transfer"]

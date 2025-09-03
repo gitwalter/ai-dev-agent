@@ -1233,10 +1233,24 @@ def display_results():
         
         zip_buffer.seek(0)
         
+        # Generate safe filename with project information
+        from datetime import datetime
+        import re
+        
+        # Create safe filename
+        project_name = result.project_name if result.project_name else "ai_generated_project"
+        safe_name = re.sub(r'[<>:"/\\|?*\s]', '_', project_name.strip())
+        safe_name = re.sub(r'_+', '_', safe_name).strip('_')
+        if not safe_name:
+            safe_name = "ai_project"
+        
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        safe_filename = f"ai_project_{safe_name}_{timestamp}.zip"
+        
         st.download_button(
             label="📥 Download ZIP",
             data=zip_buffer.getvalue(),
-            file_name=f"{result.project_name}.zip",
+            file_name=safe_filename,
             mime="application/zip"
         )
 
