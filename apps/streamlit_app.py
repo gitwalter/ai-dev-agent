@@ -25,6 +25,9 @@ from models.config import load_config_from_env
 from utils.prompt_editor import get_prompt_editor
 from utils.rag_processor import get_rag_processor
 
+# Vibe coding imports
+from typing import Tuple
+import time
 
 # Page configuration
 st.set_page_config(
@@ -100,6 +103,44 @@ def initialize_session_state():
         st.session_state.show_delete_confirm = False
     if 'show_log_viewer' not in st.session_state:
         st.session_state.show_log_viewer = False
+    
+    # 🌈 VIBE CODING STATE - Building something beautiful and useful!
+    initialize_vibe_state()
+
+
+def initialize_vibe_state():
+    """🌈 Initialize vibe coding session state for building beautiful and useful systems."""
+    if 'current_vibe' not in st.session_state:
+        st.session_state.current_vibe = {
+            'energy': 'balanced',        # peaceful, balanced, energetic, intense
+            'metaphor': 'garden',        # garden, fortress, library, studio
+            'crystal_gem': 'emerald',    # emerald, sapphire, ruby, diamond
+            'joy_level': 7,              # 1-10 happiness scale
+            'flow_state': False,         # currently in flow?
+            'purpose_clarity': 'clear',  # clear, emerging, seeking, unclear
+            'beauty_score': 6,           # 1-10 aesthetic quality
+            'last_updated': datetime.now().isoformat()
+        }
+    
+    if 'vibe_history' not in st.session_state:
+        st.session_state.vibe_history = []
+    
+    if 'joy_metrics' not in st.session_state:
+        st.session_state.joy_metrics = {
+            'happiness_trend': [7],      # Track happiness over time
+            'flow_duration': 0,          # Minutes in flow state
+            'beauty_created': 0,         # Beautiful systems created
+            'utility_delivered': 0,      # Useful features delivered
+            'session_start': datetime.now().isoformat()
+        }
+    
+    if 'vibe_preferences' not in st.session_state:
+        st.session_state.vibe_preferences = {
+            'favorite_metaphors': ['garden'],
+            'preferred_gems': ['emerald'],
+            'typical_energy': 'balanced',
+            'development_style': 'growth-oriented'
+        }
 
 
 def configure_api_key():
@@ -534,7 +575,7 @@ def display_sidebar():
     st.sidebar.subheader("📱 Navigation")
     page = st.sidebar.selectbox(
         "Choose a page:",
-        ["🚀 Main App", "🔧 Prompt Manager", "📚 RAG Documents", "⚙️ System Prompts"]
+        ["🚀 Main App", "🌈 Vibe Coding", "🔧 Prompt Manager", "📚 RAG Documents", "⚙️ System Prompts", "🎵 Vibe Dashboard"]
     )
     
     # Configure API key
@@ -648,12 +689,25 @@ def display_sidebar():
 
 
 def display_project_input():
-    """Display the project input section."""
+    """Display the project input section with vibe integration."""
     st.header("📋 Project Description")
     
     # Initialize session state for project context
     if 'project_context' not in st.session_state:
         st.session_state.project_context = ""
+    
+    # 🌈 VIBE INTEGRATION - Show if vibe-enhanced context is available
+    if 'vibe_enhanced_context' in st.session_state and st.session_state.vibe_enhanced_context:
+        st.success("🌈 **Vibe-Enhanced Context Available!** Your emotional vision has been translated to technical requirements.")
+        
+        if st.button("🎨 Use Vibe-Enhanced Context", type="primary"):
+            st.session_state.project_context = st.session_state.vibe_enhanced_context
+            st.rerun()
+            
+        if st.button("🔄 Clear Vibe Context"):
+            if 'vibe_enhanced_context' in st.session_state:
+                del st.session_state.vibe_enhanced_context
+            st.rerun()
     
     col1, col2 = st.columns([2, 1])
     
@@ -1508,13 +1562,30 @@ def display_system_prompts():
                 
                 with col2:
                     if st.button("Delete", key=f"delete_sys_{prompt['id']}"):
-                        if st.confirm(f"Are you sure you want to delete '{prompt['name']}'?"):
+                        # Use session state for confirmation
+                        st.session_state[f"confirm_delete_sys_{prompt['id']}"] = True
+                
+                # Show confirmation dialog if needed
+                if st.session_state.get(f"confirm_delete_sys_{prompt['id']}", False):
+                    st.warning(f"⚠️ Are you sure you want to delete '{prompt['name']}'?")
+                    col_yes, col_no = st.columns(2)
+                    
+                    with col_yes:
+                        if st.button("Yes, Delete", key=f"confirm_yes_sys_{prompt['id']}", type="primary"):
                             success = prompt_editor.delete_system_prompt(prompt['id'])
                             if success:
                                 st.success("System prompt deleted!")
+                                if f"confirm_delete_sys_{prompt['id']}" in st.session_state:
+                                    del st.session_state[f"confirm_delete_sys_{prompt['id']}"]
                                 st.rerun()
                             else:
                                 st.error("Failed to delete system prompt.")
+                    
+                    with col_no:
+                        if st.button("Cancel", key=f"confirm_no_sys_{prompt['id']}"):
+                            if f"confirm_delete_sys_{prompt['id']}" in st.session_state:
+                                del st.session_state[f"confirm_delete_sys_{prompt['id']}"]
+                            st.rerun()
     else:
         st.info("No system prompts found.")
     
@@ -1608,13 +1679,30 @@ def display_rag_documents():
                 
                 with col1:
                     if st.button("Delete", key=f"delete_doc_{doc['id']}"):
-                        if st.confirm(f"Are you sure you want to delete '{doc['title']}'?"):
+                        # Use session state for confirmation
+                        st.session_state[f"confirm_delete_doc_{doc['id']}"] = True
+                
+                # Show confirmation dialog if needed
+                if st.session_state.get(f"confirm_delete_doc_{doc['id']}", False):
+                    st.warning(f"⚠️ Are you sure you want to delete '{doc['title']}'?")
+                    col_yes, col_no = st.columns(2)
+                    
+                    with col_yes:
+                        if st.button("Yes, Delete", key=f"confirm_yes_doc_{doc['id']}", type="primary"):
                             success = prompt_editor.delete_rag_document(doc['id'])
                             if success:
                                 st.success("Document deleted!")
+                                if f"confirm_delete_doc_{doc['id']}" in st.session_state:
+                                    del st.session_state[f"confirm_delete_doc_{doc['id']}"]
                                 st.rerun()
                             else:
                                 st.error("Failed to delete document.")
+                    
+                    with col_no:
+                        if st.button("Cancel", key=f"confirm_no_doc_{doc['id']}"):
+                            if f"confirm_delete_doc_{doc['id']}" in st.session_state:
+                                del st.session_state[f"confirm_delete_doc_{doc['id']}"]
+                            st.rerun()
                 
                 with col2:
                     if st.button("Process Chunks", key=f"chunk_{doc['id']}"):
@@ -1751,6 +1839,471 @@ def display_rag_documents():
                     st.error("Failed to add document to database.")
 
 
+def display_vibe_coding_interface():
+    """🌈 Main vibe coding interface for intuitive, joyful development."""
+    
+    st.title("🌈 Vibe Coding - Build with Joy and Intuition")
+    st.markdown("*Express your vision through feelings, metaphors, and beautiful interfaces*")
+    st.markdown("**Purpose**: Building something beautiful and useful for everyone!")
+    
+    # Beautiful header with current vibe display
+    display_current_vibe_header()
+    
+    # Main vibe selection interface
+    st.markdown("---")
+    st.subheader("🎨 Express Your Vision")
+    
+    # Vibe Selection Row
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown("#### 🌊 **Energy**")
+        energy = st.select_slider(
+            "Choose your development energy:",
+            options=['🧘 Peaceful', '⚖️ Balanced', '⚡ Energetic', '🔥 Intense'],
+            value='⚖️ Balanced',
+            key='vibe_energy_selector'
+        )
+        st.session_state.current_vibe['energy'] = energy.split(' ', 1)[1].lower()
+    
+    with col2:
+        st.markdown("#### 🎭 **Metaphor**")
+        metaphor_options = [
+            '🌸 Garden (Growing, Organic)',
+            '🏰 Fortress (Secure, Strong)', 
+            '📚 Library (Organized, Wise)',
+            '🎨 Studio (Creative, Expressive)'
+        ]
+        metaphor = st.selectbox(
+            "What does your system feel like?",
+            metaphor_options,
+            key='vibe_metaphor_selector'
+        )
+        st.session_state.current_vibe['metaphor'] = metaphor.split(' ', 1)[1].split(' (')[0].lower()
+    
+    with col3:
+        st.markdown("#### 💎 **Crystal Gem**")
+        gem_options = [
+            '💚 Emerald (Growth & Learning)',
+            '💙 Sapphire (Wisdom & Knowledge)', 
+            '❤️ Ruby (Passion & Energy)',
+            '💎 Diamond (Precision & Clarity)'
+        ]
+        gem = st.selectbox(
+            "Choose your coding personality:",
+            gem_options,
+            key='vibe_crystal_selector'
+        )
+        st.session_state.current_vibe['crystal_gem'] = gem.split(' ', 1)[1].split(' (')[0].lower()
+    
+    with col4:
+        st.markdown("#### 🎯 **Purpose**")
+        purpose = st.text_area(
+            "What beautiful thing are you building?",
+            placeholder="A system that helps people...",
+            height=100,
+            key='vibe_purpose_input'
+        )
+    
+    # Joy tracking row
+    st.markdown("---")
+    st.subheader("😊 Track Your Coding Joy")
+    
+    joy_col1, joy_col2, joy_col3 = st.columns(3)
+    
+    with joy_col1:
+        joy_level = st.slider(
+            "🌟 How joyful does this feel right now?",
+            min_value=1, max_value=10, value=st.session_state.current_vibe['joy_level'],
+            help="Track your happiness while coding",
+            key='joy_level_slider'
+        )
+        st.session_state.current_vibe['joy_level'] = joy_level
+    
+    with joy_col2:
+        beauty_score = st.slider(
+            "💎 How beautiful does your vision feel?",
+            min_value=1, max_value=10, value=st.session_state.current_vibe['beauty_score'],
+            help="Rate the aesthetic quality of what you're creating",
+            key='beauty_score_slider'
+        )
+        st.session_state.current_vibe['beauty_score'] = beauty_score
+    
+    with joy_col3:
+        flow_indicators = st.multiselect(
+            "🌊 Flow State Indicators:",
+            ['⏰ Time flies by', '🎯 Completely focused', '💫 Ideas flowing easily', 
+             '🌟 Feeling creative', '⚡ High energy', '🧘 Calm confidence'],
+            key='flow_indicators'
+        )
+        st.session_state.current_vibe['flow_state'] = len(flow_indicators) >= 3
+    
+    # Visual Preview Section
+    st.markdown("---")
+    st.subheader("🔮 Your Vision Preview")
+    
+    # Generate beautiful preview based on vibes
+    preview_col1, preview_col2 = st.columns([2, 1])
+    
+    with preview_col1:
+        # Real-time visual preview
+        generate_vibe_preview(energy, metaphor, gem, purpose)
+    
+    with preview_col2:
+        st.markdown("### ✨ Ready to Create Magic?")
+        
+        if st.button("🌟 Generate Beautiful System", type="primary", use_container_width=True):
+            with st.spinner("🌟 Transforming your vibes into beautiful, useful code..."):
+                # Integration with existing agent system
+                execute_vibe_driven_generation(energy, metaphor, gem, purpose)
+        
+        st.markdown("---")
+        
+        # Quick vibe actions
+        if st.button("💾 Save This Vibe", use_container_width=True):
+            save_current_vibe()
+            st.success("✨ Vibe saved to your favorites!")
+        
+        if st.button("🔄 Reset to Balanced", use_container_width=True):
+            reset_to_balanced_vibe()
+            st.rerun()
+    
+    # Progress and inspiration
+    display_vibe_progress_and_inspiration()
+
+
+def display_current_vibe_header():
+    """Display beautiful current vibe indicator."""
+    
+    vibe = st.session_state.current_vibe
+    
+    # Create beautiful vibe display
+    header_cols = st.columns([1, 3, 1])
+    
+    with header_cols[1]:
+        # Get emoji representations
+        energy_emoji = {'peaceful': '🧘', 'balanced': '⚖️', 'energetic': '⚡', 'intense': '🔥'}
+        metaphor_emoji = {'garden': '🌸', 'fortress': '🏰', 'library': '📚', 'studio': '🎨'}
+        gem_emoji = {'emerald': '💚', 'sapphire': '💙', 'ruby': '❤️', 'diamond': '💎'}
+        
+        # Beautiful status display
+        st.markdown(f"""
+        <div style='text-align: center; background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4); 
+                    padding: 1rem; border-radius: 10px; margin: 1rem 0;'>
+            <h3 style='color: white; margin: 0;'>
+                Current Vibe: {energy_emoji.get(vibe['energy'], '⚖️')} {metaphor_emoji.get(vibe['metaphor'], '🌸')} {gem_emoji.get(vibe['crystal_gem'], '💚')}
+            </h3>
+            <p style='color: white; margin: 0.5rem 0 0 0;'>
+                Joy: {vibe['joy_level']}/10 • Beauty: {vibe['beauty_score']}/10 • Flow: {'🌊 Active' if vibe['flow_state'] else '🌱 Building'}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+
+def generate_vibe_preview(energy: str, metaphor: str, gem: str, purpose: str):
+    """Generate beautiful preview based on selected vibes."""
+    
+    st.markdown("#### 🎨 Your System Will Feel Like...")
+    
+    # Create beautiful visual preview based on metaphor
+    if "Garden" in metaphor:
+        st.markdown("""
+        🌱 **Growing Garden System**
+        - **Nature**: Organic, evolving, nurturing
+        - **Components**: Seeds (ideas) → Sprouts (features) → Flowers (delivered value)
+        - **User Experience**: Natural growth, patient cultivation, beautiful outcomes
+        - **Architecture**: Modular growth, self-sustaining, environmentally adaptive
+        """)
+        
+        # Visual representation
+        st.markdown("""
+        ```
+        🌳 Main System Tree
+        ├── 🌱 Core Seeds (foundational features)
+        ├── 🌿 Growing Features (developing capabilities)  
+        ├── 🌸 Blooming Services (user-facing beauty)
+        └── 🍯 Sweet Results (delivered value)
+        ```
+        """)
+    
+    elif "Fortress" in metaphor:
+        st.markdown("""
+        🏰 **Secure Fortress System**
+        - **Nature**: Protected, reliable, trustworthy
+        - **Components**: Walls (security) → Gates (APIs) → Guards (validation)
+        - **User Experience**: Safe, confident, protected access
+        - **Architecture**: Layered security, controlled access, resilient defense
+        """)
+        
+        st.markdown("""
+        ```
+        🏰 Fortress Architecture
+        ├── 🛡️ Outer Walls (perimeter security)
+        ├── 🚪 Secure Gates (API endpoints)
+        ├── ⚔️ Guard Posts (authentication)
+        └── 👑 Inner Keep (core business logic)
+        ```
+        """)
+    
+    elif "Library" in metaphor:
+        st.markdown("""
+        📚 **Organized Library System**
+        - **Nature**: Systematic, searchable, knowledge-rich
+        - **Components**: Catalogs (indexes) → Books (data) → Wisdom (insights)
+        - **User Experience**: Easy discovery, rich information, learning-focused
+        - **Architecture**: Well-organized, searchable, knowledge-preserving
+        """)
+        
+        st.markdown("""
+        ```
+        📚 Library Organization
+        ├── 📖 Catalog System (searchable indexes)
+        ├── 📚 Knowledge Collections (organized data)
+        ├── 🔍 Discovery Tools (search and browse)
+        └── 🧠 Wisdom Engine (insights and learning)
+        ```
+        """)
+    
+    elif "Studio" in metaphor:
+        st.markdown("""
+        🎨 **Creative Studio System**
+        - **Nature**: Inspirational, experimental, expressive
+        - **Components**: Canvas (interface) → Tools (features) → Masterpieces (outputs)
+        - **User Experience**: Creative freedom, artistic expression, inspiring results
+        - **Architecture**: Flexible, customizable, creativity-enabling
+        """)
+        
+        st.markdown("""
+        ```
+        🎨 Creative Studio Layout
+        ├── 🖼️ Canvas (user interface)
+        ├── 🎭 Creative Tools (feature palette)
+        ├── 🌈 Color Mixing (customization)
+        └── 🏆 Gallery (showcased results)
+        ```
+        """)
+
+
+def execute_vibe_driven_generation(energy: str, metaphor: str, gem: str, purpose: str):
+    """Execute agent workflow with vibe-driven prompts."""
+    
+    # Transform vibes into technical requirements
+    vibe_context = {
+        'energy': energy.split(' ', 1)[1].lower() if ' ' in energy else energy,
+        'metaphor': metaphor.split(' ', 1)[1].split(' (')[0].lower() if ' ' in metaphor else metaphor,
+        'crystal_gem': gem.split(' ', 1)[1].split(' (')[0].lower() if ' ' in gem else gem,
+        'purpose': purpose,
+        'joy_level': st.session_state.current_vibe['joy_level'],
+        'beauty_score': st.session_state.current_vibe['beauty_score']
+    }
+    
+    # Create enhanced project context with vibes
+    enhanced_purpose = f"""
+    🌟 VIBE-DRIVEN PROJECT REQUEST:
+    
+    Purpose: {purpose}
+    
+    🎭 Desired System Personality:
+    - Energy Level: {energy} (should feel {energy.lower()})
+    - System Metaphor: {metaphor} (architecture should embody this feeling)
+    - Development Approach: {gem} (code personality and patterns)
+    
+    😊 Joy Requirements:
+    - Target User Happiness: {st.session_state.current_vibe['joy_level']}/10
+    - Aesthetic Beauty Score: {st.session_state.current_vibe['beauty_score']}/10
+    - Flow State: {'Enable deep focus and creative flow' if st.session_state.current_vibe['flow_state'] else 'Design for accessibility and ease of use'}
+    
+    🧮 Excellence Standards:
+    - Mathematical Beauty: Apply Hilbert consistency principles
+    - Technical Excellence: Use best practices and systematic organization
+    - Moral/Spiritual Integrity: Build with love and service to users
+    
+    Build something beautiful and useful that embodies these vibes!
+    """
+    
+    # Store in session state for the main workflow
+    st.session_state.vibe_enhanced_context = enhanced_purpose
+    
+    # Update joy metrics
+    update_joy_metrics()
+    
+    st.success("🌟 Vibe-enhanced context created! Switch to 🚀 Main App to generate your beautiful system.")
+    st.info("💡 Your vibes have been translated into detailed requirements. The main app will now generate a system that matches your emotional vision!")
+
+
+def save_current_vibe():
+    """Save current vibe to favorites."""
+    current_vibe = st.session_state.current_vibe.copy()
+    current_vibe['saved_at'] = datetime.now().isoformat()
+    current_vibe['name'] = f"Vibe {len(st.session_state.vibe_history) + 1}"
+    
+    st.session_state.vibe_history.append(current_vibe)
+
+
+def reset_to_balanced_vibe():
+    """Reset to balanced, default vibe."""
+    st.session_state.current_vibe = {
+        'energy': 'balanced',
+        'metaphor': 'garden',
+        'crystal_gem': 'emerald',
+        'joy_level': 7,
+        'flow_state': False,
+        'purpose_clarity': 'clear',
+        'beauty_score': 6,
+        'last_updated': datetime.now().isoformat()
+    }
+
+
+def update_joy_metrics():
+    """Update joy and flow metrics."""
+    metrics = st.session_state.joy_metrics
+    current_joy = st.session_state.current_vibe['joy_level']
+    
+    # Update happiness trend
+    metrics['happiness_trend'].append(current_joy)
+    if len(metrics['happiness_trend']) > 50:  # Keep last 50 data points
+        metrics['happiness_trend'] = metrics['happiness_trend'][-50:]
+    
+    # Update flow duration if in flow state
+    if st.session_state.current_vibe['flow_state']:
+        metrics['flow_duration'] += 1
+    
+    st.session_state.joy_metrics = metrics
+
+
+def display_vibe_progress_and_inspiration():
+    """Display current progress and inspirational elements."""
+    
+    st.markdown("---")
+    st.subheader("🌟 Your Creative Journey")
+    
+    # Progress metrics
+    progress_col1, progress_col2, progress_col3 = st.columns(3)
+    
+    with progress_col1:
+        st.metric(
+            "😊 Joy Sessions",
+            len(st.session_state.vibe_history),
+            delta="+1" if len(st.session_state.vibe_history) > 0 else None
+        )
+    
+    with progress_col2:
+        avg_joy = sum(st.session_state.joy_metrics['happiness_trend']) / len(st.session_state.joy_metrics['happiness_trend'])
+        st.metric(
+            "🌟 Average Joy",
+            f"{avg_joy:.1f}/10",
+            delta=f"+{st.session_state.current_vibe['joy_level'] - avg_joy:.1f}" if st.session_state.current_vibe['joy_level'] > avg_joy else None
+        )
+    
+    with progress_col3:
+        st.metric(
+            "🌊 Flow Minutes",
+            st.session_state.joy_metrics['flow_duration'],
+            delta="+1" if st.session_state.current_vibe['flow_state'] else None
+        )
+    
+    # Inspirational quote based on current vibe
+    inspiration = get_vibe_inspiration(st.session_state.current_vibe)
+    st.info(f"💫 **Inspiration**: {inspiration}")
+
+
+def get_vibe_inspiration(vibe: Dict) -> str:
+    """Get inspirational message based on current vibe."""
+    
+    inspirations = {
+        'garden': "🌱 Every great system starts as a seed of an idea. Nurture it with love and watch it bloom into something beautiful.",
+        'fortress': "🏰 Strong foundations and careful protection create systems that users can trust completely.",
+        'library': "📚 Well-organized knowledge becomes wisdom, and wisdom becomes power to help others.",
+        'studio': "🎨 Creative freedom and artistic expression make technology that delights and inspires."
+    }
+    
+    base_inspiration = inspirations.get(vibe['metaphor'], "✨ Building something beautiful and useful is our sacred purpose.")
+    
+    if vibe['joy_level'] >= 8:
+        return f"{base_inspiration} Your high joy level is creating exceptional beauty!"
+    elif vibe['flow_state']:
+        return f"{base_inspiration} You're in flow state - this is where magic happens!"
+    else:
+        return base_inspiration
+
+
+def display_vibe_dashboard():
+    """🎵 Display comprehensive vibe dashboard with metrics and insights."""
+    
+    st.title("🎵 Vibe Dashboard - Track Your Coding Joy")
+    st.markdown("*Monitor your happiness, flow state, and creative output over time*")
+    
+    # Overview metrics
+    st.subheader("📊 Overview")
+    
+    metrics_col1, metrics_col2, metrics_col3, metrics_col4 = st.columns(4)
+    
+    with metrics_col1:
+        current_joy = st.session_state.current_vibe['joy_level']
+        avg_joy = sum(st.session_state.joy_metrics['happiness_trend']) / len(st.session_state.joy_metrics['happiness_trend'])
+        st.metric("😊 Current Joy", f"{current_joy}/10", delta=f"{current_joy - avg_joy:+.1f}")
+    
+    with metrics_col2:
+        st.metric("🌊 Flow Duration", f"{st.session_state.joy_metrics['flow_duration']} min")
+    
+    with metrics_col3:
+        st.metric("💎 Beauty Created", st.session_state.joy_metrics['beauty_created'])
+    
+    with metrics_col4:
+        st.metric("⚡ Utility Delivered", st.session_state.joy_metrics['utility_delivered'])
+    
+    # Happiness trend chart
+    st.subheader("📈 Happiness Trend")
+    if len(st.session_state.joy_metrics['happiness_trend']) > 1:
+        import pandas as pd
+        happiness_df = pd.DataFrame({
+            'Session': range(len(st.session_state.joy_metrics['happiness_trend'])),
+            'Joy Level': st.session_state.joy_metrics['happiness_trend']
+        })
+        st.line_chart(happiness_df.set_index('Session'))
+    else:
+        st.info("📊 Start coding with vibes to see your happiness trend!")
+    
+    # Vibe history
+    st.subheader("🌈 Vibe History")
+    if st.session_state.vibe_history:
+        for i, vibe in enumerate(reversed(st.session_state.vibe_history[-10:])):  # Show last 10
+            with st.expander(f"🎭 {vibe.get('name', f'Vibe {i+1}')} - Joy: {vibe['joy_level']}/10"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**Energy**: {vibe['energy']}")
+                    st.write(f"**Metaphor**: {vibe['metaphor']}")
+                with col2:
+                    st.write(f"**Crystal Gem**: {vibe['crystal_gem']}")
+                    st.write(f"**Beauty Score**: {vibe['beauty_score']}/10")
+    else:
+        st.info("🎨 Start creating with vibes to build your history!")
+    
+    # Recommendations
+    st.subheader("💡 Personalized Recommendations")
+    
+    # Analyze patterns and provide suggestions
+    if len(st.session_state.joy_metrics['happiness_trend']) >= 3:
+        recent_trend = st.session_state.joy_metrics['happiness_trend'][-3:]
+        if all(x < 6 for x in recent_trend):
+            st.warning("🌱 Your joy levels seem low recently. Try switching to a more energetic vibe or taking a creative break!")
+        elif all(x >= 8 for x in recent_trend):
+            st.success("🌟 You're on fire! Your high joy levels are creating beautiful systems. Keep up the excellent vibes!")
+        else:
+            st.info("⚖️ Your vibes are balanced. Experiment with different metaphors to discover what brings you the most joy!")
+    
+    # Favorite patterns
+    if st.session_state.vibe_history:
+        st.subheader("🎯 Your Patterns")
+        
+        # Analyze favorite metaphors
+        metaphors = [v['metaphor'] for v in st.session_state.vibe_history]
+        if metaphors:
+            from collections import Counter
+            favorite_metaphor = Counter(metaphors).most_common(1)[0][0]
+            st.success(f"🏆 Your favorite metaphor: **{favorite_metaphor.title()}** - you've used it {Counter(metaphors)[favorite_metaphor]} times!")
+
+
 def main():
     """Main Streamlit application."""
     initialize_session_state()
@@ -1784,6 +2337,9 @@ def main():
         # Project management section
         display_project_management()
         
+    elif config['page'] == "🌈 Vibe Coding":
+        display_vibe_coding_interface()
+        
     elif config['page'] == "🔧 Prompt Manager":
         display_prompt_manager()
         
@@ -1792,6 +2348,9 @@ def main():
         
     elif config['page'] == "⚙️ System Prompts":
         display_system_prompts()
+        
+    elif config['page'] == "🎵 Vibe Dashboard":
+        display_vibe_dashboard()
     
     # Log viewer (if activated from sidebar)
     if st.session_state.show_log_viewer:
