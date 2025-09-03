@@ -1,0 +1,12 @@
+{
+    "comment": "Edit this file to change Python path for all VS Code configurations",
+    "pythonPath": "D:/Anaconda/python.exe",
+    "anacondaPath": "D:/Anaconda",
+    "condaPath": "D:/Anaconda/Scripts/conda.exe",
+    "pipPath": "D:/Anaconda/Scripts/pip.exe",
+    "environments": {
+        "base": "D:\\Anaconda\\python.exe",
+        "dev": "D:\\Anaconda\\envs\\dev\\python.exe",
+        "test": "D:\\Anaconda\\envs\\test\\python.exe"
+    }
+}

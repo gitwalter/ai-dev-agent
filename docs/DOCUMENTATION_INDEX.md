@@ -11,13 +11,13 @@
 - **[Keyword Reference Guide](rules/cursor/KEYWORD_REFERENCE_GUIDE.md)** - **COMPLETE** - Complete reference for all @keywords and context detection
 - **[Intelligent Context-Aware Rule System](.cursor/rules/core/intelligent_context_aware_rule_system.mdc)** - **IMPLEMENTED** - Core rule for automated context detection and rule selection
 - **[Context Rule Mappings](.cursor/rules/config/context_rule_mappings.yaml)** - **CONFIGURED** - YAML configuration for context-to-rule mappings
-- **[Intelligent Context Detector](utils/rule_system/intelligent_context_detector.py)** - **IMPLEMENTED** - Python implementation of context detection system
-- **[Adaptive Rule Selector](utils/rule_system/adaptive_rule_selector.py)** - **IMPLEMENTED** - Machine learning-based rule selection
-- **[Formal Rule Catalog](utils/rule_system/formal_rule_catalog.py)** - **IMPLEMENTED** - Systematic rule organization and conflict resolution
+- **[Intelligent Context Detector](utils/rule_system/)** - **IN DEVELOPMENT** - Python implementation of context detection system
+- **[Adaptive Rule Selector](utils/rule_system/)** - **IN DEVELOPMENT** - Machine learning-based rule selection
+- **[Formal Rule Catalog](utils/rule_system/)** - **IN DEVELOPMENT** - Systematic rule organization and conflict resolution
 
 ### **Architecture Documentation**
 - [System Diagram](architecture/overview/system_diagram.md) - Visual representation of system components
-- [Component Architecture](architecture/components/component_architecture.md) - Detailed component descriptions
+- [Component Architecture](architecture/diagrams/) - Detailed component descriptions and diagrams
 - [Architecture Diagrams](architecture/diagrams/) - Collection of system diagrams
 
 ### **Agile Project Management**
@@ -62,17 +62,17 @@
 ## 🔧 **Technical Documentation**
 
 ### **Foundation-Practical Architecture** 🧄 **NEW PARADIGM**
-- **[Foundation-Practical Onion Architecture](architecture/foundation_practical_onion_architecture.md)** - **REVOLUTIONARY** - 8-layer architecture with proper ontological clustering (2 Foundation + 6 Practical)
+- **[Foundation-Practical Onion Architecture](architecture/simplified_onion_architecture.md)** - **REVOLUTIONARY** - 8-layer architecture with proper ontological clustering (2 Foundation + 6 Practical)
 - **[Foundation-Practical System](utils/validation/foundation_practical_onion_system.py)** - **IMPLEMENTED** - Complete validation system with foundation and practical layers
 - **[Foundation-Practical Compliant Agent](agents/foundation_practical_compliant_agent.py)** - **MANDATORY** - Enhanced agent base class with 8-layer validation
-- **[Foundation-Practical Tests](tests/test_foundation_practical_onion_system.py)** - **COMPREHENSIVE** - Complete test suite for 8-layer architecture (≥95% coverage)
+- **[Foundation-Practical Tests](tests/)** - **COMPREHENSIVE** - Complete test suite for 8-layer architecture (≥95% coverage)
 - **[Simplified Onion Architecture](architecture/simplified_onion_architecture.md)** - **EVOLUTION** - Improved clustering from 12 fragmented layers to 8 logical layers
 
-### **Mathematical Foundations** 🧮 **INTEGRATED**
-- **[Formal System Mathematics](mathematics/formal_system_mathematics.md)** - **DELETED** - Replaced with practical validation
-- **[Mathematical System Foundation](utils/validation/mathematical_system_foundation.py)** - **DELETED** - Replaced with ethical validation in Foundation-Practical
-- **[Formal System Compliant Agent](agents/formal_system_compliant_agent.py)** - **DELETED** - Replaced with Foundation-Practical compliant agent
-- **[Mathematical Foundation Tests](tests/test_mathematical_system_foundation.py)** - **DELETED** - Replaced with Foundation-Practical tests
+### **Mathematical Foundations** 🧮 **MIGRATED**
+- **Formal System Mathematics** - **MIGRATED** - Integrated into Foundation-Practical system
+- **Mathematical System Foundation** - **MIGRATED** - Replaced with ethical validation in Foundation-Practical
+- **Formal System Compliant Agent** - **MIGRATED** - Replaced with Foundation-Practical compliant agent
+- **Mathematical Foundation Tests** - **MIGRATED** - Replaced with Foundation-Practical tests
 
 ### **Development Guides**
 - [Development Setup](guides/development/development_setup.md) - Environment setup and configuration
@@ -137,7 +137,7 @@
 
 ### **Session Management**
 1. **Start Session**: Say "start our session" to trigger the complete 7-step routine
-2. **Session Startup**: [Session Startup Routine](.cursor/rules/session_startup_routine_rule.mdc) - Systematic workflow
+2. **Session Startup**: [Session Startup Rules](.cursor/rules/core/) - Systematic workflow rules
 3. **Session Script**: [Session Startup Script](scripts/session_startup.py) - Manual trigger
 4. **Session Shutdown**: [Session Shutdown Script](scripts/session_shutdown.py) - Manual shutdown trigger
 5. **Complete Guide**: [Automated Cursor Workflow Guide](guides/development/automated_cursor_workflow_guide.md) - Comprehensive guide for human developers
