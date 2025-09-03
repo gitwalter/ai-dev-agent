@@ -35,6 +35,9 @@ try:
         VibeAgileFusionEngine, VibeContext, VibeIntensity, AgilePhase,
         get_human_interaction_dialog
     )
+    from utils.agile.enhanced_phase_dialogues import (
+        get_enhanced_phase_dialogue, DialogueQuestion, QuestionType
+    )
     VIBE_AGILE_AVAILABLE = True
 except ImportError:
     VibeAgileFusionEngine = None
@@ -42,6 +45,9 @@ except ImportError:
     VibeIntensity = None
     AgilePhase = None
     get_human_interaction_dialog = None
+    get_enhanced_phase_dialogue = None
+    DialogueQuestion = None
+    QuestionType = None
     VIBE_AGILE_AVAILABLE = False
 
 # Page configuration
@@ -2499,14 +2505,21 @@ def display_human_interaction_dialog():
     phase = interaction['phase']
     vibe_context = interaction['vibe_context']
     
-    # Get dialog configuration for current phase
+    # Get enhanced dialog configuration for current phase
     try:
-        dialog_config = get_human_interaction_dialog(phase, vibe_context)
+        if get_enhanced_phase_dialogue:
+            dialog_config = get_enhanced_phase_dialogue(phase, vibe_context)
+        else:
+            dialog_config = get_human_interaction_dialog(phase, vibe_context)
     except Exception as e:
         st.error(f"Error getting dialog configuration: {str(e)}")
         dialog_config = {
             'phase': phase,
-            'questions': ["How do you feel about the current progress?"],
+            'questions': [DialogueQuestion(
+                text="How do you feel about the current progress?",
+                question_type=QuestionType.SCALE if QuestionType else "scale",
+                scale_range=(1, 10)
+            )],
             'duration': "10 minutes",
             'success_criteria': ["Clear feedback provided"],
             'emotional_context': vibe_context.get('intensity', 'focused'),
@@ -2538,21 +2551,50 @@ def display_human_interaction_dialog():
     questions = dialog_config.get('questions', [])
     
     for i, question in enumerate(questions):
-        st.markdown(f"**Question {i+1}**: {question}")
-        
-        # Adapt input type based on question content
-        if 'rate' in question.lower() or 'scale' in question.lower():
-            response = st.slider(f"Response {i+1}", 1, 10, 5, key=f"q_{i}")
-        elif 'yes' in question.lower() or 'no' in question.lower():
-            response = st.radio(f"Response {i+1}", ["Yes", "No", "Maybe"], key=f"q_{i}")
-        elif 'choose' in question.lower() or 'select' in question.lower():
-            response = st.selectbox(f"Response {i+1}", 
-                                  ["Option A", "Option B", "Option C", "Other"], 
-                                  key=f"q_{i}")
-        else:
-            response = st.text_area(f"Your thoughts", 
-                                  placeholder="Share your detailed feedback...", 
-                                  height=100, key=f"q_{i}")
+        # Handle both DialogueQuestion objects and simple strings
+        if hasattr(question, 'text'):  # Enhanced DialogueQuestion object
+            question_text = question.text
+            question_type = question.question_type
+            help_text = question.help_text
+            
+            st.markdown(f"**Question {i+1}**: {question_text}")
+            if help_text:
+                st.markdown(f"*{help_text}*")
+            
+            # Use specific question type for UI element
+            if question_type == QuestionType.SCALE or (hasattr(question_type, 'value') and question_type.value == 'scale'):
+                scale_range = getattr(question, 'scale_range', (1, 10))
+                response = st.slider(f"Response {i+1}", scale_range[0], scale_range[1], 
+                                   (scale_range[0] + scale_range[1]) // 2, key=f"q_{i}")
+            elif question_type == QuestionType.YES_NO or (hasattr(question_type, 'value') and question_type.value == 'yes_no'):
+                response = st.radio(f"Response {i+1}", ["Yes", "No", "Maybe"], key=f"q_{i}")
+            elif question_type == QuestionType.CHOICE or (hasattr(question_type, 'value') and question_type.value == 'choice'):
+                options = getattr(question, 'options', ["Option A", "Option B", "Option C", "Other"])
+                response = st.selectbox(f"Response {i+1}", options, key=f"q_{i}")
+            elif question_type == QuestionType.MULTI_SELECT or (hasattr(question_type, 'value') and question_type.value == 'multi_select'):
+                options = getattr(question, 'options', ["Option 1", "Option 2", "Option 3"])
+                response = st.multiselect(f"Response {i+1}", options, key=f"q_{i}")
+            else:  # TEXT type or fallback
+                response = st.text_area(f"Your thoughts", 
+                                      placeholder="Share your detailed feedback...", 
+                                      height=100, key=f"q_{i}")
+        else:  # Simple string question (fallback)
+            question_text = str(question)
+            st.markdown(f"**Question {i+1}**: {question_text}")
+            
+            # Adapt input type based on question content
+            if 'rate' in question_text.lower() or 'scale' in question_text.lower():
+                response = st.slider(f"Response {i+1}", 1, 10, 5, key=f"q_{i}")
+            elif 'yes' in question_text.lower() or 'no' in question_text.lower():
+                response = st.radio(f"Response {i+1}", ["Yes", "No", "Maybe"], key=f"q_{i}")
+            elif 'choose' in question_text.lower() or 'select' in question_text.lower():
+                response = st.selectbox(f"Response {i+1}", 
+                                      ["Option A", "Option B", "Option C", "Other"], 
+                                      key=f"q_{i}")
+            else:
+                response = st.text_area(f"Your thoughts", 
+                                      placeholder="Share your detailed feedback...", 
+                                      height=100, key=f"q_{i}")
         
         responses[f"question_{i+1}"] = response
     
