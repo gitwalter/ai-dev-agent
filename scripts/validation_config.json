@@ -1,0 +1,80 @@
+{
+  "hilbert_validation": {
+    "enabled": true,
+    "validation_patterns": {
+      "strategic_documents": {
+        "pattern": "^[A-Z][A-Z0-9_]*\\.md$",
+        "description": "CAPITAL_CASE.md for strategic documents",
+        "directories": [
+          "docs/agile/catalogs/",
+          "docs/concepts/",
+          "docs/consciousness/",
+          "docs/technical/",
+          "docs/rules/core/",
+          "docs/development/",
+          "docs/testing/",
+          "docs/guides/"
+        ],
+        "examples": [
+          "USER_STORY_CATALOG.md",
+          "SPRINT_SUMMARY.md"
+        ]
+      },
+      "operational_documents": {
+        "pattern": "^[a-z][a-z0-9_]*\\.md$",
+        "description": "lowercase_case.md for operational documents",
+        "directories": [
+          "docs/agile/core/",
+          "docs/troubleshooting/",
+          "docs/testing/",
+          "docs/operating-modes/"
+        ],
+        "examples": [
+          "daily_standup.md",
+          "agile_cursor_rules.md"
+        ]
+      },
+      "thematic_collections": {
+        "pattern": "^[a-z][a-z0-9\\-]*\\.md$",
+        "description": "lowercase-hyphens.md for thematic collections",
+        "directories": [
+          "docs/guides/implementation/",
+          "docs/guides/database/",
+          "docs/quick-start/",
+          "docs/guides/development/",
+          "docs/philosophy/"
+        ],
+        "examples": [
+          "task-3-3-progress.md",
+          "quality-gates.md"
+        ]
+      },
+      "unique_identifiers": {
+        "pattern": "^[A-Z]{2,}-[A-Z0-9\\-]+\\.md$",
+        "description": "CODE-PATTERN.md for unique identifiers",
+        "directories": [
+          "docs/agile/sprints/*/user_stories/",
+          "docs/agile/user_stories/"
+        ],
+        "examples": [
+          "US-001.md",
+          "US-PE-01.md"
+        ]
+      }
+    },
+    "enforcement_level": "blocking",
+    "auto_fix": false,
+    "report_path": "docs/agile/validation/hilbert_consistency_report.md"
+  },
+  "ci_integration": {
+    "pre_commit_hook": true,
+    "github_actions": true,
+    "validation_command": "python scripts/hilbert_consistency_validator.py",
+    "failure_threshold": 95.0
+  },
+  "monitoring": {
+    "track_consistency_trends": true,
+    "alert_on_violations": true,
+    "generate_metrics": true
+  }
+}
