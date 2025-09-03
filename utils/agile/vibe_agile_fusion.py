@@ -28,6 +28,14 @@ import json
 from dataclasses import dataclass
 from enum import Enum
 
+# Import our enhanced template manager
+try:
+    from .template_manager import get_template_manager
+    TEMPLATE_MANAGER_AVAILABLE = True
+except ImportError:
+    get_template_manager = None
+    TEMPLATE_MANAGER_AVAILABLE = False
+
 class AgilePhase(Enum):
     """Agile development phases with human interaction points."""
     INCEPTION = "inception"
@@ -136,10 +144,38 @@ class VibeAgileFusionEngine:
     def _generate_agile_artifacts(self, project_config: Dict[str, Any], 
                                 vibe_context: VibeContext, 
                                 project_agile_path: Path) -> List[str]:
-        """📋 Generate complete agile artifact structure with vibe-infused content."""
+        """📋 Generate complete agile artifact structure with vibe-infused content using templates."""
         
         artifacts_created = []
         
+        # Use template manager if available
+        if TEMPLATE_MANAGER_AVAILABLE and get_template_manager:
+            try:
+                template_manager = get_template_manager(
+                    self.agile_templates_path,
+                    self.generated_projects_path
+                )
+                
+                # Create complete project structure using templates
+                result = template_manager.create_project_agile_structure(
+                    project_config['name'],
+                    vibe_context.__dict__,
+                    project_config
+                )
+                
+                artifacts_created.extend(result.get('custom_artifacts', []))
+                
+                # Add template-based artifacts
+                for template_name, template_result in result.get('templates_copied', {}).items():
+                    if template_result.get('success'):
+                        artifacts_created.append(Path(template_result['output_path']).name)
+                
+                return artifacts_created
+                
+            except Exception as e:
+                print(f"Warning: Template manager failed, falling back to manual generation: {e}")
+        
+        # Fallback to manual generation
         # 1. Generate Epic with Vibe Context
         epic_content = self._generate_vibe_epic(project_config, vibe_context)
         epic_path = project_agile_path / "EPIC_OVERVIEW.md"

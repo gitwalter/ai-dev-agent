@@ -2347,9 +2347,16 @@ def create_vibe_agile_project(project_name, project_description, vibe_intensity,
             
             # Set up first human interaction checkpoint
             if 'next_human_interaction' in result and result['next_human_interaction']:
+                next_interaction = result['next_human_interaction']
+                if isinstance(next_interaction, dict) and 'phase' in next_interaction:
+                    phase = next_interaction['phase']
+                else:
+                    # Fallback to inception phase if structure is different
+                    phase = 'inception'
+                
                 st.session_state.active_interaction = {
                     'project_id': project_id,
-                    'phase': result['next_human_interaction']['phase'],
+                    'phase': phase,
                     'vibe_context': result['vibe_context']
                 }
             
