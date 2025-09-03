@@ -1550,7 +1550,27 @@ def display_expert_mode_builder():
     """Display the expert mode agent builder with advanced configuration."""
     st.markdown('<div class="composition-card">', unsafe_allow_html=True)
     st.subheader("🔧 Expert Mode - Advanced Agent Configuration")
-    st.info("🚧 Expert Mode coming soon! This will include advanced flow configuration, custom prompts, and detailed agent workflows.")
+    
+    # Expert Mode Tabs
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "🏗️ Architecture", "🔄 Workflow", "🧠 Intelligence", "🔗 Integration", "⚡ Deployment"
+    ])
+    
+    with tab1:
+        display_expert_architecture_config()
+    
+    with tab2:
+        display_expert_workflow_config()
+    
+    with tab3:
+        display_expert_intelligence_config()
+    
+    with tab4:
+        display_expert_integration_config()
+    
+    with tab5:
+        display_expert_deployment_config()
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
 def load_vibe_context_to_builder():
@@ -2141,6 +2161,459 @@ def main():
         st.info("🚧 System Monitor interface coming soon...")
     elif page == "⚙️ Settings":
         st.info("🚧 Settings interface coming soon...")
+
+# Expert Mode Configuration Functions
+
+def display_expert_architecture_config():
+    """Display expert architecture configuration."""
+    st.markdown("### 🏗️ Agent Architecture Design")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🎯 Core Architecture")
+        
+        # Architecture Pattern
+        arch_pattern = st.selectbox(
+            "Architecture Pattern:",
+            [
+                "🧠 Single Agent", 
+                "🤝 Multi-Agent Collaboration", 
+                "🔄 Pipeline Architecture",
+                "🌐 Mesh Network", 
+                "🎭 Actor Model",
+                "📊 Event-Driven Architecture"
+            ],
+            help="Choose the fundamental architectural pattern"
+        )
+        
+        # Processing Model
+        processing_model = st.selectbox(
+            "Processing Model:",
+            [
+                "🔄 Synchronous", 
+                "⚡ Asynchronous", 
+                "📊 Stream Processing",
+                "🧮 Batch Processing", 
+                "💫 Reactive",
+                "🌊 Event Sourcing"
+            ]
+        )
+        
+        # State Management
+        state_mgmt = st.selectbox(
+            "State Management:",
+            [
+                "💾 Stateless", 
+                "🗃️ In-Memory State", 
+                "💽 Persistent State",
+                "📚 Database State", 
+                "🔄 Distributed State",
+                "⏰ Event Store"
+            ]
+        )
+    
+    with col2:
+        st.subheader("🎛️ Advanced Configuration")
+        
+        # Concurrency Model
+        concurrency = st.selectbox(
+            "Concurrency Model:",
+            [
+                "🧵 Single Threaded", 
+                "🎭 Multi-Threaded", 
+                "📊 Process Pool",
+                "⚡ Async/Await", 
+                "🌊 Coroutines",
+                "🎪 Actor System"
+            ]
+        )
+        
+        # Communication Protocol
+        comm_protocol = st.selectbox(
+            "Communication Protocol:",
+            [
+                "📞 Direct Calls", 
+                "📬 Message Queue", 
+                "🌐 HTTP/REST",
+                "⚡ WebSockets", 
+                "📡 gRPC",
+                "📻 Event Bus"
+            ]
+        )
+    
+    # Architecture Preview
+    st.subheader("🎨 Architecture Preview")
+    st.info(f"🏗️ **Architecture Configuration**\n\n"
+           f"**Pattern**: {arch_pattern}\n"
+           f"**Processing**: {processing_model}\n"
+           f"**State Management**: {state_mgmt}\n"
+           f"**Concurrency**: {concurrency}\n"
+           f"**Communication**: {comm_protocol}")
+
+def display_expert_workflow_config():
+    """Display expert workflow configuration."""
+    st.markdown("### 🔄 Workflow Design Studio")
+    
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.subheader("🎯 Workflow Steps")
+        
+        # Initialize workflow steps in session state
+        if 'workflow_steps' not in st.session_state:
+            st.session_state.workflow_steps = [
+                {"id": 1, "name": "Input Processing", "type": "input", "config": {}},
+                {"id": 2, "name": "Core Logic", "type": "processor", "config": {}},
+                {"id": 3, "name": "Output Generation", "type": "output", "config": {}}
+            ]
+        
+        # Display workflow steps
+        for i, step in enumerate(st.session_state.workflow_steps):
+            with st.expander(f"🔧 Step {step['id']}: {step['name']}", expanded=False):
+                
+                col_a, col_b, col_c = st.columns([2, 2, 1])
+                
+                with col_a:
+                    step_name = st.text_input(
+                        "Step Name:", 
+                        value=step['name'], 
+                        key=f"step_name_{step['id']}"
+                    )
+                    step['name'] = step_name
+                
+                with col_b:
+                    step_type = st.selectbox(
+                        "Step Type:",
+                        ["input", "processor", "decision", "output", "integration", "validation"],
+                        index=["input", "processor", "decision", "output", "integration", "validation"].index(step['type']),
+                        key=f"step_type_{step['id']}"
+                    )
+                    step['type'] = step_type
+                
+                with col_c:
+                    if st.button("🗑️", key=f"delete_step_{step['id']}", help="Delete Step"):
+                        st.session_state.workflow_steps.pop(i)
+                        st.rerun()
+                
+                # Human-in-the-loop configuration
+                human_loop = st.checkbox(
+                    "🤝 Require Human Approval",
+                    value=step['config'].get('human_approval', False),
+                    key=f"human_loop_{step['id']}"
+                )
+                step['config']['human_approval'] = human_loop
+        
+        # Add new step
+        if st.button("➕ Add Workflow Step"):
+            new_id = max([s['id'] for s in st.session_state.workflow_steps]) + 1
+            st.session_state.workflow_steps.append({
+                "id": new_id,
+                "name": f"New Step {new_id}",
+                "type": "processor",
+                "config": {}
+            })
+            st.rerun()
+    
+    with col2:
+        st.subheader("🎨 Workflow Visualization")
+        
+        # Simple workflow visualization
+        if st.session_state.workflow_steps:
+            workflow_text = "**Workflow Flow:**\n\n"
+            for i, step in enumerate(st.session_state.workflow_steps):
+                workflow_text += f"{i+1}. **{step['name']}** ({step['type']})\n"
+                if step['config'].get('human_approval'):
+                    workflow_text += f"   └─ 🤝 *Human approval required*\n"
+                if i < len(st.session_state.workflow_steps) - 1:
+                    workflow_text += "   ⬇️\n"
+            
+            st.markdown(workflow_text)
+        
+        # Generate Workflow Code
+        if st.button("🚀 Generate Workflow Code", type="primary"):
+            workflow_code = f"""# Generated Workflow Configuration
+class ExpertWorkflow:
+    def __init__(self):
+        self.steps = {st.session_state.workflow_steps}
+    
+    def execute(self):
+        print("Executing expert workflow...")
+        for step in self.steps:
+            print(f"Step: {{step['name']}} ({{step['type']}})")
+            if step['config'].get('human_approval'):
+                print("  Waiting for human approval...")
+        return "Workflow completed"
+"""
+            st.code(workflow_code, language="python")
+
+def display_expert_intelligence_config():
+    """Display expert AI intelligence configuration."""
+    st.markdown("### 🧠 AI Intelligence Configuration")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🎯 Core AI Settings")
+        
+        # Primary AI Model
+        primary_model = st.selectbox(
+            "Primary AI Model:",
+            [
+                "🧠 GPT-4 Turbo", 
+                "💎 Claude 3.5 Sonnet", 
+                "⭐ Gemini Pro",
+                "🦙 Llama 3", 
+                "🔥 Mixtral 8x7B",
+                "🎯 Custom Model"
+            ]
+        )
+        
+        # Temperature and Creativity
+        temperature = st.slider("🌡️ Temperature (Creativity):", 0.0, 2.0, 0.7, 0.1)
+        max_tokens = st.number_input("📝 Max Tokens:", 100, 8000, 1000)
+        
+        # Advanced AI Parameters
+        top_p = st.slider("🎯 Top P (Nucleus Sampling):", 0.0, 1.0, 0.9, 0.05)
+    
+    with col2:
+        st.subheader("🧩 Intelligence Modules")
+        
+        # Reasoning Capabilities
+        st.markdown("**🧠 Reasoning Capabilities:**")
+        reasoning_modules = st.multiselect(
+            "Select reasoning modules:",
+            [
+                "🔍 Chain of Thought",
+                "🌳 Tree of Thoughts", 
+                "🎯 Goal-Oriented Reasoning",
+                "📊 Statistical Reasoning", 
+                "🧮 Mathematical Reasoning",
+                "🎨 Creative Reasoning"
+            ],
+            default=["🔍 Chain of Thought"]
+        )
+        
+        # Memory Systems
+        st.markdown("**🧠 Memory Systems:**")
+        memory_systems = st.multiselect(
+            "Select memory systems:",
+            [
+                "💾 Short-term Memory",
+                "🗄️ Long-term Memory", 
+                "📚 Knowledge Base",
+                "🔄 Working Memory", 
+                "🎯 Episodic Memory"
+            ],
+            default=["💾 Short-term Memory", "📚 Knowledge Base"]
+        )
+    
+    # Intelligence Preview
+    st.subheader("🎨 Intelligence Configuration")
+    st.info(f"🧠 **AI Configuration**\n\n"
+           f"**Model**: {primary_model}\n"
+           f"**Temperature**: {temperature}\n"
+           f"**Max Tokens**: {max_tokens}\n"
+           f"**Reasoning Modules**: {len(reasoning_modules)} selected\n"
+           f"**Memory Systems**: {len(memory_systems)} selected")
+
+def display_expert_integration_config():
+    """Display expert integration configuration."""
+    st.markdown("### 🔗 Integration & Connectivity")
+    
+    # External Integrations
+    st.subheader("🌐 External Service Integrations")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("**🤖 AI Frameworks:**")
+        ai_integrations = st.multiselect(
+            "AI Framework Integration:",
+            [
+                "🦜 LangChain", 
+                "📊 LangGraph", 
+                "👥 CrewAI",
+                "🔧 AutoGen", 
+                "🧠 LlamaIndex",
+                "🌊 Semantic Kernel"
+            ]
+        )
+    
+    with col2:
+        st.markdown("**📊 Data Sources:**")
+        data_integrations = st.multiselect(
+            "Data Source Integration:",
+            [
+                "🐘 PostgreSQL", 
+                "📊 MongoDB", 
+                "🔥 Redis",
+                "❄️ Snowflake", 
+                "🏢 Salesforce",
+                "📈 Google Analytics"
+            ]
+        )
+    
+    with col3:
+        st.markdown("**🔧 Business Tools:**")
+        business_integrations = st.multiselect(
+            "Business Tool Integration:",
+            [
+                "📋 Jira", 
+                "💬 Slack", 
+                "📧 Microsoft Teams",
+                "📊 Notion", 
+                "🎯 Asana",
+                "📞 Zoom"
+            ]
+        )
+    
+    # API Configuration
+    st.subheader("🔌 API Configuration")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # REST API Settings
+        st.markdown("**🌐 REST API Settings:**")
+        enable_rest_api = st.checkbox("Enable REST API Interface")
+        
+        if enable_rest_api:
+            api_prefix = st.text_input("API Prefix:", value="/api/v1")
+            enable_cors = st.checkbox("Enable CORS", value=True)
+    
+    with col2:
+        # WebSocket Settings
+        st.markdown("**⚡ WebSocket Settings:**")
+        enable_websocket = st.checkbox("Enable WebSocket Interface")
+        
+        if enable_websocket:
+            ws_path = st.text_input("WebSocket Path:", value="/ws")
+            enable_heartbeat = st.checkbox("Enable Heartbeat", value=True)
+
+def display_expert_deployment_config():
+    """Display expert deployment configuration."""
+    st.markdown("### ⚡ Deployment & Operations")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("🚀 Deployment Target")
+        
+        deployment_target = st.selectbox(
+            "Deployment Environment:",
+            [
+                "💻 Local Development",
+                "🐳 Docker Container", 
+                "☁️ Cloud Native",
+                "🎯 Kubernetes", 
+                "🌊 Serverless",
+                "🔥 Edge Computing"
+            ]
+        )
+        
+        # Resource Requirements
+        st.subheader("💾 Resource Requirements")
+        cpu_cores = st.slider("CPU Cores:", 0.1, 8.0, 1.0, 0.1)
+        memory_gb = st.slider("Memory (GB):", 0.5, 32.0, 2.0, 0.5)
+        storage_gb = st.slider("Storage (GB):", 1, 100, 10)
+    
+    with col2:
+        st.subheader("📊 Monitoring & Observability")
+        
+        monitoring_tools = st.multiselect(
+            "Monitoring Tools:",
+            [
+                "📊 Prometheus", 
+                "📈 Grafana", 
+                "🔍 Jaeger",
+                "📋 ELK Stack", 
+                "🌊 Datadog",
+                "📡 New Relic"
+            ]
+        )
+        
+        # Health Checks
+        st.markdown("**🏥 Health Checks:**")
+        enable_health_checks = st.checkbox("Enable Health Checks", value=True)
+        
+        if enable_health_checks:
+            health_check_interval = st.number_input("Check Interval (seconds):", 5, 300, 30)
+        
+        # Scaling Configuration
+        st.subheader("📈 Auto Scaling")
+        enable_autoscaling = st.checkbox("Enable Auto Scaling")
+        
+        if enable_autoscaling:
+            min_instances = st.number_input("Min Instances:", 1, 10, 1)
+            max_instances = st.number_input("Max Instances:", 1, 100, 10)
+    
+    # Generate Configuration
+    st.subheader("🛠️ Generated Configuration")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🐳 Generate Dockerfile", type="primary"):
+            dockerfile_content = f"""# Generated Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Copy application
+COPY . .
+
+# Set resource limits
+ENV CPU_CORES={cpu_cores}
+ENV MEMORY_GB={memory_gb}
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s CMD curl -f http://localhost:8000/health
+
+# Run application
+CMD ["python", "main.py"]
+"""
+            st.code(dockerfile_content, language="dockerfile")
+    
+    with col2:
+        if st.button("🎯 Generate K8s Config", type="primary"):
+            k8s_config = f"""# Generated Kubernetes Configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-agent
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-agent
+  template:
+    metadata:
+      labels:
+        app: ai-agent
+    spec:
+      containers:
+      - name: ai-agent
+        image: ai-agent:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "{cpu_cores}"
+            memory: "{memory_gb}Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+"""
+            st.code(k8s_config, language="yaml")
 
 if __name__ == "__main__":
     main()
