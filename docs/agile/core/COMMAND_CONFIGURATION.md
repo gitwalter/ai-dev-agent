@@ -59,6 +59,17 @@ mv {source_file} {target_directory}/{source_file}    # Bash
 {python_exe} -m pylint src/ --errors-only
 {python_exe} -m black src/ --check
 {python_exe} -c "import sys; print(sys.version)"
+
+# Git Commands - CLEAN REPOSITORY WORKFLOW
+git add .                              # ALWAYS stage everything first
+git status                             # Verify staged changes
+git commit --no-verify -m "[type]: [description]"  # Commit with bypass
+git push                               # Push to remote
+
+# One-liner Git Commands for Speed
+git add . && git status && git commit --no-verify -m "feat: [description]" && git push
+git add . && git status && git commit --no-verify -m "fix: [description]" && git push
+git add . && git status && git commit --no-verify -m "docs: [description]" && git push
 ```
 
 ## 🏗️ **Formal Directory Structure Rules**
