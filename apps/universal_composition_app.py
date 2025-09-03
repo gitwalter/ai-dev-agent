@@ -29,6 +29,17 @@ except ImportError:
     Architect = None
     AGENTS_AVAILABLE = False
 
+# Import Vibe-Agile Fusion Engine
+try:
+    from utils.agile.vibe_agile_fusion import VibeAgileFusionEngine, VibeContext, VibeIntensity, AgilePhase
+    VIBE_AGILE_AVAILABLE = True
+except ImportError:
+    VibeAgileFusionEngine = None
+    VibeContext = None  
+    VibeIntensity = None
+    AgilePhase = None
+    VIBE_AGILE_AVAILABLE = False
+
 # Page configuration
 st.set_page_config(
     page_title="Universal Composition Layer",
@@ -128,6 +139,20 @@ def initialize_session_state():
     if 'api_keys' not in st.session_state:
         # Load API keys from secrets.toml
         st.session_state.api_keys = load_api_keys()
+    
+    # Initialize Vibe-Agile Fusion Engine
+    if 'vibe_agile_engine' not in st.session_state:
+        if VIBE_AGILE_AVAILABLE:
+            st.session_state.vibe_agile_engine = VibeAgileFusionEngine(project_root)
+        else:
+            st.session_state.vibe_agile_engine = None
+    
+    # Initialize vibe-agile project state
+    if 'vibe_agile_projects' not in st.session_state:
+        st.session_state.vibe_agile_projects = []
+    
+    if 'current_agile_phase' not in st.session_state:
+        st.session_state.current_agile_phase = AgilePhase.INCEPTION if VIBE_AGILE_AVAILABLE else None
     
     if 'running_projects' not in st.session_state:
         st.session_state.running_projects = []
@@ -2144,6 +2169,255 @@ def execute_guided_step(guided_config: Dict):
         st.info(f"🎯 **Guided Creation**: Now executing {steps[step]}")
         st.info("⏸️ **Paused for Approval**: Review the step and approve to continue.")
 
+def display_agile_vibe_projects_interface():
+    """Display the Agile-Vibe Projects interface for creating projects with emotional intelligence and systematic agile methodology."""
+    
+    st.markdown('<div class="composition-card">', unsafe_allow_html=True)
+    st.subheader("🎼 Agile-Vibe Projects - Emotional Intelligence Meets Systematic Excellence")
+    st.markdown("Create projects that combine vibe-driven emotional context with complete agile methodology including auto-generated artifacts, human interaction loops, and phase-specific dialogues.")
+    
+    if not VIBE_AGILE_AVAILABLE:
+        st.error("🚨 Vibe-Agile Fusion Engine not available. Please check the installation.")
+        st.markdown('</div>', unsafe_allow_html=True)
+        return
+    
+    # Project Creation Interface
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("### 🌟 Create New Vibe-Agile Project")
+        
+        # Project Basic Info
+        project_name = st.text_input("Project Name", placeholder="My Amazing Vibe Project")
+        project_description = st.text_area(
+            "Project Vision", 
+            placeholder="Describe your project vision with emotional context...",
+            height=100
+        )
+        
+        # Vibe Context Configuration
+        st.markdown("#### 🎭 Vibe Context")
+        col_vibe1, col_vibe2 = st.columns(2)
+        
+        with col_vibe1:
+            vibe_intensity = st.selectbox(
+                "Energy Level",
+                ["calm", "focused", "energetic", "passionate", "urgent"],
+                help="How intense should the development energy be?"
+            )
+            
+            communication_style = st.selectbox(
+                "Communication Style",
+                ["collaborative", "direct", "supportive", "analytical", "creative"],
+                help="How should the team communicate during development?"
+            )
+        
+        with col_vibe2:
+            quality_focus = st.selectbox(
+                "Quality Focus",
+                ["craft", "speed", "innovation", "reliability", "user_delight"],
+                help="What aspect of quality should drive decisions?"
+            )
+            
+            timeline_preference = st.selectbox(
+                "Timeline Approach",
+                ["flexible", "structured", "sprint_driven", "milestone_driven", "continuous"],
+                help="How should time be managed in this project?"
+            )
+        
+        # Agile Configuration
+        st.markdown("#### 📋 Agile Configuration")
+        col_agile1, col_agile2 = st.columns(2)
+        
+        with col_agile1:
+            sprint_length = st.slider("Sprint Length (days)", 7, 21, 14)
+            team_size = st.slider("Team Size", 1, 10, 3)
+        
+        with col_agile2:
+            methodology = st.selectbox(
+                "Agile Framework",
+                ["Scrum", "Kanban", "Scrumban", "XP", "Custom"],
+                help="Choose your preferred agile methodology"
+            )
+            
+            human_interaction_level = st.selectbox(
+                "Human Interaction Level",
+                ["minimal", "standard", "intensive", "continuous"],
+                help="How much human interaction should be required?"
+            )
+        
+        # Create Project Button
+        if st.button("🚀 Create Vibe-Agile Project", type="primary"):
+            if project_name and project_description:
+                create_vibe_agile_project(
+                    project_name, project_description, vibe_intensity, 
+                    communication_style, quality_focus, timeline_preference,
+                    sprint_length, team_size, methodology, human_interaction_level
+                )
+            else:
+                st.error("Please fill in project name and description.")
+    
+    with col2:
+        st.markdown("### 🎯 Vibe-Agile Benefits")
+        st.info("""
+        **🌟 Emotional Intelligence**
+        - Projects adapt to team energy levels
+        - Communication style influences planning
+        - Quality focus drives decisions
+        
+        **📋 Systematic Excellence**  
+        - Complete agile artifact generation
+        - User stories with emotional context
+        - Sprint planning with vibe adaptation
+        
+        **🤝 Human-Centered Process**
+        - Real interaction checkpoints
+        - Phase-specific dialogues
+        - Continuous feedback loops
+        
+        **🔄 Adaptive Development**
+        - Timeline adjusts to energy levels
+        - Story points include emotional complexity
+        - Definition of Done includes satisfaction
+        """)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Display Existing Projects
+    display_existing_vibe_agile_projects()
+
+def create_vibe_agile_project(project_name, project_description, vibe_intensity, 
+                             communication_style, quality_focus, timeline_preference,
+                             sprint_length, team_size, methodology, human_interaction_level):
+    """Create a new vibe-agile project with complete agile artifacts."""
+    
+    try:
+        # Create vibe context
+        vibe_context = VibeContext(
+            intensity=getattr(VibeIntensity, vibe_intensity.upper()) if vibe_intensity.upper() in VibeIntensity.__members__ else VibeIntensity.FOCUSED,
+            communication_style=communication_style,
+            quality_focus=quality_focus,
+            timeline_preference=timeline_preference
+        )
+        
+        # Project configuration
+        project_config = {
+            'name': project_name,
+            'description': project_description,
+            'vibe_context': vibe_context,
+            'sprint_length_days': sprint_length,
+            'team_size': team_size,
+            'methodology': methodology,
+            'human_interaction_level': human_interaction_level,
+            'created_at': datetime.now().isoformat()
+        }
+        
+        # Create project using Vibe-Agile Fusion Engine
+        with st.spinner("🎼 Creating vibe-agile project with complete agile artifacts..."):
+            result = st.session_state.vibe_agile_engine.create_vibe_agile_project(project_config)
+            
+            # Add to session state
+            st.session_state.vibe_agile_projects.append(result)
+            
+            st.success("🎉 Vibe-Agile Project Created Successfully!")
+            st.balloons()
+            
+            # Display creation summary
+            display_project_creation_summary(result)
+            
+    except Exception as e:
+        st.error(f"🚨 Error creating vibe-agile project: {str(e)}")
+
+def display_project_creation_summary(project_result):
+    """Display a summary of the created vibe-agile project."""
+    
+    st.markdown("### 🎯 Project Creation Summary")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("📋 Agile Artifacts", project_result.get('artifacts_created', 0))
+        st.metric("📝 User Stories", project_result.get('user_stories_count', 0))
+    
+    with col2:
+        st.metric("🏃‍♂️ Sprint Length", f"{project_result.get('sprint_length', 14)} days")
+        st.metric("👥 Team Size", project_result.get('team_size', 3))
+    
+    with col3:
+        st.metric("🎭 Vibe Intensity", project_result.get('vibe_intensity', 'focused').title())
+        st.metric("💬 Interaction Level", project_result.get('human_interaction_level', 'standard').title())
+    
+    # Display project structure
+    if 'project_structure' in project_result:
+        with st.expander("📁 Generated Project Structure"):
+            st.code(project_result['project_structure'], language='text')
+    
+    # Display agile artifacts
+    if 'agile_artifacts' in project_result:
+        with st.expander("📋 Generated Agile Artifacts"):
+            for artifact_name, artifact_path in project_result['agile_artifacts'].items():
+                st.markdown(f"- **{artifact_name}**: `{artifact_path}`")
+
+def display_existing_vibe_agile_projects():
+    """Display existing vibe-agile projects with management options."""
+    
+    if not st.session_state.vibe_agile_projects:
+        st.info("🌟 No vibe-agile projects yet. Create your first one above!")
+        return
+    
+    st.markdown('<div class="composition-card">', unsafe_allow_html=True)
+    st.subheader(f"📁 Existing Vibe-Agile Projects ({len(st.session_state.vibe_agile_projects)})")
+    
+    for i, project in enumerate(st.session_state.vibe_agile_projects):
+        with st.expander(f"🎼 {project.get('name', f'Project {i+1}')} - {project.get('vibe_intensity', 'focused').title()} Energy"):
+            col1, col2, col3 = st.columns([2, 1, 1])
+            
+            with col1:
+                st.markdown(f"**Description**: {project.get('description', 'No description')}")
+                st.markdown(f"**Methodology**: {project.get('methodology', 'Scrum')}")
+                st.markdown(f"**Created**: {project.get('created_at', 'Unknown')}")
+            
+            with col2:
+                if st.button(f"🚀 Enter Project", key=f"enter_project_{i}"):
+                    enter_vibe_agile_project(project)
+                
+                if st.button(f"📊 View Artifacts", key=f"view_artifacts_{i}"):
+                    view_project_artifacts(project)
+            
+            with col3:
+                if st.button(f"🔄 Continue Development", key=f"continue_dev_{i}"):
+                    continue_project_development(project)
+                
+                if st.button(f"📈 Project Health", key=f"health_{i}"):
+                    show_project_health(project)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def enter_vibe_agile_project(project):
+    """Enter a vibe-agile project and start the development workflow."""
+    st.session_state.current_vibe_project = project
+    st.success(f"🎯 Entered project: {project.get('name', 'Unnamed Project')}")
+    st.info("🚧 Project development interface coming in next update...")
+
+def view_project_artifacts(project):
+    """View the agile artifacts for a project."""
+    st.info(f"📋 Viewing artifacts for: {project.get('name', 'Unnamed Project')}")
+    if 'agile_artifacts' in project:
+        for artifact_name, artifact_path in project['agile_artifacts'].items():
+            st.markdown(f"- **{artifact_name}**: `{artifact_path}`")
+    else:
+        st.warning("No artifacts found for this project.")
+
+def continue_project_development(project):
+    """Continue development on an existing project."""
+    st.info(f"🔄 Continuing development for: {project.get('name', 'Unnamed Project')}")
+    st.info("🚧 Development continuation interface coming in next update...")
+
+def show_project_health(project):
+    """Show project health metrics."""
+    st.info(f"📈 Project health for: {project.get('name', 'Unnamed Project')}")
+    st.info("🚧 Project health dashboard coming in next update...")
+
 def main():
     """Main application function."""
     initialize_session_state()
@@ -2154,7 +2428,7 @@ def main():
         st.markdown("### 🔧 Navigation")
         page = st.selectbox(
             "Select Interface:",
-            ["🎯 Composition Dashboard", "🚀 Project Runner", "🤖 Agent Builder", "🏢 Enterprise Systems", "🔍 System Monitor", "⚙️ Settings"]
+            ["🎯 Composition Dashboard", "🚀 Project Runner", "🤖 Agent Builder", "🎼 Agile-Vibe Projects", "🏢 Enterprise Systems", "🔍 System Monitor", "⚙️ Settings"]
         )
     
     if page == "🎯 Composition Dashboard":
@@ -2163,6 +2437,8 @@ def main():
         display_project_runner()
     elif page == "🤖 Agent Builder":
         display_agent_builder_interface()
+    elif page == "🎼 Agile-Vibe Projects":
+        display_agile_vibe_projects_interface()
     elif page == "🏢 Enterprise Systems":
         st.info("🚧 Enterprise Systems interface coming soon...")
     elif page == "🔍 System Monitor":
