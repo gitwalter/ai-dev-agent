@@ -41,6 +41,16 @@ python_exe = "C:\\App\\Anaconda\\python.exe"  # Your Python path
 
 # Health check - parametrized command
 {python_exe} scripts/health_monitor_service.py --check
+
+# Git operations - EXACT COMMANDS (files auto-staged by IDE)
+git commit -m "feat: [description]"
+git push
+
+# Alternative commit types:
+git commit -m "fix: [description]"
+git commit -m "docs: [description]"
+git commit -m "refactor: [description]"
+git commit -m "test: [description]"
 ```
 
 📋 **See**: `docs/agile/core/COMMAND_CONFIGURATION.md` for full configuration options
