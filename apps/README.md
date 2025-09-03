@@ -14,7 +14,17 @@ This directory contains the application entry points for the AI Development Agen
 #### **Streamlit Web App** (`streamlit_app.py`)
 - **Purpose**: User-friendly web interface for the AI Development Agent
 - **Target Users**: End users, developers, project managers
-- **Features**: Interactive web interface, project generation, progress tracking
+- **Features**: Interactive web interface, project generation, progress tracking, Vibe Coding
+
+#### **Universal Composition App** (`universal_composition_app.py`) 🆕
+- **Purpose**: Professional AI Agent Builder & Enterprise System Composer
+- **Target Users**: Enterprise developers, system architects, AI engineers
+- **Features**: Multi-platform AI framework integration, enterprise module composition, universal compatibility
+
+#### **Vibe Coding App (Original)** (`vibe_coding_app.py`)
+- **Purpose**: Preserved original vibe coding implementation
+- **Target Users**: Developers interested in vibe-driven development
+- **Features**: Reference implementation for emotional coding approaches
 
 #### **Prompt Manager App** (`prompt_manager_app.py`)
 - **Purpose**: Dedicated interface for managing system prompts
@@ -31,9 +41,22 @@ pip install -r requirements.txt
 # Set up configuration in .streamlit/secrets.toml
 GEMINI_API_KEY = "your-api-key"
 
-# Run the web app
+# Run the main app (Port 8501)
 streamlit run apps/streamlit_app.py
+
+# Run the Universal Composition App (Port 8502)
+streamlit run apps/universal_composition_app.py --server.port 8502
+
+# Run the original Vibe Coding App (Port 8503)
+streamlit run apps/vibe_coding_app.py --server.port 8503
 ```
+
+### VS Code Launch Configurations
+Use the preconfigured launch configurations in `.vscode/launch.json`:
+- **🚀 Main Streamlit App** - Original app with vibe coding integration
+- **🔧 Universal Composition App** - Professional enterprise system builder
+- **🌈 Vibe Coding App (Original)** - Preserved original implementation
+- **🤖 Prompt Manager App** - Prompt management interface
 
 ### Running the Main Application
 ```bash

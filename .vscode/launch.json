@@ -27,6 +27,56 @@
             }
         },
         {
+            "name": "🔧 Universal Composition App",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/universal_composition_app.py",
+                "--server.port",
+                "8502",
+                "--server.headless",
+                "true"
+            ],
+            "python": "C:\\App\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "🌈 Vibe Coding App (Original)",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/vibe_coding_app.py",
+                "--server.port",
+                "8503",
+                "--server.headless",
+                "true"
+            ],
+            "python": "C:\\App\\Anaconda\\python.exe",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
             "name": "🤖 Prompt Manager App",
             "type": "python",
             "request": "launch",
@@ -35,11 +85,11 @@
                 "run",
                 "apps/prompt_manager_app.py",
                 "--server.port",
-                "8502",
+                "8504",
                 "--server.headless",
                 "true"
             ],
-            "python": "D:\\Anaconda\\python.exe",
+            "python": "C:\\App\\Anaconda\\python.exe",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -56,7 +106,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/apps/main.py",
-            "python": "D:\\Anaconda\\python.exe",
+            "python": "C:\\App\\Anaconda\\python.exe",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -66,7 +116,7 @@
             "stopOnEntry": false
         },
         {
-            "name": "🚀 Main Streamlit App (Debug Port 8503)",
+            "name": "🚀 Main Streamlit App (Debug Port 8505)",
             "type": "python",
             "request": "launch",
             "module": "streamlit",
@@ -74,13 +124,13 @@
                 "run",
                 "apps/streamlit_app.py",
                 "--server.port",
-                "8503",
+                "8505",
                 "--server.headless",
                 "true",
                 "--logger.level",
                 "debug"
             ],
-            "python": "D:\\Anaconda\\python.exe",
+            "python": "C:\\App\\Anaconda\\python.exe",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -93,7 +143,7 @@
             }
         },
         {
-            "name": "🤖 Prompt Manager App (Debug Port 8504)",
+            "name": "🤖 Prompt Manager App (Debug Port 8506)",
             "type": "python",
             "request": "launch",
             "module": "streamlit",
@@ -101,13 +151,13 @@
                 "run",
                 "apps/prompt_manager_app.py",
                 "--server.port",
-                "8504",
+                "8506",
                 "--server.headless",
                 "true",
                 "--logger.level",
                 "debug"
             ],
-            "python": "D:\\Anaconda\\python.exe",
+            "python": "C:\\App\\Anaconda\\python.exe",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -128,11 +178,11 @@
                 "run",
                 "utils/health_dashboard.py",
                 "--server.port",
-                "8505",
+                "8507",
                 "--server.headless",
                 "true"
             ],
-            "python": "D:\\Anaconda\\python.exe",
+            "python": "C:\\App\\Anaconda\\python.exe",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"
@@ -145,7 +195,7 @@
             }
         },
         {
-            "name": "🔍 System Health Monitor (Debug Port 8506)",
+            "name": "🔍 System Health Monitor (Debug Port 8508)",
             "type": "python",
             "request": "launch",
             "module": "streamlit",
@@ -153,13 +203,13 @@
                 "run",
                 "utils/health_dashboard.py",
                 "--server.port",
-                "8506",
+                "8508",
                 "--server.headless",
                 "true",
                 "--logger.level",
                 "debug"
             ],
-            "python": "D:\\Anaconda\\python.exe",
+            "python": "C:\\App\\Anaconda\\python.exe",
             "cwd": "${workspaceFolder}",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}"

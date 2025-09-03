@@ -1,10 +1,10 @@
 # 🔗 Link Healing Analysis Report
-**Generated**: 2025-09-03T08:57:04.903577
+**Generated**: 2025-09-03T09:35:54.201767
 
 ## 📊 Summary Statistics
-- **Total Links Found**: 1036
-- **Valid Links**: 281
-- **Broken Links**: 755
+- **Total Links Found**: 1140
+- **Valid Links**: 277
+- **Broken Links**: 863
 - **Files with Links**: 84
 
 ## 🚨 Broken Links Requiring Attention
@@ -1221,430 +1221,1078 @@
 - **Line**: 1140
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\SPRINT_4_SUMMARY.md
 
+### docs/rules/AGILE_AUTOMATION_RULE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1152
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\AGILE_AUTOMATION_RULE.md
+
+### docs/rules/AGILE_AUTOMATION_RULE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1158
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\AGILE_AUTOMATION_RULE.md
+
+### docs/rules/AGILE_AUTOMATION_RULE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1164
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\AGILE_AUTOMATION_RULE.md
+
+### docs/rules/AGILE_AUTOMATION_RULE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1170
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\AGILE_AUTOMATION_RULE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1176
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/agile/catalogs/epic-overview.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1182
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
+
+### docs/agile/sprints/sprint_2/user_stories/story_active_knowledge_extension.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1188
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_2\user_stories\story_active_knowledge_extension.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1194
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/agile/catalogs/epic-overview.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1200
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
+
+### docs/agile/sprints/sprint_2/user_stories/story_active_knowledge_extension.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1206
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_2\user_stories\story_active_knowledge_extension.md
+
+### docs/agile/sprints/sprint_4/SPRINT_4_SUMMARY.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1212
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\SPRINT_4_SUMMARY.md
+
+### docs/agile/sprints/sprint_4/SPRINT_4_SUMMARY.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1218
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\SPRINT_4_SUMMARY.md
+
 ### docs/agile/sprints/sprint_4/sprint_4_summary.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 1704
+- **Line**: 1224
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\sprint_4_summary.md
 
 ### docs/agile/sprints/sprint_4/sprint_4_summary.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 1734
+- **Line**: 1230
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\sprint_4_summary.md
 
 ### docs/agile/catalogs/epic-overview.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 1740
+- **Line**: 1236
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
 
 ### docs/agile/catalogs/epic-overview.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 1746
+- **Line**: 1242
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
 
 ### docs/agile/sprint_1_progress.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2178
+- **Line**: 1248
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprint_1_progress.md
 
 ### docs/api.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2640
+- **Line**: 1254
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api.md
 
 ### docs/architecture.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2646
+- **Line**: 1260
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\architecture.md
 
 ### docs/database_automation_guide.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2748
+- **Line**: 1266
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
 
 ### docs/database_automation_guide.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2754
+- **Line**: 1272
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
 
 ### docs/database_automation_guide.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2760
+- **Line**: 1278
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
 
 ### docs/database_automation_guide.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2766
+- **Line**: 1284
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
 
 ### docs/api/README.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2790
+- **Line**: 1290
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api\README.md
 
 ### docs/api/README.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2796
+- **Line**: 1296
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api\README.md
 
 ### docs/api/README.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 2808
+- **Line**: 1302
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api\README.md
 
 ### docs/langgraph_agent_development_guide.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3000
+- **Line**: 1308
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\langgraph_agent_development_guide.md
 
 ### docs/langgraph_agent_development_guide.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3006
+- **Line**: 1314
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\langgraph_agent_development_guide.md
 
 ### docs/rules/core/craftsman_situational_mastery_rule.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3012
+- **Line**: 1320
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\core\craftsman_situational_mastery_rule.md
 
 ### docs/philosophy/foundation_principles.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3018
+- **Line**: 1326
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\philosophy\foundation_principles.md
 
 ### docs/guides/rule_selection_mastery.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3024
+- **Line**: 1332
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\rule_selection_mastery.md
 
 ### docs/training/craftsman_development_path.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3030
+- **Line**: 1338
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\training\craftsman_development_path.md
 
 ### docs/rules/core/craftsman_situational_mastery_rule.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3036
+- **Line**: 1344
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\core\craftsman_situational_mastery_rule.md
 
 ### docs/philosophy/foundation_principles.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3042
+- **Line**: 1350
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\philosophy\foundation_principles.md
 
 ### docs/guides/rule_selection_mastery.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3048
+- **Line**: 1356
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\rule_selection_mastery.md
 
 ### docs/training/craftsman_development_path.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3054
+- **Line**: 1362
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\training\craftsman_development_path.md
 
 ### docs/research/methodologies/research_first_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3096
+- **Line**: 1368
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
 
 ### docs/research/methodologies/ai_agent_stable_routine_protocol.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3102
+- **Line**: 1374
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\ai_agent_stable_routine_protocol.md
 
 ### docs/research/philosophy/sacred_enforcement_explanation.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3108
+- **Line**: 1380
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\sacred_enforcement_explanation.md
 
 ### docs/research/philosophy/divine_lesson_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3114
+- **Line**: 1386
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\divine_lesson_principle.md
 
 ### docs/research/philosophy/perspective_switching_ontologies.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3120
+- **Line**: 1392
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\perspective_switching_ontologies.md
 
 ### docs/research/philosophy/wittgensteinian_foundations.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3126
+- **Line**: 1398
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\wittgensteinian_foundations.md
 
 ### docs/research/case_studies/file_organization_violation_analysis.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3132
+- **Line**: 1404
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\case_studies\file_organization_violation_analysis.md
 
 ### docs/research/architecture/master_overview_paper.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3138
+- **Line**: 1410
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\architecture\master_overview_paper.md
 
 ### docs/research/teams/llm_enforcement_research_team.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3144
+- **Line**: 1416
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\llm_enforcement_research_team.md
 
 ### docs/research/teams/expert_gem_development_teams.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3150
+- **Line**: 1422
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\expert_gem_development_teams.md
 
 ### docs/research/methodologies/research_first_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3156
+- **Line**: 1428
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
 
 ### docs/research/methodologies/ai_agent_stable_routine_protocol.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3162
+- **Line**: 1434
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\ai_agent_stable_routine_protocol.md
 
 ### docs/research/philosophy/sacred_enforcement_explanation.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3168
+- **Line**: 1440
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\sacred_enforcement_explanation.md
 
 ### docs/research/philosophy/divine_lesson_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3174
+- **Line**: 1446
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\divine_lesson_principle.md
 
 ### docs/research/philosophy/perspective_switching_ontologies.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3180
+- **Line**: 1452
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\perspective_switching_ontologies.md
 
 ### docs/research/philosophy/wittgensteinian_foundations.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3186
+- **Line**: 1458
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\wittgensteinian_foundations.md
 
 ### docs/research/case_studies/file_organization_violation_analysis.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3192
+- **Line**: 1464
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\case_studies\file_organization_violation_analysis.md
 
 ### docs/research/architecture/master_overview_paper.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3198
+- **Line**: 1470
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\architecture\master_overview_paper.md
 
 ### docs/research/teams/llm_enforcement_research_team.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3204
+- **Line**: 1476
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\llm_enforcement_research_team.md
 
 ### docs/research/teams/expert_gem_development_teams.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3210
+- **Line**: 1482
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\expert_gem_development_teams.md
 
 ### docs/research/methodologies/research_first_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3216
+- **Line**: 1488
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
 
 ### docs/research/methodologies/ai_agent_stable_routine_protocol.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3222
+- **Line**: 1494
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\ai_agent_stable_routine_protocol.md
 
 ### docs/research/philosophy/sacred_enforcement_explanation.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3228
+- **Line**: 1500
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\sacred_enforcement_explanation.md
 
 ### docs/research/philosophy/divine_lesson_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3234
+- **Line**: 1506
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\divine_lesson_principle.md
 
 ### docs/research/methodologies/research_first_principle.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3240
+- **Line**: 1512
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
 
 ### docs/RULE_APPLICATION_GUIDE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3576
+- **Line**: 1518
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
 
 ### docs/RULE_DOCUMENT_EXCELLENCE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3582
+- **Line**: 1524
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
 
 ### docs/RULE_APPLICATION_GUIDE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3588
+- **Line**: 1530
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
 
 ### docs/RULE_DOCUMENT_EXCELLENCE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3594
+- **Line**: 1536
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
 
 ### docs/index.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3600
+- **Line**: 1542
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
 
 ### docs/MIGRATION_GUIDE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3606
+- **Line**: 1548
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\MIGRATION_GUIDE.md
 
 ### docs/RULE_APPLICATION_GUIDE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3624
+- **Line**: 1554
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
 
 ### docs/RULE_DOCUMENT_EXCELLENCE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3636
+- **Line**: 1560
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
 
 ### docs/index.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3642
+- **Line**: 1566
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
 
 ### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1572
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1578
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1584
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1590
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1596
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1602
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1608
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1614
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1620
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1626
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1632
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1638
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1644
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/file.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1668
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\file.md
+
+### docs/file.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1680
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\file.md
+
+### docs/file.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1692
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\file.md
+
+### docs/path/file.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1698
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\path\file.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1704
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/guides/implementation/quality_gates.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1710
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\quality_gates.md
+
+### docs/guides/database/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1716
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\database\database_automation_guide.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1722
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/guides/implementation/quality_gates.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1728
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\quality_gates.md
+
+### docs/guides/database/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1734
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\database\database_automation_guide.md
+
+### docs/quick-start/implementation_quick_start_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1740
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\quick-start\implementation_quick_start_guide.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1746
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/guides/implementation/quality_gates.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1752
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\quality_gates.md
+
+### docs/guides/database/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1758
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\database\database_automation_guide.md
+
+### docs/quick-start/implementation_quick_start_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 1764
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\quick-start\implementation_quick_start_guide.md
+
+### docs/agile/sprints/sprint_4/sprint_4_summary.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2298
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\sprint_4_summary.md
+
+### docs/agile/sprints/sprint_4/sprint_4_summary.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2328
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprints\sprint_4\sprint_4_summary.md
+
+### docs/agile/catalogs/epic-overview.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2334
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
+
+### docs/agile/catalogs/epic-overview.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2340
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
+
+### docs/agile/sprint_1_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2772
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\sprint_1_progress.md
+
+### docs/agile/catalogs/epic-overview.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2802
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2814
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/guides/implementation/quality_gates.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2826
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\quality_gates.md
+
+### docs/guides/database/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2838
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\database\database_automation_guide.md
+
+### docs/agile/catalogs/epic-overview.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2856
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\agile\catalogs\epic-overview.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2862
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/guides/implementation/quality_gates.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2868
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\quality_gates.md
+
+### docs/guides/database/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 2874
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\database\database_automation_guide.md
+
+### docs/api.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3312
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api.md
+
+### docs/architecture.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3318
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\architecture.md
+
+### docs/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3420
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
+
+### docs/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3426
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
+
+### docs/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3432
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
+
+### docs/database_automation_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3438
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\database_automation_guide.md
+
+### docs/api/README.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3462
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api\README.md
+
+### docs/api/README.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3468
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api\README.md
+
+### docs/api/README.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3480
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\api\README.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3672
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/guides/implementation/task_3_3_progress.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3678
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\implementation\task_3_3_progress.md
+
+### docs/langgraph_agent_development_guide.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3684
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\langgraph_agent_development_guide.md
+
+### docs/langgraph_agent_development_guide.md
 - **Type**: bare_paths
 - **Text**: 
 - **Line**: 3690
-- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\langgraph_agent_development_guide.md
 
-### docs/RULE_APPLICATION_GUIDE.md
+### docs/rules/core/craftsman_situational_mastery_rule.md
 - **Type**: bare_paths
 - **Text**: 
 - **Line**: 3696
-- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\core\craftsman_situational_mastery_rule.md
 
-### docs/RULE_DOCUMENT_EXCELLENCE.md
+### docs/philosophy/foundation_principles.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3702
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\philosophy\foundation_principles.md
+
+### docs/guides/rule_selection_mastery.md
 - **Type**: bare_paths
 - **Text**: 
 - **Line**: 3708
-- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\rule_selection_mastery.md
 
-### docs/index.md
+### docs/training/craftsman_development_path.md
 - **Type**: bare_paths
 - **Text**: 
 - **Line**: 3714
-- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\training\craftsman_development_path.md
 
-### docs/index.md
+### docs/rules/core/craftsman_situational_mastery_rule.md
 - **Type**: bare_paths
 - **Text**: 
 - **Line**: 3720
-- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\rules\core\craftsman_situational_mastery_rule.md
 
-### docs/RULE_APPLICATION_GUIDE.md
+### docs/philosophy/foundation_principles.md
 - **Type**: bare_paths
 - **Text**: 
 - **Line**: 3726
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\philosophy\foundation_principles.md
+
+### docs/guides/rule_selection_mastery.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3732
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\guides\rule_selection_mastery.md
+
+### docs/training/craftsman_development_path.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3738
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\training\craftsman_development_path.md
+
+### docs/research/methodologies/research_first_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3780
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
+
+### docs/research/methodologies/ai_agent_stable_routine_protocol.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3786
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\ai_agent_stable_routine_protocol.md
+
+### docs/research/philosophy/sacred_enforcement_explanation.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3792
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\sacred_enforcement_explanation.md
+
+### docs/research/philosophy/divine_lesson_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3798
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\divine_lesson_principle.md
+
+### docs/research/philosophy/perspective_switching_ontologies.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3804
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\perspective_switching_ontologies.md
+
+### docs/research/philosophy/wittgensteinian_foundations.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3810
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\wittgensteinian_foundations.md
+
+### docs/research/case_studies/file_organization_violation_analysis.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3816
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\case_studies\file_organization_violation_analysis.md
+
+### docs/research/architecture/master_overview_paper.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3822
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\architecture\master_overview_paper.md
+
+### docs/research/teams/llm_enforcement_research_team.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3828
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\llm_enforcement_research_team.md
+
+### docs/research/teams/expert_gem_development_teams.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3834
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\expert_gem_development_teams.md
+
+### docs/research/methodologies/research_first_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3840
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
+
+### docs/research/methodologies/ai_agent_stable_routine_protocol.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3846
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\ai_agent_stable_routine_protocol.md
+
+### docs/research/philosophy/sacred_enforcement_explanation.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3852
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\sacred_enforcement_explanation.md
+
+### docs/research/philosophy/divine_lesson_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3858
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\divine_lesson_principle.md
+
+### docs/research/philosophy/perspective_switching_ontologies.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3864
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\perspective_switching_ontologies.md
+
+### docs/research/philosophy/wittgensteinian_foundations.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3870
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\wittgensteinian_foundations.md
+
+### docs/research/case_studies/file_organization_violation_analysis.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3876
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\case_studies\file_organization_violation_analysis.md
+
+### docs/research/architecture/master_overview_paper.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3882
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\architecture\master_overview_paper.md
+
+### docs/research/teams/llm_enforcement_research_team.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3888
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\llm_enforcement_research_team.md
+
+### docs/research/teams/expert_gem_development_teams.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3894
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\teams\expert_gem_development_teams.md
+
+### docs/research/methodologies/research_first_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3900
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
+
+### docs/research/methodologies/ai_agent_stable_routine_protocol.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3906
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\ai_agent_stable_routine_protocol.md
+
+### docs/research/philosophy/sacred_enforcement_explanation.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3912
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\sacred_enforcement_explanation.md
+
+### docs/research/philosophy/divine_lesson_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3918
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\philosophy\divine_lesson_principle.md
+
+### docs/research/methodologies/research_first_principle.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 3924
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\research\methodologies\research_first_principle.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4260
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
 
 ### docs/RULE_DOCUMENT_EXCELLENCE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3732
+- **Line**: 4266
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4272
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4278
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
 
 ### docs/index.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3738
+- **Line**: 4284
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/MIGRATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4290
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\MIGRATION_GUIDE.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4308
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4320
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4326
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
 
 ### docs/index.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3744
+- **Line**: 4374
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
 
 ### docs/RULE_APPLICATION_GUIDE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3750
+- **Line**: 4380
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
 
 ### docs/RULE_DOCUMENT_EXCELLENCE.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3756
+- **Line**: 4392
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
 
 ### docs/index.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3762
+- **Line**: 4398
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
 
 ### docs/index.md
 - **Type**: bare_paths
 - **Text**: 
-- **Line**: 3768
+- **Line**: 4404
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4410
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4416
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4422
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4428
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/RULE_APPLICATION_GUIDE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4434
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_APPLICATION_GUIDE.md
+
+### docs/RULE_DOCUMENT_EXCELLENCE.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4440
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\RULE_DOCUMENT_EXCELLENCE.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4446
+- **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
+
+### docs/index.md
+- **Type**: bare_paths
+- **Text**: 
+- **Line**: 4452
 - **Resolution Attempted**: C:\Users\pogawal\WorkFolder\Documents\Python\ai-dev-agent\docs\index.md
 
 ### .*\.md

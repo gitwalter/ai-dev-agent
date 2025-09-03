@@ -42,7 +42,7 @@ jobs:
         echo "$SCORE"
         
     - name: 📋 Upload Validation Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: hilbert-consistency-report
         path: docs/agile/validation/hilbert_consistency_report.md
