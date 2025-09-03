@@ -1,5 +1,50 @@
 # Agile Cursor Rules for AI-Dev-Agent System
 
+## 📍 **Agile Artifacts Quick Reference**
+
+**ALWAYS USE THESE EXACT PATHS** - No searching required:
+
+### **Core Catalogs**
+- **User Story Catalog**: `docs/agile/catalogs/USER_STORY_CATALOG.md`
+- **Sprint Summary**: `docs/agile/catalogs/SPRINT_SUMMARY.md`  
+- **Epic Overview**: `docs/agile/catalogs/epic-overview.md`
+- **Task Catalog**: `docs/agile/catalogs/TASK_CATALOG.md`
+- **Cross-Sprint Tracking**: `docs/agile/catalogs/CROSS_SPRINT_TRACKING.md`
+
+### **Current Sprint**
+- **Daily Standup**: `docs/agile/daily_standup.md`
+- **Current Sprint Folder**: `docs/agile/sprints/current/`
+
+### **All Sprints**
+- **Sprint 0**: `docs/agile/sprints/sprint_0/`
+- **Sprint 1**: `docs/agile/sprints/sprint_1/`
+- **Sprint 2**: `docs/agile/sprints/sprint_2/`
+- **Sprint 3**: `docs/agile/sprints/sprint_3/`
+- **Sprint 4**: `docs/agile/sprints/sprint_4/`
+
+### **Working Commands (Configurable)**
+
+**Setup**: Create `.agile-config.toml` in project root with your specific paths:
+```toml
+[environment]
+python_exe = "C:\\App\\Anaconda\\python.exe"  # Your Python path
+# Alternative: python_exe = "python" for standard installations
+```
+
+**Commands** (automatically use your configured paths):
+```bash
+# Test status - parametrized command
+{python_exe} -m pytest tests/ --tb={test_verbosity} -x
+
+# UI tests manual run - parametrized command  
+{python_exe} -m pytest tests/automated_ui/ -v
+
+# Health check - parametrized command
+{python_exe} scripts/health_monitor_service.py --check
+```
+
+📋 **See**: `docs/agile/core/COMMAND_CONFIGURATION.md` for full configuration options
+
 ## 🎯 **Agile Manifesto Integration**
 
 **FOUNDATION**: These Cursor rules are built upon the [Agile Manifesto Principles](https://agilemanifesto.org/principles.html) and specifically designed to enforce agile principles, automate agile processes, and ensure the system operates with maximum agility and efficiency.

@@ -5,6 +5,66 @@
 **Priority**: CRITICAL - Sacred Rule Documentation  
 **Purpose**: Comprehensive documentation of project file organization standards  
 
+## 📍 **File Organization Quick Reference**
+
+**ALWAYS USE THESE EXACT PATHS** - No searching required:
+
+### **Current Real Directory Structure**
+```
+project_root/
+├── agents/                 # AI agent implementations ✅ EXISTS
+├── apps/                   # Application entry points ✅ EXISTS  
+├── context/                # Context management ✅ EXISTS
+├── docs/                   # Documentation ✅ EXISTS
+│   ├── agile/             # Agile artifacts ✅ EXISTS
+│   ├── architecture/      # Architecture docs ✅ EXISTS
+│   ├── development/       # This file is here ✅ EXISTS
+│   └── [other subdirs]    # Various doc categories ✅ EXISTS
+├── examples/               # Code examples ✅ EXISTS
+├── logs/                   # Log files ✅ EXISTS
+├── models/                 # Data models and schemas ✅ EXISTS
+├── monitoring/             # Monitoring and analytics ✅ EXISTS
+├── prompts/                # Prompt management ✅ EXISTS
+├── scripts/                # Utility scripts ✅ EXISTS
+├── tests/                  # All test files ✅ EXISTS
+├── tools/                  # Development tools ✅ EXISTS
+├── utils/                  # Utility modules ✅ EXISTS
+└── workflow/               # Workflow management ✅ EXISTS
+```
+
+### **FORMAL Directory Structure Rules** ⚖️
+*These directory names and locations are SACRED and NEVER configurable:*
+
+| Directory | Purpose | Rule Status |
+|-----------|---------|-------------|
+| `docs/agile/catalogs/` | Agile artifact catalogs | 🔒 **IMMUTABLE** |
+| `docs/agile/sprints/` | Sprint data storage | 🔒 **IMMUTABLE** |
+| `docs/development/` | Development documentation | 🔒 **IMMUTABLE** |
+| `agents/` | AI agent implementations | 🔒 **IMMUTABLE** |
+| `scripts/` | Utility scripts | 🔒 **IMMUTABLE** |
+| `tests/` | All test files | 🔒 **IMMUTABLE** |
+| `utils/` | Utility modules | 🔒 **IMMUTABLE** |
+| `workflow/` | Workflow management | 🔒 **IMMUTABLE** |
+
+### **Configurable File Movement Commands**
+*Commands adapt to your environment via `.agile-config.toml`:*
+
+```bash
+# Parametrized file movement (Windows PowerShell default)
+move {source_file} {target_directory}\{source_file}
+
+# Examples with formal directory structure:
+move demo_script.py scripts\demo_script.py        # ← "scripts" NEVER changes
+move test_feature.py tests\test_feature.py        # ← "tests" NEVER changes  
+move helper_agent.py agents\helper_agent.py       # ← "agents" NEVER changes
+move data_utils.py utils\data_utils.py            # ← "utils" NEVER changes
+
+# Compliance check (parametrized)
+dir *.py                                           # Should only show setup.py
+```
+
+📋 **Configuration**: See `docs/agile/core/COMMAND_CONFIGURATION.md` for command customization
+
 ## Overview
 
 This document provides the complete specification for file organization in the AI-Dev-Agent project. These standards are **SACRED** and must be followed by all team members and automated systems.

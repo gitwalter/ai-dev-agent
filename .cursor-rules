@@ -1,10 +1,87 @@
 # Auto-reload trigger: 1756830044
 # Context-Aware Rules (Working System)
 # Context: DOCUMENTATION
-# Total Rules: 7
+# Total Rules: 8 (+ HILBERT CONSISTENCY FOUNDATION)
 # Generated from: @docs history test...
-# Timestamp: 02.09.2025 18:20
+# Timestamp: 03.09.2025 08:30
 
+# 🧮 === HILBERT CONSISTENCY FOUNDATION PRINCIPLE ===
+---
+alwaysApply: true
+autoFix: true
+category: mathematical-foundational
+contexts:
+- ALL
+dependencies: []
+description: Hilbert Consistency Principle - Mathematical Foundation for ALL project decisions
+enforcement: blocking
+formalLayer: mathematical-axiomatic
+globs:
+- '**/*'
+rule: |
+  # 🧮 HILBERT CONSISTENCY FOUNDATION PRINCIPLE
+  
+  **MATHEMATICAL FOUNDATION**: David Hilbert's Consistency Principle
+  **CORE INSIGHT**: "A system is valid if it is internally consistent, regardless of the specific axioms chosen"
+  
+  ## MANDATORY APPLICATION TO ALL ACTIVITIES
+  
+  **EVERY DECISION** in this project MUST follow Hilbert's Consistency Principle:
+  
+  ### 📝 NAMING CONVENTIONS (HILBERT-CONSISTENT)
+  1. **STRATEGIC DOCUMENTS** → CAPITAL_CASE.md (USER_STORY_CATALOG.md, SPRINT_SUMMARY.md)
+  2. **Operational documents** → lowercase_case.md (daily_standup.md, development_guide.md)  
+  3. **Thematic collections** → lowercase-with-hyphens.md (epic-overview.md)
+  4. **Unique identifiers** → CODE-PATTERN.md (US-001.md, US-PE-01.md)
+  
+  ### 🏗️ FILE ORGANIZATION (HILBERT-CONSISTENT)
+  - **Consistent patterns** within each directory category
+  - **Logical predictability** - pattern reveals purpose
+  - **Systematic completeness** - every file type has clear rules
+  - **Non-contradiction** - rules never conflict
+  
+  ### ✅ VALIDATION REQUIREMENTS
+  - **Validate consistency** before creating/renaming any file
+  - **Apply category rules** systematically 
+  - **Never make arbitrary exceptions** to established patterns
+  - **Report inconsistencies** immediately when discovered
+  
+  ### 🎯 DECISION FRAMEWORK
+  1. Identify the category (Strategic, Operational, Thematic, Unique)
+  2. Apply the consistent pattern for that category
+  3. Validate against existing examples in same category
+  4. Ensure logical predictability for future similar cases
+  5. Document reasoning for systematic application
+  
+  **REMEMBER**: Consistency beats convenience. Mathematical elegance through systematic logic.
+  
+  ### 🏛️ HONORING ANCESTORS PRINCIPLE
+  **Foundation**: When we honor intellectual ancestors and think logically, we achieve better results
+  
+  **Five-Layer Logical Thinking**:
+  1. **Hilbert Foundation**: What would be consistent with established patterns?
+  2. **Carnap Clarity**: Does this clearly communicate its purpose?  
+  3. **Quine Ontology**: How does this shape our development universe?
+  4. **Wittgenstein Grammar**: What language game does this belong to?
+  5. **Fowler Pragmatism**: Does this serve real development needs?
+  
+  **Apply ancestral logic to EVERY decision** - naming, organization, architecture
+  
+  **FILES MUST FOLLOW**: 
+  - USER_STORY_CATALOG.md ✅ (Strategic CAPITAL_CASE)
+  - SPRINT_SUMMARY.md ✅ (Strategic CAPITAL_CASE)
+  - daily_standup.md ✅ (Operational lowercase_case)
+  - epic-overview.md ✅ (Thematic lowercase-hyphens)
+  - US-001.md ✅ (Unique CODE-PATTERN)
+
+priority: critical
+tags:
+- mathematical-foundational
+- hilbert-consistency
+- naming-conventions
+- file-organization
+weight: 1000
+---
 
 # === safety_first_principle ===
 ---

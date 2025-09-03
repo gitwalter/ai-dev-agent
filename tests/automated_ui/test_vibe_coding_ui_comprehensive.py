@@ -83,7 +83,7 @@ except ImportError:
 
 # Test configuration
 @dataclass
-class TestConfig:
+class UITestConfig:
     """Configuration for automated UI testing."""
     
     # Browser settings
@@ -123,7 +123,7 @@ class AutomatedUITester:
     """Comprehensive automated UI testing system."""
     
     def __init__(self, config: TestConfig = None):
-        self.config = config or TestConfig()
+        self.config = config or UITestConfig()
         self.driver = None
         self.test_results = []
         self.screenshots = {}
@@ -597,7 +597,7 @@ class AutomatedUITester:
 @pytest.fixture
 def ui_tester():
     """Setup UI tester fixture."""
-    config = TestConfig()
+    config = UITestConfig()
     tester = AutomatedUITester(config)
     
     # Start Streamlit app
@@ -645,7 +645,7 @@ def test_ui_user_journey(ui_tester):
 
 def test_ui_comprehensive_suite():
     """Run complete UI test suite and generate report."""
-    config = TestConfig()
+    config = UITestConfig()
     tester = AutomatedUITester(config)
     
     # Start app

@@ -204,6 +204,22 @@ class CursorTestingHandler(FileSystemEventHandler):
     def _run_ui_tests(self) -> Dict[str, Any]:
         """Run comprehensive UI tests."""
         
+        # DISABLED: UI tests now run manually only
+        # UI tests are heavy and should be run manually when needed
+        return {
+            "test_type": "ui_comprehensive",
+            "success": True,
+            "execution_time": 0,
+            "passed_tests": 0,
+            "failed_tests": 0,
+            "skipped_tests": 1,
+            "output": "UI tests disabled - run manually when needed",
+            "timestamp": datetime.now().isoformat(),
+            "disabled": True
+        }
+        
+        # Original code commented out:
+        """
         start_time = time.time()
         
         try:
