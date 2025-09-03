@@ -31,13 +31,17 @@ except ImportError:
 
 # Import Vibe-Agile Fusion Engine
 try:
-    from utils.agile.vibe_agile_fusion import VibeAgileFusionEngine, VibeContext, VibeIntensity, AgilePhase
+    from utils.agile.vibe_agile_fusion import (
+        VibeAgileFusionEngine, VibeContext, VibeIntensity, AgilePhase,
+        get_human_interaction_dialog
+    )
     VIBE_AGILE_AVAILABLE = True
 except ImportError:
     VibeAgileFusionEngine = None
     VibeContext = None  
     VibeIntensity = None
     AgilePhase = None
+    get_human_interaction_dialog = None
     VIBE_AGILE_AVAILABLE = False
 
 # Page configuration
@@ -153,6 +157,16 @@ def initialize_session_state():
     
     if 'current_agile_phase' not in st.session_state:
         st.session_state.current_agile_phase = AgilePhase.INCEPTION if VIBE_AGILE_AVAILABLE else None
+    
+    # Initialize human interaction state
+    if 'human_interactions' not in st.session_state:
+        st.session_state.human_interactions = {}
+    
+    if 'active_interaction' not in st.session_state:
+        st.session_state.active_interaction = None
+    
+    if 'interaction_history' not in st.session_state:
+        st.session_state.interaction_history = []
     
     if 'running_projects' not in st.session_state:
         st.session_state.running_projects = []
@@ -2181,6 +2195,11 @@ def display_agile_vibe_projects_interface():
         st.markdown('</div>', unsafe_allow_html=True)
         return
     
+    # Display active human interaction dialog if one exists
+    if hasattr(st.session_state, 'show_interaction_dialog') and st.session_state.show_interaction_dialog:
+        display_human_interaction_dialog()
+        return
+    
     # Project Creation Interface
     col1, col2 = st.columns([2, 1])
     
@@ -2316,6 +2335,18 @@ def create_vibe_agile_project(project_name, project_description, vibe_intensity,
         with st.spinner("🎼 Creating vibe-agile project with complete agile artifacts..."):
             result = st.session_state.vibe_agile_engine.create_vibe_agile_project(project_config)
             
+            # Initialize human interaction for this project
+            project_id = f"project_{len(st.session_state.vibe_agile_projects)}"
+            result['project_id'] = project_id
+            
+            # Set up first human interaction checkpoint
+            if 'next_human_interaction' in result and result['next_human_interaction']:
+                st.session_state.active_interaction = {
+                    'project_id': project_id,
+                    'phase': result['next_human_interaction']['phase'],
+                    'vibe_context': result['vibe_context']
+                }
+            
             # Add to session state
             st.session_state.vibe_agile_projects.append(result)
             
@@ -2324,6 +2355,13 @@ def create_vibe_agile_project(project_name, project_description, vibe_intensity,
             
             # Display creation summary
             display_project_creation_summary(result)
+            
+            # Start first human interaction
+            if st.session_state.active_interaction:
+                st.info("🤝 **Ready for Human Interaction!** Your project is waiting for the first dialogue checkpoint.")
+                if st.button("▶️ Start Human Interaction", type="primary"):
+                    st.session_state.show_interaction_dialog = True
+                    st.rerun()
             
     except Exception as e:
         st.error(f"🚨 Error creating vibe-agile project: {str(e)}")
@@ -2390,6 +2428,33 @@ def display_existing_vibe_agile_projects():
                 
                 if st.button(f"📈 Project Health", key=f"health_{i}"):
                     show_project_health(project)
+            
+            # Show interaction history for this project
+            project_interactions = [
+                record for record in st.session_state.interaction_history 
+                if record.get('project_id') == project.get('project_id')
+            ]
+            
+            if project_interactions:
+                with st.expander(f"🤝 Interaction History ({len(project_interactions)} interactions)"):
+                    for interaction in project_interactions[-3:]:  # Show last 3 interactions
+                        col_hist1, col_hist2, col_hist3 = st.columns([1, 2, 1])
+                        
+                        with col_hist1:
+                            st.markdown(f"**{interaction['phase'].title()}**")
+                            st.markdown(f"*{interaction['timestamp'][:16]}*")
+                        
+                        with col_hist2:
+                            st.markdown(f"**Action**: {interaction['action'].title()}")
+                            if interaction['emotional_state']['additional_thoughts']:
+                                st.markdown(f"*{interaction['emotional_state']['additional_thoughts'][:100]}...*")
+                        
+                        with col_hist3:
+                            emo = interaction['emotional_state']
+                            st.markdown(f"😊 {emo['satisfaction']}/10")
+                            st.markdown(f"💪 {emo['energy']}/10")
+                        
+                        st.markdown("---")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -2417,6 +2482,233 @@ def show_project_health(project):
     """Show project health metrics."""
     st.info(f"📈 Project health for: {project.get('name', 'Unnamed Project')}")
     st.info("🚧 Project health dashboard coming in next update...")
+
+def display_human_interaction_dialog():
+    """Display interactive dialog for human feedback and decision making."""
+    
+    st.markdown('<div class="composition-card">', unsafe_allow_html=True)
+    st.subheader("🤝 Human Interaction Checkpoint")
+    
+    if not st.session_state.active_interaction:
+        st.error("No active interaction found.")
+        st.markdown('</div>', unsafe_allow_html=True)
+        return
+    
+    interaction = st.session_state.active_interaction
+    project_id = interaction['project_id']
+    phase = interaction['phase']
+    vibe_context = interaction['vibe_context']
+    
+    # Get dialog configuration for current phase
+    try:
+        dialog_config = get_human_interaction_dialog(phase, vibe_context)
+    except Exception as e:
+        st.error(f"Error getting dialog configuration: {str(e)}")
+        dialog_config = {
+            'phase': phase,
+            'questions': ["How do you feel about the current progress?"],
+            'duration': "10 minutes",
+            'success_criteria': ["Clear feedback provided"],
+            'emotional_context': vibe_context.get('intensity', 'focused'),
+            'interaction_type': 'conversation'
+        }
+    
+    # Display phase context
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col1:
+        st.metric("🎭 Phase", phase.replace('_', ' ').title())
+        st.metric("⏰ Duration", dialog_config.get('duration', '10 min'))
+    
+    with col2:
+        st.markdown(f"### 🎯 {phase.replace('_', ' ').title()} Interaction")
+        st.markdown(f"**Emotional Context**: {dialog_config.get('emotional_context', 'balanced').title()}")
+        st.markdown(f"**Interaction Type**: {dialog_config.get('interaction_type', 'conversation').title()}")
+    
+    with col3:
+        st.metric("💬 Vibe Level", vibe_context.get('intensity', 'focused').title())
+        st.metric("🎨 Style", vibe_context.get('communication_style', 'collaborative').title())
+    
+    st.markdown("---")
+    
+    # Display phase-specific questions
+    st.markdown("### 🗣️ Interactive Questions")
+    
+    responses = {}
+    questions = dialog_config.get('questions', [])
+    
+    for i, question in enumerate(questions):
+        st.markdown(f"**Question {i+1}**: {question}")
+        
+        # Adapt input type based on question content
+        if 'rate' in question.lower() or 'scale' in question.lower():
+            response = st.slider(f"Response {i+1}", 1, 10, 5, key=f"q_{i}")
+        elif 'yes' in question.lower() or 'no' in question.lower():
+            response = st.radio(f"Response {i+1}", ["Yes", "No", "Maybe"], key=f"q_{i}")
+        elif 'choose' in question.lower() or 'select' in question.lower():
+            response = st.selectbox(f"Response {i+1}", 
+                                  ["Option A", "Option B", "Option C", "Other"], 
+                                  key=f"q_{i}")
+        else:
+            response = st.text_area(f"Your thoughts", 
+                                  placeholder="Share your detailed feedback...", 
+                                  height=100, key=f"q_{i}")
+        
+        responses[f"question_{i+1}"] = response
+    
+    # Emotional feedback section
+    st.markdown("### 🎭 Emotional State Check")
+    
+    col_emo1, col_emo2 = st.columns(2)
+    
+    with col_emo1:
+        current_energy = st.slider("Current Energy Level", 1, 10, 5)
+        satisfaction_level = st.slider("Satisfaction with Progress", 1, 10, 7)
+    
+    with col_emo2:
+        stress_level = st.slider("Stress Level", 1, 10, 3)
+        confidence_level = st.slider("Confidence in Direction", 1, 10, 8)
+    
+    # Additional feedback
+    st.markdown("### 💭 Additional Feedback")
+    additional_thoughts = st.text_area(
+        "Any additional thoughts, concerns, or suggestions?",
+        placeholder="Share anything else on your mind about this project...",
+        height=120
+    )
+    
+    # Success criteria check
+    if 'success_criteria' in dialog_config:
+        st.markdown("### ✅ Success Criteria")
+        criteria_met = []
+        for criterion in dialog_config['success_criteria']:
+            met = st.checkbox(f"✓ {criterion}")
+            criteria_met.append(met)
+    
+    # Action buttons
+    st.markdown("---")
+    col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
+    
+    with col_btn1:
+        if st.button("✅ Approve & Continue", type="primary"):
+            handle_interaction_response("approve", responses, {
+                'energy': current_energy,
+                'satisfaction': satisfaction_level,
+                'stress': stress_level,
+                'confidence': confidence_level,
+                'additional_thoughts': additional_thoughts
+            })
+    
+    with col_btn2:
+        if st.button("🔄 Request Changes"):
+            handle_interaction_response("request_changes", responses, {
+                'energy': current_energy,
+                'satisfaction': satisfaction_level,
+                'stress': stress_level,
+                'confidence': confidence_level,
+                'additional_thoughts': additional_thoughts
+            })
+    
+    with col_btn3:
+        if st.button("⏸️ Pause for Review"):
+            handle_interaction_response("pause", responses, {
+                'energy': current_energy,
+                'satisfaction': satisfaction_level,
+                'stress': stress_level,
+                'confidence': confidence_level,
+                'additional_thoughts': additional_thoughts
+            })
+    
+    with col_btn4:
+        if st.button("❌ Cancel Interaction"):
+            st.session_state.show_interaction_dialog = False
+            st.session_state.active_interaction = None
+            st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def handle_interaction_response(action, responses, emotional_state):
+    """Handle human interaction response and proceed with workflow."""
+    
+    # Record interaction in history
+    interaction_record = {
+        'timestamp': datetime.now().isoformat(),
+        'project_id': st.session_state.active_interaction['project_id'],
+        'phase': st.session_state.active_interaction['phase'],
+        'action': action,
+        'responses': responses,
+        'emotional_state': emotional_state
+    }
+    
+    st.session_state.interaction_history.append(interaction_record)
+    
+    # Handle different actions
+    if action == "approve":
+        st.success("✅ **Approved!** Moving to next phase of development.")
+        advance_to_next_phase()
+        
+    elif action == "request_changes":
+        st.warning("🔄 **Changes Requested** - The team will review and implement your feedback.")
+        st.info("Changes will be incorporated before moving to the next phase.")
+        
+    elif action == "pause":
+        st.info("⏸️ **Paused for Review** - Project development is paused pending further review.")
+    
+    # Clear current interaction
+    st.session_state.show_interaction_dialog = False
+    st.session_state.active_interaction = None
+    
+    # Show feedback summary
+    display_interaction_feedback_summary(interaction_record)
+    
+    st.rerun()
+
+def advance_to_next_phase():
+    """Advance the project to the next agile phase."""
+    
+    current_phase = st.session_state.active_interaction['phase']
+    
+    # Define phase progression
+    phase_sequence = [
+        'inception', 'planning', 'development', 
+        'testing', 'review', 'retrospective', 'deployment'
+    ]
+    
+    try:
+        current_index = phase_sequence.index(current_phase)
+        if current_index < len(phase_sequence) - 1:
+            next_phase = phase_sequence[current_index + 1]
+            st.session_state.current_agile_phase = AgilePhase(next_phase)
+            st.info(f"🚀 **Advanced to {next_phase.title()}** - Ready for next interaction checkpoint!")
+        else:
+            st.success("🎉 **Project Complete!** All agile phases completed successfully.")
+            st.session_state.current_agile_phase = None
+    except ValueError:
+        st.warning(f"Unknown phase: {current_phase}")
+
+def display_interaction_feedback_summary(interaction_record):
+    """Display summary of interaction feedback."""
+    
+    st.markdown("### 📊 Interaction Summary")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("🎭 Phase", interaction_record['phase'].title())
+        st.metric("⚡ Action", interaction_record['action'].title())
+    
+    with col2:
+        emotional_state = interaction_record['emotional_state']
+        st.metric("💪 Energy", f"{emotional_state['energy']}/10")
+        st.metric("😊 Satisfaction", f"{emotional_state['satisfaction']}/10")
+    
+    with col3:
+        st.metric("😰 Stress", f"{emotional_state['stress']}/10")
+        st.metric("🎯 Confidence", f"{emotional_state['confidence']}/10")
+    
+    if interaction_record['emotional_state']['additional_thoughts']:
+        st.markdown("**Additional Thoughts:**")
+        st.info(interaction_record['emotional_state']['additional_thoughts'])
 
 def main():
     """Main application function."""
