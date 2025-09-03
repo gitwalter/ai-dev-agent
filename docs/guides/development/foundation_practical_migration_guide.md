@@ -29,11 +29,11 @@ This guide provides step-by-step instructions for migrating from the legacy arch
 
 | **Legacy Component** | **New Integration** | **Migration Action** |
 |---------------------|---------------------|---------------------|
-| `MathematicalSystemFoundation` | Foundation Layer 0 validation | **INTEGRATE** mathematical constants |
+| `MathematicalSystemFoundation` | Foundation Layer 0 validation | **DELETED** - replaced with ethical validation |
 | `FormalSystemCompliantAgent` | `FoundationPracticalCompliantAgent` | **REPLACE** with enhanced agent |
-| Divine mathematical constants | Universal Foundation validation | **EMBED** in foundation validation |
-| Ethical mathematics | Universal Foundation ethical validation | **CONSOLIDATE** with Asimov + Kant |
-| Harmonic integration matrix | Cross-layer validation | **SIMPLIFY** to foundation-practical harmony |
+| Mathematical constants | Universal Foundation validation | **REPLACED** with ethical constants |
+| Ethical validation | Universal Foundation ethical validation | **ENHANCED** with practical ethics |
+| Integration validation | Cross-layer validation | **SIMPLIFIED** to foundation-practical coordination |
 
 ## Step-by-Step Migration Process
 

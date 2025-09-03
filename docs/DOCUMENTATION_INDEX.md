@@ -69,10 +69,10 @@
 - **[Simplified Onion Architecture](architecture/simplified_onion_architecture.md)** - **EVOLUTION** - Improved clustering from 12 fragmented layers to 8 logical layers
 
 ### **Mathematical Foundations** 🧮 **INTEGRATED**
-- **[Formal System Mathematics](mathematics/formal_system_mathematics.md)** - **FOUNDATIONAL** - Mathematical formalization integrated into Foundation Layer 0
-- **[Mathematical System Foundation](utils/validation/mathematical_system_foundation.py)** - **LEGACY** - Original mathematical validation (superseded by Foundation-Practical)
-- **[Formal System Compliant Agent](agents/formal_system_compliant_agent.py)** - **LEGACY** - Original agent base class (superseded by Foundation-Practical)
-- **[Mathematical Foundation Tests](tests/test_mathematical_system_foundation.py)** - **LEGACY** - Original test suite (superseded by Foundation-Practical tests)
+- **[Formal System Mathematics](mathematics/formal_system_mathematics.md)** - **DELETED** - Replaced with practical validation
+- **[Mathematical System Foundation](utils/validation/mathematical_system_foundation.py)** - **DELETED** - Replaced with ethical validation in Foundation-Practical
+- **[Formal System Compliant Agent](agents/formal_system_compliant_agent.py)** - **DELETED** - Replaced with Foundation-Practical compliant agent
+- **[Mathematical Foundation Tests](tests/test_mathematical_system_foundation.py)** - **DELETED** - Replaced with Foundation-Practical tests
 
 ### **Development Guides**
 - [Development Setup](guides/development/development_setup.md) - Environment setup and configuration

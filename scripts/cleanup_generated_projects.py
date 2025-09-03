@@ -1,16 +1,11 @@
+#!/usr/bin/env python3
 """
-Pytest configuration for automatic cleanup
-Wu wei approach - runs cleanup automatically before tests
+Clean up generated_projects folder before tests
+Wu wei approach - simple, effective, no fuss
 """
 
-import pytest
 import shutil
 from pathlib import Path
-
-
-def pytest_sessionstart(session):
-    """Clean up generated_projects before test session starts."""
-    cleanup_generated_projects()
 
 
 def cleanup_generated_projects():
@@ -20,9 +15,14 @@ def cleanup_generated_projects():
     if generated_dir.exists():
         try:
             shutil.rmtree(generated_dir)
-            print(f"🧹 Cleaned up {generated_dir} before tests")
+            print(f"✅ Cleaned up {generated_dir}")
         except Exception as e:
             print(f"⚠️ Could not fully clean {generated_dir}: {e}")
     
     # Recreate empty directory
     generated_dir.mkdir(exist_ok=True)
+    print(f"📁 Created clean {generated_dir}")
+
+
+if __name__ == "__main__":
+    cleanup_generated_projects()

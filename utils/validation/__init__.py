@@ -1,27 +1,13 @@
 """
-🛡️ Validation System - Systematic Excellence Enforcement
+🛡️ Validation System - Practical Excellence Enforcement
 
-This module provides comprehensive validation capabilities for:
-- Mathematical system foundations
-- Formal system compliance
+This module provides practical validation capabilities for:
+- Formal system compliance  
 - Universal naming validation
 - Self-healing validation processes
 
 Core Philosophy: Validation serves excellence, not bureaucracy.
 """
-
-from .mathematical_system_foundation import (
-    MathematicalSystemFoundation,
-    Operation,
-    LayerIndex,
-    MathematicalValidationResult,
-    DivineMathematicalConstants,
-    DivineConstantValidator,
-    ScientificMethodValidator,
-    EthicalMathematicsValidator,
-    HarmonicIntegrationValidator,
-    FormalVerificationSystem
-)
 
 from .formal_system_detector import (
     FormalSystemDetector,
@@ -48,18 +34,6 @@ from .self_healing_naming_validator import (
 )
 
 __all__ = [
-    # Mathematical System Foundation
-    'MathematicalSystemFoundation',
-    'Operation',
-    'LayerIndex', 
-    'MathematicalValidationResult',
-    'DivineMathematicalConstants',
-    'DivineConstantValidator',
-    'ScientificMethodValidator',
-    'EthicalMathematicsValidator',
-    'HarmonicIntegrationValidator',
-    'FormalVerificationSystem',
-    
     # Formal System Detector
     'FormalSystemDetector',
     'ValidationLevel',

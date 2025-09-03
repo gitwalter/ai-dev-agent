@@ -1,6 +1,6 @@
-# 🔧 **Philosophy Technical Implementation**
+# 🔧 **Rule System Technical Implementation**
 
-**Purpose**: Complete technical documentation of how our philosophical principles are implemented in Cursor IDE and how they will scale to our agent systems.
+**Purpose**: Complete technical documentation of how our development rules are implemented in Cursor IDE and how they will scale to our agent systems.
 
 **Status**: Active implementation with measurable results  
 **Date**: 2025-01-02  
@@ -10,10 +10,10 @@
 
 ## 🎯 **EXECUTIVE SUMMARY**
 
-Our philosophical principles are not abstract theory - they are **technically implemented systems** that:
+Our development rules are not abstract theory - they are **technically implemented systems** that:
 
 1. **Currently work in Cursor IDE** through rule enforcement and context awareness
-2. **Will scale to agent systems** through automated philosophical decision engines
+2. **Will scale to agent systems** through automated rule decision engines
 3. **Demonstrate measurable results** in code quality, consistency, and development speed
 4. **Integrate with all development tools** through standardized interfaces
 
@@ -23,18 +23,18 @@ Our philosophical principles are not abstract theory - they are **technically im
 
 ### **🔧 Technical Architecture in Cursor**
 
-#### **1. Rule-Based Philosophy Engine**
+#### **1. Rule-Based Development Engine**
 
 **File**: `.cursor-rules`  
 **Technical Implementation**:
 
 ```yaml
-# Rule structure that embeds philosophical principles
+# Rule structure that embeds development principles
 rule_architecture:
-  philosophical_foundation:
-    hilbert_consistency: "ALWAYS APPLY - Mathematical foundation for all decisions"
-    five_layer_logic: "CONTEXT-DEPENDENT - Structured decision framework"
-    organic_growth: "ALWAYS APPLY - Natural development progression"
+  foundation_rules:
+    consistency_principle: "ALWAYS APPLY - Mathematical foundation for all decisions"
+    layered_logic: "CONTEXT-DEPENDENT - Structured decision framework"
+    iterative_growth: "ALWAYS APPLY - Natural development progression"
     
   technical_implementation:
     pattern_matching: "YAML-based rule definitions with context triggers"
@@ -42,9 +42,9 @@ rule_architecture:
     enforcement_level: "blocking, warning, advisory based on rule type"
     
   integration_points:
-    file_operations: "Create, move, rename operations trigger philosophy checks"
-    code_generation: "All code follows philosophical patterns"
-    problem_solving: "Philosophy guides solution approaches"
+    file_operations: "Create, move, rename operations trigger rule checks"
+    code_generation: "All code follows established patterns"
+    problem_solving: "Rules guide solution approaches"
 ```
 
 #### **2. Context-Aware Activation System**
@@ -52,23 +52,23 @@ rule_architecture:
 **Technical Flow**:
 ```python
 # Simplified representation of Cursor's context detection
-class CursorPhilosophyEngine:
+class CursorRuleEngine:
     def detect_context(self, user_action):
-        """Detect development context and activate relevant philosophy."""
+        """Detect development context and activate relevant rules."""
         
         context_map = {
-            "file_creation": ["hilbert_consistency", "naming_conventions"],
-            "architecture_design": ["leibnizian_onion", "foundation_practical"],
-            "problem_solving": ["five_layer_logic", "wu_wei_flow"],
-            "code_review": ["three_pillars_excellence", "carnap_clarity"],
-            "team_coordination": ["confucian_ethics", "sacred_communication"]
+            "file_creation": ["consistency_principle", "naming_conventions"],
+            "architecture_design": ["layered_architecture", "foundation_practical"],
+            "problem_solving": ["structured_logic", "efficient_flow"],
+            "code_review": ["quality_excellence", "clear_communication"],
+            "team_coordination": ["ethical_guidelines", "effective_communication"]
         }
         
-        active_philosophy = context_map.get(user_action, ["hilbert_consistency"])
-        return self.apply_philosophy(active_philosophy, user_action)
+        active_rules = context_map.get(user_action, ["consistency_principle"])
+        return self.apply_rules(active_rules, user_action)
         
-    def apply_philosophy(self, principles, context):
-        """Apply philosophical principles to current context."""
+    def apply_rules(self, principles, context):
+        """Apply development rules to current context."""
         results = {}
         for principle in principles:
             results[principle] = self.philosophy_modules[principle].apply(context)

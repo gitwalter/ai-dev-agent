@@ -4,13 +4,13 @@
 
 ## Description
 
-This framework establishes a universal formal rule system that combines mathematical precision with human intuition, rigid logical execution with flexible contextual adaptation. Following foundational principles from Russell, Carnap, Gödel, Hilbert, Wittgenstein, and Quine for formal elegance with practical effectiveness.
+This framework establishes a universal formal rule system that combines mathematical precision with human intuition, rigid logical execution with flexible contextual adaptation. Following foundational logical principles for formal elegance with practical effectiveness.
 
 **Universe of Discourse**: All development contexts, philosophical reasoning, and practical applications within software development and agile project management.
 
 ## Theoretical Foundation
 
-### **Mathematical Logic Base (Russell, Gödel, Hilbert)**
+### **Mathematical Logic Base**
 ```yaml
 formal_logical_structure:
   axiom_system:
@@ -26,7 +26,7 @@ formal_logical_structure:
     evidence_validation: "Empirical truth verification"
 ```
 
-### **Language Philosophy Integration (Carnap, Wittgenstein, Quine)**
+### **Language Philosophy Integration**
 ```yaml
 linguistic_precision:
   carnap_principle: "Language choice determines expressible concepts"

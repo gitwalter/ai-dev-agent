@@ -110,13 +110,16 @@ class TestLanguageLayerActivator:
         context = LayerActivationContext(
             task_type="implementation",
             audience="developers",
-            content_complexity="high",
-            user_input="Implement the database connection pooling with proper error handling"
+            artifact_type="code",
+            communication_goal="technical_implementation",
+            technical_depth=0.9,
+            business_relevance=0.3,
+            philosophical_relevance=0.1
         )
         
         result = self.activator.detect_optimal_layer(context)
         
-        assert result.selected_layer == LanguageLayer.TECHNICAL
+        assert result.primary_layer == LanguageLayer.TECHNICAL
         assert result.confidence > 0.7
         assert "technical" in result.reasoning.lower()
     
@@ -125,13 +128,16 @@ class TestLanguageLayerActivator:
         context = LayerActivationContext(
             task_type="user_story_creation",
             audience="business_stakeholders",
-            content_complexity="medium",
-            user_input="Create user stories for the new customer dashboard feature"
+            artifact_type="documentation",
+            communication_goal="business_requirements",
+            technical_depth=0.2,
+            business_relevance=0.9,
+            philosophical_relevance=0.3
         )
         
         result = self.activator.detect_optimal_layer(context)
         
-        assert result.selected_layer == LanguageLayer.BUSINESS
+        assert result.primary_layer == LanguageLayer.BUSINESS
         assert result.confidence > 0.6
         assert "business" in result.reasoning.lower()
     
@@ -140,13 +146,16 @@ class TestLanguageLayerActivator:
         context = LayerActivationContext(
             task_type="documentation",
             audience="mixed_audience",
-            content_complexity="medium",
-            user_input="Document the API endpoints and provide usage examples"
+            artifact_type="documentation",
+            communication_goal="user_guidance",
+            technical_depth=0.6,
+            business_relevance=0.5,
+            philosophical_relevance=0.2
         )
         
         result = self.activator.detect_optimal_layer(context)
         
-        assert result.selected_layer == LanguageLayer.DOCUMENTATION
+        assert result.primary_layer == LanguageLayer.DOCUMENTATION
         assert result.confidence > 0.5
     
     def test_philosophical_layer_activation(self):
@@ -154,14 +163,17 @@ class TestLanguageLayerActivator:
         context = LayerActivationContext(
             task_type="architectural_decision",
             audience="technical_leads",
-            content_complexity="high",
-            user_input="Design the overall system architecture considering scalability and maintainability principles"
+            artifact_type="architecture_document",
+            communication_goal="system_design",
+            technical_depth=0.8,
+            business_relevance=0.6,
+            philosophical_relevance=0.9
         )
         
         result = self.activator.detect_optimal_layer(context)
         
         # Should prefer technical or philosophical
-        assert result.selected_layer in [LanguageLayer.TECHNICAL, LanguageLayer.PHILOSOPHICAL]
+        assert result.primary_layer in [LanguageLayer.TECHNICAL, LanguageLayer.PHILOSOPHICAL]
         assert result.confidence > 0.5
 
 
@@ -182,7 +194,7 @@ class TestIntegratedContextSystem:
         
         assert isinstance(result, IntegratedContextResult)
         assert result.context_detection.primary_context == DevelopmentContext.AGILE_DEVELOPMENT
-        assert result.language_layer.selected_layer in [LanguageLayer.BUSINESS, LanguageLayer.DOCUMENTATION]
+        assert result.language_layer.primary_layer in [LanguageLayer.BUSINESS, LanguageLayer.DOCUMENTATION]
         assert result.integration_score > 0.5
         assert len(result.recommended_rules) > 0
     
@@ -195,7 +207,7 @@ class TestIntegratedContextSystem:
         )
         
         assert result.context_detection.primary_context == DevelopmentContext.CODE_DEVELOPMENT
-        assert result.language_layer.selected_layer == LanguageLayer.TECHNICAL
+        assert result.language_layer.primary_layer == LanguageLayer.TECHNICAL
         assert result.integration_score > 0.6
         
         # Should include technical rules
@@ -214,7 +226,7 @@ class TestIntegratedContextSystem:
         )
         
         assert result.context_detection.primary_context == DevelopmentContext.TESTING
-        assert result.language_layer.selected_layer == LanguageLayer.TECHNICAL
+        assert result.language_layer.primary_layer == LanguageLayer.TECHNICAL
         assert "testing" in [rule for rule in result.recommended_rules if "testing" in rule]
     
     def test_integration_score_calculation(self):
@@ -306,9 +318,9 @@ class TestContextSwitching:
         assert docs_result.context_detection.primary_context == DevelopmentContext.DOCUMENTATION
         
         # Verify language layer adaptation
-        assert coding_result.language_layer.selected_layer == LanguageLayer.TECHNICAL
-        assert testing_result.language_layer.selected_layer == LanguageLayer.TECHNICAL
-        assert docs_result.language_layer.selected_layer == LanguageLayer.DOCUMENTATION
+        assert coding_result.language_layer.primary_layer == LanguageLayer.TECHNICAL
+        assert testing_result.language_layer.primary_layer == LanguageLayer.TECHNICAL
+        assert docs_result.language_layer.primary_layer == LanguageLayer.DOCUMENTATION
 
 
 if __name__ == "__main__":

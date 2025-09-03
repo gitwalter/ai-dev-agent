@@ -1,0 +1,209 @@
+# Applied Verification Principle - Anti-Hallucination Rule
+
+**CRITICAL**: Never fake, assume, or hallucinate results. Always verify what actually works. Use mocks ONLY when explicitly needed for testing isolated components.
+
+## Core Principle
+
+**"Verify Everything - Fake Nothing - Know What's Real"**
+
+Every claim about functionality must be backed by actual verification. No assumptions, no optimistic assertions, no "it should work" statements.
+
+## Mandatory Verification Requirements
+
+### 1. **Code Must Actually Work**
+**BEFORE claiming any code works**:
+```python
+# REQUIRED: Actual verification
+def test_function_actually_works():
+    result = my_function(test_input)
+    assert result == expected_output  # VERIFY the actual result
+    
+# FORBIDDEN: Assumed functionality
+def test_function_should_work():
+    # Assuming this works without testing
+    assert True  # HALLUCINATION - DELETE THIS
+```
+
+### 2. **Test Results Must Be Real**
+**NEVER fake test results**:
+```python
+# GOOD: Real test of real functionality
+def test_import_fix_actually_fixes_imports():
+    broken_file = create_file_with_broken_imports()
+    result = fix_imports(broken_file)
+    verify_imports_actually_work(broken_file)  # REAL VERIFICATION
+    
+# BAD: Fake test that passes without testing anything real
+def test_import_fix_works():
+    return True  # HALLUCINATION - This tests nothing
+```
+
+### 3. **Documentation Must Match Reality**
+```markdown
+# GOOD: Accurate documentation
+## Code Generator
+- Generates Python functions that compile and run
+- VERIFIED: Tested with 50+ real examples
+- VERIFIED: Generated code passes all tests
+
+# BAD: Hallucinated documentation  
+## Code Generator  
+- Uses advanced AI to generate perfect code
+- UNVERIFIED CLAIM - How do you know it's "perfect"?
+```
+
+## Anti-Hallucination Mechanisms
+
+### **Before Any Success Claim**
+1. **RUN THE CODE**: Execute it with real inputs
+2. **CHECK THE OUTPUTS**: Verify they match expectations
+3. **TEST EDGE CASES**: Ensure it works in realistic scenarios
+4. **DOCUMENT WHAT BROKE**: Be honest about limitations
+
+### **Test Verification Standards**
+```python
+# EXCELLENT: Tests real working functionality
+class TestCodeGeneration:
+    def test_generates_working_python_function(self):
+        # 1. Generate actual code
+        generated_code = generator.create_function("add_numbers", ["a", "b"])
+        
+        # 2. Save to real file  
+        with open("test_function.py", "w") as f:
+            f.write(generated_code)
+        
+        # 3. Import and test it actually works
+        import test_function
+        result = test_function.add_numbers(2, 3)
+        assert result == 5  # REAL VERIFICATION
+        
+    def test_handles_invalid_input_gracefully(self):
+        # Test real error handling, not assumed behavior
+        with pytest.raises(ValueError):
+            generator.create_function("", [])  # ACTUAL ERROR TEST
+
+# TERRIBLE: Fake tests that verify nothing
+class TestCodeGeneration:
+    def test_code_generation_works(self):
+        assert True  # HALLUCINATION - DELETE
+        
+    def test_handles_all_edge_cases(self):
+        # Assuming it works without testing
+        assert generator.is_robust == True  # FAKE PROPERTY
+```
+
+### **Explicit Mock Usage ONLY**
+**Mocks are allowed ONLY when**:
+1. **Testing in isolation**: Testing one component without external dependencies
+2. **Explicitly labeled**: Clear comments explaining why mocking is needed
+3. **Testing real interfaces**: Mock represents real external system behavior
+
+```python
+# GOOD: Explicit mock for external dependency
+@patch('requests.get')  # EXPLICIT MOCK
+def test_api_client_handles_timeout(self, mock_get):
+    """Test API client timeout handling - mocking external HTTP request."""
+    mock_get.side_effect = requests.Timeout()
+    
+    client = APIClient()
+    with pytest.raises(TimeoutError):
+        client.fetch_data()  # Testing OUR error handling logic
+
+# BAD: Mock to avoid implementing real functionality
+@patch('my_function')  # AVOIDING REAL IMPLEMENTATION
+def test_my_function_works(self, mock_func):
+    mock_func.return_value = "success"
+    assert my_function() == "success"  # Testing the mock, not reality
+```
+
+## Verification Workflows
+
+### **Feature Development Verification**
+1. **Write failing test**: Test describes what should work
+2. **Implement minimum code**: Make the test pass with real implementation
+3. **Verify manually**: Run the feature by hand to confirm it works
+4. **Test edge cases**: What happens when things go wrong?
+5. **Document limitations**: Be honest about what doesn't work yet
+
+### **Bug Fix Verification**
+1. **Reproduce the bug**: Create test that demonstrates the failure
+2. **Fix the bug**: Change code to make test pass
+3. **Verify fix works**: Test the actual user scenario
+4. **Prevent regression**: Keep the test to catch future breaks
+
+### **Integration Verification** 
+1. **Test real workflows**: End-to-end user scenarios
+2. **Use real data**: Not fake test data that's too clean
+3. **Test on target platform**: Windows/Linux/whatever users actually use
+4. **Measure actual performance**: Don't assume it's "fast enough"
+
+## Anti-Hallucination Checklist
+
+### **Before Claiming Success**
+- [ ] Code actually compiles and runs
+- [ ] Tests pass with real implementation (not mocks)
+- [ ] Manually verified the functionality works
+- [ ] Tested with realistic inputs and edge cases
+- [ ] Documented actual limitations and known issues
+
+### **Before Submitting Code**
+- [ ] All tests use real functionality
+- [ ] Mocks are explicitly labeled and justified
+- [ ] Performance claims are measured, not assumed
+- [ ] Documentation matches actual implementation
+- [ ] Error handling is tested with real error scenarios
+
+### **Red Flags (DELETE IMMEDIATELY)**
+- ❌ Tests that pass without testing real functionality
+- ❌ "It should work" statements without verification
+- ❌ Mocks used to avoid implementing real features
+- ❌ Claims about performance without measurement
+- ❌ Documentation that describes ideal behavior, not actual behavior
+
+## Benefits
+
+1. **Reliable Software**: Only ship what actually works
+2. **Honest Progress**: Know exactly what's implemented vs. planned
+3. **Better Debugging**: Real tests catch real problems
+4. **User Trust**: Software behaves as documented
+5. **Developer Confidence**: Team knows what's real vs. aspirational
+
+## Examples
+
+### **GOOD: Applied Verification**
+```python
+def test_file_organization_actually_works():
+    """Verify file organization moves files to correct locations."""
+    # 1. Create test files in wrong locations
+    create_file("test_utils.py", content="def helper(): pass")
+    create_file("test_agent.py", content="class Agent: pass")
+    
+    # 2. Run file organization
+    organizer.organize_project()
+    
+    # 3. Verify files actually moved
+    assert os.path.exists("utils/test_utils.py")
+    assert os.path.exists("agents/test_agent.py")
+    assert not os.path.exists("test_utils.py")  # REAL VERIFICATION
+```
+
+### **BAD: Hallucinated Testing**
+```python
+def test_file_organization_works():
+    """Test that file organization is working."""
+    organizer = FileOrganizer()
+    assert organizer.is_working == True  # FAKE PROPERTY
+    assert organizer.organizes_files() == "success"  # UNVERIFIED CLAIM
+```
+
+## Remember
+
+**"Never trust, always verify."**
+
+**"Mocks test our code, not our assumptions."**
+
+**"If you can't demo it working, don't claim it works."**
+
+**"Real tests catch real bugs. Fake tests give fake confidence."**
+
+This principle prevents hallucination by requiring actual verification of every claim we make about our code.

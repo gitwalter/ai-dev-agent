@@ -18,21 +18,21 @@
 
 ## 🌟 **TIER 0: FOUNDATIONAL PRINCIPLES (Sacred & Immutable)**
 
-### **1. Hilbert Consistency Foundation**
-- **File**: `docs/rules/core/HILBERT_CONSISTENCY_FOUNDATION_RULE.md`
-- **Principle**: *"A system is valid if it is internally consistent, regardless of specific axioms"*
+### **1. Consistency Foundation**
+- **File**: `docs/rules/core/CONSISTENCY_FOUNDATION_RULE.md`
+- **Principle**: *"A system is valid if it is internally consistent, regardless of specific conventions"*
 - **Application**: ALL naming conventions, file organization, and decision-making
 - **Status**: ✅ **ACTIVE** - Embedded in Cursor rules
 
-### **2. Honoring Ancestors Logical Excellence**
+### **2. Structured Logical Excellence**
 - **File**: `docs/concepts/HONORING_ANCESTORS_LOGICAL_EXCELLENCE.md`
-- **Principle**: *"Logical thinking based on intellectual ancestors leads to better results"*
-- **Framework**: Five-Layer Logical Thinking (Hilbert → Carnap → Quine → Wittgenstein → Fowler)
+- **Principle**: *"Structured logical thinking leads to better development results"*
+- **Framework**: Five-Layer Logical Thinking (Foundation → Syntax → Semantics → Pragmatics → Implementation)
 - **Status**: ✅ **ACTIVE** - Integrated into decision processes
 
-### **3. Universal Divine Core**
-- **File**: `docs/philosophy/universal_divine_core.md`
-- **Principle**: Universal divine reality across all spiritual traditions
+### **3. Ethical Foundation Core**
+- **File**: `enforcement/spiritual_backbone.md`
+- **Principle**: Universal ethical principles across wisdom traditions
 - **Application**: Ethical foundation for all system design
 - **Status**: ✅ **ACTIVE** - Foundational layer architecture
 
@@ -46,10 +46,10 @@
 ## 🔬 **TIER 1: PHILOSOPHICAL FOUNDATIONS**
 
 ### **Mathematical & Logical Foundations**
-1. **Russell's Type Theory** - Hierarchical rule organization preventing paradoxes
-2. **Gödel's Completeness** - Formal system validity verification
-3. **Carnap's Protocol Sentences** - Precise context detection for rule activation
-4. **Wittgenstein's Language Games** - Agent coordination through domain-specific languages
+1. **Type Hierarchy** - Hierarchical rule organization preventing paradoxes
+2. **Completeness Verification** - Formal system validity verification
+3. **Logical Construction** - Building complex systems from simple, tested elements
+4. **Domain Languages** - Agent coordination through domain-specific languages
 
 ### **Chinese Philosophical Integration**
 1. **Confucian Moral Framework (仁义礼智信)**
@@ -64,11 +64,11 @@
    - 上善若水 (Water-like Excellence): Adaptive persistence
    - 自然 (Ziran): Natural spontaneity and alignment
 
-### **Western Philosophical Systems**
-1. **Leibnizian Monadology** - Each component as autonomous monad with inner principles
-2. **Kantian Categorical Imperative** - Universal moral laws for rational beings
-3. **Quine's Ontological Relativity** - Names define our development universe
-4. **Fowler's Pragmatism** - Practical utility for real problem-solving
+### **Western Design Principles**
+1. **Component Autonomy** - Each component as autonomous unit with inner principles
+2. **Universal Ethics** - Universal moral laws for rational decision-making
+3. **Naming Significance** - Names define our development universe
+4. **Practical Utility** - Practical utility for real problem-solving
 
 ---
 

@@ -72,7 +72,27 @@ class TestPromptQualityAssessment(unittest.TestCase):
     
     def tearDown(self):
         """Clean up test environment."""
-        shutil.rmtree(self.temp_dir)
+        # Close database connections first
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, 'close') and callable(attr.close):
+                try:
+                    attr.close()
+                except Exception:
+                    pass  # Best effort cleanup
+        
+        # Enhanced cleanup for Windows database locking issues
+        if hasattr(self, 'temp_dir'):
+            try:
+                import shutil
+                shutil.rmtree(self.temp_dir)
+            except PermissionError:
+                import time
+                time.sleep(0.1)
+                try:
+                    shutil.rmtree(self.temp_dir)
+                except PermissionError:
+                    pass  # Best effort cleanup
     
     def test_quality_assessment_creation(self):
         """Test that quality assessor can be created."""
@@ -159,7 +179,27 @@ class TestPromptBackupRecovery(unittest.TestCase):
     
     def tearDown(self):
         """Clean up test environment."""
-        shutil.rmtree(self.temp_dir)
+        # Close database connections first
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, 'close') and callable(attr.close):
+                try:
+                    attr.close()
+                except Exception:
+                    pass  # Best effort cleanup
+        
+        # Enhanced cleanup for Windows database locking issues
+        if hasattr(self, 'temp_dir'):
+            try:
+                import shutil
+                shutil.rmtree(self.temp_dir)
+            except PermissionError:
+                import time
+                time.sleep(0.1)
+                try:
+                    shutil.rmtree(self.temp_dir)
+                except PermissionError:
+                    pass  # Best effort cleanup
     
     def test_backup_system_creation(self):
         """Test that backup system can be created."""
@@ -238,7 +278,27 @@ class TestPromptAuditTrail(unittest.TestCase):
     
     def tearDown(self):
         """Clean up test environment."""
-        shutil.rmtree(self.temp_dir)
+        # Close database connections first
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, 'close') and callable(attr.close):
+                try:
+                    attr.close()
+                except Exception:
+                    pass  # Best effort cleanup
+        
+        # Enhanced cleanup for Windows database locking issues
+        if hasattr(self, 'temp_dir'):
+            try:
+                import shutil
+                shutil.rmtree(self.temp_dir)
+            except PermissionError:
+                import time
+                time.sleep(0.1)
+                try:
+                    shutil.rmtree(self.temp_dir)
+                except PermissionError:
+                    pass  # Best effort cleanup
     
     def test_audit_trail_creation(self):
         """Test that audit trail system can be created."""
@@ -377,7 +437,27 @@ class TestPromptManagementSystemIntegration(unittest.TestCase):
     
     def tearDown(self):
         """Clean up test environment."""
-        shutil.rmtree(self.temp_dir)
+        # Close database connections first
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if hasattr(attr, 'close') and callable(attr.close):
+                try:
+                    attr.close()
+                except Exception:
+                    pass  # Best effort cleanup
+        
+        # Enhanced cleanup for Windows database locking issues
+        if hasattr(self, 'temp_dir'):
+            try:
+                import shutil
+                shutil.rmtree(self.temp_dir)
+            except PermissionError:
+                import time
+                time.sleep(0.1)
+                try:
+                    shutil.rmtree(self.temp_dir)
+                except PermissionError:
+                    pass  # Best effort cleanup
     
     def test_system_creation(self):
         """Test that the integrated system can be created."""

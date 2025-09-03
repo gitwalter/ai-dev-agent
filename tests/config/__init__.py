@@ -5,9 +5,9 @@ Provides centralized configuration management for test execution modes.
 """
 
 from .test_config import (
-    TestMode,
-    TestConfig,
-    TestConfigManager,
+    ConfigMode as TestMode,
+    Config as TestConfig,
+    ConfigManager as TestConfigManager,
     get_test_config,
     set_test_config,
     is_mock_mode,
