@@ -122,7 +122,7 @@ class UITestConfig:
 class AutomatedUITester:
     """Comprehensive automated UI testing system."""
     
-    def __init__(self, config: TestConfig = None):
+    def __init__(self, config: 'UITestConfig' = None):
         self.config = config or UITestConfig()
         self.driver = None
         self.test_results = []
