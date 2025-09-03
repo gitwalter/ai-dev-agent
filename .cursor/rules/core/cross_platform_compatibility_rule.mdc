@@ -1,0 +1,465 @@
+# Cross-Platform Compatibility Rule
+
+**CRITICAL**: All code, scripts, and artifacts must work seamlessly on Windows and Linux (minimum requirement), with macOS compatibility as a bonus.
+
+## Description
+This rule ensures our entire codebase runs without modification across different operating systems, eliminating platform-specific barriers and maximizing accessibility.
+
+## Core Requirements
+
+### 1. Python Code Compatibility
+**MANDATORY**: All Python code must use cross-platform approaches
+
+```python
+# CORRECT: Cross-platform path handling
+from pathlib import Path
+import os
+
+def get_config_path():
+    return Path.home() / ".config" / "app"
+
+def find_files(pattern):
+    return list(Path(".").glob(pattern))
+
+# FORBIDDEN: Platform-specific paths
+def get_config_path():
+    return "C:\\Users\\username\\.config\\app"  # Windows only
+    return "/home/username/.config/app"          # Linux only
+```
+
+### 2. File Path Standards
+**MANDATORY**: Use pathlib.Path for all file operations
+
+```python
+# CORRECT: Cross-platform paths
+from pathlib import Path
+
+project_root = Path(__file__).parent.parent
+config_file = project_root / "config" / "settings.yaml"
+temp_dir = Path.cwd() / "temp"
+
+# Create directories cross-platform
+temp_dir.mkdir(parents=True, exist_ok=True)
+
+# FORBIDDEN: OS-specific path separators
+config_file = "config\\settings.yaml"  # Windows backslash
+config_file = "config/settings.yaml"   # Unix forward slash (better but use Path)
+```
+
+### 3. Script Execution Standards
+**MANDATORY**: All scripts must have cross-platform execution logic
+
+```python
+#!/usr/bin/env python3
+"""Cross-platform script template"""
+
+import sys
+import subprocess
+import os
+from pathlib import Path
+
+def find_python_interpreter():
+    """Find Python across platforms."""
+    candidates = []
+    
+    # Windows-specific paths
+    if os.name == 'nt':
+        candidates.extend([
+            r"C:\App\Anaconda\python.exe",
+            r"C:\Python*\python.exe",
+        ])
+    
+    # Cross-platform commands
+    candidates.extend(["python3", "python", sys.executable])
+    
+    for cmd in candidates:
+        if test_command(cmd):
+            return cmd
+    return None
+
+def run_cross_platform_command(cmd_args):
+    """Run command across platforms."""
+    try:
+        result = subprocess.run(
+            cmd_args,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        return result.returncode == 0
+    except Exception:
+        return False
+```
+
+### 4. Environment Variable Handling
+**MANDATORY**: Handle environment variables consistently
+
+```python
+# CORRECT: Cross-platform environment handling
+import os
+from pathlib import Path
+
+def get_home_directory():
+    return Path.home()
+
+def get_user_name():
+    return os.environ.get('USERNAME') or os.environ.get('USER', 'unknown')
+
+def get_path_separator():
+    return os.pathsep  # ':' on Unix, ';' on Windows
+
+# FORBIDDEN: Platform-specific assumptions
+home_dir = "C:\\Users\\" + os.environ['USERNAME']  # Windows only
+home_dir = "/home/" + os.environ['USER']           # Linux only
+```
+
+### 5. Process and Command Execution
+**MANDATORY**: Use subprocess with cross-platform considerations
+
+```python
+# CORRECT: Cross-platform process handling
+import subprocess
+import sys
+
+def run_python_script(script_path, args=None):
+    cmd = [sys.executable, str(script_path)]
+    if args:
+        cmd.extend(args)
+    
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        cwd=Path(script_path).parent
+    )
+
+def check_command_exists(command):
+    """Check if command exists across platforms."""
+    try:
+        subprocess.run(
+            [command, "--version"], 
+            capture_output=True, 
+            timeout=5
+        )
+        return True
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        return False
+
+# FORBIDDEN: Platform-specific command calls
+os.system("dir")        # Windows only
+os.system("ls -la")     # Unix only
+```
+
+### 6. File Operations
+**MANDATORY**: Use consistent file handling
+
+```python
+# CORRECT: Cross-platform file operations
+from pathlib import Path
+import shutil
+
+def copy_file(src, dst):
+    """Copy file across platforms."""
+    src_path = Path(src)
+    dst_path = Path(dst)
+    dst_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src_path, dst_path)
+
+def make_executable(file_path):
+    """Make file executable across platforms."""
+    path = Path(file_path)
+    if path.exists():
+        # Unix-like systems
+        if hasattr(os, 'chmod'):
+            import stat
+            current_mode = path.stat().st_mode
+            path.chmod(current_mode | stat.S_IEXEC)
+
+# FORBIDDEN: Platform-specific file operations
+os.system("chmod +x script.sh")  # Unix only
+```
+
+### 7. Git Hook Implementation
+**MANDATORY**: All git hooks must be cross-platform Python scripts
+
+```python
+#!/usr/bin/env python3
+"""Cross-platform git hook template"""
+
+import sys
+import subprocess
+from pathlib import Path
+
+def main():
+    """Main hook logic."""
+    try:
+        # Hook implementation here
+        return run_validation()
+    except Exception as e:
+        print(f"Hook error: {e}")
+        return 1
+
+def run_validation():
+    """Run validation logic."""
+    # Cross-platform validation logic
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+## Implementation Guidelines
+
+### 1. Development Environment Setup
+```python
+# Cross-platform development environment detection
+def detect_development_environment():
+    """Detect and configure for current platform."""
+    platform_info = {
+        'os': os.name,
+        'platform': sys.platform,
+        'python_version': sys.version,
+        'architecture': os.uname() if hasattr(os, 'uname') else 'unknown'
+    }
+    
+    # Configure based on platform
+    if os.name == 'nt':  # Windows
+        return configure_windows_environment()
+    else:  # Unix-like (Linux, macOS)
+        return configure_unix_environment()
+
+def configure_windows_environment():
+    """Windows-specific configuration."""
+    return {
+        'python_path': find_anaconda_python() or sys.executable,
+        'shell': 'powershell',
+        'path_separator': ';',
+        'line_ending': '\r\n'
+    }
+
+def configure_unix_environment():
+    """Unix-like system configuration."""
+    return {
+        'python_path': sys.executable,
+        'shell': 'bash',
+        'path_separator': ':',
+        'line_ending': '\n'
+    }
+```
+
+### 2. Testing Across Platforms
+```python
+# Cross-platform testing utilities
+def run_cross_platform_tests():
+    """Run tests that verify cross-platform compatibility."""
+    tests = [
+        test_file_path_handling,
+        test_command_execution,
+        test_environment_variables,
+        test_process_creation,
+        test_file_permissions
+    ]
+    
+    results = []
+    for test in tests:
+        try:
+            result = test()
+            results.append((test.__name__, result, None))
+        except Exception as e:
+            results.append((test.__name__, False, str(e)))
+    
+    return results
+
+def test_file_path_handling():
+    """Test file path operations work cross-platform."""
+    test_path = Path("test") / "subdir" / "file.txt"
+    assert "/" not in str(test_path) or "\\" not in str(test_path)
+    return True
+```
+
+### 3. Configuration Management
+```yaml
+# Cross-platform configuration template
+cross_platform_config:
+  file_paths:
+    use_pathlib: true
+    avoid_hardcoded_separators: true
+    
+  commands:
+    use_subprocess: true
+    avoid_os_system: true
+    timeout_all_commands: true
+    
+  environment:
+    use_os_environ_get: true
+    provide_fallback_values: true
+    
+  processes:
+    use_sys_executable: true
+    handle_platform_differences: true
+```
+
+### 4. Documentation Standards
+```markdown
+# Cross-Platform Documentation Template
+
+## Requirements
+- Python 3.8+ (Windows/Linux/macOS)
+- Git 2.20+ (all platforms)
+
+## Installation
+
+### Windows
+```cmd
+# Using Anaconda (recommended)
+C:\App\Anaconda\python.exe -m pip install -r requirements.txt
+```
+
+### Linux/macOS
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+## Running Scripts
+All scripts use cross-platform Python:
+```bash
+python script_name.py  # Works on all platforms
+```
+```
+
+## Validation and Testing
+
+### 1. Automated Cross-Platform Testing
+```python
+# Continuous integration for cross-platform compatibility
+def validate_cross_platform_compatibility():
+    """Validate all code works across platforms."""
+    
+    # Path handling validation
+    assert_path_compatibility()
+    
+    # Command execution validation
+    assert_command_compatibility()
+    
+    # File operation validation
+    assert_file_operation_compatibility()
+    
+    # Environment handling validation
+    assert_environment_compatibility()
+
+def assert_path_compatibility():
+    """Ensure all path operations use pathlib."""
+    # Scan codebase for hardcoded path separators
+    violations = scan_for_hardcoded_paths()
+    assert len(violations) == 0, f"Hardcoded paths found: {violations}"
+```
+
+### 2. Pre-commit Validation
+```python
+# Pre-commit hook for cross-platform validation
+def pre_commit_cross_platform_check():
+    """Check all changes maintain cross-platform compatibility."""
+    
+    changed_files = get_git_changed_files()
+    violations = []
+    
+    for file in changed_files:
+        if file.suffix == '.py':
+            violations.extend(check_python_cross_platform(file))
+        elif file.suffix in ['.sh', '.bat', '.cmd']:
+            violations.append(f"Platform-specific script: {file}")
+    
+    return len(violations) == 0, violations
+```
+
+## Common Pitfalls to Avoid
+
+### 1. Path Separators
+```python
+# FORBIDDEN
+file_path = "dir\\file.txt"  # Windows backslash
+file_path = "dir/file.txt"   # Unix forward slash
+
+# CORRECT
+file_path = Path("dir") / "file.txt"  # Cross-platform
+```
+
+### 2. Line Endings
+```python
+# CORRECT: Let Python handle line endings
+with open(file_path, 'w', newline='') as f:
+    writer = csv.writer(f)
+    # Python handles line endings appropriately
+
+# Or explicitly handle if needed
+def write_cross_platform_text(file_path, content):
+    # Normalize line endings for current platform
+    content = content.replace('\r\n', '\n').replace('\r', '\n')
+    if os.name == 'nt':
+        content = content.replace('\n', '\r\n')
+    
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+```
+
+### 3. Command Execution
+```python
+# FORBIDDEN
+os.system("clear")      # Unix only
+os.system("cls")        # Windows only
+
+# CORRECT
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+# BETTER: Use cross-platform libraries
+import subprocess
+def clear_screen():
+    subprocess.run(['cls' if os.name == 'nt' else 'clear'], shell=True)
+```
+
+## Benefits
+
+### Immediate Benefits
+- **Universal Accessibility**: Code runs everywhere without modification
+- **Team Productivity**: Developers can use any platform
+- **Deployment Flexibility**: Deploy to any server environment
+- **Reduced Debugging**: Eliminate platform-specific bugs
+
+### Long-term Benefits
+- **Market Reach**: Support users on all platforms
+- **Development Cost**: Reduce platform-specific maintenance
+- **Code Quality**: Force better, more portable code design
+- **Team Scalability**: Hire developers regardless of platform preference
+
+## Enforcement
+
+This rule is **ALWAYS ACTIVE** and applies to:
+- All Python scripts and modules
+- All git hooks and automation scripts
+- All configuration files and templates
+- All documentation and examples
+- All deployment and setup procedures
+
+**Violations require immediate correction before commit approval.**
+
+## Testing Checklist
+
+Before committing code, verify:
+- [ ] All file paths use pathlib.Path
+- [ ] No hardcoded path separators (\\ or /)
+- [ ] All subprocess calls include timeout
+- [ ] Environment variables have fallbacks
+- [ ] No platform-specific commands (unless properly abstracted)
+- [ ] All scripts have proper shebangs (#!/usr/bin/env python3)
+- [ ] Documentation includes installation for both Windows and Linux
+
+## Remember
+
+**"Write once, run everywhere - true cross-platform excellence."**
+
+**"Platform independence is user freedom."**
+
+**"Cross-platform code is higher quality code."**
+
+This rule ensures our system is truly universal and accessible to all developers and users, regardless of their platform choice.
