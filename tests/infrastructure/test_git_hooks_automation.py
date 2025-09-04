@@ -28,13 +28,11 @@ from unittest.mock import patch, MagicMock, call
 from typing import List, Tuple, Optional
 
 # Add project root to path at the very beginning to override any conflicting modules
+# Define project root for tests  
 project_root = Path(__file__).parent.parent.parent
-if str(project_root) in sys.path:
-    sys.path.remove(str(project_root))
-sys.path.insert(0, str(project_root))
 
-# Import through utils package
-from utils import SafeGitOperations
+# Import SafeGitOperations (namespace conflict resolved by renaming tests/utils to tests/test_utils)
+from utils.safe_git_operations import SafeGitOperations
 
 
 class TestGitHooksInfrastructure:

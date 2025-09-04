@@ -312,7 +312,7 @@ class TestTaskExecution:
         )
     
     @patch('streamlit.secrets')
-    @patch('agents.specialized_subagent_team.ChatGoogleGenerativeAI')
+    @patch('agents.teams.specialized_subagent_team.ChatGoogleGenerativeAI')
     def test_architect_prompt_generation(self, mock_llm_class, mock_secrets, sample_context):
         """Test architect agent prompt generation"""
         mock_secrets.get.return_value = "test-api-key"
@@ -331,7 +331,7 @@ class TestTaskExecution:
         assert sample_context.priority in prompt
     
     @patch('streamlit.secrets')
-    @patch('agents.specialized_subagent_team.ChatGoogleGenerativeAI')
+    @patch('agents.teams.specialized_subagent_team.ChatGoogleGenerativeAI')
     def test_developer_prompt_generation(self, mock_llm_class, mock_secrets, sample_context):
         """Test developer agent prompt generation"""
         mock_secrets.get.return_value = "test-api-key"
@@ -513,7 +513,7 @@ class TestErrorHandling:
             ArchitectAgent()
     
     @patch('streamlit.secrets')
-    @patch('agents.specialized_subagent_team.ChatGoogleGenerativeAI')
+    @patch('agents.teams.specialized_subagent_team.ChatGoogleGenerativeAI')
     def test_agent_task_failure_handling(self, mock_llm_class, mock_secrets):
         """Test handling of agent task failures"""
         mock_secrets.get.return_value = "test-api-key"

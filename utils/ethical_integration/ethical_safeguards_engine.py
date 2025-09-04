@@ -23,7 +23,7 @@ import json
 # Import our ethical protection team
 import sys
 sys.path.append(str(Path(__file__).parent.parent.parent))
-from agents.ethical_ai_protection_team import get_ethical_ai_protection_team, EthicalDecision
+from agents.security.ethical_ai_protection_team import get_ethical_ai_protection_team, EthicalDecision
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

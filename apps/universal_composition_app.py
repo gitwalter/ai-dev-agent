@@ -56,7 +56,6 @@ try:
     # Import agile ceremony manager and context-aware rule system  
     from utils.agile.agile_ceremony_manager import get_ceremony_manager, AgileCeremony
     from utils.rule_system.context_aware_rule_loader import get_rule_loader, apply_context_aware_rules
-    from utils.rule_system.dynamic_rule_activator import get_dynamic_activator, start_dynamic_rule_system
     
     VIBE_AGILE_AVAILABLE = True
     AGILE_CEREMONIES_AVAILABLE = True
@@ -85,14 +84,7 @@ st.set_page_config(
 )
 
 # Initialize dynamic rule system
-if DYNAMIC_RULES_AVAILABLE and 'dynamic_rules_started' not in st.session_state:
-    try:
-        activator = start_dynamic_rule_system()
-        st.session_state.dynamic_rules_started = True
-        st.session_state.dynamic_activator = activator
-    except Exception as e:
-        st.session_state.dynamic_rules_started = False
-        print(f"Dynamic rules initialization failed: {e}")
+# Real rule system is handled by Cursor natively via .cursor/rules/
 
 # Professional CSS styling
 st.markdown("""
@@ -101,46 +93,46 @@ st.markdown("""
         font-size: 3.5rem;
         font-weight: bold;
         text-align: center;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #f9fafb;
         margin-bottom: 2rem;
     }
     .composition-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: rgba(255, 255, 255, 0.05);
         padding: 1.5rem;
-        border-radius: 15px;
+        border-radius: 8px;
         margin: 1rem 0;
-        border-left: 5px solid #667eea;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
     }
     .framework-badge {
         display: inline-block;
-        background: #667eea;
+        background: #374151;
         color: white;
         padding: 0.3rem 0.8rem;
-        border-radius: 20px;
+        border-radius: 4px;
         margin: 0.2rem;
         font-size: 0.8rem;
-        font-weight: bold;
+        font-weight: 500;
     }
     .enterprise-module {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: rgba(255, 255, 255, 0.08);
+        color: #e5e7eb;
+        border: 1px solid rgba(255, 255, 255, 0.15);
         padding: 1rem;
-        border-radius: 10px;
+        border-radius: 6px;
         margin: 0.5rem 0;
         text-align: center;
-        font-weight: bold;
+        font-weight: 500;
     }
     .capability-metric {
         display: flex;
         justify-content: space-between;
         padding: 0.5rem;
-        background: rgba(102, 126, 234, 0.1);
-        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 4px;
         margin: 0.3rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -361,30 +353,39 @@ def display_architecture_designer():
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-def display_capability_matrix():
-    """Display system capability matrix."""
+def display_system_status():
+    """Display actual system status information."""
     st.markdown('<div class="composition-card">', unsafe_allow_html=True)
-    st.subheader("📊 System Capability Matrix")
+    st.subheader("🔧 System Status")
     
-    capabilities = {
-        'Agent Coordination': 85,
-        'Enterprise Integration': 92,
-        'Scalability': 78,
-        'Security': 88,
-        'Performance': 82,
-        'Maintainability': 90,
-        'Extensibility': 87,
-        'User Experience': 85
-    }
-    
-    for capability, score in capabilities.items():
-        st.markdown(f"""
-        <div class="capability-metric">
-            <span><strong>{capability}</strong></span>
-            <span>{score}%</span>
-        </div>
-        """, unsafe_allow_html=True)
-        st.progress(score / 100)
+    # Show only real, verifiable information
+    try:
+        # Check if modules are actually importable/available
+        modules_status = {}
+        
+        try:
+            import agents
+            modules_status['Agents'] = '✅ Available'
+        except ImportError:
+            modules_status['Agents'] = '❌ Not Available'
+        
+        try:
+            import workflow
+            modules_status['Workflow'] = '✅ Available'
+        except ImportError:
+            modules_status['Workflow'] = '❌ Not Available'
+            
+        try:
+            import utils
+            modules_status['Utils'] = '✅ Available'
+        except ImportError:
+            modules_status['Utils'] = '❌ Not Available'
+        
+        for module, status in modules_status.items():
+            st.markdown(f"**{module}**: {status}")
+            
+    except Exception as e:
+        st.error(f"Could not check system status: {e}")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -399,7 +400,7 @@ def display_composition_dashboard():
     
     with col2:
         display_api_configuration()
-        display_capability_matrix()
+        display_system_status()
         
         # Action buttons
         st.markdown('<div class="composition-card">', unsafe_allow_html=True)
@@ -3841,7 +3842,7 @@ def display_agile_ceremonies_interface():
     # Apply context-aware rules for agile ceremonies
     if RULE_SYSTEM_AVAILABLE:
         rule_context = apply_context_aware_rules("@agile ceremonies interface")
-        st.info(f"🎯 **Context**: {rule_context.context} | **Rules**: {len(rule_context.active_rules)} | **Efficiency**: {rule_context.token_efficiency:.1f}%")
+        st.info(f"🎯 **Context**: {rule_context.context} | **Rules**: {len(rule_context.active_rules)}")
     
     ceremony_manager = get_ceremony_manager()
     
@@ -4045,10 +4046,10 @@ def display_dynamic_rule_status():
                     except Exception as e:
                         st.error(f"Context detection failed: {str(e)}")
             
-            # Efficiency metrics
+            # Basic metrics
             metrics = status['efficiency_metrics']
-            if metrics['token_efficiency'] > 0:
-                st.markdown(f"**Efficiency**: {metrics['token_efficiency']:.1f}%")
+            if metrics.get('context_switches', 0) > 0:
+                st.markdown(f"**Context Switches**: {metrics['context_switches']}")
             
             # Show active rules list
             active_rules_to_show = None
@@ -4128,7 +4129,7 @@ def display_dynamic_rule_configuration():
         st.metric(
             "Active Rules",
             status['rules_count'],
-            delta=f"{status['efficiency_metrics']['token_efficiency']:.1f}% efficiency"
+            delta=None
         )
     
     with col3:
@@ -4588,7 +4589,7 @@ def load_cursor_rules():
     return rules_by_category
 
 
-def display_basic_rule_monitor():
+def display_real_cursor_rule_status():
     """Display basic rule monitoring interface when dynamic system is not available."""
     
     st.markdown("## 🔍 **Rule Monitor Dashboard**")
@@ -4759,7 +4760,65 @@ Detected Triggers: {current_context['triggers']}
     with tab4:
         st.markdown("### 🔄 **Real-time Rule Activation Framework**")
         
+        # Show rule activation history section
+        st.markdown("### 🕐 **Rule Activation History**")
+        
+        # Try to get dynamic rule activator for history
+        try:
+            from utils.rule_system.dynamic_rule_activator import get_dynamic_activator
+            activator = get_dynamic_activator()
+            
+            if hasattr(activator, 'rule_activation_history') and activator.rule_activation_history:
+                timeline = activator.get_rule_activation_timeline()
+                
+                st.success(f"📊 Found {len(timeline)} rule activation events")
+                
+                # Display recent events (limited for basic view)
+                for i, event in enumerate(timeline[:5]):  # Show last 5 events
+                    event_type_icon = {
+                        'activate': '✅',
+                        'deactivate': '❌', 
+                        'switch': '🔄',
+                        'context_activation': '🎯'
+                    }.get(event['event_type'], '📝')
+                    
+                    st.write(f"{event_type_icon} **{event['timestamp']}** - {event['event_type'].title()}")
+                    st.write(f"   📝 Context: {event['context']}")
+                    st.write(f"   📋 Rules: {', '.join(event['rule_names'][:3])}{'...' if len(event['rule_names']) > 3 else ''}")
+                    st.write(f"   💡 Reason: {event['reason'][:80]}{'...' if len(event['reason']) > 80 else ''}")
+                    st.divider()
+                
+                # Show summary metrics
+                recent_changes = activator.get_recent_rule_changes(hours=24)
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Total Events Today", recent_changes['total_events'])
+                with col2:
+                    st.metric("Context Switches", len(recent_changes['context_switches']))
+                with col3:
+                    st.metric("Rule Changes", len(recent_changes['recent_activations']) + len(recent_changes['recent_deactivations']))
+                    
+            else:
+                st.info("📝 No rule activation events recorded yet. Start the dynamic rule system to track activations.")
+                
+                # Button to initialize dynamic system
+                if st.button("🚀 Initialize Dynamic Rule Tracking"):
+                    try:
+                        from utils.rule_system.dynamic_rule_activator import start_dynamic_rule_system
+                        activator = start_dynamic_rule_system()
+                        st.session_state.dynamic_activator = activator
+                        st.success("✅ Dynamic rule tracking initialized!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Failed to initialize: {e}")
+                        
+        except Exception as e:
+            st.warning(f"⚠️ Rule activation history not available: {e}")
+            st.info("💡 Install the dynamic rule system for full activation tracking.")
+        
         # Show the activation framework
+        st.markdown("### ⚡ **Rule Activation Framework**")
         display_rule_activation_framework()
         
         # Show live rule activation process
@@ -5090,7 +5149,7 @@ def display_rule_monitor_interface():
         st.metric(
             "Active Rules",
             status['rules_count'],
-            delta=f"{status['efficiency_metrics']['token_efficiency']:.1f}% efficiency"
+            delta=None
         )
     
     with col3:
@@ -5205,34 +5264,24 @@ def display_rule_monitor_interface():
     
     efficiency_metrics = status.get('efficiency_metrics', {})
     
-    col_token, col_performance, col_quality = st.columns(3)
+    # Show only actual useful metrics
+    active_rules_count = status.get('rules_count', 0)
+    current_context = status.get('current_context', 'Unknown')
     
-    with col_token:
-        token_eff = efficiency_metrics.get('token_efficiency', 0)
-        st.metric(
-            "Token Efficiency",
-            f"{token_eff:.1f}%",
-            delta=f"Target: 85%" if token_eff < 85 else "✅ Above target"
-        )
-        
-        # Progress bar
-        st.progress(min(token_eff / 100, 1.0))
+    col1, col2 = st.columns(2)
     
-    with col_performance:
-        response_time = efficiency_metrics.get('avg_response_time', 0)
+    with col1:
         st.metric(
-            "Avg Response Time",
-            f"{response_time:.2f}s",
-            delta="Target: <3s" if response_time > 3 else "✅ Within target"
+            "Active Rules",
+            f"{active_rules_count}"
         )
     
-    with col_quality:
-        rule_compliance = efficiency_metrics.get('rule_compliance', 0)
+    with col2:
         st.metric(
-            "Rule Compliance",
-            f"{rule_compliance:.1f}%",
-            delta="Target: 100%" if rule_compliance < 100 else "✅ Perfect"
+            "Current Context", 
+            current_context
         )
+    
     
     # === DETAILED MONITORING SECTION ===
     st.markdown("## 🔍 **Detailed Monitoring**")
@@ -5255,11 +5304,38 @@ def display_rule_monitor_interface():
         
         # Rule activation timeline
         st.markdown("#### 🕐 **Rule Activation Timeline**")
-        if hasattr(activator, 'rule_activation_history'):
-            # This would show a timeline of when rules were activated/deactivated
-            st.info("📈 Rule activation timeline would be displayed here")
+        if hasattr(activator, 'rule_activation_history') and activator.rule_activation_history:
+            timeline = activator.get_rule_activation_timeline()
+            
+            if timeline:
+                st.success(f"📊 Found {len(timeline)} rule activation events")
+                
+                # Display recent events
+                for i, event in enumerate(timeline[:10]):  # Show last 10 events
+                    event_type_icon = {
+                        'activate': '✅',
+                        'deactivate': '❌', 
+                        'switch': '🔄',
+                        'context_activation': '🎯'
+                    }.get(event['event_type'], '📝')
+                    
+                    with st.expander(f"{event_type_icon} {event['timestamp']} - {event['event_type'].title()} ({event['rules_affected']} rules)"):
+                        col1, col2 = st.columns([1, 1])
+                        
+                        with col1:
+                            st.write(f"**Context:** {event['context']}")
+                            st.write(f"**Reason:** {event['reason']}")
+                            st.write(f"**Efficiency Impact:** {event['efficiency_impact']:.2f}")
+                            
+                        with col2:
+                            st.write("**Rules Affected:**")
+                            for rule in event['rule_names']:
+                                st.code(rule)
+                    
+            else:
+                st.info("📝 No rule activation events recorded yet")
         else:
-            st.info("ℹ️ Rule activation history not available")
+            st.warning("⚠️ Rule activation history not available - dynamic rule system may not be initialized")
     
     with monitor_tab2:
         st.markdown("### 🎯 **Context Detection Testing**")

@@ -24,7 +24,7 @@ from enum import Enum
 # Import the specialized team
 import sys
 sys.path.append(str(Path(__file__).parent.parent.parent))
-from agents.workflow_orchestration_team import (
+from agents.teams.workflow_orchestration_team import (
     WorkflowOrchestrationTeam,
     WorkflowComposition,
     WorkflowStep,

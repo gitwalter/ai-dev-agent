@@ -46,7 +46,50 @@ This rule implements principles from:
 - **Kent Beck**: Test-Driven Development, Extreme Programming
 - **Gang of Four**: Design Patterns and object-oriented design
 
-## 1. Code Quality Standards
+## 1. Data Integrity and Authenticity
+
+### **NO FAKE VALUES - CRITICAL PRINCIPLE**
+```python
+# FORBIDDEN: Fake, placeholder, or arbitrary values in production code
+efficiency_gain = 0.15  # WRONG - arbitrary hardcoded value
+baseline_time = 100.0   # WRONG - fake baseline
+performance_bonus = 8.5  # WRONG - magic number without measurement
+
+# REQUIRED: Only real, measured, or calculated values
+start_time = time.perf_counter()  # Real measurement
+result = actual_operation()
+end_time = time.perf_counter()
+actual_duration = end_time - start_time  # Real calculation
+
+# REQUIRED: If you can't measure it accurately, don't show it
+if can_measure_accurately():
+    display_metric(measured_value)
+else:
+    # Don't show fake values - better to show nothing than lies
+    pass
+
+# FORBIDDEN: Placeholder data presented as real metrics
+return {
+    'efficiency': 85.0,  # WRONG - where did 85% come from?
+    'tokens_saved': 1000  # WRONG - based on what calculation?
+}
+
+# REQUIRED: Clear indication when using estimates
+return {
+    'estimated_efficiency': calculate_from_real_data(),  # Clear it's estimated
+    'measurement_method': 'tiktoken_word_count',         # How it was measured
+    'confidence_level': 0.8                             # How confident we are
+}
+```
+
+### **Measurement Authenticity Standards**
+- **Real Data Only**: All metrics must be based on actual measurements or calculations
+- **No Magic Numbers**: Every value must have a traceable source or calculation method
+- **Transparent Methods**: Always document how values were obtained
+- **Fail Fast**: If measurement is impossible, fail rather than fake
+- **User Trust**: Never present estimates as absolute facts
+
+## 2. Code Quality Standards
 
 ### **Clean Code Principles**
 ```python
@@ -523,6 +566,7 @@ This rule is **ALWAYS ACTIVE** and applies to:
 ### **Quality Gates**
 Before any code is considered complete:
 
+- [ ] **NO FAKE VALUES**: All data is real, measured, or clearly marked as estimates
 - [ ] **Clean Code**: Self-documenting, well-structured
 - [ ] **Type Safety**: Full type annotations and validation
 - [ ] **Error Handling**: Comprehensive exception management
@@ -536,13 +580,14 @@ Before any code is considered complete:
 ### **Review Checklist**
 Every piece of code must pass:
 
-1. **Functionality**: Does it work correctly?
-2. **Readability**: Can others understand it easily?
-3. **Maintainability**: Can it be easily modified?
-4. **Testability**: Is it thoroughly tested?
-5. **Performance**: Does it meet performance requirements?
-6. **Security**: Are security concerns addressed?
-7. **Documentation**: Is it properly documented?
+1. **Data Authenticity**: Are all values real, measured, or clearly marked as estimates?
+2. **Functionality**: Does it work correctly?
+3. **Readability**: Can others understand it easily?
+4. **Maintainability**: Can it be easily modified?
+5. **Testability**: Is it thoroughly tested?
+6. **Performance**: Does it meet performance requirements?
+7. **Security**: Are security concerns addressed?
+8. **Documentation**: Is it properly documented?
 
 ## Remember
 

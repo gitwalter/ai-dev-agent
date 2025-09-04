@@ -1,6 +1,6 @@
 # Test Catalogue - Comprehensive Test Documentation
 
-**Generated**: 2025-09-04 15:44:02  
+**Generated**: 2025-09-04 18:00:44  
 **Generator**: Test Catalogue Generator v1.0  
 **Purpose**: Complete inventory and documentation of all test cases
 
@@ -234,76 +234,76 @@ Excellence Standards Applied:
 
 #### Test Classes
 
-- **`TestGitHooksInfrastructure`** (Line 40)
+- **`TestGitHooksInfrastructure`** (Line 38)
   - *Comprehensive tests for git hooks automation infrastructure*
   - Category: Infrastructure
-- **`TestGitHooksEndToEndScenarios`** (Line 222)
+- **`TestGitHooksEndToEndScenarios`** (Line 220)
   - *End-to-end scenario tests for git hooks automation*
   - Category: General
-- **`TestGitHooksErrorScenarios`** (Line 279)
+- **`TestGitHooksErrorScenarios`** (Line 277)
   - *Test error scenarios and edge cases for git hooks automation*
   - Category: General
-- **`TestGitHooksDocumentationAndCompliance`** (Line 325)
+- **`TestGitHooksDocumentationAndCompliance`** (Line 323)
   - *Test documentation and compliance aspects of git hooks automation*
   - Category: General
 
 #### Test Functions
 
-- **`test_safe_git_operations_initialization`** (Line 57)
+- **`test_safe_git_operations_initialization`** (Line 55)
   - *Test SafeGitOperations initializes correctly*
   - Category: General
-- **`test_git_status_check`** (Line 66)
+- **`test_git_status_check`** (Line 64)
   - *Test git status checking functionality*
   - Category: General
-- **`test_database_files_detection`** (Line 75)
+- **`test_database_files_detection`** (Line 73)
   - *Test detection of staged database files*
   - Category: General
-- **`test_safe_git_operations_command_line_interface`** (Line 84)
+- **`test_safe_git_operations_command_line_interface`** (Line 82)
   - *Test the command line interface of safe_git_operations*
   - Category: General
-- **`test_safe_git_operations_pre_merge_command`** (Line 96)
+- **`test_safe_git_operations_pre_merge_command`** (Line 94)
   - *Test pre-merge command functionality*
   - Category: General
-- **`test_safe_git_operations_post_merge_command`** (Line 108)
+- **`test_safe_git_operations_post_merge_command`** (Line 106)
   - *Test post-merge command functionality*
   - Category: General
-- **`test_git_hooks_files_exist`** (Line 120)
+- **`test_git_hooks_files_exist`** (Line 118)
   - *Test that required git hook files exist*
   - Category: General
-- **`test_powershell_pre_push_hook_execution`** (Line 144)
+- **`test_powershell_pre_push_hook_execution`** (Line 142)
   - *Test PowerShell pre-push hook execution on Windows*
   - Category: General
-- **`test_powershell_post_merge_hook_execution`** (Line 161)
+- **`test_powershell_post_merge_hook_execution`** (Line 159)
   - *Test PowerShell post-merge hook execution on Windows*
   - Category: General
-- **`test_error_handling_invalid_command`** (Line 177)
+- **`test_error_handling_invalid_command`** (Line 175)
   - *Test error handling for invalid commands*
   - Category: General
-- **`test_prepare_for_pull_functionality`** (Line 189)
+- **`test_prepare_for_pull_functionality`** (Line 187)
   - *Test prepare_for_pull method functionality*
   - Category: General
-- **`test_cleanup_after_pull_functionality`** (Line 203)
+- **`test_cleanup_after_pull_functionality`** (Line 201)
   - *Test cleanup_after_pull method functionality*
   - Category: General
-- **`test_complete_push_pull_cycle_simulation`** (Line 234)
+- **`test_complete_push_pull_cycle_simulation`** (Line 232)
   - *Test simulated complete push-pull cycle*
   - Category: System
-- **`test_database_file_handling_workflow`** (Line 246)
+- **`test_database_file_handling_workflow`** (Line 244)
   - *Test database file handling workflow*
   - Category: System
-- **`test_git_automation_wrapper_integration`** (Line 258)
+- **`test_git_automation_wrapper_integration`** (Line 256)
   - *Test integration with git automation wrapper*
   - Category: Integration
-- **`test_missing_git_repository`** (Line 289)
+- **`test_missing_git_repository`** (Line 287)
   - *Test behavior when not in a git repository*
   - Category: General
-- **`test_git_command_failure_handling`** (Line 306)
+- **`test_git_command_failure_handling`** (Line 304)
   - *Test handling of git command failures*
   - Category: General
-- **`test_safe_git_operations_has_proper_docstrings`** (Line 334)
+- **`test_safe_git_operations_has_proper_docstrings`** (Line 332)
   - *Test that SafeGitOperations has proper documentation*
   - Category: General
-- **`test_git_hooks_contain_required_comments`** (Line 347)
+- **`test_git_hooks_contain_required_comments`** (Line 345)
   - *Test that git hooks contain proper documentation*
   - Category: General
 
@@ -1176,7 +1176,7 @@ MISSION: Prove Wu Wei + Sun Tzu efficiency works in practice.
 
 ---
 
-### `utils\automated_testing\test_reporter.py` (1 tests)
+### `test_utils\automated_testing\test_reporter.py` (1 tests)
 
 **Description**: TestReporter - Test result reporting and notifications
 
@@ -2915,10 +2915,10 @@ Tests the distinction between checking rule applicability and selective applicat
 - `security/` - 1 files, 14 tests
 - `supervisor/` - 2 files, 21 tests
 - `system/` - 1 files, 0 tests
+- `test_utils\automated_testing/` - 1 files, 1 tests
 - `unit/` - 7 files, 135 tests
 - `unit\agents/` - 3 files, 37 tests
 - `unit\prompts/` - 4 files, 82 tests
-- `utils\automated_testing/` - 1 files, 1 tests
 - `workflow/` - 4 files, 94 tests
 
 ### Test Distribution by Category

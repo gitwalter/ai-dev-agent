@@ -133,7 +133,7 @@ class TestAgentExecution:
         """Test RequirementsAnalyst execution to identify the src property error."""
         
                 # Mock LangChain availability
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
+        with patch('agents.development.requirements_analyst.LANGCHAIN_AVAILABLE', True):
             
             # Create the agent
             agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client
@@ -352,7 +352,7 @@ class TestAgentExecution:
         """Test agent execution with empty response."""
         
         # Mock LangChain availability and make the _execute_with_langchain method return empty response
-        with patch('agents.requirements_analyst.LANGCHAIN_AVAILABLE', True):
+        with patch('agents.development.requirements_analyst.LANGCHAIN_AVAILABLE', True):
             
             # Create the agent
             agent = RequirementsAnalyst(agent_config, Mock())  # Mock gemini_client

@@ -102,7 +102,7 @@ class CodeGenerator(EnhancedBaseAgent):
                         setattr(self, attr, getattr(base_config, attr))
         
         agent_config = CodeGeneratorConfig(config)
-        super().__init__(agent_config)
+        super().__init__(agent_config, gemini_client)
         self.prompt_loader = get_agent_prompt_loader("code_generator")
         
         # Setup LangChain parser if available
@@ -113,6 +113,37 @@ class CodeGenerator(EnhancedBaseAgent):
         
         # Initialize the legacy parser with format instructions
         self.parser = OutputParserFactory.get_parser("code_generator")
+    
+    def get_enhanced_prompt(self, base_prompt: str) -> str:
+        """
+        Enhance prompt with masters principles guidance.
+        
+        CRITICAL: This ensures all agent prompts include masters guidance.
+        """
+        # Try to use parent method if available
+        if hasattr(super(), 'get_enhanced_prompt'):
+            return super().get_enhanced_prompt(base_prompt)
+        
+        # Fallback implementation
+        return f"""
+{base_prompt}
+
+🎯 **Software Engineering Masters Guidance:**
+- Follow Uncle Bob's Clean Code principles
+- Apply Martin Fowler's refactoring patterns  
+- Use Steve McConnell's construction practices
+- Implement Kent Beck's TDD methodology
+
+🗂️ **File Organization Requirement:**
+ALL files must be placed in correct directories according to sacred organization rules.
+- Tests → tests/ directory
+- Agents → agents/ directory  
+- Utils → utils/ directory
+- Models → models/ directory
+- Documentation → docs/ directory
+
+NEVER violate file organization rules!
+"""
     
     def validate_task(self, task: Any) -> bool:
         """

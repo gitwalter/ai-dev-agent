@@ -6,6 +6,9 @@ Wu wei approach - runs cleanup automatically before tests
 import pytest
 import shutil
 import sys
+import gc
+import sqlite3
+import tempfile
 from pathlib import Path
 
 # Add project root to Python path
@@ -15,8 +18,52 @@ if str(project_root) not in sys.path:
 
 
 def pytest_sessionstart(session):
-    """Clean up generated_projects before test session starts."""
+    """Clean up before test session starts."""
+    cleanup_databases()
     cleanup_generated_projects()
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Clean up after test session ends."""
+    cleanup_databases()
+
+
+def cleanup_databases():
+    """Clean up database files and connections to prevent Windows locking issues."""
+    print("🧹 Cleaning up database connections and files...")
+    
+    # Force close all SQLite connections
+    gc.collect()
+    if hasattr(sqlite3, '_connections'):
+        sqlite3._connections.clear()
+    
+    # Remove test database files
+    patterns = ["*.db", "*.sqlite", "*.sqlite3", "*test*.db", "*temp*.db"]
+    test_dirs = [
+        Path("tests"),
+        Path(tempfile.gettempdir()),
+        Path("cache"),
+        Path("analytics"),
+        Path("templates"),
+        Path("prompts")
+    ]
+    
+    removed_count = 0
+    for test_dir in test_dirs:
+        if test_dir.exists():
+            for pattern in patterns:
+                for db_file in test_dir.rglob(pattern):
+                    try:
+                        if db_file.is_file():
+                            db_file.unlink()
+                            removed_count += 1
+                    except PermissionError:
+                        pass  # Skip locked files
+                    except Exception:
+                        pass  # Skip other errors
+    
+    if removed_count > 0:
+        print(f"   Cleaned up {removed_count} database files")
 
 
 def cleanup_generated_projects():

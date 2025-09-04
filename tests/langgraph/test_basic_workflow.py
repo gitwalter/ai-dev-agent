@@ -362,7 +362,7 @@ class TestRequirementsAnalysisNode:
         assert output.summary["estimated_complexity"] == "low"
     
     @pytest.mark.asyncio
-    async def test_requirements_node_integration(self, mock_llm, basic_state):
+    async def test_requirements_node_integration(self, basic_state):
         """Test requirements analysis node with mock LLM."""
         if not LANGGRAPH_AVAILABLE:
             pytest.skip("LangGraph not available")
