@@ -40,7 +40,16 @@ This is a **foundational research project** that teaches how to build AI agent s
 
 ---
 
-## Quick Start
+## 🚀 **Quick Start**
+
+### **📖 Essential Reading: Complete Cursor Practical Guide**
+**[→ Complete Cursor Practical Guide](docs/guides/development/CURSOR_PRACTICAL_GUIDE.md)** 🎯
+
+**THE definitive guide for developers using our revolutionary AI development system:**
+- Full development workflows (coding, debugging, testing, deployment)
+- Complete agile management with automation
+- @keyword mastery for instant context switching  
+- Advanced features and troubleshooting
 
 ### Prerequisites
 - **Python**: Use Anaconda installation at `C:\App\Anaconda\` (Windows)

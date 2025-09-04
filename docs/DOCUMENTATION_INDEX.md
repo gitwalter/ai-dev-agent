@@ -121,6 +121,16 @@
 
 ## 🎯 **Quick Reference**
 
+### **🚀 START HERE: Complete Cursor Practical Guide** 
+**[→ CURSOR_PRACTICAL_GUIDE.md](guides/development/CURSOR_PRACTICAL_GUIDE.md)** 🎯 **ESSENTIAL READING**
+
+**The ultimate guide for developers using our revolutionary system:**
+- Complete development workflows (coding, debugging, testing, deployment)
+- Full agile management automation
+- @keyword mastery for instant context switching
+- Platform-safe operations and troubleshooting
+- Advanced features and pro tips
+
 ### **Deductive-Inductive Rule System** 🎯 **REVOLUTIONIZED**
 1. **Foundation Rules**: Always applied (ethical_dna_core, safety_first_principle, systematic_completion, development_excellence)
 2. **Context Rules**: Triggered by keywords and patterns
