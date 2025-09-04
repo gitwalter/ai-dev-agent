@@ -554,7 +554,7 @@ AgentSwarm:
 
 ### **📖 ESSENTIAL: Read the Complete Practical Guide First**
 
-**[→ Complete Cursor Practical Guide](../docs/guides/development/CURSOR_PRACTICAL_GUIDE.md)** 🎯
+**[→ Complete Cursor Practical Guide](../docs/guides/development/cursor-practical-guide.md)** 🎯
 
 This comprehensive guide covers:
 - **Full development workflow** (coding, debugging, testing, deployment)

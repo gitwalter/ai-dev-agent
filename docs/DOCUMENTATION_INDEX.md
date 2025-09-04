@@ -122,7 +122,7 @@
 ## 🎯 **Quick Reference**
 
 ### **🚀 START HERE: Complete Cursor Practical Guide** 
-**[→ CURSOR_PRACTICAL_GUIDE.md](guides/development/CURSOR_PRACTICAL_GUIDE.md)** 🎯 **ESSENTIAL READING**
+**[→ cursor-practical-guide.md](guides/development/cursor-practical-guide.md)** 🎯 **ESSENTIAL READING**
 
 **The ultimate guide for developers using our revolutionary system:**
 - Complete development workflows (coding, debugging, testing, deployment)

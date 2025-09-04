@@ -43,7 +43,7 @@ This is a **foundational research project** that teaches how to build AI agent s
 ## 🚀 **Quick Start**
 
 ### **📖 Essential Reading: Complete Cursor Practical Guide**
-**[→ Complete Cursor Practical Guide](docs/guides/development/CURSOR_PRACTICAL_GUIDE.md)** 🎯
+**[→ Complete Cursor Practical Guide](docs/guides/development/cursor-practical-guide.md)** 🎯
 
 **THE definitive guide for developers using our revolutionary AI development system:**
 - Full development workflows (coding, debugging, testing, deployment)
