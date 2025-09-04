@@ -234,25 +234,25 @@ async def test_agent(agent_name: str, config) -> bool:
         
         # Import the agent
         if agent_name == "requirements_analyst":
-            from agents.requirements_analyst import RequirementsAnalyst
+            from agents.development.requirements_analyst import RequirementsAnalyst
             agent = RequirementsAnalyst(agent_config, gemini_client)
         elif agent_name == "architecture_designer":
-            from agents.architecture_designer import ArchitectureDesigner
+            from agents.development.architecture_designer import ArchitectureDesigner
             agent = ArchitectureDesigner(agent_config, gemini_client)
         elif agent_name == "code_generator":
-            from agents.code_generator import CodeGenerator
+            from agents.development.code_generator import CodeGenerator
             agent = CodeGenerator(agent_config, gemini_client)
         elif agent_name == "test_generator":
-            from agents.test_generator import TestGenerator
+            from agents.development.test_generator import TestGenerator
             agent = TestGenerator(agent_config, gemini_client)
         elif agent_name == "code_reviewer":
-            from agents.code_reviewer import CodeReviewer
+            from agents.development.code_reviewer import CodeReviewer
             agent = CodeReviewer(agent_config, gemini_client)
         elif agent_name == "security_analyst":
-            from agents.security_analyst import SecurityAnalyst
+            from agents.security.security_analyst import SecurityAnalyst
             agent = SecurityAnalyst(agent_config, gemini_client)
         elif agent_name == "documentation_generator":
-            from agents.documentation_generator import DocumentationGenerator
+            from agents.development.documentation_generator import DocumentationGenerator
             agent = DocumentationGenerator(agent_config, gemini_client)
         else:
             logger.error(f"Unknown agent: {agent_name}")

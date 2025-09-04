@@ -11,11 +11,12 @@ from typing import Dict, Any
 from unittest.mock import Mock, patch, AsyncMock
 
 from agents import (
-    BaseAgent, AgentConfig, AgentState, AgentFactory, AgentManager,
-    RequirementsAnalysisAgent, get_agent_manager, execute_task,
+    BaseAgent, AgentConfig, AgentFactory, AgentManager,
+    RequirementsAnalyst, get_agent_manager, execute_task,
     analyze_requirements, get_system_status
 )
-from agents.agent_manager import AgentPerformanceMonitor, AgentConfigManager
+from agents.core.agent_manager import AgentPerformanceMonitor, AgentConfigManager
+from models.state import AgentState
 
 class TestAgentConfig:
     """Test AgentConfig dataclass."""
@@ -41,16 +42,49 @@ class TestAgentState:
     
     def test_agent_state_creation(self):
         """Test creating an AgentState instance."""
-        state = AgentState(agent_id="test_agent")
+        from datetime import datetime
         
-        assert state.agent_id == "test_agent"
-        assert state.status == "idle"
-        assert state.current_task is None
-        assert state.start_time is None
-        assert state.end_time is None
-        assert state.error_count == 0
-        assert state.success_count == 0
-        assert state.total_executions == 0
+        state = AgentState(
+            project_context="test context",
+            project_name="test project",
+            requirements=[],
+            user_stories=[],
+            architecture={},
+            tech_stack={},
+            database_schema={},
+            code_files={},
+            tests={},
+            documentation={},
+            configuration_files={},
+            current_task="test_task",
+            current_agent="test_agent",
+            agent_outputs={},
+            workflow_history=[],
+            human_approval_needed=False,
+            approval_requests=[],
+            human_feedback={},
+            errors=[],
+            warnings=[],
+            retry_count=0,
+            memory_context="",
+            memory_query="",
+            memory_timestamp="",
+            recall_memories=[],
+            knowledge_triples=[],
+            memory_stats={},
+            handoff_queue=[],
+            handoff_history=[],
+            agent_availability={},
+            collaboration_context={},
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+            session_id="test_session"
+        )
+        
+        assert state["current_agent"] == "test_agent"
+        assert state["current_task"] == "test_task"
+        assert state["project_name"] == "test project"
+        assert state["human_approval_needed"] is False
 
 class TestAgentFactory:
     """Test AgentFactory class."""
@@ -246,8 +280,8 @@ class TestAgentManager:
         agent_types = manager.list_available_agent_types()
         assert "test_type" in agent_types
 
-class TestRequirementsAnalysisAgent:
-    """Test RequirementsAnalysisAgent class."""
+class TestRequirementsAnalyst:
+    """Test RequirementsAnalyst class."""
     
     def test_agent_initialization(self):
         """Test agent initialization."""
@@ -257,7 +291,7 @@ class TestRequirementsAnalysisAgent:
             prompt_template_id="requirements_template"
         )
         
-        agent = RequirementsAnalysisAgent(config)
+        agent = RequirementsAnalyst(config)
         
         assert agent.config.agent_id == "test_agent"
         assert agent.config.agent_type == "requirements_analysis"
@@ -271,7 +305,7 @@ class TestRequirementsAnalysisAgent:
             prompt_template_id="requirements_template"
         )
         
-        agent = RequirementsAnalysisAgent(config)
+        agent = RequirementsAnalyst(config)
         
         # Valid task
         valid_task = {
@@ -301,7 +335,7 @@ class TestRequirementsAnalysisAgent:
             prompt_template_id="requirements_template"
         )
         
-        agent = RequirementsAnalysisAgent(config)
+        agent = RequirementsAnalyst(config)
         
         task = {
             'description': 'Create a user authentication system',
@@ -331,7 +365,7 @@ class TestRequirementsAnalysisAgent:
             prompt_template_id="requirements_template"
         )
         
-        agent = RequirementsAnalysisAgent(config)
+        agent = RequirementsAnalyst(config)
         
         text = "Create a web API with database security and cloud scalability"
         keywords = agent._extract_keywords(text)
@@ -350,7 +384,7 @@ class TestRequirementsAnalysisAgent:
             prompt_template_id="requirements_template"
         )
         
-        agent = RequirementsAnalysisAgent(config)
+        agent = RequirementsAnalyst(config)
         
         description = "User can login and reset password"
         keywords = ['api', 'security']
@@ -371,7 +405,7 @@ class TestRequirementsAnalysisAgent:
             prompt_template_id="requirements_template"
         )
         
-        agent = RequirementsAnalysisAgent(config)
+        agent = RequirementsAnalyst(config)
         
         description = "Create a secure API with database"
         keywords = ['api', 'database', 'security']
@@ -443,7 +477,7 @@ class TestAgentPerformance:
     
     def test_performance_monitor_initialization(self):
         """Test performance monitor initialization."""
-        from agents.agent_manager import AgentPerformanceMonitor
+        from agents.core.agent_manager import AgentPerformanceMonitor
         
         monitor = AgentPerformanceMonitor()
         
@@ -451,7 +485,7 @@ class TestAgentPerformance:
     
     def test_record_execution(self):
         """Test recording agent execution."""
-        from agents.agent_manager import AgentPerformanceMonitor
+        from agents.core.agent_manager import AgentPerformanceMonitor
         
         monitor = AgentPerformanceMonitor()
         
@@ -487,7 +521,7 @@ class TestAgentPerformance:
     
     def test_get_summary(self):
         """Test getting performance summary."""
-        from agents.agent_manager import AgentPerformanceMonitor
+        from agents.core.agent_manager import AgentPerformanceMonitor
         
         monitor = AgentPerformanceMonitor()
         

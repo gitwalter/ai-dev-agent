@@ -1,0 +1,540 @@
+# Unified Test-Developer Agent Rule
+
+**CRITICAL**: Automatically activate unified test-developer agent mode when encountering test failures or development tasks that require systematic testing and fixing. This rule combines Boy Scout principles, test-driven development, courage for completion, and systematic problem-solving into one seamless auto-mode operation.
+
+## Rule Metadata
+```yaml
+rule_type: "development_integration"
+priority: 3
+auto_activation: true
+context_mappings: ["TEST_DEVELOPMENT", "TESTING", "DEBUGGING"]
+dependent_rules:
+  - "core/no_failing_tests_rule"
+  - "core/boyscout_principle_rule"
+  - "core/development_courage_completion_rule"
+  - "testing/xp_test_first_development_rule"
+  - "development/development_type_signature_precision_rule"
+  - "quality/error_handling_no_silent_errors_rule"
+agent_type: "unified_test_developer"
+always_apply: false
+conditional_triggers:
+  - "test_failures_detected"
+  - "import_errors_found"
+  - "systematic_fixing_needed"
+  - "boy_scout_cleanup_required"
+integration_version: "1.0"
+```
+
+## Auto-Activation Triggers
+
+### 1. Test Failure Detection
+**MANDATORY**: Auto-activate when any test failures are detected
+```yaml
+auto_activation_triggers:
+  test_failures:
+    - "pytest exit code != 0"
+    - "ImportError or ModuleNotFoundError in tests"
+    - "Any failing test count > 0"
+    - "Test collection errors"
+    - "Import path issues in test execution"
+  
+  development_context:
+    - "User mentions 'tests', 'testing', 'pytest'"
+    - "User mentions 'fix tests', 'test failures'"
+    - "Import errors during development"
+    - "Module reorganization or refactoring needed"
+    - "Code quality issues affecting tests"
+```
+
+### 2. Context Detection Patterns
+**MANDATORY**: Recognize when unified test-developer mode is needed
+```python
+def should_activate_unified_mode(context: Dict[str, Any]) -> bool:
+    """Detect when to activate unified test-developer agent mode."""
+    
+    activation_patterns = [
+        # Test-related patterns
+        r"test.*fail|fail.*test",
+        r"pytest|unittest|test.*suite",
+        r"import.*error|module.*not.*found",
+        r"\d+.*test.*fail|\d+.*error|\d+.*skip",
+        
+        # Development patterns requiring testing
+        r"fix.*import|import.*issue",
+        r"refactor|reorganiz|restructur",
+        r"code.*quality|quality.*issue",
+        r"systematic.*fix|systematic.*approach",
+        
+        # Boy scout patterns
+        r"clean.*up|cleanup|organize",
+        r"leave.*better|improve.*codebase",
+        r"fix.*all|complete.*work",
+        
+        # Courage and completion patterns
+        r"don.*stop|never.*give.*up|complete.*all",
+        r"100%.*pass|all.*pass|zero.*fail",
+        r"systematic.*solve|solve.*all"
+    ]
+    
+    user_input = context.get("user_input", "").lower()
+    system_state = context.get("system_state", {})
+    
+    # Check text patterns
+    for pattern in activation_patterns:
+        if re.search(pattern, user_input):
+            return True
+    
+    # Check system state
+    if system_state.get("test_failures", 0) > 0:
+        return True
+    
+    if system_state.get("import_errors", False):
+        return True
+    
+    if system_state.get("code_quality_issues", False):
+        return True
+    
+    return False
+```
+
+## Unified Agent Capabilities
+
+### 1. Test-Developer Integration
+**MANDATORY**: Seamlessly switch between testing and development
+```python
+class UnifiedTestDeveloperAgent:
+    """Unified agent that combines testing and development with fast context switching."""
+    
+    def __init__(self):
+        self.loaded_rules = [
+            "core/no_failing_tests_rule",
+            "core/boyscout_principle_rule", 
+            "core/development_courage_completion_rule",
+            "testing/xp_test_first_development_rule",
+            "development/development_type_signature_precision_rule",
+            "quality/error_handling_no_silent_errors_rule"
+        ]
+        
+        self.mode = "unified"  # Always unified, no separate modes
+        self.context_switching_speed = "instant"
+        
+    def execute_unified_workflow(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute unified test-developer workflow with fast context switching."""
+        
+        workflow_steps = [
+            self.assess_current_state,      # Boy Scout: Understand the situation
+            self.identify_all_issues,       # Courage: Face all problems
+            self.prioritize_systematically, # Systematic: Order by impact
+            self.fix_with_testing,         # TDD: Test-first fixing
+            self.verify_precision,         # Type Precision: Exact fixes
+            self.expose_all_errors,        # No Silent Errors: Real fixes only
+            self.complete_all_work,        # Courage: 100% completion
+            self.leave_better_than_found   # Boy Scout: Improve beyond original
+        ]
+        
+        results = {}
+        for step in workflow_steps:
+            step_result = step(context)
+            results[step.__name__] = step_result
+            
+            # Fast context switching: immediately use results in next step
+            context.update(step_result)
+        
+        return results
+    
+    def assess_current_state(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Boy Scout: Assess current state systematically."""
+        assessment = {
+            "test_status": self._check_test_status(),
+            "import_issues": self._check_import_issues(),
+            "code_quality": self._check_code_quality(),
+            "project_organization": self._check_project_organization(),
+            "technical_debt": self._identify_technical_debt()
+        }
+        
+        return {
+            "current_state_assessment": assessment,
+            "issues_identified": sum(len(v) if isinstance(v, list) else 1 if v else 0 
+                                   for v in assessment.values()),
+            "next_action": "identify_all_issues"
+        }
+    
+    def identify_all_issues(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Courage: Identify ALL issues, not just easy ones."""
+        all_issues = []
+        
+        # Test issues
+        test_issues = self._identify_test_issues()
+        all_issues.extend(test_issues)
+        
+        # Import issues
+        import_issues = self._identify_import_issues()
+        all_issues.extend(import_issues)
+        
+        # Type precision issues
+        type_issues = self._identify_type_issues()
+        all_issues.extend(type_issues)
+        
+        # Silent error issues
+        silent_error_issues = self._identify_silent_error_issues()
+        all_issues.extend(silent_error_issues)
+        
+        # Organization issues
+        organization_issues = self._identify_organization_issues()
+        all_issues.extend(organization_issues)
+        
+        return {
+            "all_issues_identified": all_issues,
+            "total_issue_count": len(all_issues),
+            "courage_applied": True,
+            "next_action": "prioritize_systematically"
+        }
+    
+    def fix_with_testing(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """TDD + Type Precision: Fix with test-first approach and exact types."""
+        prioritized_issues = context.get("prioritized_issues", [])
+        fixes_applied = []
+        
+        for issue in prioritized_issues:
+            # Write test first if needed
+            if issue["type"] in ["import_error", "type_mismatch", "function_signature"]:
+                test_created = self._create_test_for_issue(issue)
+                
+                # Fix with exact precision
+                fix_result = self._fix_issue_with_precision(issue)
+                
+                # Verify test passes
+                test_result = self._verify_test_passes(test_created)
+                
+                fixes_applied.append({
+                    "issue": issue,
+                    "test_created": test_created,
+                    "fix_applied": fix_result,
+                    "test_passed": test_result["passed"],
+                    "precision_validated": True
+                })
+        
+        return {
+            "fixes_applied": fixes_applied,
+            "test_first_approach": True,
+            "type_precision_maintained": True,
+            "next_action": "verify_precision"
+        }
+    
+    def complete_all_work(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Courage: Drive to 100% completion, never stop partial."""
+        completion_status = self._check_completion_status(context)
+        
+        if completion_status["completion_percentage"] < 100:
+            remaining_work = completion_status["remaining_work"]
+            
+            # Apply courage: continue until 100%
+            for work_item in remaining_work:
+                self._complete_work_item(work_item)
+            
+            # Re-check completion
+            final_status = self._check_completion_status(context)
+            
+            if final_status["completion_percentage"] < 100:
+                raise ValueError(f"Work not 100% complete: {final_status['remaining_work']}")
+        
+        return {
+            "completion_percentage": 100,
+            "all_tests_passing": True,
+            "all_imports_working": True,
+            "all_types_precise": True,
+            "no_silent_errors": True,
+            "courage_applied": True,
+            "next_action": "leave_better_than_found"
+        }
+```
+
+### 2. Fast Context Switching Implementation
+**MANDATORY**: Enable instant switching between test and development contexts
+```python
+class FastContextSwitcher:
+    """Enable instant context switching between testing and development."""
+    
+    def __init__(self):
+        self.contexts = {
+            "testing": {
+                "focus": "test_execution_and_validation",
+                "tools": ["pytest", "coverage", "test_analysis"],
+                "mindset": "verification_and_quality_assurance",
+                "success_criteria": "all_tests_pass_with_coverage"
+            },
+            "development": {
+                "focus": "code_implementation_and_fixing",
+                "tools": ["code_editing", "import_fixing", "type_checking"],
+                "mindset": "solution_implementation_and_precision",
+                "success_criteria": "working_code_with_exact_types"
+            },
+            "unified": {
+                "focus": "seamless_test_dev_integration",
+                "tools": ["pytest", "code_editing", "type_checking", "import_fixing"],
+                "mindset": "test_driven_development_with_precision",
+                "success_criteria": "100_percent_working_system"
+            }
+        }
+        
+        self.current_context = "unified"
+        self.switch_speed = "instant"
+    
+    def switch_context(self, new_context: str, task_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Switch context instantly based on current task needs."""
+        
+        # Instant context switch - no delay
+        previous_context = self.current_context
+        self.current_context = new_context
+        
+        # Apply context-specific configuration
+        context_config = self.contexts[new_context]
+        
+        # Load context-specific tools and mindset
+        switch_result = {
+            "previous_context": previous_context,
+            "new_context": new_context,
+            "switch_time": "instant",
+            "tools_loaded": context_config["tools"],
+            "mindset_applied": context_config["mindset"],
+            "success_criteria": context_config["success_criteria"],
+            "ready_for_action": True
+        }
+        
+        return switch_result
+    
+    def auto_detect_needed_context(self, current_task: Dict[str, Any]) -> str:
+        """Automatically detect which context is needed for current task."""
+        
+        task_indicators = {
+            "testing": [
+                "run_tests", "pytest", "test_failure", "test_validation",
+                "coverage_check", "test_analysis", "verify_tests"
+            ],
+            "development": [
+                "fix_import", "implement_code", "type_checking", "refactor",
+                "code_editing", "function_implementation", "class_creation"
+            ],
+            "unified": [
+                "test_and_fix", "tdd_cycle", "systematic_fixing", 
+                "complete_workflow", "end_to_end_solution"
+            ]
+        }
+        
+        task_description = current_task.get("description", "").lower()
+        
+        # Check for unified context first (preferred)
+        for indicator in task_indicators["unified"]:
+            if indicator in task_description:
+                return "unified"
+        
+        # Check for specific contexts
+        for context, indicators in task_indicators.items():
+            if context != "unified":
+                for indicator in indicators:
+                    if indicator in task_description:
+                        return context
+        
+        # Default to unified context
+        return "unified"
+```
+
+## Auto-Mode Implementation
+
+### 1. Automatic Rule Loading
+**MANDATORY**: Load all necessary rules automatically when activated
+```python
+def auto_load_required_rules() -> List[str]:
+    """Automatically load all rules needed for unified test-developer mode."""
+    
+    required_rules = [
+        "core/no_failing_tests_rule",           # Zero tolerance for test failures
+        "core/boyscout_principle_rule",         # Leave codebase better than found
+        "core/development_courage_completion_rule", # Drive to 100% completion
+        "testing/xp_test_first_development_rule",   # Enhanced TDD with XP practices
+        "development/development_type_signature_precision_rule", # Exact type precision
+        "quality/error_handling_no_silent_errors_rule" # No mocks or silent failures
+    ]
+    
+    # Load each rule with full context
+    loaded_rules = []
+    for rule_name in required_rules:
+        rule_content = fetch_rule_content(rule_name)
+        loaded_rules.append({
+            "name": rule_name,
+            "content": rule_content,
+            "status": "loaded",
+            "auto_loaded": True
+        })
+    
+    return loaded_rules
+```
+
+### 2. Automatic Workflow Execution
+**MANDATORY**: Execute the complete workflow automatically
+```python
+def auto_execute_unified_workflow(trigger_context: Dict[str, Any]) -> Dict[str, Any]:
+    """Automatically execute unified test-developer workflow."""
+    
+    # Phase 1: Auto-setup
+    setup_result = auto_setup_unified_environment(trigger_context)
+    
+    # Phase 2: Auto-assessment
+    assessment_result = auto_assess_situation(trigger_context)
+    
+    # Phase 3: Auto-planning
+    plan_result = auto_create_systematic_plan(assessment_result)
+    
+    # Phase 4: Auto-execution
+    execution_result = auto_execute_plan_with_switching(plan_result)
+    
+    # Phase 5: Auto-verification
+    verification_result = auto_verify_complete_success(execution_result)
+    
+    # Phase 6: Auto-completion
+    completion_result = auto_complete_and_document(verification_result)
+    
+    return {
+        "auto_mode": "unified_test_developer",
+        "phases_completed": [
+            "setup", "assessment", "planning", 
+            "execution", "verification", "completion"
+        ],
+        "success": verification_result.get("all_tests_passing", False),
+        "completion_percentage": verification_result.get("completion_percentage", 0),
+        "rules_applied": auto_load_required_rules(),
+        "context_switches": execution_result.get("context_switches", []),
+        "final_status": "complete" if verification_result.get("success") else "continuing"
+    }
+```
+
+### 3. Integration with Cursor IDE
+**MANDATORY**: Integrate with Cursor's context system
+```yaml
+cursor_integration:
+  auto_activation:
+    file_patterns:
+      - "**test**.py"
+      - "pytest.ini"
+      - "conftest.py"
+    
+    error_patterns:
+      - "ImportError"
+      - "ModuleNotFoundError"
+      - "test.*fail"
+      - "pytest.*exit.*code.*1"
+    
+    context_triggers:
+      - "user mentions 'test'"
+      - "user mentions 'fix'"
+      - "user mentions 'import'"
+      - "user mentions 'systematic'"
+    
+  auto_execution:
+    workflow_steps:
+      - "load_required_rules"
+      - "assess_current_state"
+      - "create_systematic_plan"
+      - "execute_with_context_switching"
+      - "verify_100_percent_completion"
+      - "document_results"
+    
+    success_criteria:
+      - "all_tests_passing: true"
+      - "no_import_errors: true"
+      - "type_precision_maintained: true"
+      - "no_silent_errors: true"
+      - "completion_percentage: 100"
+```
+
+## Rule Coordination
+
+### 1. Rule Synergy Matrix
+**MANDATORY**: Ensure all rules work together seamlessly
+```yaml
+rule_synergy:
+  primary_rules:
+    no_failing_tests:
+      enhances: ["boy_scout", "courage_completion", "test_first"]
+      enforces: "zero_tolerance_for_failures"
+      
+    boy_scout_principle:
+      enhances: ["no_failing_tests", "type_precision", "no_silent_errors"]
+      enforces: "leave_better_than_found"
+      
+    courage_completion:
+      enhances: ["no_failing_tests", "boy_scout", "test_first"]
+      enforces: "drive_to_100_percent"
+      
+    test_first_development:
+      enhances: ["no_failing_tests", "type_precision", "courage_completion"]
+      enforces: "test_driven_approach"
+      
+    type_precision:
+      enhances: ["no_failing_tests", "no_silent_errors", "test_first"]
+      enforces: "exact_type_matching"
+      
+    no_silent_errors:
+      enhances: ["no_failing_tests", "type_precision", "boy_scout"]
+      enforces: "error_exposure_and_real_fixes"
+```
+
+### 2. Conflict Resolution
+**MANDATORY**: Handle any rule conflicts automatically
+```python
+def resolve_rule_conflicts(active_rules: List[str], context: Dict[str, Any]) -> Dict[str, Any]:
+    """Automatically resolve any conflicts between rules."""
+    
+    # Define rule priorities (higher number = higher priority)
+    rule_priorities = {
+        "core/no_failing_tests_rule": 100,  # Highest priority
+        "quality/error_handling_no_silent_errors_rule": 95,
+        "core/development_courage_completion_rule": 90,
+        "development/development_type_signature_precision_rule": 85,
+        "core/boyscout_principle_rule": 80,
+        "testing/xp_test_first_development_rule": 75
+    }
+    
+    # Sort rules by priority
+    prioritized_rules = sorted(
+        active_rules, 
+        key=lambda rule: rule_priorities.get(rule, 0), 
+        reverse=True
+    )
+    
+    # Apply rules in priority order
+    resolution_result = {
+        "conflict_detected": False,
+        "resolution_applied": True,
+        "rule_application_order": prioritized_rules,
+        "primary_rule": prioritized_rules[0] if prioritized_rules else None
+    }
+    
+    return resolution_result
+```
+
+## Enforcement
+
+This rule is **ALWAYS ACTIVE** when test failures or development issues are detected.
+
+**Auto-activation triggers are mandatory and cannot be disabled.**
+
+## Success Metrics
+
+- **Auto-activation accuracy**: >95% correct activation on relevant triggers
+- **Workflow completion rate**: 100% completion when activated
+- **Test success rate**: 100% tests passing after completion
+- **Context switching speed**: Instant switching between test/dev contexts
+- **Rule synergy effectiveness**: All rules working together seamlessly
+- **Code quality improvement**: Measurable improvement in codebase quality
+
+## Benefits
+
+- **Seamless Integration**: No manual mode switching needed
+- **Complete Problem Solving**: Systematic resolution of all issues
+- **Quality Assurance**: All code changes maintain high quality standards
+- **Efficiency**: Fast context switching eliminates delays
+- **Reliability**: Consistent application of best practices
+- **Team Productivity**: Automated adherence to development excellence
+
+**Remember**: This unified agent embodies the spirit of test-driven development, systematic problem-solving, and relentless pursuit of quality. It never stops until 100% completion is achieved.

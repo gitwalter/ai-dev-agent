@@ -1,0 +1,448 @@
+---
+alwaysApply: false
+autoFix: true
+category: context-agile
+contexts:
+- AGILE
+dependencies:
+- ethical_dna_core
+- safety_first_principle
+- systematic_completion
+- development_excellence
+description: Agile Coordination - Consolidated agile project management and artifact system
+enforcement: warning
+formalLayer: context
+globs:
+- '**/*'
+languageGames:
+- agile_methodology
+- project_coordination
+- artifact_management
+linguisticFramework: agile
+logicalType: 2
+priority: medium
+tags:
+- context
+- agile
+- coordination
+- type_2
+- priority_2
+tier: '2'
+---
+
+# Agile Coordination
+
+**CONTEXT RULE**: Comprehensive agile project management coordination with systematic artifact maintenance. This rule consolidates ALL agile-related rules into one complete agile system.
+
+## Core Principle
+
+**"Deliver Working Software with Agile Excellence"**
+
+Coordinate all agile development activities through:
+1. **Systematic Artifact Management**: Keep all agile artifacts current and accurate
+2. **Sprint Coordination**: Manage sprints with velocity tracking and continuous improvement
+3. **User Story Excellence**: Maintain complete user story lifecycle management
+4. **Team Coordination**: Enable effective team collaboration and communication
+5. **Continuous Delivery**: Ensure daily deployable builds and continuous integration
+
+## Foundation: Agile Manifesto + Modern Practices
+
+### **The Agile Values Enhanced**
+```yaml
+Individuals_and_Interactions: "Over processes and tools - but with systematic support"
+Working_Software: "Over comprehensive documentation - but with live documentation"
+Customer_Collaboration: "Over contract negotiation - with user story excellence"
+Responding_to_Change: "Over following a plan - with systematic adaptability"
+```
+
+### **Agile Coordination Framework**
+```python
+# REQUIRED: Comprehensive agile coordination
+def agile_coordination_system(context: AgileContext) -> CoordinationResult:
+    """Apply comprehensive agile coordination to any agile activity."""
+    
+    coordination = CoordinationResult()
+    
+    # Phase 1: Artifact Maintenance
+    coordination.artifacts = maintain_agile_artifacts(context)
+    
+    # Phase 2: Sprint Management
+    coordination.sprint = coordinate_sprint_activities(context)
+    
+    # Phase 3: User Story Management
+    coordination.stories = manage_user_story_lifecycle(context)
+    
+    # Phase 4: Team Coordination
+    coordination.team = coordinate_team_activities(context)
+    
+    # Phase 5: Continuous Delivery
+    coordination.delivery = ensure_continuous_delivery(context)
+    
+    return coordination
+```
+
+## 1. Systematic Artifact Management
+
+### **Live Artifact System**
+```python
+# REQUIRED: Automatic artifact maintenance
+class AgileArtifactSystem:
+    """Systematic management of all agile artifacts."""
+    
+    def __init__(self):
+        self.artifact_registry = self._load_artifact_registry()
+        self.automation_engine = ArtifactAutomationEngine()
+        
+    def maintain_artifacts(self, change_context: ChangeContext) -> ArtifactMaintenance:
+        """Automatically maintain artifacts based on changes."""
+        
+        maintenance = ArtifactMaintenance()
+        
+        # Detect affected artifacts
+        affected_artifacts = self._detect_affected_artifacts(change_context)
+        
+        # Update each affected artifact
+        for artifact in affected_artifacts:
+            update_result = self._update_artifact(artifact, change_context)
+            maintenance.updates.append(update_result)
+        
+        # Validate artifact consistency
+        maintenance.consistency = self._validate_artifact_consistency()
+        
+        # Generate artifact reports
+        maintenance.reports = self._generate_artifact_reports()
+        
+        return maintenance
+    
+    def _detect_affected_artifacts(self, context: ChangeContext) -> List[AgileArtifact]:
+        """Detect which artifacts need updates based on changes."""
+        
+        affected = []
+        
+        # User story changes affect catalogs
+        if context.involves_user_stories:
+            affected.append(self.artifact_registry.user_story_catalog)
+            affected.append(self.artifact_registry.sprint_summary)
+        
+        # Code changes affect epic overview
+        if context.involves_code_changes:
+            affected.append(self.artifact_registry.epic_overview)
+        
+        # Sprint changes affect all sprint artifacts
+        if context.involves_sprint_activities:
+            affected.extend(self.artifact_registry.sprint_artifacts)
+        
+        return affected
+```
+
+### **Artifact Types and Automation**
+```yaml
+# Core Agile Artifacts
+EPIC_OVERVIEW:
+  location: "docs/agile/EPIC_OVERVIEW.md"
+  automation: "Update on epic completion or modification"
+  
+USER_STORY_CATALOG:
+  location: "docs/agile/USER_STORY_CATALOG.md"
+  automation: "Update on any user story status change"
+  
+SPRINT_SUMMARY:
+  location: "docs/agile/SPRINT_SUMMARY.md"
+  automation: "Update daily with sprint progress"
+  
+SPRINT_ARTIFACTS:
+  location: "docs/agile/sprints/sprint_N/"
+  automation: "Create and maintain per sprint"
+  
+TEAM_STAFFING:
+  location: "docs/agile/EXPERT_TEAM_STAFFING_FRAMEWORK.md"
+  automation: "Update on team composition changes"
+```
+
+## 2. Sprint Management Excellence
+
+### **Sprint Coordination System**
+```python
+# REQUIRED: Comprehensive sprint management
+class SprintCoordinationSystem:
+    """Manage complete sprint lifecycle with velocity tracking."""
+    
+    def coordinate_sprint(self, sprint: Sprint) -> SprintCoordination:
+        """Coordinate all aspects of sprint management."""
+        
+        coordination = SprintCoordination()
+        
+        # Sprint planning
+        coordination.planning = self._coordinate_sprint_planning(sprint)
+        
+        # Daily standups
+        coordination.standups = self._manage_daily_standups(sprint)
+        
+        # Sprint execution
+        coordination.execution = self._coordinate_sprint_execution(sprint)
+        
+        # Sprint review
+        coordination.review = self._conduct_sprint_review(sprint)
+        
+        # Sprint retrospective
+        coordination.retrospective = self._facilitate_retrospective(sprint)
+        
+        # Velocity calculation
+        coordination.velocity = self._calculate_sprint_velocity(sprint)
+        
+        return coordination
+    
+    def _coordinate_sprint_planning(self, sprint: Sprint) -> SprintPlanning:
+        """Coordinate comprehensive sprint planning."""
+        
+        planning = SprintPlanning()
+        
+        # Backlog refinement
+        planning.backlog = self._refine_product_backlog()
+        
+        # Capacity planning
+        planning.capacity = self._calculate_team_capacity(sprint)
+        
+        # Story selection
+        planning.stories = self._select_sprint_stories(planning.capacity)
+        
+        # Task breakdown
+        planning.tasks = self._break_down_stories_to_tasks(planning.stories)
+        
+        # Commitment
+        planning.commitment = self._establish_sprint_commitment(planning)
+        
+        return planning
+```
+
+### **Velocity and Metrics**
+```python
+# REQUIRED: Agile metrics and velocity tracking
+def calculate_agile_metrics(sprint_history: List[Sprint]) -> AgileMetrics:
+    """Calculate comprehensive agile metrics."""
+    
+    metrics = AgileMetrics()
+    
+    # Velocity metrics
+    metrics.average_velocity = calculate_average_velocity(sprint_history)
+    metrics.velocity_trend = calculate_velocity_trend(sprint_history)
+    metrics.velocity_stability = calculate_velocity_stability(sprint_history)
+    
+    # Quality metrics
+    metrics.defect_rate = calculate_defect_rate(sprint_history)
+    metrics.story_completion_rate = calculate_completion_rate(sprint_history)
+    metrics.cycle_time = calculate_average_cycle_time(sprint_history)
+    
+    # Predictability metrics
+    metrics.commitment_reliability = calculate_commitment_reliability(sprint_history)
+    metrics.scope_change_frequency = calculate_scope_changes(sprint_history)
+    
+    return metrics
+```
+
+## 3. User Story Excellence
+
+### **User Story Lifecycle Management**
+```python
+# REQUIRED: Complete user story management
+class UserStoryLifecycleManager:
+    """Manage complete user story lifecycle with automation."""
+    
+    def manage_story_lifecycle(self, story: UserStory) -> StoryManagement:
+        """Manage complete user story from creation to completion."""
+        
+        management = StoryManagement()
+        
+        # Story creation and validation
+        management.creation = self._create_and_validate_story(story)
+        
+        # Acceptance criteria definition
+        management.criteria = self._define_acceptance_criteria(story)
+        
+        # Story estimation
+        management.estimation = self._estimate_story_effort(story)
+        
+        # Sprint assignment
+        management.assignment = self._assign_to_sprint(story)
+        
+        # Development tracking
+        management.tracking = self._track_development_progress(story)
+        
+        # Acceptance testing
+        management.testing = self._conduct_acceptance_testing(story)
+        
+        # Story completion
+        management.completion = self._complete_story(story)
+        
+        return management
+    
+    def _create_and_validate_story(self, story: UserStory) -> StoryCreation:
+        """Create and validate user story with quality standards."""
+        
+        creation = StoryCreation()
+        
+        # Validate story format (As a... I want... So that...)
+        creation.format_valid = self._validate_story_format(story)
+        
+        # Validate acceptance criteria
+        creation.criteria_valid = self._validate_acceptance_criteria(story)
+        
+        # Validate story size (not too big/small)
+        creation.size_valid = self._validate_story_size(story)
+        
+        # Assign story ID
+        creation.story_id = self._assign_story_id(story)
+        
+        # Update catalog
+        creation.catalog_updated = self._update_story_catalog(story)
+        
+        return creation
+```
+
+### **Automated Status Updates**
+```python
+# REQUIRED: Automatic user story status updates
+def automated_story_status_updates(code_changes: CodeChanges) -> StatusUpdates:
+    """Automatically update user story status based on code changes."""
+    
+    updates = StatusUpdates()
+    
+    # Detect story-related changes
+    story_references = extract_story_references(code_changes)
+    
+    for story_ref in story_references:
+        story = get_story_by_reference(story_ref)
+        
+        # Determine status update
+        if code_changes.includes_tests and code_changes.tests_passing:
+            if code_changes.includes_feature_complete:
+                updates.append(update_story_status(story, "COMPLETED"))
+            else:
+                updates.append(update_story_status(story, "IN_PROGRESS"))
+        
+        # Update catalog automatically
+        updates.append(update_story_catalog(story))
+    
+    return updates
+```
+
+## 4. Team Coordination
+
+### **Expert Team Staffing**
+```python
+# REQUIRED: Dynamic team staffing and coordination
+class ExpertTeamStaffingSystem:
+    """Manage expert team staffing and coordination."""
+    
+    def coordinate_team_staffing(self, project_needs: ProjectNeeds) -> TeamStaffing:
+        """Coordinate expert team staffing based on project needs."""
+        
+        staffing = TeamStaffing()
+        
+        # Analyze project requirements
+        staffing.requirements = self._analyze_staffing_requirements(project_needs)
+        
+        # Identify needed expertise
+        staffing.expertise_needed = self._identify_expertise_gaps(project_needs)
+        
+        # Assign specialized teams
+        staffing.teams = self._assign_specialized_teams(staffing.expertise_needed)
+        
+        # Coordinate team collaboration
+        staffing.collaboration = self._coordinate_team_collaboration(staffing.teams)
+        
+        return staffing
+    
+    def _assign_specialized_teams(self, expertise: List[ExpertiseArea]) -> List[SpecializedTeam]:
+        """Assign specialized teams based on expertise needs."""
+        
+        teams = []
+        
+        for area in expertise:
+            if area == ExpertiseArea.TEST_AUTOMATION:
+                teams.append(UnifiedTestDeveloperTeam())
+            elif area == ExpertiseArea.DATABASE_OPTIMIZATION:
+                teams.append(DatabaseSpecialistTeam())
+            elif area == ExpertiseArea.RECOVERY_OPERATIONS:
+                teams.append(TestRecoverySpecialistTeam())
+            # Add more specialized teams as needed
+        
+        return teams
+```
+
+## 5. Continuous Delivery
+
+### **Daily Deployable Builds**
+```python
+# REQUIRED: Ensure daily deployable builds
+class ContinuousDeliverySystem:
+    """Ensure continuous delivery with daily deployable builds."""
+    
+    def ensure_daily_deployable_build(self) -> DeployabilityStatus:
+        """Ensure system is deployable every day."""
+        
+        status = DeployabilityStatus()
+        
+        # Run comprehensive test suite
+        status.tests = self._run_comprehensive_tests()
+        
+        # Check build integrity
+        status.build = self._verify_build_integrity()
+        
+        # Validate deployment readiness
+        status.deployment = self._validate_deployment_readiness()
+        
+        # Check quality gates
+        status.quality = self._verify_quality_gates()
+        
+        # Overall deployability
+        status.deployable = all([
+            status.tests.all_passing,
+            status.build.successful,
+            status.deployment.ready,
+            status.quality.meets_standards
+        ])
+        
+        return status
+```
+
+## Enforcement Standards
+
+This rule is **CONTEXT-TRIGGERED** and applies when:
+
+- Agile keywords detected (@agile, @sprint, @story, etc.)
+- Working in agile artifact directories
+- Sprint planning or management activities
+- User story creation or modification
+- Team coordination activities
+
+### **Agile Quality Gates**
+Before any agile activity is considered complete:
+
+- [ ] **Artifacts Updated**: All affected artifacts automatically updated
+- [ ] **Story Status Current**: User story statuses reflect actual state
+- [ ] **Sprint Metrics**: Velocity and metrics calculated and recorded
+- [ ] **Team Coordination**: All team members informed and coordinated
+- [ ] **Deployability**: System remains deployable throughout sprint
+- [ ] **Documentation Live**: All documentation reflects current reality
+
+### **Activation Conditions**
+This rule activates when:
+
+1. **Agile Context Detected**: Keywords or file patterns indicate agile work
+2. **Sprint Activities**: Any sprint planning, execution, or review activities
+3. **Story Management**: User story creation, modification, or completion
+4. **Artifact Changes**: Changes that affect agile artifacts
+5. **Team Coordination**: Activities requiring team coordination
+
+## Remember
+
+**"Deliver working software frequently, with agile excellence."**
+
+**"Individuals and interactions over processes and tools - but with systematic support."**
+
+**"Respond to change over following a plan - with systematic adaptability."**
+
+**"Continuous delivery of valuable software with systematic artifact management."**
+
+This rule ensures comprehensive agile coordination while maintaining the agile values and principles, enhanced with systematic automation and excellence standards.

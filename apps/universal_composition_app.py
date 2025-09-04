@@ -34,8 +34,8 @@ DYNAMIC_RULES_AVAILABLE = False
 
 # Import actual agent system components
 try:
-    from agents.requirements_analyst import RequirementsAnalyst
-    from agents.architect import Architect  
+    from agents.development.requirements_analyst import RequirementsAnalyst
+    from agents.development.architecture_designer import ArchitectureDesigner as Architect  
     AGENTS_AVAILABLE = True
 except ImportError:
     # Fallback if agents not available
@@ -4051,18 +4051,42 @@ def display_dynamic_rule_status():
                 st.markdown(f"**Efficiency**: {metrics['token_efficiency']:.1f}%")
             
             # Show active rules list
-            if hasattr(activator, 'active_rules') and activator.active_rules:
+            active_rules_to_show = None
+            
+            # Try to get active rules from status first, then from activator object
+            if 'active_rules' in status and status['active_rules']:
+                active_rules_to_show = status['active_rules']
+            elif hasattr(activator, 'active_rules') and activator.active_rules:
+                active_rules_to_show = activator.active_rules
+            
+            if active_rules_to_show:
                 with st.expander("📋 Active Rules", expanded=False):
-                    for i, rule in enumerate(activator.active_rules[:5], 1):
+                    for i, rule in enumerate(active_rules_to_show[:5], 1):
                         st.markdown(f"{i}. `{rule}`")
-                    if len(activator.active_rules) > 5:
-                        st.markdown(f"... and {len(activator.active_rules) - 5} more")
+                    if len(active_rules_to_show) > 5:
+                        st.markdown(f"... and {len(active_rules_to_show) - 5} more")
+            else:
+                st.info("ℹ️ No active rules found. Click refresh to load default rules.")
+                if st.button("🚀 Load Default Rules", key="load_default_rules", help="Manually load default context rules"):
+                    try:
+                        activator._load_default_context_rules()
+                        st.success("✅ Default rules loaded successfully!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Failed to load default rules: {e}")
             
             # Control buttons
             col1, col2 = st.columns(2)
             
             with col1:
                 if st.button("🔄 Refresh", key="refresh_dynamic"):
+                    # Force reload default rules if none are active
+                    if not status.get('active_rules') or len(status.get('active_rules', [])) == 0:
+                        try:
+                            activator._load_default_context_rules()
+                            st.success("🚀 Default rules loaded!")
+                        except Exception as e:
+                            st.error(f"Failed to load rules: {e}")
                     st.rerun()
             
             with col2:
@@ -4164,9 +4188,23 @@ def display_dynamic_rule_configuration():
         recent_changes = activator.context_history[-5:]  # Last 5 changes
         
         for change in reversed(recent_changes):
-            with st.expander(f"{change.timestamp.strftime('%H:%M:%S')} - {change.old_context} → {change.new_context}"):
-                st.markdown(f"**Confidence**: {change.confidence:.1f}")
-                st.markdown(f"**Reason**: {change.reason}")
+            # Handle both dict and object formats
+            if isinstance(change, dict):
+                timestamp = change['timestamp'].strftime('%H:%M:%S') if 'timestamp' in change and change['timestamp'] else 'Unknown time'
+                old_context = change.get('old_context', 'Unknown')
+                new_context = change.get('new_context', 'Unknown')
+                confidence = change.get('confidence', 0.0)
+                reason = change.get('reason', 'No reason provided')
+            else:
+                timestamp = change.timestamp.strftime('%H:%M:%S') if hasattr(change, 'timestamp') and change.timestamp else 'Unknown time'
+                old_context = getattr(change, 'old_context', 'Unknown')
+                new_context = getattr(change, 'new_context', 'Unknown')
+                confidence = getattr(change, 'confidence', 0.0)
+                reason = getattr(change, 'reason', 'No reason provided')
+            
+            with st.expander(f"{timestamp} - {old_context} → {new_context}"):
+                st.markdown(f"**Confidence**: {confidence:.1f}")
+                st.markdown(f"**Reason**: {reason}")
 
 
 def get_currently_active_rules():
@@ -5144,10 +5182,10 @@ def display_rule_monitor_interface():
             recent_switches = activator.context_history[-10:]  # Last 10 switches
             
             for i, switch in enumerate(reversed(recent_switches)):
-                time_str = switch.get('timestamp', 'Unknown time')
-                old_ctx = switch.get('old_context', 'Unknown')
-                new_ctx = switch.get('new_context', 'Unknown')
-                reason = switch.get('reason', 'No reason provided')
+                time_str = switch.timestamp.strftime('%H:%M:%S') if hasattr(switch, 'timestamp') and switch.timestamp else 'Unknown time'
+                old_ctx = getattr(switch, 'old_context', 'Unknown')
+                new_ctx = getattr(switch, 'new_context', 'Unknown')
+                reason = getattr(switch, 'reason', 'No reason provided')
                 
                 # Color code based on recency
                 if i < 3:

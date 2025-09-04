@@ -107,6 +107,87 @@ def safe_database_update():
         raise SafetyException(f"Update failed, rolled back: {e}")
 ```
 
+### 5. **Platform-Safe Commands**
+**MANDATORY**: Always use platform-appropriate commands to prevent system failures
+```python
+import platform
+
+# REQUIRED: Platform detection and safe commands
+def get_safe_command(operation: str) -> str:
+    """Get platform-safe command."""
+    system = platform.system()
+    
+    if system == "Windows":
+        commands = {
+            "list_files": "Get-ChildItem",
+            "test_file": "Test-Path",
+            "read_file": "Get-Content",
+            "search_text": "Select-String"
+        }
+    else:  # Linux/macOS
+        commands = {
+            "list_files": "ls",
+            "test_file": "test -f",
+            "read_file": "cat", 
+            "search_text": "grep"
+        }
+    
+    return commands.get(operation, operation)
+
+# FORBIDDEN: Using wrong platform commands
+def unsafe_command():
+    subprocess.run("ls utils/*.py")  # FAILS on Windows
+    
+# REQUIRED: Platform-safe commands
+def safe_command():
+    system = platform.system()
+    if system == "Windows":
+        cmd = "Get-ChildItem -Path 'utils' -Filter '*.py'"
+    else:
+        cmd = "ls utils/*.py"
+    subprocess.run(cmd, shell=True)
+```
+
+### 6. **Safe Git Operations**
+**MANDATORY**: Use safe git patterns with validation and rollback capability
+```python
+# REQUIRED: Safe git workflow with validation
+def safe_git_commit_and_push(commit_message: str):
+    """Safe git operations with validation and rollback."""
+    try:
+        # 1. Validate working directory state
+        status_result = subprocess.run(['git', 'status', '--porcelain'], 
+                                     capture_output=True, text=True)
+        if not status_result.stdout.strip():
+            print("No changes to commit")
+            return False
+        
+        # 2. Safe three-command sequence
+        subprocess.run(['git', 'add', '.'], check=True)
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        subprocess.run(['git', 'push'], check=True)
+        
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"Git operation failed: {e}")
+        # Allow user to decide recovery action
+        return False
+
+# FORBIDDEN: Destructive git operations without confirmation
+def unsafe_git_reset():
+    subprocess.run(['git', 'reset', '--hard', 'HEAD~1'])  # DANGEROUS
+
+# REQUIRED: Safe git operations with confirmation
+def safe_git_reset():
+    print("⚠️  WARNING: This will discard uncommitted changes")
+    confirmation = input("Type 'YES' to confirm git reset: ")
+    if confirmation == "YES":
+        subprocess.run(['git', 'reset', '--hard', 'HEAD~1'])
+    else:
+        print("Git reset cancelled - safety first")
+```
+
 ## Safety Patterns
 
 ### 1. **Read-Only by Default**
@@ -155,6 +236,9 @@ Before any operation, verify:
 - [ ] **Dry-run mode available**
 - [ ] **Read-only analysis first**
 - [ ] **Explicit confirmation for dangerous operations**
+- [ ] **Platform-appropriate commands used (Windows vs Unix)**
+- [ ] **Git operations validated before execution**
+- [ ] **Safe git workflow: add, commit, push sequence**
 
 ## Implementation Examples
 
@@ -209,5 +293,32 @@ This rule is **ALWAYS ACTIVE** and applies to:
 - All automation scripts
 - All deployment operations
 - All configuration changes
+- **All shell commands and terminal operations**
+- **All git operations and version control**
+
+### **Platform Command Safety**
+**MANDATORY**: Always use correct commands for the target platform
+
+**Windows Systems**: Use PowerShell commands
+- `Get-ChildItem` instead of `ls`
+- `Test-Path` instead of `test -f`
+- `Get-Content` instead of `cat`
+- `Select-String` instead of `grep`
+
+**Unix/Linux Systems**: Use bash/shell commands
+- `ls`, `cat`, `grep`, `test` work as expected
+
+### **Git Operation Safety**
+**MANDATORY**: Always use safe git patterns
+
+**Safe Git Workflow**: Always use validated sequence
+- `git add .` (stage all changes)
+- `git commit -m "message"` (commit with descriptive message)
+- `git push` (push to remote)
+
+**Destructive Git Operations**: Require explicit confirmation
+- `git reset --hard` (discards changes)
+- `git rebase -i` (rewrites history)
+- `git force push` (overwrites remote)
 
 **Remember**: It's better to be slow and safe than fast and sorry. Safety first, always.

@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Import our ethical protection systems
-from agents.ethical_ai_protection_team import (
+from agents.security.ethical_ai_protection_team import (
     get_ethical_ai_protection_team,
     EthicalDecision,
     EthicalRisk,
@@ -245,7 +245,7 @@ class TestTransparencyAccountabilitySpecialist:
     @pytest.mark.asyncio
     async def test_decision_documentation(self, specialist):
         """Test documentation of ethical decisions."""
-        from agents.ethical_ai_protection_team import EthicalValidationResult
+        from agents.security.ethical_ai_protection_team import EthicalValidationResult
         
         validation_result = EthicalValidationResult(
             decision=EthicalDecision.APPROVED,

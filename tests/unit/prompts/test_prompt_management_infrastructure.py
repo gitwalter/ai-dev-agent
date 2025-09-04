@@ -34,7 +34,17 @@ class TestPromptAnalytics:
         analytics = PromptAnalytics(analytics_dir=temp_dir)
         yield analytics
         # Explicitly close database connections before cleanup
-        analytics.close()
+        try:
+            if hasattr(analytics, 'close'):
+                analytics.close()
+            elif hasattr(analytics, '_connection') and analytics._connection:
+                analytics._connection.close()
+            elif hasattr(analytics, 'db') and analytics.db:
+                analytics.db.close()
+        except Exception:
+            pass  # Best effort to close
+        
+        # Force cleanup with retry for Windows file locking
         try:
             shutil.rmtree(temp_dir)
         except PermissionError:

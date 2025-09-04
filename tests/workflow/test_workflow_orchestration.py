@@ -24,7 +24,7 @@ from unittest.mock import Mock, patch
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
-from agents.workflow_orchestration_team import (
+from agents.teams.workflow_orchestration_team import (
     WorkflowOrchestrationTeam,
     WorkflowArchitectAgent,
     OrchestrationEngineerAgent,
@@ -228,7 +228,7 @@ class TestWorkflowOrchestrationTeam:
         }
         
         # Create mock composition
-        from agents.workflow_orchestration_team import WorkflowComposition, WorkflowStep
+        from agents.teams.workflow_orchestration_team import WorkflowComposition, WorkflowStep
         composition = WorkflowComposition(
             id="test_comp",
             name="Test Composition",

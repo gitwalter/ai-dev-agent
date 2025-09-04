@@ -20,10 +20,15 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pathlib import Path
 
-from agents.specialized_subagent_team import (
+# Add project root to path at the very beginning to override any conflicting modules
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) in sys.path:
+    sys.path.remove(str(project_root))
+sys.path.insert(0, str(project_root))
+
+from agents.teams.specialized_subagent_team import (
     SpecializedSubagentTeam,
     ArchitectAgent,
     DeveloperAgent,

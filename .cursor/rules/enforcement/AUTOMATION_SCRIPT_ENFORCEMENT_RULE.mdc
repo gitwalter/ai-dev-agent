@@ -1,0 +1,387 @@
+---
+alwaysApply: true
+autoFix: true
+category: core-automation
+contexts:
+- ALL
+dependencies: []
+description: MANDATORY automation script execution enforcement - NO MANUAL WORK
+enforcement: error
+formalLayer: core
+globs:
+- '**/*'
+languageGames:
+- automation_enforcement
+- script_execution
+linguisticFramework: automation
+logicalType: 0
+priority: critical
+tags:
+- core
+- automation
+- enforcement
+- critical
+tier: '0'
+---
+
+# AUTOMATION SCRIPT ENFORCEMENT RULE
+
+**CRITICAL CORE RULE**: MANDATORY automation script execution for ALL operations. This rule ensures NO manual work where automation exists and enforces systematic use of project automation scripts.
+
+## Core Principle
+
+**"AUTOMATION FIRST - NO MANUAL WORK WHERE SCRIPTS EXIST"**
+
+This rule has ZERO TOLERANCE for manual operations when automation scripts exist. It is a BLOCKING rule that prevents manual work and enforces systematic automation.
+
+## Foundation: Zero Manual Work Policy
+
+### **Automation Discovery Engine**
+```python
+# REQUIRED: Automatic detection and execution of automation scripts
+class AutomationEnforcementEngine:
+    """Enforce mandatory automation script usage."""
+    
+    def __init__(self):
+        self.automation_registry = self._discover_all_automation_scripts()
+        self.enforcement_level = "BLOCKING"
+        
+    def enforce_automation_usage(self, operation: Operation) -> EnforcementResult:
+        """MANDATORY: Check and enforce automation script usage."""
+        
+        enforcement = EnforcementResult()
+        
+        # Detect applicable automation scripts
+        applicable_scripts = self._find_applicable_automation(operation)
+        
+        if applicable_scripts:
+            # BLOCK manual operation
+            enforcement.blocked = True
+            enforcement.required_scripts = applicable_scripts
+            enforcement.blocking_reason = "AUTOMATION SCRIPTS MUST BE USED"
+            enforcement.manual_operation_forbidden = True
+        
+        return enforcement
+    
+    def _discover_all_automation_scripts(self) -> Dict[str, AutomationScript]:
+        """Discover ALL automation scripts in the project."""
+        
+        scripts = {}
+        
+        # Agile automation scripts
+        scripts.update(self._discover_agile_automation())
+        
+        # Test automation scripts  
+        scripts.update(self._discover_test_automation())
+        
+        # Git automation scripts
+        scripts.update(self._discover_git_automation())
+        
+        # Database automation scripts
+        scripts.update(self._discover_database_automation())
+        
+        # Build automation scripts
+        scripts.update(self._discover_build_automation())
+        
+        return scripts
+```
+
+## 1. Discovered Automation Scripts
+
+### **Agile Automation Scripts** (MANDATORY USAGE)
+```yaml
+agile_story_automation.py:
+  location: "utils/agile/agile_story_automation.py"
+  triggers: ["user story creation", "user story updates", "story status changes"]
+  mandatory_for: ["@agile", "user story work", "sprint activities"]
+  
+artifacts_automation.py:
+  location: "utils/agile/artifacts_automation.py" 
+  triggers: ["artifact updates", "story completion", "sprint updates"]
+  mandatory_for: ["artifact maintenance", "agile documentation"]
+  
+automate_user_story_updates.py:
+  location: "scripts/automate_user_story_updates.py"
+  triggers: ["status updates", "progress tracking", "story synchronization"]
+  mandatory_for: ["user story status changes", "progress reporting"]
+  
+automate_test_catalogue.py:
+  location: "scripts/automate_test_catalogue.py"
+  triggers: ["test changes", "test status updates", "catalogue maintenance"]
+  mandatory_for: ["test documentation", "test tracking"]
+  
+automatic_story_detection.py:
+  location: "utils/agile/automatic_story_detection.py"
+  triggers: ["story detection", "context analysis", "agile workflow"]
+  mandatory_for: ["agile context detection", "story management"]
+```
+
+### **Test Automation Scripts** (MANDATORY USAGE)
+```yaml
+cursor_auto_testing.py:
+  location: "scripts/cursor_auto_testing.py"
+  triggers: ["test execution", "cursor integration", "automated testing"]
+  mandatory_for: ["cursor-based testing", "IDE integration"]
+  
+setup_status_automation.py:
+  location: "scripts/setup_status_automation.py"
+  triggers: ["setup validation", "status monitoring", "health checks"]
+  mandatory_for: ["system setup", "status validation"]
+  
+daily_build_automation.py:
+  location: "scripts/daily_build_automation.py"
+  triggers: ["daily builds", "build validation", "continuous integration"]
+  mandatory_for: ["build processes", "CI/CD operations"]
+```
+
+### **Git Automation Scripts** (MANDATORY USAGE)
+```yaml
+git_automation_wrapper.py:
+  location: "utils/git_automation_wrapper.py"
+  triggers: ["git operations", "version control", "repository management"]
+  mandatory_for: ["git workflows", "repository operations"]
+  
+github_database_automation.py:
+  location: "utils/github_database_automation.py"
+  triggers: ["GitHub integration", "database sync", "remote operations"]
+  mandatory_for: ["GitHub workflows", "database synchronization"]
+  
+setup_automated_git_pull.py:
+  location: "scripts/setup_automated_git_pull.py"
+  triggers: ["git pull automation", "repository sync", "automated updates"]
+  mandatory_for: ["repository synchronization", "automatic updates"]
+```
+
+## 2. Enforcement Mechanisms
+
+### **Operation Interception**
+```python
+# REQUIRED: Intercept operations and enforce automation
+def intercept_manual_operation(operation: ManualOperation) -> InterceptionResult:
+    """Intercept manual operations and enforce automation usage."""
+    
+    interception = InterceptionResult()
+    
+    # Check for applicable automation
+    automation_scripts = find_applicable_automation(operation)
+    
+    if automation_scripts:
+        # BLOCK the manual operation
+        interception.blocked = True
+        interception.error = f"AUTOMATION REQUIRED: Use {automation_scripts}"
+        interception.required_action = "Execute automation script instead"
+        interception.script_commands = generate_automation_commands(automation_scripts)
+        
+        # Provide exact automation commands
+        interception.automation_commands = [
+            f"python {script.path} {script.get_parameters(operation)}"
+            for script in automation_scripts
+        ]
+    
+    return interception
+```
+
+### **Context-Specific Enforcement**
+```python
+# REQUIRED: Context-specific automation enforcement
+class ContextAutomationEnforcer:
+    """Enforce automation based on operation context."""
+    
+    CONTEXT_AUTOMATION_MAP = {
+        "AGILE": {
+            "user_story_updates": ["automate_user_story_updates.py"],
+            "artifact_maintenance": ["artifacts_automation.py"],
+            "story_creation": ["agile_story_automation.py"],
+            "story_detection": ["automatic_story_detection.py"]
+        },
+        "TESTING": {
+            "test_catalogue": ["automate_test_catalogue.py"],
+            "cursor_testing": ["cursor_auto_testing.py"],
+            "test_pipeline": ["test_git_hooks_automation.py"]
+        },
+        "GIT_OPERATIONS": {
+            "git_workflows": ["git_automation_wrapper.py"],
+            "github_sync": ["github_database_automation.py"],
+            "automated_pull": ["setup_automated_git_pull.py"]
+        },
+        "BUILD_DEPLOY": {
+            "daily_builds": ["daily_build_automation.py"],
+            "setup_validation": ["setup_status_automation.py"]
+        }
+    }
+    
+    def enforce_context_automation(self, context: str, operation: str) -> EnforcementAction:
+        """Enforce automation for specific context and operation."""
+        
+        required_scripts = self.CONTEXT_AUTOMATION_MAP.get(context, {}).get(operation, [])
+        
+        if required_scripts:
+            return EnforcementAction(
+                blocked=True,
+                required_scripts=required_scripts,
+                error_message=f"AUTOMATION REQUIRED for {context}:{operation}",
+                automation_commands=self._generate_commands(required_scripts)
+            )
+        
+        return EnforcementAction(allowed=True)
+```
+
+## 3. Specific Operation Enforcement
+
+### **Agile Operations** (ZERO TOLERANCE)
+```python
+# FORBIDDEN: Manual agile artifact updates
+def manual_user_story_update():
+    edit_user_story_file()  # BLOCKED - use automate_user_story_updates.py
+    
+def manual_artifact_maintenance():
+    update_catalogs_manually()  # BLOCKED - use artifacts_automation.py
+
+# REQUIRED: Automatic enforcement for agile operations
+def enforce_agile_automation(operation):
+    if operation.type in ["user_story_update", "artifact_update", "story_creation"]:
+        raise AutomationRequiredError(
+            f"Use automation script: {get_required_script(operation)}"
+        )
+```
+
+### **Test Operations** (ZERO TOLERANCE)
+```python
+# FORBIDDEN: Manual test catalogue updates
+def manual_test_catalogue_update():
+    edit_test_catalogue()  # BLOCKED - use automate_test_catalogue.py
+
+# REQUIRED: Automatic test automation enforcement
+def enforce_test_automation(operation):
+    if operation.type in ["test_catalogue", "test_status", "test_pipeline"]:
+        raise AutomationRequiredError(
+            f"Use automation script: {get_required_test_script(operation)}"
+        )
+```
+
+### **Git Operations** (ZERO TOLERANCE)
+```python
+# FORBIDDEN: Manual git operations where automation exists
+def manual_git_operations():
+    run_git_commands_manually()  # BLOCKED - use git_automation_wrapper.py
+
+# REQUIRED: Git automation enforcement  
+def enforce_git_automation(operation):
+    if operation.type in ["git_workflow", "github_sync", "repository_ops"]:
+        raise AutomationRequiredError(
+            f"Use automation script: {get_required_git_script(operation)}"
+        )
+```
+
+## 4. Script Execution Framework
+
+### **Automatic Script Discovery and Execution**
+```python
+# REQUIRED: Automatic script discovery and execution
+class AutomationExecutor:
+    """Execute automation scripts automatically."""
+    
+    def execute_required_automation(self, context: OperationContext) -> ExecutionResult:
+        """Execute all required automation scripts for the context."""
+        
+        execution = ExecutionResult()
+        
+        # Discover required scripts
+        required_scripts = self._discover_required_scripts(context)
+        
+        # Execute each script
+        for script in required_scripts:
+            script_result = self._execute_script(script, context)
+            execution.script_results.append(script_result)
+            
+            if not script_result.success:
+                execution.overall_success = False
+                execution.failed_scripts.append(script)
+        
+        return execution
+    
+    def _execute_script(self, script: AutomationScript, context: OperationContext) -> ScriptResult:
+        """Execute a single automation script."""
+        
+        result = ScriptResult()
+        
+        try:
+            # Prepare script parameters
+            parameters = script.prepare_parameters(context)
+            
+            # Execute script
+            command = f"python {script.path} {parameters}"
+            process_result = subprocess.run(command, capture_output=True, text=True)
+            
+            result.success = process_result.returncode == 0
+            result.output = process_result.stdout
+            result.errors = process_result.stderr
+            
+        except Exception as e:
+            result.success = False
+            result.errors = str(e)
+        
+        return result
+```
+
+## 5. Integration with Existing Rules
+
+### **Rule System Integration**
+```python
+# REQUIRED: Integration with agile coordination rule
+def integrate_with_agile_coordination():
+    """Ensure agile coordination always uses automation scripts."""
+    
+    # Override manual operations in agile coordination
+    agile_coordination.artifact_updates = use_artifacts_automation
+    agile_coordination.story_updates = use_story_automation
+    agile_coordination.catalogue_updates = use_catalogue_automation
+
+# REQUIRED: Integration with test development rule  
+def integrate_with_test_development():
+    """Ensure test development always uses automation scripts."""
+    
+    # Override manual test operations
+    test_development.catalogue_updates = use_test_catalogue_automation
+    test_development.status_updates = use_test_status_automation
+```
+
+## Enforcement Standards
+
+This rule is **ALWAYS ACTIVE** and applies to:
+
+- All agile operations and artifact management
+- All test catalogue and status updates
+- All git operations and repository management
+- All build and deployment operations
+- All status monitoring and health checks
+
+### **Automation Quality Gates**
+Before any operation is allowed:
+
+- [ ] **Script Discovery**: All applicable automation scripts identified
+- [ ] **Script Validation**: Required scripts exist and are executable
+- [ ] **Parameter Preparation**: Script parameters properly prepared
+- [ ] **Execution Readiness**: Environment ready for script execution
+- [ ] **Fallback Prevention**: No manual alternatives allowed
+
+### **Blocking Conditions**
+The following conditions will BLOCK any operation:
+
+1. **Available Automation**: Automation script exists for the operation
+2. **Manual Operation Attempted**: User tries to perform manual work
+3. **Script Not Executed**: Required automation script not run
+4. **Incomplete Automation**: Partial manual work where full automation exists
+5. **Script Bypass**: Attempt to work around automation requirements
+
+## Remember
+
+**"AUTOMATION FIRST - NO EXCEPTIONS"**
+
+**"If a script exists, it MUST be used"**
+
+**"Manual work is FORBIDDEN where automation exists"**
+
+**"Zero tolerance for automation bypass"**
+
+This rule ensures systematic automation usage and prevents the inconsistency and errors that arise from manual operations where automation scripts exist.

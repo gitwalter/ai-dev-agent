@@ -8,10 +8,14 @@ import sys
 import os
 from pathlib import Path
 
-# Add project root to path
-sys.path.append(str(Path(__file__).parent.parent.parent))
+# Add project root to path at the very beginning to override any conflicting modules
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) in sys.path:
+    sys.path.remove(str(project_root))
+sys.path.insert(0, str(project_root))
 
-from utils.reliable_context_integration import ReliableContextIntegration, auto_switch_context_reliable
+from utils import ReliableContextIntegration
+from utils.reliable_context_integration import auto_switch_context_reliable
 
 class TestContextSystemValidation:
     """Comprehensive validation tests for context system."""

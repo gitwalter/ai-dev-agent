@@ -16,9 +16,16 @@ Last Updated: Current Session
 import unittest
 import tempfile
 import shutil
+import sys
 from pathlib import Path
 from datetime import datetime
 import json
+
+# Add project root to path at the very beginning to override any conflicting modules
+project_root = Path(__file__).parent.parent.parent
+if str(project_root) in sys.path:
+    sys.path.remove(str(project_root))
+sys.path.insert(0, str(project_root))
 
 # Import the prompt management system
 from utils.prompt_management import (

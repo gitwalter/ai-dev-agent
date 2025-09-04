@@ -35,12 +35,31 @@ class TestStrategicRuleSelector:
         temp_dir = tempfile.mkdtemp()
         db_path = Path(temp_dir) / "test_strategic_selection.db"
         yield str(db_path)
-        shutil.rmtree(temp_dir)
+        # Force cleanup with retry for Windows file locking
+        try:
+            shutil.rmtree(temp_dir)
+        except PermissionError:
+            # Windows file locking - try to force cleanup
+            import time
+            time.sleep(0.1)  # Brief pause
+            try:
+                shutil.rmtree(temp_dir)
+            except PermissionError:
+                # If still locked, leave for OS cleanup
+                pass
     
     @pytest.fixture
     def selector(self, temp_db_path):
         """Create StrategicRuleSelector instance for testing."""
-        return StrategicRuleSelector(db_path=temp_db_path)
+        selector_instance = StrategicRuleSelector(db_path=temp_db_path)
+        yield selector_instance
+        # Ensure database connection is properly closed
+        if hasattr(selector_instance, 'close'):
+            selector_instance.close()
+        elif hasattr(selector_instance, '_connection') and selector_instance._connection:
+            selector_instance._connection.close()
+        elif hasattr(selector_instance, 'db') and selector_instance.db:
+            selector_instance.db.close()
     
     @pytest.fixture
     def file_operation_context(self):

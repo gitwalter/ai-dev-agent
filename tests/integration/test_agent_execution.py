@@ -5,15 +5,22 @@ Tests for actual agent execution to identify and fix the "src property must be a
 import pytest
 import json
 import asyncio
+import sys
+from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 from typing import Dict, Any
 
-from agents.base_agent import BaseAgent
-from agents.requirements_analyst import RequirementsAnalyst
-from agents.architecture_designer import ArchitectureDesigner
-from agents.code_generator import CodeGenerator
+# Add project root to path at the very beginning to override any conflicting modules  
+project_root = Path(__file__).parent.parent
+if str(project_root) in sys.path:
+    sys.path.remove(str(project_root))
+sys.path.insert(0, str(project_root))
+
+from agents.core.base_agent import BaseAgent, AgentConfig
+from agents.development.requirements_analyst import RequirementsAnalyst
+from agents.development.architecture_designer import ArchitectureDesigner
+from agents.development.code_generator import CodeGenerator
 from models.config import SystemConfig, GeminiConfig
-from agents.base_agent import AgentConfig
 from models.state import AgentState
 
 

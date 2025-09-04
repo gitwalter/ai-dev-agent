@@ -20,7 +20,7 @@ import streamlit as st
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from agents.test_generator import TestGenerator
+from agents.development.test_generator import TestGenerator
 from models.config import AgentConfig
 from models.state import create_initial_state
 import google.generativeai as genai

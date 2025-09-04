@@ -8,7 +8,7 @@ import asyncio
 from unittest.mock import Mock, AsyncMock, patch
 from typing import Dict, Any
 
-from agents.base_agent import BaseAgent
+from agents.core.base_agent import BaseAgent
 from models.config import AgentConfig
 from models.state import AgentState
 

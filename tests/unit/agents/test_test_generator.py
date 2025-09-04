@@ -17,8 +17,8 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 # Import components to test
-from agents.test_generator import TestGenerator
-from agents.base_agent import AgentConfig
+from agents.development.test_generator import TestGenerator
+from agents.core.base_agent import AgentConfig
 import streamlit as st
 import google.generativeai as genai
 

@@ -1,10 +1,13 @@
-# Context-Aware Rule System Configuration
-# Maps development contexts to optimized rule sets
-# Foundation for future agent swarm coordination
+# DEPRECATED - Replaced by optimized_context_rule_mappings.yaml
+# This file is kept for reference only
+# Use optimized_context_rule_mappings.yaml for actual rule system
 
-version: "1.0"
-system: "intelligent_context_aware_rule_system"
-total_available_rules: 40
+version: "1.1_DEPRECATED"
+system: "intelligent_context_aware_rule_system_DEPRECATED"
+total_available_rules: 8  # Reduced from 41 to 8 via Carnap-Quine elimination
+new_features:
+  - "unified_test_developer_agent_rule: Auto-activating unified test-dev agent"
+  - "TEST_DEVELOPMENT context: Specialized context for systematic test fixing"
 
 # Context Categories with Rule Mappings
 contexts:
@@ -77,6 +80,7 @@ contexts:
       - "error_handling_no_silent_errors_rule"
       - "testing_test_monitoring_rule"
       - "development_error_exposure_rule"
+      - "unified_test_developer_agent_rule"
     agent_future: "DebuggingAgent"
     priority: 2
     
@@ -95,8 +99,28 @@ contexts:
       - "no_failing_tests_rule"
       - "quality_validation_rule"
       - "development_comprehensive_test_pattern_rule"
+      - "unified_test_developer_agent_rule"
     agent_future: "QAAgent"
     priority: 2
+    
+  TEST_DEVELOPMENT:
+    description: "Unified test-driven development with systematic fixing"
+    keywords: ["@testdev", "@tdd", "@fixall", "@systematic", "@testfix"]
+    auto_detect_patterns:
+      message: ["test fail", "import error", "module not found", "systematic fix", "fix all", "test and fix", "tdd cycle", "test driven", "complete work", "boy scout", "100% pass", "zero fail", "courage", "all tests"]
+      files: ["pytest.ini", "conftest.py", "*test*.py", "test_*.py"]
+      directories: ["tests/", "test/"]
+    rules:
+      - "safety_first_principle"
+      - "unified_test_developer_agent_rule"
+      - "no_failing_tests_rule"
+      - "boyscout_principle_rule"
+      - "development_courage_completion_rule"
+      - "xp_test_first_development_rule"
+      - "development_type_signature_precision_rule"
+      - "error_handling_no_silent_errors_rule"
+    agent_future: "UnifiedTestDeveloperAgent"
+    priority: 3
     
   AGILE:
     description: "Agile project management and artifacts"

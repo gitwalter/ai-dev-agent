@@ -6,7 +6,7 @@ Project Manager Supervisor for orchestrating the development workflow.
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from agents.supervisor.base_supervisor import BaseSupervisor, SupervisorConfig
+from .base_supervisor import BaseSupervisor, SupervisorConfig
 from models.supervisor_state import SupervisorSwarmState
 from models.supervisor_state import Task, TaskResult, Escalation
 

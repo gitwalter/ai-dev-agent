@@ -104,13 +104,13 @@ class AIDevelopmentAgent:
         
         try:
             # Import agent classes
-            from agents.requirements_analyst import RequirementsAnalyst
-            from agents.architecture_designer import ArchitectureDesigner
-            from agents.code_generator import CodeGenerator
-            from agents.test_generator import TestGenerator
-            from agents.code_reviewer import CodeReviewer
-            from agents.security_analyst import SecurityAnalyst
-            from agents.documentation_generator import DocumentationGenerator
+            from agents.development.requirements_analyst import RequirementsAnalyst
+            from agents.development.architecture_designer import ArchitectureDesigner
+            from agents.development.code_generator import CodeGenerator
+            from agents.development.test_generator import TestGenerator
+            from agents.development.code_reviewer import CodeReviewer
+            from agents.security.security_analyst import SecurityAnalyst
+            from agents.development.documentation_generator import DocumentationGenerator
             
             # Create agent configurations
             agent_configs = {
@@ -226,7 +226,7 @@ Your goal is to create professional, comprehensive documentation that includes c
             }
             
             # Import AgentConfig from the correct location
-            from agents.base_agent import AgentConfig
+            from agents.core.base_agent import AgentConfig
             
             # Initialize agents
             agent_classes = {
