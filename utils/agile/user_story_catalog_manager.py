@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, asdict
 from datetime import datetime
+from .temporal_authority import get_temporal_authority, temporal_compliance_decorator
 from collections import defaultdict
 import glob
 
@@ -138,7 +139,7 @@ class UserStoryCatalogManager:
                 description=description,
                 business_value=business_value,
                 acceptance_criteria=acceptance_criteria,
-                last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                last_updated=get_temporal_authority().timestamp()
             )
             
         except Exception as e:
@@ -398,7 +399,7 @@ class UserStoryCatalogManager:
         # Generate content
         content = f"""# User Story Catalog - Master Index
 
-**Last Updated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} - Automated Real-Time Update
+**Last Updated**: {get_temporal_authority().timestamp()} - Automated Real-Time Update
 **Maintainer**: AI Development Agent Project Team  
 **Purpose**: Central tracking of all user stories across all sprints
 **🤖 Status**: Automatically synchronized with all user story files
@@ -495,7 +496,7 @@ This catalog is automatically updated whenever:
 - Story status changes
 - Story metadata is updated
 
-**Last Scan**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
+**Last Scan**: {get_temporal_authority().timestamp()}  
 **Stories Scanned**: {metrics.total_stories}  
 **Update Frequency**: Real-time  
 

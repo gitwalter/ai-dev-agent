@@ -1,6 +1,6 @@
 # US-AUTO-001: Full Cursor Automation with Workflow Composition
 
-**Priority**: CRITICAL | **Story Points**: 21 | **Sprint**: Next | **Status**: 📋 **PLANNED**
+**Epic**: EPIC-6 - Full Cursor Automation | **Priority**: CRITICAL | **Story Points**: 21 | **Sprint**: Next | **Status**: 📋 **PLANNED**
 
 ## User Story
 - **As a** developer working on complex software projects

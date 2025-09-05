@@ -17,6 +17,7 @@ import os
 import json
 import re
 from datetime import datetime
+from .temporal_authority import get_temporal_authority, temporal_compliance_decorator
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
@@ -542,7 +543,7 @@ This story integrates with:
 - **ARTIFACT INTEGRATION**: All agile artifacts automatically updated
 - **PROGRESS TRACKING**: Status changes automatically reflected across project
 
-**Last Updated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
+**Last Updated**: {get_temporal_authority().timestamp()}  
 **Story Status**: {story.status.value}  
 **Next Action**: Begin task execution and progress tracking
 """

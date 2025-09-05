@@ -111,18 +111,27 @@ def validate_temporal_compliance(content: str) -> bool:
     forbidden_patterns = [
         r'\[DATE\]', r'\[TIMESTAMP\]', r'TODO.*date', r'TBD.*date',
         r'2024-01-01',  # Obviously fake dates
-        r'1900-01-01', r'2000-01-01',
-        r'YYYY-MM-DD', r'HH:MM:SS'
+        r'1900-01-01', r'2000-01-01', r'2023-01-01',
+        r'YYYY-MM-DD', r'HH:MM:SS',
+        r'2025-09-04',  # Old dates that should be updated
+        r'2025-09-03',  # Yesterday's dates  
+        r'2025-09-02',  # Day before yesterday
     ]
     
     for pattern in forbidden_patterns:
         if re.search(pattern, content, re.IGNORECASE):
-            raise TemporalTrustViolation(f"Placeholder temporal data detected: {pattern}")
+            raise TemporalTrustViolation(f"Placeholder or outdated temporal data detected: {pattern}")
     
     # Verify current year is present
     current_year = TEMPORAL_AUTHORITY.now().year
+    current_date = TEMPORAL_AUTHORITY.today()  # Get today's date
+    
     if str(current_year) not in content:
         logger.warning(f"Current system year {current_year} not found in artifact content")
+    
+    # CRITICAL: Ensure today's date is used for "Last Updated" fields
+    if "Last Updated" in content and current_date not in content:
+        logger.warning(f"Last Updated field should use today's date: {current_date}")
     
     return True
 

@@ -13,6 +13,7 @@ import shutil
 import threading
 from pathlib import Path
 from datetime import datetime
+from .temporal_authority import get_temporal_authority, temporal_compliance_decorator
 from dataclasses import dataclass, field
 from typing import Dict, List, Any, Optional
 import logging
@@ -335,7 +336,7 @@ class AgileArtifactsAutomator:
                 result.backup_location = backup_location
             
             # Set timestamp (always for tracking)
-            result.timestamp = datetime.now().strftime(self.timestamp_format)
+            result.timestamp = get_temporal_authority().timestamp()
             if include_timestamps:
                 result.timestamp_format = "Automated Update"
             
@@ -434,7 +435,7 @@ class AgileArtifactsAutomator:
 
     def _create_backup(self) -> Path:
         """Create backup of all artifact files."""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = get_temporal_authority().file_timestamp()
         backup_dir = self.docs_dir.parent / "backups" / f"agile_backup_{timestamp}"
         backup_dir.mkdir(parents=True, exist_ok=True)
         
@@ -534,7 +535,7 @@ def update_agile_artifacts_for_story(story_id: str, title: str, story_points: in
         AllArtifactsUpdateResult with comprehensive update status
     """
     if completion_date is None:
-        completion_date = datetime.now().strftime("%Y-%m-%d")
+        completion_date = get_temporal_authority().today()
     
     # Create story completion object
     completion = StoryCompletion(
