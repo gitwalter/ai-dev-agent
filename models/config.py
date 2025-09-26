@@ -84,6 +84,7 @@ class ContextConfig(BaseModel):
     max_file_size: int = Field(default=1024 * 1024, description="Maximum file size to index in bytes")
     enable_semantic_search: bool = Field(default=True, description="Enable semantic search")
     vector_db_path: str = Field(default="./context_db", description="Path to vector database")
+    max_search_results: int = Field(default=20, description="Maximum number of search results to return")
 
 
 class StorageConfig(BaseModel):

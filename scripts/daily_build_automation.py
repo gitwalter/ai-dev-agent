@@ -29,7 +29,7 @@ from typing import Dict, List, Optional
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from utils.logging_config import setup_logging
+from utils.core.logging_config import setup_logging
 # from utils.system_health_monitor import HealthMonitor  # Will implement when needed
 
 

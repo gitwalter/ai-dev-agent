@@ -18,12 +18,12 @@ sys.path.insert(0, str(project_root))
 from models.config import get_default_config
 from models.state import create_initial_state
 from models.responses import WorkflowResult, WorkflowStatus
-from utils.logging_config import setup_logging
+from utils.core.logging_config import setup_logging
 from main import AIDevelopmentAgent
 from models.config import load_config_from_env
 # Removed unnecessary TOML dependency - using streamlit.secrets instead
-from utils.prompt_editor import get_prompt_editor
-from utils.rag_processor import get_rag_processor
+from utils.prompts.prompt_editor import get_prompt_editor
+from utils.prompts.rag_processor import get_rag_processor
 
 # Vibe coding imports
 from typing import Tuple

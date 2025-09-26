@@ -20,7 +20,7 @@ except ImportError:
     LANGGRAPH_AVAILABLE = False
 
 from tests.mocks.workflow.langgraph_workflow_manager import LangGraphWorkflowManager, AgentNodeFactory, AgentState
-from utils.structured_outputs import RequirementsAnalysisOutput
+from utils.core.structured_outputs import RequirementsAnalysisOutput
 
 
 class TestLangGraphWorkflowManager:
@@ -135,8 +135,8 @@ class TestLangGraphWorkflowManager:
         
         mock_llm.invoke.return_value = mock_result
         
-        with patch('langgraph_workflow_manager.PydanticOutputParser') as mock_parser, \
-             patch('langgraph_workflow_manager.PromptTemplate') as mock_prompt:
+        with patch('workflow.langgraph_workflow_manager.PydanticOutputParser') as mock_parser, \
+             patch('workflow.langgraph_workflow_manager.PromptTemplate') as mock_prompt:
             
             # Mock parser and prompt
             mock_parser_instance = Mock()
@@ -193,9 +193,9 @@ class TestLangGraphWorkflowManager:
             pytest.skip("LangGraph not available")
         
         # Mock all dependencies
-        with patch('langgraph_workflow_manager.ChatGoogleGenerativeAI') as mock_chat, \
-             patch('langgraph_workflow_manager.PydanticOutputParser') as mock_parser, \
-             patch('langgraph_workflow_manager.PromptTemplate') as mock_prompt:
+        with patch('workflow.langgraph_workflow_manager.ChatGoogleGenerativeAI') as mock_chat, \
+             patch('workflow.langgraph_workflow_manager.PydanticOutputParser') as mock_parser, \
+             patch('workflow.langgraph_workflow_manager.PromptTemplate') as mock_prompt:
             
             # Setup mocks
             mock_llm = Mock()

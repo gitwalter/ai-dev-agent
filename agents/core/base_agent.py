@@ -15,6 +15,13 @@ import logging
 import json
 from pathlib import Path
 
+# Universal agent tracking
+try:
+    from utils.system.universal_agent_tracker import get_universal_tracker, AgentType, ContextType
+    UNIVERSAL_TRACKING_AVAILABLE = True
+except ImportError:
+    UNIVERSAL_TRACKING_AVAILABLE = False
+
 @dataclass
 class AgentConfig:
     """Configuration for agent instances."""
@@ -55,6 +62,51 @@ class BaseAgent(ABC):
         self.state = AgentState(agent_id=config.agent_id)
         self.logger = logging.getLogger(f"agent.{config.agent_id}")
         self.performance_metrics = {}
+        
+        # Universal agent tracking via logging coordinator
+        self.tracking_session_id = None
+        try:
+            from utils.system.agent_logging_coordinator import get_logging_coordinator
+            self.logging_coordinator = get_logging_coordinator()
+            
+            # Register this agent through the coordinator for comprehensive logging
+            self.tracking_session_id = self.logging_coordinator.register_framework_agent(
+                agent_id=config.agent_id,
+                agent_type="base_agent",
+                agent_class=self.__class__.__name__
+            )
+            
+            if self.tracking_session_id:
+                self.logger.info(f"✅ Agent {config.agent_id} registered with logging coordinator: {self.tracking_session_id}")
+            else:
+                self.logger.warning(f"⚠️ Failed to register {config.agent_id} with logging coordinator")
+                
+        except Exception as e:
+            self.logger.warning(f"⚠️ Could not connect to logging coordinator: {e}")
+            self.logging_coordinator = None
+            
+            # Fallback to direct universal tracker
+            if UNIVERSAL_TRACKING_AVAILABLE:
+                try:
+                    self.universal_tracker = get_universal_tracker()
+                    self.tracking_session_id = self.universal_tracker.register_agent(
+                        agent_id=config.agent_id,
+                        agent_type=AgentType.CUSTOM_AGENT,
+                        initial_context=ContextType.SYSTEM_STARTUP,
+                        metadata={
+                            "agent_type": config.agent_type,
+                            "prompt_template_id": config.prompt_template_id,
+                            "model_name": config.model_name,
+                            "fallback_registration": True
+                        }
+                    )
+                    self.logger.info(f"✅ Agent {config.agent_id} registered with fallback tracker: {self.tracking_session_id}")
+                except Exception as e:
+                    self.logger.warning(f"⚠️ Failed to register with fallback tracker: {e}")
+                    self.universal_tracker = None
+            else:
+                self.universal_tracker = None
+                self.logger.warning("⚠️ No tracking available")
         
         # Initialize prompt engineering integration
         self.prompt_system = self._initialize_prompt_system()

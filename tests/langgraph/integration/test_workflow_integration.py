@@ -43,7 +43,7 @@ else:
 from tests.mocks.workflow.langgraph_workflow_manager import LangGraphWorkflowManager as MockLangGraphWorkflowManager
 from tests.mocks.workflow.langgraph_workflow_manager import AgentNodeFactory as MockAgentNodeFactory
 
-from utils.structured_outputs import RequirementsAnalysisOutput, ArchitectureDesignOutput
+from utils.core.structured_outputs import RequirementsAnalysisOutput, ArchitectureDesignOutput
 
 # Set up workflow manager class based on test mode
 def get_workflow_manager_class():

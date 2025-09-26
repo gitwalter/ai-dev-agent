@@ -83,7 +83,7 @@ def cleanup_temp_directories():
 
 def main():
     """Main cleanup function."""
-    print("🧹 Starting database cleanup...")
+    print("Starting database cleanup...")
     
     # Step 1: Close all SQLite connections
     print("1. Closing SQLite connections...")
@@ -101,7 +101,7 @@ def main():
     print("4. Running garbage collection...")
     gc.collect()
     
-    print(f"✅ Cleanup complete!")
+    print(f"Cleanup complete!")
     print(f"   - Database files removed: {db_count}")
     print(f"   - Temp directories removed: {temp_count}")
     

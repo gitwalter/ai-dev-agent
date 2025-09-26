@@ -12,9 +12,48 @@ Tests the advanced prompt management infrastructure including:
 import pytest
 import tempfile
 import shutil
+import os
+import time
 from pathlib import Path
 from datetime import datetime, timedelta
 import json
+
+def safe_cleanup_temp_dir(temp_dir, *objects_to_close):
+    """Safely clean up temporary directory with database files on Windows."""
+    # Close any database connections
+    for obj in objects_to_close:
+        try:
+            if hasattr(obj, 'close'):
+                obj.close()
+        except Exception:
+            pass
+    
+    # Retry cleanup for Windows file locking
+    for attempt in range(3):
+        try:
+            shutil.rmtree(temp_dir)
+            break
+        except PermissionError:
+            if attempt < 2:
+                time.sleep(0.1)
+                continue
+            # Final attempt: force cleanup
+            try:
+                for root, dirs, files in os.walk(temp_dir, topdown=False):
+                    for file in files:
+                        try:
+                            os.chmod(os.path.join(root, file), 0o777)
+                            os.remove(os.path.join(root, file))
+                        except:
+                            pass
+                    for dir in dirs:
+                        try:
+                            os.rmdir(os.path.join(root, dir))
+                        except:
+                            pass
+                os.rmdir(temp_dir)
+            except:
+                pass  # Give up gracefully
 
 from utils.prompt_management import (
     PromptAnalytics, AnalyticsPerformanceMetrics as PerformanceMetrics, CostMetrics, QualityMetrics,
@@ -33,28 +72,7 @@ class TestPromptAnalytics:
         temp_dir = tempfile.mkdtemp()
         analytics = PromptAnalytics(analytics_dir=temp_dir)
         yield analytics
-        # Explicitly close database connections before cleanup
-        try:
-            if hasattr(analytics, 'close'):
-                analytics.close()
-            elif hasattr(analytics, '_connection') and analytics._connection:
-                analytics._connection.close()
-            elif hasattr(analytics, 'db') and analytics.db:
-                analytics.db.close()
-        except Exception:
-            pass  # Best effort to close
-        
-        # Force cleanup with retry for Windows file locking
-        try:
-            shutil.rmtree(temp_dir)
-        except PermissionError:
-            # On Windows, wait a moment and try again
-            import time
-            time.sleep(0.1)
-            try:
-                shutil.rmtree(temp_dir)
-            except PermissionError:
-                pass  # Best effort cleanup
+        safe_cleanup_temp_dir(temp_dir, analytics)
     
     @pytest.fixture
     def sample_metrics(self):
@@ -222,7 +240,7 @@ class TestPromptWebInterface:
         interface.template_system = PromptTemplateSystem(templates_dir=f"{temp_dir}/templates")
         interface.optimizer = PromptOptimizer(cache_dir=f"{temp_dir}/cache")
         yield interface
-        shutil.rmtree(temp_dir)
+        safe_cleanup_temp_dir(temp_dir, interface.analytics, interface.template_system, interface.optimizer, interface.prompt_manager)
     
     def test_web_interface_initialization(self, web_interface):
         """Test web interface initialization."""
@@ -282,7 +300,7 @@ class TestIntegrationWithExistingSystems:
             "prompt_manager": prompt_manager
         }
         
-        shutil.rmtree(temp_dir)
+        safe_cleanup_temp_dir(temp_dir, analytics, template_system, optimizer, prompt_manager)
     
     def test_template_creation_with_analytics(self, integrated_system):
         """Test creating templates and tracking analytics."""
@@ -427,7 +445,7 @@ class TestPerformanceAndScalability:
         temp_dir = tempfile.mkdtemp()
         analytics = PromptAnalytics(analytics_dir=f"{temp_dir}/analytics")
         yield analytics
-        shutil.rmtree(temp_dir)
+        safe_cleanup_temp_dir(temp_dir, analytics)
     
     def test_bulk_metrics_recording(self, performance_system):
         """Test recording many metrics efficiently."""
@@ -510,7 +528,7 @@ class TestErrorHandlingAndEdgeCases:
         temp_dir = tempfile.mkdtemp()
         analytics = PromptAnalytics(analytics_dir=f"{temp_dir}/analytics")
         yield analytics
-        shutil.rmtree(temp_dir)
+        safe_cleanup_temp_dir(temp_dir, analytics)
     
     def test_invalid_metrics_handling(self, error_system):
         """Test handling of invalid metrics."""
@@ -550,9 +568,26 @@ class TestErrorHandlingAndEdgeCases:
         # This test would require more sophisticated setup to simulate database corruption
         # For now, we test that the system handles missing database gracefully
         
-        # Remove the database file
+        # Close the database connection first
+        try:
+            if hasattr(error_system, 'close'):
+                error_system.close()
+        except Exception:
+            pass
+        
+        # Remove the database file (retry on Windows file locking)
         if error_system.db_path.exists():
-            error_system.db_path.unlink()
+            import time
+            for attempt in range(3):
+                try:
+                    error_system.db_path.unlink()
+                    break
+                except PermissionError:
+                    if attempt < 2:
+                        time.sleep(0.1)
+                        continue
+                    # Skip test if we can't delete the file (Windows file locking)
+                    pytest.skip("Cannot delete database file due to Windows file locking")
         
         # Try to record metrics - should handle gracefully
         metrics = PerformanceMetrics(

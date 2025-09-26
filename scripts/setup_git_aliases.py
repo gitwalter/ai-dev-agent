@@ -19,9 +19,9 @@ def setup_git_aliases():
     
     aliases = {
         "safe-pull": f"!python {project_root}/scripts/safe_pull.py",
-        "db-status": f"!python {project_root}/utils/github_database_automation.py status",
-        "db-prepare": f"!python {project_root}/utils/github_database_automation.py prepare",
-        "db-restore": f"!python {project_root}/utils/github_database_automation.py restore",
+        "db-status": f"!python {project_root}/utils/git/github_database_automation.py status",
+        "db-prepare": f"!python {project_root}/utils/git/github_database_automation.py prepare",
+        "db-restore": f"!python {project_root}/utils/git/github_database_automation.py restore",
     }
     
     for alias, command in aliases.items():

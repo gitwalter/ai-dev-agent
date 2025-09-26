@@ -14,6 +14,8 @@ try:
     from langgraph.graph import StateGraph, END, START
     from langgraph.checkpoint.memory import MemorySaver
     from langchain_google_genai import ChatGoogleGenerativeAI
+    from langchain_core.output_parsers import PydanticOutputParser
+    from langchain_core.prompts import PromptTemplate
     from pydantic import BaseModel, Field
     LANGGRAPH_AVAILABLE = True
 except ImportError as e:
@@ -25,8 +27,10 @@ except ImportError as e:
     END = None
     START = None
     MemorySaver = None
+    PydanticOutputParser = None
+    PromptTemplate = None
 
-from utils.structured_outputs import (
+from utils.core.structured_outputs import (
     RequirementsAnalysisOutput, ArchitectureDesignOutput, CodeGenerationOutput,
     TestGenerationOutput, CodeReviewOutput, SecurityAnalysisOutput, DocumentationGenerationOutput
 )

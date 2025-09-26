@@ -111,7 +111,7 @@ def test_hooks():
         return False
     
     # Check if automation script exists
-    automation_script = project_root / "utils" / "github_database_automation.py"
+    automation_script = project_root / "utils" / "git" / "github_database_automation.py"
     if not automation_script.exists():
         print("❌ Database automation script not found")
         return False
@@ -128,9 +128,9 @@ def show_usage():
     print("  python setup_git_hooks.py status   - Show current status")
     
     print("\n🔄 Manual commands:")
-    print("  python utils/github_database_automation.py prepare  - Prepare for GitHub")
-    print("  python utils/github_database_automation.py restore  - Restore development DB")
-    print("  python utils/github_database_automation.py status   - Show DB status")
+    print("  python utils/git/github_database_automation.py prepare  - Prepare for GitHub")
+    print("  python utils/git/github_database_automation.py restore  - Restore development DB")
+    print("  python utils/git/github_database_automation.py status   - Show DB status")
 
 def show_status():
     """Show the current status of the Git hooks setup."""
@@ -148,7 +148,7 @@ def show_status():
     print(f"  Post-merge hook: {'✅' if post_merge_hook.exists() else '❌'}")
     
     # Check automation script
-    automation_script = project_root / "utils" / "github_database_automation.py"
+    automation_script = project_root / "utils" / "git" / "github_database_automation.py"
     print(f"  Automation script: {'✅' if automation_script.exists() else '❌'}")
     
     # Check database

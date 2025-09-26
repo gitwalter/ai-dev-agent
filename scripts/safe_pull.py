@@ -70,7 +70,7 @@ class SafePull:
                 print("🔄 Restoring development database...")
                 if not self._restore_development_database():
                     print("⚠️  Failed to restore development database")
-                    print("   You may need to run: python utils/github_database_automation.py restore")
+                    print("   You may need to run: python utils/git/github_database_automation.py restore")
                 else:
                     print("✅ Development database restored")
             
@@ -186,7 +186,7 @@ class SafePull:
         try:
             # Import here to avoid circular imports
             sys.path.append(str(self.project_root))
-            from utils.github_database_automation import GitHubDatabaseAutomation
+            from utils.git.github_database_automation import GitHubDatabaseAutomation
             
             automation = GitHubDatabaseAutomation()
             return automation.restore_development_database()

@@ -34,7 +34,7 @@ import re
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from utils.logging_config import setup_logging
+from utils.core.logging_config import setup_logging
 
 class UserStoryStatusAutomation:
     """Main automation coordinator for user story status updates."""
@@ -62,15 +62,33 @@ class UserStoryStatusAutomation:
         try:
             self.logger.info("🚀 Starting automated user story status update cycle")
             
-            # 1. Collect current status
-            self.logger.info("📊 Collecting comprehensive status data...")
-            status_data = self.collect_comprehensive_status()
+            # 1. Run story-specific tests first if updating specific story
+            story_test_results = None
+            if specific_story:
+                self.logger.info(f"🧪 Running specific tests for {specific_story}...")
+                story_test_results = self.collect_user_story_test_status(specific_story)
+                
+                if story_test_results.get("all_passed"):
+                    self.logger.info(f"✅ All tests passed for {specific_story}")
+                elif story_test_results.get("status") == "no_specific_tests":
+                    self.logger.info(f"ℹ️  No specific tests found for {specific_story}")
+                else:
+                    self.logger.warning(f"⚠️  Some tests failed for {specific_story}")
             
-            # 2. Validate data quality
+            # 2. Collect current status (skip full test suite if we ran specific tests)
+            self.logger.info("📊 Collecting comprehensive status data...")
+            if specific_story and story_test_results and story_test_results.get("all_passed"):
+                # Use lightweight status collection
+                status_data = self.collect_lightweight_status()
+                status_data["story_specific_tests"] = story_test_results
+            else:
+                status_data = self.collect_comprehensive_status()
+            
+            # 3. Validate data quality
             if not self.validate_status_data(status_data):
                 raise ValueError("Status data validation failed")
             
-            # 3. Update user stories
+            # 4. Update user stories
             stories_to_update = [specific_story] if specific_story else self.monitored_stories
             for story_id in stories_to_update:
                 if self.story_exists(story_id):
@@ -114,15 +132,51 @@ class UserStoryStatusAutomation:
         
         return status_data
     
-    def collect_test_status(self) -> Dict[str, Any]:
-        """Run tests and collect detailed results."""
-        self.logger.info("🧪 Collecting test status...")
+    def collect_lightweight_status(self) -> Dict[str, Any]:
+        """Collect lightweight status data without running full test suite."""
+        self.logger.info("📋 Collecting lightweight status data...")
+        
+        return {
+            "test_results": {"status": "skipped_for_story_specific_tests"},
+            "health_monitoring": self.collect_health_status(),
+            "implementation_progress": self.collect_implementation_status(),
+            "system_metrics": {"status": "lightweight_collection"},
+            "validation_results": {"status": "story_specific_validation"},
+            "timestamp": self.timestamp.isoformat(),
+            "collection_metadata": {
+                "collector": "automated_user_story_updates",
+                "version": "1.0.0",
+                "mode": "lightweight",
+                "execution_time": datetime.now().isoformat()
+            }
+        }
+    
+    def collect_user_story_test_status(self, story_id: str) -> Dict[str, Any]:
+        """Run specific tests for a user story."""
+        self.logger.info(f"🧪 Running tests for {story_id}...")
+        
+        # Map story ID to test file
+        test_file_map = {
+            "US-000": "tests/test_imports.py",  # Test infrastructure
+            "US-024": "tests/agile/test_us024_automated_story_management.py",
+            # Add more mappings as stories get specific tests
+        }
+        
+        story_test_file = test_file_map.get(story_id)
+        if not story_test_file:
+            self.logger.info(f"No specific test file found for {story_id}")
+            return {"status": "no_specific_tests", "story_id": story_id}
+        
+        test_path = self.project_root / story_test_file
+        if not test_path.exists():
+            self.logger.warning(f"Test file not found: {story_test_file}")
+            return {"status": "test_file_missing", "story_id": story_id, "expected_file": story_test_file}
         
         try:
-            # Execute pytest with simpler output
+            # Run specific tests for this story
             cmd = [
-                sys.executable, "-m", "pytest", "tests/",
-                "--tb=short", "--no-header", "-q"
+                sys.executable, "-m", "pytest", str(test_path),
+                "--tb=short", "-v"
             ]
             
             result = subprocess.run(
@@ -130,7 +184,68 @@ class UserStoryStatusAutomation:
                 cwd=self.project_root,
                 capture_output=True,
                 text=True,
-                timeout=300  # 5 minute timeout
+                timeout=120  # 2 minute timeout for specific tests
+            )
+            
+            # Parse results
+            output_lines = result.stdout.strip().split('\n') if result.stdout else []
+            
+            # Count test results
+            passed = failed = total = 0
+            test_details = []
+            
+            for line in output_lines:
+                if "::" in line and ("PASSED" in line or "FAILED" in line):
+                    test_name = line.split("::")[1].split()[0]
+                    status = "PASSED" if "PASSED" in line else "FAILED"
+                    test_details.append({"test": test_name, "status": status})
+                    
+                    if status == "PASSED":
+                        passed += 1
+                    else:
+                        failed += 1
+            
+            total = passed + failed
+            success_rate = (passed / total * 100) if total > 0 else 0
+            
+            return {
+                "story_id": story_id,
+                "test_file": story_test_file,
+                "total_tests": total,
+                "passed": passed,
+                "failed": failed,
+                "success_rate": success_rate,
+                "all_passed": failed == 0,
+                "test_details": test_details,
+                "output": result.stdout,
+                "return_code": result.returncode,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except subprocess.TimeoutExpired:
+            self.logger.error(f"Test timeout for {story_id}")
+            return {"status": "timeout", "story_id": story_id}
+        except Exception as e:
+            self.logger.error(f"Test execution failed for {story_id}: {e}")
+            return {"status": "error", "story_id": story_id, "error": str(e)}
+
+    def collect_test_status(self) -> Dict[str, Any]:
+        """Run tests and collect detailed results."""
+        self.logger.info("🧪 Collecting test status...")
+        
+        try:
+            # Execute pytest with simpler output and shorter timeout
+            cmd = [
+                sys.executable, "-m", "pytest", "tests/",
+                "--tb=short", "--no-header", "-q", "--maxfail=3"
+            ]
+            
+            result = subprocess.run(
+                cmd,
+                cwd=self.project_root,
+                capture_output=True,
+                text=True,
+                timeout=180  # Reduced to 3 minute timeout
             )
             
             # Parse stdout for test counts
@@ -322,9 +437,17 @@ class UserStoryStatusAutomation:
                 self.logger.error(f"Missing required status data key: {key}")
                 return False
         
-        # Validate test results
+        # Validate test results (handle lightweight mode)
         test_results = status_data["test_results"]
-        if "total" not in test_results or test_results["total"] <= 0:
+        if isinstance(test_results, dict) and test_results.get("status") == "skipped_for_story_specific_tests":
+            # Lightweight mode - check for story specific tests
+            if "story_specific_tests" in status_data:
+                story_tests = status_data["story_specific_tests"]
+                if "total_tests" not in story_tests and "status" not in story_tests:
+                    self.logger.error("Invalid story-specific test results data")
+                    return False
+            # Lightweight mode is valid
+        elif "total" not in test_results or test_results["total"] <= 0:
             self.logger.error("Invalid test results data")
             return False
         

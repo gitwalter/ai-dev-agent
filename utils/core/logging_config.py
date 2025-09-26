@@ -1,21 +1,89 @@
 """
-Core logging configuration for agent-specific logging.
-Provides specialized logging setup for individual agents.
+Logging configuration module for the AI Development Agent system.
+Provides centralized logging setup and configuration.
 """
 
 import logging
-from typing import Optional
-from pathlib import Path
-
-# Import from parent logging_config
+import os
 import sys
-sys.path.append(str(Path(__file__).parent.parent))
-from logging_config import setup_logging, get_logger
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
+
+
+def setup_logging(
+    log_level: str = "INFO",
+    log_file: Optional[str] = None,
+    console_logging: bool = True,
+    file_logging: bool = True,
+    log_format: Optional[str] = None
+) -> logging.Logger:
+    """
+    Set up centralized logging for the AI Development Agent system.
+    
+    Args:
+        log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        log_file: Path to log file (defaults to ./logs/agent.log)
+        console_logging: Whether to enable console logging
+        file_logging: Whether to enable file logging
+        log_format: Custom log format string
+        
+    Returns:
+        Configured logger instance
+    """
+    
+    # Ensure logs directory exists
+    if log_file is None:
+        log_file = "./logs/agent.log"
+    
+    log_path = Path(log_file)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Configure log format
+    if log_format is None:
+        log_format = "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+    
+    # Set up root logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
+    
+    # Clear existing handlers
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
+    
+    # Create formatter
+    formatter = logging.Formatter(log_format)
+    
+    # Console handler
+    if console_logging:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(getattr(logging, log_level.upper(), logging.INFO))
+        console_handler.setFormatter(formatter)
+        root_logger.addHandler(console_handler)
+    
+    # File handler
+    if file_logging:
+        file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
+        file_handler.setLevel(getattr(logging, log_level.upper(), logging.INFO))
+        file_handler.setFormatter(formatter)
+        root_logger.addHandler(file_handler)
+    
+    # Create main logger
+    logger = logging.getLogger("logging_config")
+    
+    # Log initialization success
+    logger.info("Logging system initialized")
+    logger.info(f"Log level: {log_level}")
+    logger.info(f"Log file: {log_file}")
+    logger.info(f"Console logging: {console_logging}")
+    logger.info(f"File logging: {file_logging}")
+    
+    return root_logger
 
 
 def setup_agent_logging(agent_name: str, log_level: str = "INFO") -> logging.Logger:
     """
-    Set up logging for a specific agent with agent-specific configuration.
+    Set up logging for a specific agent.
     
     Args:
         agent_name: Name of the agent
@@ -33,58 +101,53 @@ def setup_agent_logging(agent_name: str, log_level: str = "INFO") -> logging.Log
     agent_logger = logging.getLogger(f"agent.{agent_name}")
     agent_logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
     
-    # Create agent-specific log file if needed
-    agent_log_file = f"./logs/agents/{agent_name}.log"
-    log_path = Path(agent_log_file)
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Add agent-specific file handler if not already present
-    agent_file_handler = None
-    for handler in agent_logger.handlers:
-        if isinstance(handler, logging.FileHandler) and handler.baseFilename.endswith(f"{agent_name}.log"):
-            agent_file_handler = handler
-            break
-    
-    if not agent_file_handler:
-        agent_file_handler = logging.FileHandler(agent_log_file, mode='a', encoding='utf-8')
-        agent_file_handler.setLevel(getattr(logging, log_level.upper(), logging.INFO))
-        
-        # Use same format as main logging
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
-        )
-        agent_file_handler.setFormatter(formatter)
-        agent_logger.addHandler(agent_file_handler)
-    
     return agent_logger
 
 
-def setup_workflow_logging(workflow_name: str, log_level: str = "INFO") -> logging.Logger:
+def get_logger(name: str, log_level: str = "INFO") -> logging.Logger:
     """
-    Set up logging for workflow components.
+    Get a logger with the specified name and level.
     
     Args:
-        workflow_name: Name of the workflow
+        name: Logger name
         log_level: Logging level
         
     Returns:
-        Configured logger for the workflow
+        Configured logger
     """
     
-    return get_logger(f"workflow.{workflow_name}", log_level)
+    # Ensure main logging is set up
+    if not logging.getLogger().handlers:
+        setup_logging(log_level=log_level)
+    
+    logger = logging.getLogger(name)
+    logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))
+    
+    return logger
 
 
-def setup_utils_logging(utils_name: str, log_level: str = "INFO") -> logging.Logger:
-    """
-    Set up logging for utility components.
+def configure_library_logging():
+    """Configure logging for external libraries to reduce noise."""
     
-    Args:
-        utils_name: Name of the utility
-        log_level: Logging level
-        
-    Returns:
-        Configured logger for the utility
-    """
+    # Reduce httpx logging
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     
-    return get_logger(f"utils.{utils_name}", log_level)
+    # Reduce urllib3 logging
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    
+    # Reduce google auth logging
+    logging.getLogger("google.auth").setLevel(logging.WARNING)
+    logging.getLogger("google.auth.transport").setLevel(logging.WARNING)
+    
+    # Reduce langchain logging
+    logging.getLogger("langchain").setLevel(logging.WARNING)
+    logging.getLogger("langchain_core").setLevel(logging.WARNING)
+    
+    # Reduce other noisy libraries
+    logging.getLogger("asyncio").setLevel(logging.WARNING)
+    logging.getLogger("websockets").setLevel(logging.WARNING)
+
+
+# Initialize library logging configuration
+configure_library_logging()
 

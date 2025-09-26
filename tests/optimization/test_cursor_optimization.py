@@ -3,7 +3,7 @@
 Test Cursor-First Optimization System
 """
 
-from utils.cursor_native_optimizer import optimize_cursor_session
+from utils.optimization.cursor_native_optimizer import optimize_cursor_session
 
 def test_cursor_optimization():
     """Test the Cursor-first optimization."""

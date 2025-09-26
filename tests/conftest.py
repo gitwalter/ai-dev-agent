@@ -30,7 +30,7 @@ def pytest_sessionfinish(session, exitstatus):
 
 def cleanup_databases():
     """Clean up database files and connections to prevent Windows locking issues."""
-    print("🧹 Cleaning up database connections and files...")
+    print("Cleaning up database connections and files...")
     
     # Force close all SQLite connections
     gc.collect()

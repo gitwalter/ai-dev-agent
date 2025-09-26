@@ -32,7 +32,7 @@ from typing import List, Tuple, Optional
 project_root = Path(__file__).parent.parent.parent
 
 # Import SafeGitOperations (namespace conflict resolved by renaming tests/utils to tests/test_utils)
-from utils.safe_git_operations import SafeGitOperations
+from utils.system.safe_git_operations import SafeGitOperations
 
 
 class TestGitHooksInfrastructure:
@@ -81,7 +81,7 @@ class TestGitHooksInfrastructure:
         
     def test_safe_git_operations_command_line_interface(self):
         """Test the command line interface of safe_git_operations.py."""
-        script_path = self.project_root / "utils" / "safe_git_operations.py"
+        script_path = self.project_root / "utils" / "system" / "safe_git_operations.py"
         
         # Test status command
         result = subprocess.run([
@@ -93,7 +93,7 @@ class TestGitHooksInfrastructure:
         
     def test_safe_git_operations_pre_merge_command(self):
         """Test pre-merge command functionality."""
-        script_path = self.project_root / "utils" / "safe_git_operations.py"
+        script_path = self.project_root / "utils" / "system" / "safe_git_operations.py"
         
         # Test pre-merge command
         result = subprocess.run([
@@ -105,7 +105,7 @@ class TestGitHooksInfrastructure:
         
     def test_safe_git_operations_post_merge_command(self):
         """Test post-merge command functionality."""
-        script_path = self.project_root / "utils" / "safe_git_operations.py"
+        script_path = self.project_root / "utils" / "system" / "safe_git_operations.py"
         
         # Test post-merge command
         result = subprocess.run([
@@ -174,7 +174,7 @@ class TestGitHooksInfrastructure:
         
     def test_error_handling_invalid_command(self):
         """Test error handling for invalid commands."""
-        script_path = self.project_root / "utils" / "safe_git_operations.py"
+        script_path = self.project_root / "utils" / "system" / "safe_git_operations.py"
         
         # Test invalid command
         result = subprocess.run([
@@ -255,7 +255,7 @@ class TestGitHooksEndToEndScenarios:
         
     def test_git_automation_wrapper_integration(self):
         """Test integration with git automation wrapper."""
-        wrapper_path = self.project_root / "utils" / "git_automation_wrapper.py"
+        wrapper_path = self.project_root / "utils" / "git" / "git_automation_wrapper.py"
         
         if not wrapper_path.exists():
             pytest.skip("Git automation wrapper not found")
@@ -263,7 +263,7 @@ class TestGitHooksEndToEndScenarios:
         # Test that wrapper can be imported and initialized
         sys.path.insert(0, str(self.project_root))
         try:
-            from utils.git_automation_wrapper import GitAutomationWrapper
+            from utils.git.git_automation_wrapper import GitAutomationWrapper
             
             # Should initialize without errors
             wrapper = GitAutomationWrapper(self.project_root)
@@ -331,7 +331,7 @@ class TestGitHooksDocumentationAndCompliance:
     
     def test_safe_git_operations_has_proper_docstrings(self):
         """Test that SafeGitOperations has proper documentation."""
-        from utils.safe_git_operations import SafeGitOperations
+        from utils.system.safe_git_operations import SafeGitOperations
         
         # Class should have docstring
         assert SafeGitOperations.__doc__ is not None

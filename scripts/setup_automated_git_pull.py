@@ -32,7 +32,7 @@ def setup_git_alias():
     """
     try:
         project_root = Path(__file__).parent.parent
-        wrapper_script = project_root / "utils" / "git_automation_wrapper.py"
+        wrapper_script = project_root / "utils" / "git" / "git_automation_wrapper.py"
         
         # Use Python executable path for cross-platform compatibility
         python_exe = sys.executable

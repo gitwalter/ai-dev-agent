@@ -25,6 +25,26 @@ from tests.mocks.mock_structured_outputs import RequirementsAnalysisOutput
 
 # Using mock from tests.mock_structured_outputs
 
+@pytest.fixture
+def basic_state():
+    """Basic test state for all test classes."""
+    return {
+        "project_context": "Create a simple calculator app",
+        "project_name": "test-calculator",
+        "session_id": "test-session-123",
+        "requirements": [],
+        "architecture": {},
+        "code_files": {},
+        "tests": {},
+        "documentation": {},
+        "diagrams": {},
+        "agent_outputs": {},
+        "errors": [],
+        "warnings": [],
+        "approval_requests": [],
+        "current_step": "started",
+        "execution_history": []
+    }
 
 class WorkflowState(TypedDict):
     """Test state for LangGraph workflows."""
@@ -43,26 +63,6 @@ class TestBasicLangGraphWorkflow:
         mock.invoke.return_value = "Mock response"
         return mock
     
-    @pytest.fixture
-    def basic_state(self):
-        """Basic test state."""
-        return {
-            "project_context": "Create a simple calculator app",
-            "project_name": "test-calculator",
-            "session_id": "test-session-123",
-            "requirements": [],
-            "architecture": {},
-            "code_files": {},
-            "tests": {},
-            "documentation": {},
-            "diagrams": {},
-            "agent_outputs": {},
-            "errors": [],
-            "warnings": [],
-            "approval_requests": [],
-            "current_step": "started",
-            "execution_history": []
-        }
     
     def test_langgraph_imports(self):
         """Test that LangGraph and related libraries can be imported."""

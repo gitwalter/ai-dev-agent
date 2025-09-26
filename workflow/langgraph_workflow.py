@@ -27,7 +27,7 @@ except ImportError:
     ChatGoogleGenerativeAI = None
     logging.warning("LangGraph not available, using fallback")
 
-from utils.structured_outputs import (
+from utils.core.structured_outputs import (
     RequirementsAnalysisOutput, ArchitectureDesignOutput, CodeGenerationOutput,
     TestGenerationOutput, CodeReviewOutput, SecurityAnalysisOutput, DocumentationGenerationOutput
 )

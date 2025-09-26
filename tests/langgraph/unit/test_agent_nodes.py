@@ -49,7 +49,7 @@ def _has_valid_api_key():
         return False
 
 from tests.mocks.workflow.langgraph_workflow_manager import LangGraphWorkflowManager, AgentNodeFactory, AgentState
-from utils.structured_outputs import (
+from utils.core.structured_outputs import (
     RequirementsAnalysisOutput, 
     ArchitectureDesignOutput, 
     TestGenerationOutput,

@@ -5,7 +5,7 @@ Demo: IDE-Triggered Rule Selection
 
 import sys
 sys.path.append('.')
-from utils.ide_triggered_rule_selector import trigger_rule_selection, get_analytics
+from utils.rule_system.ide_triggered_rule_selector import trigger_rule_selection, get_analytics
 
 def demo_ide_trigger():
     """Demonstrate IDE-triggered rule selection."""

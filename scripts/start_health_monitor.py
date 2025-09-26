@@ -17,10 +17,10 @@ from datetime import datetime
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from utils.system_health_monitor import get_health_monitor, start_health_monitoring
-from utils.health_api_endpoints import start_health_api
-from utils.proactive_alerting import start_proactive_alerting
-from utils.logging_config import setup_logging
+from utils.system.monitoring.system_health_monitor import get_health_monitor, start_health_monitoring
+from utils.monitoring.health_api_endpoints import start_health_api
+from utils.system.monitoring.proactive_alerting import start_proactive_alerting
+from utils.core.logging_config import setup_logging
 
 
 class HealthMonitorService:
@@ -57,7 +57,7 @@ class HealthMonitorService:
             import subprocess
             api_process = subprocess.Popen([
                 sys.executable, "-c",
-                "from utils.health_api_endpoints import start_health_api; start_health_api()"
+                "from utils.monitoring.health_api_endpoints import start_health_api; start_health_api()"
             ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             
             self.logger.info("✅ Health Monitor Service started successfully")

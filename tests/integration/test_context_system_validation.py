@@ -15,7 +15,7 @@ if str(project_root) in sys.path:
 sys.path.insert(0, str(project_root))
 
 from utils import ReliableContextIntegration
-from utils.reliable_context_integration import auto_switch_context_reliable
+from utils.system.context.reliable_context_integration import auto_switch_context_reliable
 
 class TestContextSystemValidation:
     """Comprehensive validation tests for context system."""

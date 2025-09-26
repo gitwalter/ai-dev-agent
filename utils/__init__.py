@@ -3,8 +3,8 @@ Utility functions for the AI Development Agent system.
 Contains helper functions, logging configuration, and file management utilities.
 """
 
-from .logging_config import setup_logging
-from .file_manager import FileManager
+from .core.logging_config import setup_logging
+from .core.file_manager import FileManager
 from .core.helpers import *
 
 # Import submodules with error handling to prevent import failures
@@ -37,14 +37,14 @@ except ImportError as e:
     rule_system = None
 
 try:
-    from .safe_git_operations import SafeGitOperations
+    from .system.safe_git_operations import SafeGitOperations
 except ImportError as e:
     import warnings
     warnings.warn(f"Could not import SafeGitOperations: {e}")
     SafeGitOperations = None
 
 try:
-    from .reliable_context_integration import ReliableContextIntegration
+    from .system.context.reliable_context_integration import ReliableContextIntegration
 except ImportError as e:
     import warnings
     warnings.warn(f"Could not import ReliableContextIntegration: {e}")

@@ -23,7 +23,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 try:
-    from utils.file_organization_enforcer import FileOrganizationEnforcer, enforce_file_organization
+    from utils.validation.file_organization_enforcer import FileOrganizationEnforcer, enforce_file_organization
 except ImportError:
     # Fallback if file organization enforcer is not available
     class FileOrganizationEnforcer:

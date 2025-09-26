@@ -36,6 +36,29 @@ except ImportError:
     AutomatedOptimizationController = None
     ContinuousLearningSystem = None
 
+# Dynamic rule system components
+try:
+    from .dynamic_rule_activator import (
+        DynamicRuleActivator,
+        get_dynamic_activator,
+        start_dynamic_rule_system,
+        shutdown_dynamic_rule_system,
+        RuleActivationEvent,
+        RuleEvent,
+        SystemMetrics
+    )
+    DYNAMIC_RULES_AVAILABLE = True
+except ImportError:
+    # Dynamic rule system optional
+    DynamicRuleActivator = None
+    get_dynamic_activator = None
+    start_dynamic_rule_system = None
+    shutdown_dynamic_rule_system = None
+    RuleActivationEvent = None
+    RuleEvent = None
+    SystemMetrics = None
+    DYNAMIC_RULES_AVAILABLE = False
+
 __all__ = [
     # Core formal system
     "FormalRule",
@@ -56,7 +79,17 @@ __all__ = [
     # Self-optimization
     "SelfOptimizingRuleEngine",
     "AutomatedOptimizationController",
-    "ContinuousLearningSystem"
+    "ContinuousLearningSystem",
+    
+    # Dynamic rule system
+    "DynamicRuleActivator",
+    "get_dynamic_activator",
+    "start_dynamic_rule_system", 
+    "shutdown_dynamic_rule_system",
+    "RuleActivationEvent",
+    "RuleEvent",
+    "SystemMetrics",
+    "DYNAMIC_RULES_AVAILABLE"
 ]
 
 # Package version
