@@ -129,16 +129,30 @@ class UniversalAgentTracker:
     
     def record_context_switch(self, session_id: str, new_context, **kwargs) -> str:
         """Record context switch."""
-        switch_id = f"switch_{int(time.time())}"
+        import uuid
+        switch_id = f"switch_{int(time.time())}_{uuid.uuid4().hex[:8]}"
         to_context = new_context.value if hasattr(new_context, 'value') else str(new_context)
+        
+        # Extract additional parameters
+        from_context = kwargs.get('from_context', 'unknown')
+        if hasattr(from_context, 'value'):
+            from_context = from_context.value
+        
+        trigger_type = kwargs.get('trigger_type', 'manual')
+        trigger_details = kwargs.get('trigger_details', {})
+        
+        # Convert trigger_details to JSON string if it's a dict
+        if isinstance(trigger_details, dict):
+            import json
+            trigger_details = json.dumps(trigger_details)
         
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO context_switches 
-                (switch_id, session_id, from_context, to_context, timestamp)
-                VALUES (?, ?, ?, ?, ?)
-            """, (switch_id, session_id, "unknown", to_context, datetime.now().isoformat()))
+                (switch_id, session_id, from_context, to_context, timestamp, trigger_type, trigger_details)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (switch_id, session_id, str(from_context), to_context, datetime.now().isoformat(), trigger_type, trigger_details))
             conn.commit()
         
         return switch_id
@@ -282,15 +296,30 @@ class UniversalAgentTracker:
     def record_rule_activation(self, session_id: str, rule_name: str, **kwargs) -> str:
         """Record a rule activation event."""
         # For now, just record as a context switch with special type
-        activation_id = f"rule_{int(time.time())}"
+        import uuid
+        activation_id = f"rule_{int(time.time())}_{uuid.uuid4().hex[:8]}"
+        
+        # Extract additional parameters
+        activation_reason = kwargs.get('activation_reason', 'Rule activated')
+        performance_impact = kwargs.get('performance_impact', 1.0)
+        
+        # Create trigger details
+        trigger_details = {
+            'activation_reason': activation_reason,
+            'performance_impact': performance_impact,
+            'rule_type': 'dynamic_rule'
+        }
+        
+        import json
+        trigger_details_json = json.dumps(trigger_details)
         
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO context_switches 
-                (switch_id, session_id, from_context, to_context, timestamp)
-                VALUES (?, ?, ?, ?, ?)
-            """, (activation_id, session_id, "rule_activation", rule_name, datetime.now().isoformat()))
+                (switch_id, session_id, from_context, to_context, timestamp, trigger_type, trigger_details)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (activation_id, session_id, "rule_activation", rule_name, datetime.now().isoformat(), "rule_activation", trigger_details_json))
             conn.commit()
         
         return activation_id

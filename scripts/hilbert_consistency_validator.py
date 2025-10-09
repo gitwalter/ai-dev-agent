@@ -41,6 +41,57 @@ class HilbertConsistencyValidator:
         self.project_root = Path(project_root).resolve()
         self.docs_root = self.project_root / "docs"
         
+        # File organization patterns (Sacred File Organization Rule integration)
+        self.file_organization_patterns = {
+            "test_files": {
+                "pattern": r"^test_.*\.py$|.*_test\.py$",
+                "required_location": "tests/",
+                "description": "Test files must be in tests/ directory"
+            },
+            "agent_files": {
+                "pattern": r".*agent.*\.py$",
+                "required_location": "agents/",
+                "description": "Agent files must be in agents/ directory"
+            },
+            "utility_files": {
+                "pattern": r"^(?!app|test_).*\.py$",
+                "required_location": "utils/",
+                "description": "Utility files must be in utils/ directory"
+            },
+            "rule_files": {
+                "pattern": r".*\.mdc$",
+                "required_location": ".cursor/rules/",
+                "description": "Rule files must be in .cursor/rules/ directory"
+            },
+            "documentation": {
+                "pattern": r"^(?!README).*\.md$",
+                "required_location": "docs/",
+                "description": "Documentation files must be in docs/ directory"
+            }
+        }
+        
+        # Temporary/demo files that should be automatically deleted
+        self.cleanup_patterns = {
+            "temporary_scripts": {
+                "pattern": r"^(query_|show_|list_|simple_|build_|test_).*\.py$",
+                "locations": [".", "scripts/"],
+                "description": "Temporary demo/test scripts in root or scripts directory",
+                "action": "delete"
+            },
+            "empty_files": {
+                "pattern": r".*\.py$",
+                "size_threshold": 50,  # bytes
+                "description": "Empty or nearly empty Python files",
+                "action": "delete"
+            },
+            "demo_files": {
+                "pattern": r".*(demo|temp|tmp|sample).*\.py$",
+                "locations": [".", "scripts/"],
+                "description": "Demo and temporary files",
+                "action": "delete"
+            }
+        }
+        
         # Beautiful, systematic naming patterns
         self.hilbert_patterns = {
             "strategic_documents": {
@@ -106,6 +157,7 @@ class HilbertConsistencyValidator:
         Returns beautiful, comprehensive validation report.
         """
         print("🧮 Starting Hilbert Consistency Validation...")
+        print("🛡️ Including Sacred File Organization Rule validation...")
         print("=" * 60)
         
         validation_summary = {
@@ -141,6 +193,32 @@ class HilbertConsistencyValidator:
         
         validation_summary["violations_found"] = validation_summary["total_files_checked"] - validation_summary["consistent_files"]
         
+        # Add file organization validation
+        print("\n🛡️ Validating Sacred File Organization Rule...")
+        org_violations = self._validate_file_organization()
+        validation_summary["file_organization_violations"] = len(org_violations)
+        validation_summary["violations_found"] += len(org_violations)
+        
+        if org_violations:
+            print(f"❌ Found {len(org_violations)} file organization violations")
+            for violation in org_violations:
+                print(f"   • {violation}")
+        else:
+            print("✅ All files follow Sacred File Organization Rule")
+        
+        # Automatic cleanup of temporary/demo files
+        print("\n🧹 Cleaning up temporary and demo files...")
+        cleanup_results = self._cleanup_temporary_files()
+        validation_summary["files_cleaned_up"] = cleanup_results["deleted_count"]
+        validation_summary["cleanup_summary"] = cleanup_results["summary"]
+        
+        if cleanup_results["deleted_count"] > 0:
+            print(f"🗑️ Cleaned up {cleanup_results['deleted_count']} temporary files")
+            for deleted_file in cleanup_results["deleted_files"]:
+                print(f"   • Deleted: {deleted_file}")
+        else:
+            print("✅ No temporary files found to clean up")
+        
         return validation_summary
     
     def _validate_category(self, category: str, pattern_info: Dict) -> List[ValidationResult]:
@@ -165,6 +243,154 @@ class HilbertConsistencyValidator:
                         results.append(result)
         
         return results
+    
+    def _validate_file_organization(self) -> List[str]:
+        """
+        🛡️ Validate Sacred File Organization Rule compliance.
+        
+        Returns list of file organization violations.
+        """
+        violations = []
+        
+        # Walk through all files in the project
+        for root, dirs, files in os.walk(self.project_root):
+            # Skip certain directories
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['__pycache__', 'node_modules']]
+            
+            for file in files:
+                file_path = Path(root) / file
+                relative_path = file_path.relative_to(self.project_root)
+                
+                # Check each file organization pattern
+                for category, pattern_info in self.file_organization_patterns.items():
+                    if re.match(pattern_info["pattern"], file):
+                        required_location = pattern_info["required_location"]
+                        current_location = str(relative_path.parent) + "/"
+                        
+                        # Check if file is in correct location
+                        if not current_location.startswith(required_location):
+                            # Skip certain acceptable exceptions
+                            if self._is_acceptable_file_location(relative_path, required_location):
+                                continue
+                                
+                            violations.append(
+                                f"{relative_path} should be in {required_location} "
+                                f"(currently in {current_location})"
+                            )
+                        break  # Only check first matching pattern
+        
+        return violations
+    
+    def _cleanup_temporary_files(self) -> Dict[str, any]:
+        """
+        🧹 Automatically clean up temporary and demo files.
+        
+        Returns cleanup results with deleted files and summary.
+        """
+        cleanup_results = {
+            "deleted_count": 0,
+            "deleted_files": [],
+            "summary": {},
+            "skipped_files": []
+        }
+        
+        # Walk through project files
+        for root, dirs, files in os.walk(self.project_root):
+            # Skip certain directories
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['__pycache__', 'node_modules', 'venv', 'env']]
+            
+            for file in files:
+                file_path = Path(root) / file
+                relative_path = file_path.relative_to(self.project_root)
+                
+                # Check each cleanup pattern
+                for pattern_name, pattern_info in self.cleanup_patterns.items():
+                    should_delete = False
+                    reason = ""
+                    
+                    # Check pattern match
+                    if re.match(pattern_info["pattern"], file):
+                        # Check location restrictions if specified
+                        if "locations" in pattern_info:
+                            current_location = str(relative_path.parent)
+                            if current_location in pattern_info["locations"] or current_location == ".":
+                                should_delete = True
+                                reason = f"Temporary file in {current_location}"
+                        else:
+                            should_delete = True
+                            reason = "Matches cleanup pattern"
+                    
+                    # Check size threshold for empty files
+                    if pattern_name == "empty_files" and file.endswith('.py'):
+                        try:
+                            if file_path.stat().st_size <= pattern_info.get("size_threshold", 50):
+                                should_delete = True
+                                reason = f"Empty file ({file_path.stat().st_size} bytes)"
+                        except OSError:
+                            continue
+                    
+                    # Skip certain protected files
+                    if should_delete and self._is_protected_file(relative_path):
+                        cleanup_results["skipped_files"].append(str(relative_path))
+                        should_delete = False
+                    
+                    # Delete the file
+                    if should_delete:
+                        try:
+                            file_path.unlink()
+                            cleanup_results["deleted_files"].append(str(relative_path))
+                            cleanup_results["deleted_count"] += 1
+                            
+                            # Track by pattern
+                            if pattern_name not in cleanup_results["summary"]:
+                                cleanup_results["summary"][pattern_name] = 0
+                            cleanup_results["summary"][pattern_name] += 1
+                            
+                            break  # Only delete once per file
+                            
+                        except OSError as e:
+                            print(f"⚠️ Could not delete {relative_path}: {e}")
+        
+        return cleanup_results
+    
+    def _is_protected_file(self, file_path: Path) -> bool:
+        """Check if file should be protected from automatic deletion."""
+        protected_patterns = [
+            r"setup\.py$",
+            r"__init__\.py$", 
+            r"conftest\.py$",
+            r"requirements.*\.txt$",
+            r".*\.toml$",
+            r".*\.yml$",
+            r".*\.yaml$",
+            r"README.*\.md$"
+        ]
+        
+        file_str = str(file_path)
+        return any(re.search(pattern, file_str) for pattern in protected_patterns)
+    
+    def _is_acceptable_file_location(self, file_path: Path, required_location: str) -> bool:
+        """Check if file location is acceptable even if not optimal."""
+        filename = file_path.name
+        current_str = str(file_path)
+        
+        # README files can be in root or module directories
+        if filename == 'README.md':
+            return True
+        
+        # Configuration files in root are acceptable
+        if filename.endswith(('.toml', '.ini', '.cfg', '.json')) and file_path.parent == Path('.'):
+            return True
+        
+        # Temporary files during development (should be cleaned up)
+        if filename.startswith(('temp_', 'debug_', 'test_')) and file_path.parent == Path('.'):
+            return True  # Temporary allowance
+        
+        # App files in apps/ directory
+        if filename.startswith('app') and 'apps/' in current_str:
+            return True
+            
+        return False
     
     def _expand_wildcard_pattern(self, pattern: str) -> List[Path]:
         """Expand wildcard patterns like docs/agile/sprints/*/user_stories/"""

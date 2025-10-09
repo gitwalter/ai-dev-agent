@@ -332,7 +332,7 @@ class ProfessionalAgentMonitor:
                 
                 if timestamp_col:
                     cursor.execute(f"""
-                        SELECT {timestamp_col}, new_context, session_id, trigger_event
+                        SELECT {timestamp_col}, to_context, session_id, trigger_details
                         FROM context_switches 
                         WHERE {timestamp_col} > ?
                         ORDER BY {timestamp_col} DESC LIMIT 20

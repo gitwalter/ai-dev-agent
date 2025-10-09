@@ -46,6 +46,70 @@ This rule implements principles from:
 - **Kent Beck**: Test-Driven Development, Extreme Programming
 - **Gang of Four**: Design Patterns and object-oriented design
 
+## 0. Anti-Duplication Principle (CRITICAL FOUNDATION)
+
+### **NO FAKE VALUES - CRITICAL PRINCIPLE**
+```python
+# FORBIDDEN: Creating duplicate functionality without discovery
+def create_new_validation_system():
+    # WRONG - duplicates existing Hilbert consistency validation
+    pass
+
+# REQUIRED: Always discover existing functionality first
+async def prevent_duplicate_functionality(proposed_feature: str) -> bool:
+    """
+    Mandatory anti-duplication workflow.
+    
+    Returns:
+        True if safe to proceed, False if duplicates found
+    """
+    from utils.mcp.tools.anti_duplication_tools import get_anti_duplication_rag_tools
+    
+    # Step 1: Discover existing functionality using RAG
+    anti_dup_tools = get_anti_duplication_rag_tools()
+    discovery_result = await anti_dup_tools.discover_existing_functionality(
+        proposed_functionality=proposed_feature,
+        context="New feature development"
+    )
+    
+    # Step 2: Check duplicate risk
+    if discovery_result["duplicate_risk"]["risk_level"] == "high":
+        print(f"🚨 HIGH DUPLICATE RISK DETECTED!")
+        print(f"Similar systems found: {discovery_result['duplicate_risk']['similar_systems_count']}")
+        print(f"Recommendation: {discovery_result['duplicate_risk']['recommendation']}")
+        return False
+    
+    # Step 3: Follow integration recommendations
+    for recommendation in discovery_result["recommendations"]:
+        print(f"📋 {recommendation['priority'].upper()}: {recommendation['description']}")
+        print(f"   Action: {recommendation['action']}")
+    
+    return True
+```
+
+### **Mandatory Discovery Process**
+Before building ANY new functionality:
+
+1. **MANDATORY RAG Search**: Use semantic search to find existing systems
+2. **MANDATORY Analysis**: Analyze discovered systems for integration opportunities  
+3. **MANDATORY Decision**: Choose integration over new implementation when possible
+4. **MANDATORY Documentation**: Document discovery process and rationale
+
+### **Integration-First Patterns**
+```python
+# Pattern 1: MCP Tool Extension
+if existing_system_type == "mcp_system":
+    extend_mcp_tool(existing_tool_path, new_functionality)
+
+# Pattern 2: Agent Capability Extension  
+elif existing_system_type == "agent_system":
+    add_agent_capability(existing_agent_path, new_capability)
+
+# Pattern 3: Utility Function Addition
+elif existing_system_type == "utility_system":
+    add_utility_function(existing_util_path, new_function)
+```
+
 ## 1. Data Integrity and Authenticity
 
 ### **NO FAKE VALUES - CRITICAL PRINCIPLE**
@@ -566,6 +630,7 @@ This rule is **ALWAYS ACTIVE** and applies to:
 ### **Quality Gates**
 Before any code is considered complete:
 
+- [ ] **ANTI-DUPLICATION**: RAG search completed, existing systems analyzed, integration considered
 - [ ] **NO FAKE VALUES**: All data is real, measured, or clearly marked as estimates
 - [ ] **Clean Code**: Self-documenting, well-structured
 - [ ] **Type Safety**: Full type annotations and validation

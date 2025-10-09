@@ -15,6 +15,13 @@ try:
     apply_professional_warning_filters()
 except ImportError:
     pass  # Graceful fallback if warning suppression not available
+
+# Auto-initialize Cursor integration for automatic logging
+try:
+    from utils.integration.cursor_auto_startup import auto_initialize_cursor_integration
+    auto_initialize_cursor_integration()
+except ImportError:
+    pass  # Graceful fallback if integration not available
 import subprocess
 from pathlib import Path
 from datetime import datetime
@@ -5981,74 +5988,21 @@ Detected Triggers: {current_context['triggers']}
             
             st.divider()
             
-            # FORCE DATABASE POPULATION for immediate visibility
-            if len(universal_tracker.get_agent_timeline(hours=24)) < 5:
-                # Add some initial context switches to make the system immediately visible
-                universal_tracker.record_context_switch(
-                    session_id=monitor_session,
-                    from_context=ContextType.MONITORING,
-                    to_context=ContextType.CODING,
-                    reason="Initial system setup - coding context",
-                    triggered_by="system_initialization"
-                )
-                
-                universal_tracker.record_context_switch(
-                    session_id=monitor_session,
-                    from_context=ContextType.CODING,
-                    to_context=ContextType.MONITORING,
-                    reason="Returning to monitoring dashboard",
-                    triggered_by="user_interface_access"
-                )
+            # NO FAKE DATA - Only show real activity when it exists
+            timeline_events = universal_tracker.get_agent_timeline(hours=24)
+            if len(timeline_events) < 5:
+                st.info("📊 **Real Activity Tracking**: No recent agent activity detected. Activity will appear here when actual context switches and rule activations occur during real usage.")
             
             # Also get the legacy activator for compatibility
             activator = DynamicRuleActivator()
             
-            # Force-populate with current session data
-            current_timestamp = datetime.now().strftime('%H:%M:%S')
+            # Only record REAL user actions, not fabricated events
+            # Real session tracking will occur naturally through actual user interactions
             
-            # Add current session events to database
-            activator.add_manual_activation_event(
-                event_type='context_activation',
-                rule_names=['Rule Monitor Access', 'System Monitoring'],
-                context='MONITORING',
-                reason='User accessed Rule Monitor dashboard'
-            )
-            
-            # Record our conversation context switches in UNIVERSAL tracker
-            conversation_contexts = [
-                ('@agile', 'Agile Coordination', ContextType.AGILE),
-                ('@research', 'Research Agent', ContextType.RESEARCH),
-                ('@debug', 'Debugging Specialist', ContextType.DEBUGGING),
-                ('@test', 'Testing Context', ContextType.TESTING),
-                ('@optimize', 'Performance Optimization', ContextType.OPTIMIZATION)
-            ]
+            # Context definitions for reference only - no fake data injection
             
             # Track all context switches in universal system
-            for keyword, context_name, context_enum in conversation_contexts:
-                # Record context switch
-                universal_tracker.record_context_switch(
-                    session_id=monitor_session,
-                    from_context=ContextType.MONITORING,
-                    to_context=context_enum,
-                    reason=f'Agent keyword detected: {keyword}',
-                    triggered_by="user_conversation"
-                )
-                
-                # Record rule activation
-                universal_tracker.record_rule_activation(
-                    session_id=monitor_session,
-                    rule_name=context_name,
-                    activation_reason=f'Context switch triggered by {keyword}',
-                    performance_impact=0.85
-                )
-                
-                # Also record in legacy system for compatibility
-                activator.add_manual_activation_event(
-                    event_type='switch',
-                    rule_names=[context_name, 'Context-Aware Rules'],
-                    context=context_name.upper().replace(' ', '_'),
-                    reason=f'Agent keyword detected: {keyword}'
-                )
+            # NO FAKE CONTEXT SWITCHES - Only record actual user interactions
             
             # Get comprehensive timeline from universal tracker
             universal_timeline = universal_tracker.get_agent_timeline(hours=24)
@@ -6483,8 +6437,17 @@ def display_comprehensive_agent_transparency():
     # Get real-time agent statistics
     agent_stats = get_real_time_agent_statistics()
     
-    # === LIVE AGENT METRICS ===
-    st.markdown("### 📈 **Live Agent Metrics**")
+    # === AGENT METRICS ===
+    st.markdown("### 📈 **Agent Metrics**")
+    
+    # Add proper monitoring dashboard button
+    if st.button("🔍 Open Agent Monitor Dashboard", key="open_monitor_dashboard"):
+        try:
+            from utils.monitoring.dashboard import display_monitoring_dashboard
+            st.write("---")
+            display_monitoring_dashboard()
+        except ImportError:
+            st.error("Monitoring dashboard not available")
     
     metric_col1, metric_col2, metric_col3, metric_col4, metric_col5 = st.columns(5)
     
@@ -6516,7 +6479,7 @@ def display_comprehensive_agent_transparency():
     ])
     
     with activity_tab1:
-        display_live_agent_activity_feed()
+        display_agent_activity_feed()
     
     with activity_tab2:
         display_agent_registry_monitor()
@@ -6536,112 +6499,12 @@ def display_comprehensive_agent_transparency():
         
         live_detector = get_live_keyword_detector()
         
-        # Auto-detect keywords in user context (simulate processing)
-        # This would normally come from Cursor integration, but for demo we'll simulate
-        demo_message = "@agile i want to see context switches and rule activations in the monitor and no fake data. @docs @research lets switch contextes and load different rule sets for different agent tasks"
+        # NO FAKE MESSAGE PROCESSING - Only process real user messages from Cursor
+        st.info("🔌 **Real Cursor Integration**: Keyword detection will automatically process real user messages when Cursor integration is active. No demo messages or fake processing.")
         
-        # Process the message for keywords
-        if st.button("🔄 Process Live Keywords (@agile @docs @research)", key="process_live_keywords"):
-            detection_result = live_detector.process_live_message(demo_message)
-            
-            st.success(f"✅ Processed message and detected {len(detection_result['detected_keywords'])} keywords!")
-            
-            for event in detection_result['detected_keywords']:
-                st.info(f"🎯 {event['keyword']} → {event['new_context']} context ({event['rules_count']} rules activated)")
-            
-            st.rerun()
-        
-        # IMMEDIATE DATABASE POPULATION
-        if st.button("🚀 POPULATE DATABASE NOW (Fix Missing Rule Activations)", key="populate_db_now"):
-            with st.spinner("Populating database with real rule activations..."):
-                try:
-                    import sqlite3
-                    import json
-                    import uuid
-                    from datetime import datetime, timedelta
-                    
-                    # Define rule sets
-                    keyword_rules = {
-                        '@agile': ['agile_coordination', 'sprint_management', 'user_story_development', 'systematic_completion'],
-                        '@docs': ['clear_documentation', 'api_documentation', 'live_documentation_updates', 'technical_writing_standards'],
-                        '@research': ['systematic_research', 'evidence_based_development', 'technology_evaluation', 'best_practices_research'],
-                        '@debug': ['systematic_debugging', 'error_analysis', 'root_cause_analysis', 'problem_resolution'],
-                        '@test': ['test_driven_development', 'comprehensive_testing', 'test_automation', 'quality_assurance']
-                    }
-                    
-                    with sqlite3.connect("utils/universal_agent_tracking.db") as conn:
-                        cursor = conn.cursor()
-                        
-                        # Ensure rule_activations table exists with correct schema
-                        cursor.execute("DROP TABLE IF EXISTS rule_activations")
-                        cursor.execute("""
-                            CREATE TABLE rule_activations (
-                                activation_id TEXT PRIMARY KEY,
-                                session_id TEXT,
-                                rules_activated TEXT,
-                                trigger_event TEXT,
-                                trigger_details TEXT,
-                                timestamp TEXT,
-                                performance_impact TEXT
-                            )
-                        """)
-                        
-                        session_id = str(uuid.uuid4())
-                        base_time = datetime.now()
-                        
-                        activations_created = 0
-                        
-                        # Create multiple activations for each keyword
-                        for i, (keyword, rules) in enumerate(keyword_rules.items()):
-                            for j in range(2):  # 2 activations per keyword
-                                timestamp = (base_time + timedelta(minutes=i*3 + j*1)).isoformat()
-                                activation_id = str(uuid.uuid4())
-                                
-                                cursor.execute("""
-                                    INSERT INTO rule_activations 
-                                    (activation_id, session_id, rules_activated, trigger_event, trigger_details, timestamp, performance_impact)
-                                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                                """, (
-                                    activation_id,
-                                    session_id,
-                                    json.dumps(rules),
-                                    "keyword_detection",
-                                    json.dumps({
-                                        'keyword': keyword,
-                                        'context': keyword.upper().replace('@', ''),
-                                        'rules_count': len(rules),
-                                        'sequence': j + 1
-                                    }),
-                                    timestamp,
-                                    json.dumps({'efficiency_score': 0.8 + j * 0.1})
-                                ))
-                                
-                                activations_created += 1
-                        
-                        # Also add context switches
-                        contexts = ['AGILE', 'DOCUMENTATION', 'RESEARCH', 'DEBUGGING', 'TESTING']
-                        for i, context in enumerate(contexts):
-                            switch_id = str(uuid.uuid4())
-                            timestamp = (base_time + timedelta(minutes=i*2)).isoformat()
-                            
-                            cursor.execute("""
-                                INSERT INTO context_switches 
-                                (switch_id, session_id, from_context, to_context, timestamp, trigger_type, trigger_details)
-                                VALUES (?, ?, ?, ?, ?, ?, ?)
-                            """, (
-                                switch_id, session_id, "SYSTEM_STARTUP", context, timestamp, "keyword_detection",
-                                json.dumps({'keyword': f'@{context.lower()}', 'user_triggered': True})
-                            ))
-                        
-                        conn.commit()
-                    
-                    st.success(f"✅ Database populated with {activations_created} rule activations and {len(contexts)} context switches!")
-                    st.info("🔄 Refresh the page to see the new data in the history sections below.")
-                    
-                except Exception as e:
-                    st.error(f"❌ Database population failed: {e}")
-                    import traceback
-                    st.code(traceback.format_exc())
+        # NO FAKE DATA GENERATION
+        # Data will only appear when real user interactions occur
+        st.info("📊 **Authentic Activity Only**: Rule activations and context switches are recorded only from real user interactions, not artificial data generation.")
         
         # Show current detector status
         status = live_detector.get_current_status()
@@ -7414,7 +7277,8 @@ def display_rule_monitor_interface():
             "🔴 Live Cursor Status",
             "🚀 Rule Activation Framework", 
             "📈 Live Rule Activation",
-            "🏗️ Framework Architecture"
+            "🏗️ Framework Architecture",
+            "🔍 Developer Insights & Debugging"
         ],
         index=0  # Default to transparency system
     )
@@ -7440,6 +7304,9 @@ def display_rule_monitor_interface():
         return
     elif monitor_view == "🏗️ Framework Architecture":
         display_rule_framework_architecture()
+        return
+    elif monitor_view == "🔍 Developer Insights & Debugging":
+        display_developer_insights_dashboard()
         return
     
     # === MODE SWITCHER INTERFACE ===
@@ -7939,85 +7806,15 @@ def display_full_dynamic_interface():
             from utils.system.universal_agent_tracker import get_universal_tracker, AgentType, ContextType
             universal_tracker = get_universal_tracker()
             
-            # REAL-TIME LIVE CONTEXT DETECTION - NO FAKE DATA
-            if 'live_session_id' not in st.session_state:
-                # Register this session as a REAL live monitoring agent
-                st.session_state.live_session_id = universal_tracker.register_agent(
-                    agent_id="live_rule_monitor",
-                    agent_type=AgentType.USER_INTERFACE,
-                    initial_context=ContextType.MONITORING
-                )
-                st.session_state.last_detected_context = ContextType.MONITORING
-                
-                # Start Cursor integration hook for REAL Cursor session tracking
-                try:
-                    from utils.integration.cursor_integration_hook import start_cursor_tracking
-                    if 'cursor_hook_started' not in st.session_state:
-                        start_cursor_tracking()
-                        st.session_state.cursor_hook_started = True
-                        st.info("🔌 Cursor Integration Hook: STARTED - Now capturing ALL Cursor sessions!")
-                except Exception as hook_error:
-                    st.warning(f"⚠️ Cursor hook not available: {hook_error}")
+            # NO AUTOMATIC AGENT REGISTRATION - Only register when real events occur
+            st.info("🎯 **Event Tracking**: Agent sessions and context switches will be recorded only when actual user interactions trigger them through Cursor integration.")
             
-            # CAPTURE LIVE @agile CONTEXT SWITCH RIGHT NOW
-            # Detect if user just used @agile (real-time detection)
-            current_context = detect_current_context()
-            detected_agents = current_context.get('detected_agents', [])
-            
-            if '@agile' in detected_agents and st.session_state.last_detected_context != ContextType.AGILE:
-                # REAL @agile context switch detected!
-                universal_tracker.record_context_switch(
-                    session_id=st.session_state.live_session_id,
-                    from_context=st.session_state.last_detected_context,
-                    to_context=ContextType.AGILE,
-                    reason="LIVE @agile keyword detected in user message",
-                    triggered_by="real_user_input"
-                )
-                
-                universal_tracker.record_rule_activation(
-                    session_id=st.session_state.live_session_id,
-                    rule_name="Agile Coordination",
-                    activation_reason="LIVE @agile keyword triggered",
-                    performance_impact=0.95
-                )
-                
-                # Also track through Cursor integration hook for comprehensive tracking
-                try:
-                    from utils.integration.cursor_integration_hook import track_manual_context_switch
-                    track_manual_context_switch('agile', '@agile')
-                except ImportError:
-                    pass  # Hook not available
-                
-                st.session_state.last_detected_context = ContextType.AGILE
-                st.success("🎯 LIVE @agile context switch captured!")
-            
-            # Check for other live context switches
-            if '@test' in detected_agents and st.session_state.last_detected_context != ContextType.TESTING:
-                universal_tracker.record_context_switch(
-                    session_id=st.session_state.live_session_id,
-                    from_context=st.session_state.last_detected_context,
-                    to_context=ContextType.TESTING,
-                    reason="LIVE @test keyword detected",
-                    triggered_by="real_user_input"
-                )
-                st.session_state.last_detected_context = ContextType.TESTING
-                
-            if '@debug' in detected_agents and st.session_state.last_detected_context != ContextType.DEBUGGING:
-                universal_tracker.record_context_switch(
-                    session_id=st.session_state.live_session_id,
-                    from_context=st.session_state.last_detected_context,
-                    to_context=ContextType.DEBUGGING,
-                    reason="LIVE @debug keyword detected",
-                    triggered_by="real_user_input"
-                )
-                st.session_state.last_detected_context = ContextType.DEBUGGING
-            
-            # Get recent context switches from universal tracker
+            # Get context switches from database
             recent_events = universal_tracker.get_agent_timeline(hours=24)
             context_switches = [event for event in recent_events if event['event_type'] == 'context_switch']
             
             if context_switches:
-                st.success(f"🌟 Found {len(context_switches)} context switches from UNIVERSAL tracker!")
+                st.info(f"📊 Found {len(context_switches)} context switches in database")
                 
                 # Display recent context switches
                 for i, switch in enumerate(context_switches[:10]):  # Last 10 switches
@@ -8482,10 +8279,10 @@ def display_research_center_interface():
         # Research metrics
         metrics_container = st.container()
         with metrics_container:
-            # Placeholder metrics
-            st.metric("Active Searches", "0")
-            st.metric("Sources Found", "0")
-            st.metric("Accuracy Score", "N/A")
+            # Real metrics only - no fake data
+            st.metric("Active Searches", "0", help="Will update with real search activity")
+            st.metric("Sources Found", "0", help="Will update with real source discovery")
+            st.metric("Accuracy Score", "No data", help="Will calculate from real research validation")
         
         st.markdown("## 🛠️ Research Tools")
         
@@ -8719,10 +8516,10 @@ def get_real_time_agent_statistics():
             'last_activity': f'Error: {e}'
         }
 
-def display_live_agent_activity_feed():
-    """Display live feed of all agent activities."""
-    st.markdown("### 🔴 **Live Agent Activity Feed**")
-    st.markdown("*Real-time stream of all agent activities, communications, and state changes*")
+def display_agent_activity_feed():
+    """Display agent activity feed."""
+    st.markdown("### 📊 **Agent Activity Feed**")
+    st.markdown("*Agent activities, communications, and state changes*")
     
     try:
         import sqlite3
@@ -9237,6 +9034,266 @@ def display_agent_performance_dashboard():
         
     except Exception as e:
         st.error(f"❌ Error loading performance metrics: {e}")
+
+
+def display_developer_insights_dashboard():
+    """
+    Display enhanced developer insights and debugging dashboard.
+    
+    Integrates with existing logging system to provide useful development information.
+    """
+    st.markdown("# 🔍 **Developer Insights & Debugging Dashboard**")
+    st.markdown("**Real-time analysis of agent behavior, performance, and issues**")
+    
+    # Import the integration enhancer
+    try:
+        from utils.logging_integration_enhancer import get_logging_enhancer, get_developer_insights, get_debugging_info
+    except ImportError as e:
+        st.error(f"❌ Could not import logging integration enhancer: {e}")
+        st.info("Please ensure utils/logging_integration_enhancer.py is properly installed")
+        return
+    
+    # Refresh controls
+    col_refresh1, col_refresh2, col_refresh3 = st.columns([2, 1, 1])
+    
+    with col_refresh1:
+        auto_refresh = st.checkbox("🔄 Auto-refresh every 10 seconds", value=False, key="dev_insights_auto_refresh")
+    
+    with col_refresh2:
+        if st.button("🔄 Refresh Now", key="dev_insights_refresh"):
+            st.rerun()
+    
+    with col_refresh3:
+        time_range = st.selectbox("📅 Time Range", [1, 6, 24, 168], index=2, format_func=lambda x: f"{x} hours")
+    
+    if auto_refresh:
+        import time
+        time.sleep(10)
+        st.rerun()
+    
+    # === INTEGRATION STATUS ===
+    st.markdown("## 🔗 **System Integration Status**")
+    
+    try:
+        enhancer = get_logging_enhancer()
+        integration_status = enhancer.get_integration_status()
+        
+        # Display integration status
+        col_status1, col_status2, col_status3 = st.columns(3)
+        
+        with col_status1:
+            st.metric("🔌 Integration", "Active" if integration_status["integration_active"] else "Inactive")
+        
+        with col_status2:
+            connected_components = sum(1 for connected in integration_status["existing_components"].values() if connected)
+            total_components = len(integration_status["existing_components"])
+            st.metric("🧩 Components", f"{connected_components}/{total_components}")
+        
+        with col_status3:
+            st.metric("💾 Database", "Connected" if integration_status["database_access"] else "Error")
+        
+        # Show component details
+        with st.expander("🔍 **Component Details**"):
+            for component, connected in integration_status["existing_components"].items():
+                status_icon = "✅" if connected else "❌"
+                st.write(f"{status_icon} **{component.replace('_', ' ').title()}**: {'Connected' if connected else 'Not Available'}")
+        
+        if integration_status.get("recommendations"):
+            st.warning("**Recommendations:** " + " • ".join(integration_status["recommendations"]))
+    
+    except Exception as e:
+        st.error(f"❌ Error checking integration status: {e}")
+        return
+    
+    # === DEVELOPER INSIGHTS ===
+    st.markdown("## 📊 **Developer Insights**")
+    
+    try:
+        insights = get_developer_insights(hours=time_range)
+        
+        if insights:
+            # Group insights by severity
+            critical_insights = [i for i in insights if i.severity == "critical"]
+            error_insights = [i for i in insights if i.severity == "error"]
+            warning_insights = [i for i in insights if i.severity == "warning"]
+            info_insights = [i for i in insights if i.severity == "info"]
+            
+            # Display critical and error insights first
+            if critical_insights or error_insights:
+                st.markdown("### 🚨 **Critical Issues & Errors**")
+                
+                for insight in critical_insights + error_insights:
+                    severity_color = "red" if insight.severity == "critical" else "orange"
+                    
+                    with st.container():
+                        st.markdown(f"<div style='padding: 10px; border-left: 4px solid {severity_color}; background-color: rgba(255,0,0,0.1); margin: 5px 0;'>", unsafe_allow_html=True)
+                        st.markdown(f"**🚨 {insight.title}**")
+                        st.write(insight.description)
+                        
+                        if insight.suggestions:
+                            st.write("**Suggestions:**")
+                            for suggestion in insight.suggestions:
+                                st.write(f"• {suggestion}")
+                        
+                        if insight.data:
+                            with st.expander("📊 **Technical Details**"):
+                                st.json(insight.data)
+                        
+                        st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Display warnings and info
+            if warning_insights or info_insights:
+                st.markdown("### ⚠️ **Warnings & Information**")
+                
+                for insight in warning_insights + info_insights:
+                    severity_icon = "⚠️" if insight.severity == "warning" else "ℹ️"
+                    
+                    with st.expander(f"{severity_icon} **{insight.title}**"):
+                        st.write(insight.description)
+                        
+                        if insight.suggestions:
+                            st.write("**Suggestions:**")
+                            for suggestion in insight.suggestions:
+                                st.write(f"• {suggestion}")
+                        
+                        if insight.data:
+                            st.json(insight.data)
+            
+            # Summary statistics
+            st.markdown("### 📈 **Insights Summary**")
+            
+            col_summary1, col_summary2, col_summary3, col_summary4 = st.columns(4)
+            
+            with col_summary1:
+                st.metric("🚨 Critical", len(critical_insights))
+            
+            with col_summary2:
+                st.metric("🔴 Errors", len(error_insights))
+            
+            with col_summary3:
+                st.metric("⚠️ Warnings", len(warning_insights))
+            
+            with col_summary4:
+                st.metric("ℹ️ Info", len(info_insights))
+        
+        else:
+            st.info("✅ No issues detected - system appears to be running smoothly!")
+    
+    except Exception as e:
+        st.error(f"❌ Error generating insights: {e}")
+    
+    # === REAL-TIME DEBUGGING ===
+    st.markdown("## 🐛 **Real-time Debugging Information**")
+    
+    try:
+        debug_info = get_debugging_info()
+        
+        # Key metrics
+        col_debug1, col_debug2, col_debug3, col_debug4 = st.columns(4)
+        
+        with col_debug1:
+            st.metric("🤖 Active Sessions", debug_info.get("active_sessions", 0))
+        
+        with col_debug2:
+            st.metric("📈 Activities Today", debug_info.get("activities_today", 0))
+        
+        with col_debug3:
+            system_status = debug_info.get("system_status", "unknown")
+            status_color = "green" if system_status == "connected" else "red"
+            st.markdown(f"**System Status**<br><span style='color: {status_color}'>{system_status}</span>", unsafe_allow_html=True)
+        
+        with col_debug4:
+            last_activity = debug_info.get("last_activity", "None")
+            if last_activity != "None" and last_activity:
+                try:
+                    from datetime import datetime
+                    last_time = datetime.fromisoformat(last_activity.replace("Z", "+00:00"))
+                    time_diff = datetime.now() - last_time.replace(tzinfo=None)
+                    st.metric("⏰ Last Activity", f"{int(time_diff.total_seconds())}s ago")
+                except:
+                    st.metric("⏰ Last Activity", "Recent")
+            else:
+                st.metric("⏰ Last Activity", "None")
+        
+        # Recent events timeline
+        if debug_info.get("recent_events"):
+            st.markdown("### 📋 **Recent Events**")
+            
+            events_df_data = []
+            for event in debug_info["recent_events"][:10]:
+                events_df_data.append({
+                    "Timestamp": event.get("timestamp", ""),
+                    "Event Type": event.get("event_type", "unknown"),
+                    "Agent ID": event.get("session_id", "")[:20] + "..." if len(event.get("session_id", "")) > 20 else event.get("session_id", ""),
+                    "Details": str(event.get("details", ""))[:50] + "..." if len(str(event.get("details", ""))) > 50 else str(event.get("details", ""))
+                })
+            
+            if events_df_data:
+                import pandas as pd
+                events_df = pd.DataFrame(events_df_data)
+                st.dataframe(events_df, use_container_width=True)
+        
+        # Debugging suggestions
+        if debug_info.get("debug_suggestions"):
+            st.markdown("### 💡 **Debugging Suggestions**")
+            for suggestion in debug_info["debug_suggestions"]:
+                st.write(f"• {suggestion}")
+        
+        # Detailed system info
+        with st.expander("🔍 **Detailed System Information**"):
+            st.json(debug_info)
+    
+    except Exception as e:
+        st.error(f"❌ Error getting debugging information: {e}")
+    
+    # === MANUAL DEBUGGING TOOLS ===
+    st.markdown("## 🛠️ **Manual Debugging Tools**")
+    
+    col_tools1, col_tools2 = st.columns(2)
+    
+    with col_tools1:
+        st.markdown("### 🔍 **Query Tools**")
+        
+        if st.button("🧹 **Clean Stale Sessions**", help="Clean up inactive agent sessions"):
+            try:
+                from utils.agent_monitor import ProfessionalAgentMonitor
+                monitor = ProfessionalAgentMonitor()
+                cleaned = monitor.cleanup_stale_agents(hours_threshold=2)
+                st.success(f"✅ Cleaned up {cleaned} stale agent sessions")
+            except Exception as e:
+                st.error(f"❌ Error cleaning sessions: {e}")
+        
+        if st.button("📊 **Refresh Performance Baselines**", help="Recalculate performance baselines"):
+            try:
+                enhancer = get_logging_enhancer()
+                enhancer._load_performance_baselines()
+                st.success("✅ Performance baselines refreshed")
+            except Exception as e:
+                st.error(f"❌ Error refreshing baselines: {e}")
+    
+    with col_tools2:
+        st.markdown("### 📈 **Analysis Tools**")
+        
+        agent_id_input = st.text_input("🎯 **Agent ID Filter**", placeholder="Enter agent ID for focused analysis")
+        
+        if st.button("🔍 **Analyze Specific Agent**", disabled=not agent_id_input):
+            try:
+                specific_debug = get_debugging_info(agent_id=agent_id_input)
+                st.json(specific_debug)
+            except Exception as e:
+                st.error(f"❌ Error analyzing agent {agent_id_input}: {e}")
+    
+    # Footer with helpful information
+    st.markdown("---")
+    st.markdown("### 💡 **How to Use This Dashboard**")
+    st.markdown("""
+    - **🔗 Integration Status**: Shows connection to existing logging components
+    - **📊 Developer Insights**: Automated analysis of patterns, errors, and performance
+    - **🐛 Real-time Debugging**: Current system state and recent activity
+    - **🛠️ Manual Tools**: Interactive debugging and analysis tools
+    - **⏰ Auto-refresh**: Enable for real-time monitoring
+    """)
+
 
 if __name__ == "__main__":
     main()

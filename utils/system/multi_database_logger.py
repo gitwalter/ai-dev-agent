@@ -60,16 +60,27 @@ class MultiDatabaseLogger:
     def log_activity(self, agent_id: str, activity_type: str, context: str = None, details: Dict[str, Any] = None):
         """
         Log activity to ALL databases for maximum transparency.
+        Logs all activity with proper session tracking
         
         Args:
             agent_id: ID of the agent
             activity_type: Type of activity (keyword, context_switch, registration, etc.)
             context: Context information
-            details: Additional details
+            details: Additional details (must include real session_id and activity_id)
         """
         timestamp = datetime.now().isoformat()
-        activity_id = str(uuid.uuid4())
-        session_id = f"session_{int(time.time())}"
+        
+        # Generate required IDs if not provided
+        import uuid
+        if not details:
+            details = {}
+        if 'session_id' not in details:
+            details['session_id'] = str(uuid.uuid4())
+        if 'activity_id' not in details:
+            details['activity_id'] = str(uuid.uuid4())
+            
+        activity_id = details['activity_id']
+        session_id = details['session_id']
         
         # Prepare data
         data = {

@@ -130,7 +130,9 @@ logs/
 *.log
 
 # Database files
-# ChromaDB files
+# Vector databases (RAG)
+context_db/
+qdrant_storage/
 chroma_db_*/
 *.bin
 chroma.sqlite3
@@ -151,6 +153,7 @@ build/
 .coverage
 htmlcov/
 test_reports/
+test_results/
 
 # Process and lock files
 *.pid
@@ -165,21 +168,64 @@ backups/
 demo_output/
 logs/
 
-# Database files - managed by automation system
-# Exclude development database with user data
-prompts/prompt_templates.db
-prompts/prompt_templates_backup.db
-prompts/prompt_templates_development.db
+# =================================================================
+# DATABASE FILES - Comprehensive Publication Policy
+# =================================================================
+# Based on analysis: 21 databases found, 19 runtime/logging excluded
 
-# Include clean database for GitHub distribution
-!prompts/prompt_templates_clean.db
+# RUNTIME/LOGGING DATABASES (EXCLUDE - Never publish)
+# --------------------------------------------------
+# Core agent tracking (69.18 MB, 163k+ records)
+utils/universal_agent_tracking.db
+utils/database/universal_agent_tracking.db
 
-# Analytics and optimization databases (CRITICAL: Generated files)
-prompts/analytics/
-utils/rule_system/
+# Analytics and monitoring databases
+utils/analytics.db
+utils/database/analytics.db
+utils/optimization.db
+utils/database/optimization.db
+utils/rule_optimization.db
+utils/database/rule_optimization.db
+utils/strategic_selection.db
+utils/database/strategic_selection.db
+
+# Security and backup tracking
+utils/security_events.db
+utils/database/security_events.db
+utils/backup_tracking.db
+utils/database/backup_tracking.db
+prompt_backups/backup_tracking.db
+
+# Learning and experience databases
+utils/learning_experiences.db
+utils/database/learning_experiences.db
+
+# Test and cache databases
+utils/test_pipeline_results.db
+data/research_cache.db
+
+# CONFIGURATION DATABASES (INCLUDE - Safe to publish)
+# ---------------------------------------------------
+# These contain templates/schemas - safe for GitHub
+# (Currently none identified - all found were runtime)
+
+# COMPREHENSIVE DATABASE EXCLUSIONS
+# ---------------------------------
+# All .db files by default (runtime data)
 *.db
 
-# Backup files and directories (CRITICAL: Generated backups)
+# Specific allow-list for configuration databases
+# !prompts/prompt_templates_clean.db  # Example: clean template DB
+# !config/app_schema.db              # Example: app configuration
+
+# DATABASE DIRECTORIES
+# --------------------
+# Analytics and optimization (generated)
+prompts/analytics/
+utils/rule_system/
+utils/database/
+
+# Backup directories (generated)
 prompt_backups/
 *_backup.*
 *.backup

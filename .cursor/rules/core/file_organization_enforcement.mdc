@@ -1,0 +1,230 @@
+---
+description: "Active file organization enforcement - prevents misplaced files"
+category: "core"
+priority: "critical"
+alwaysApply: true
+globs: ["**/*"]
+tags: ['file-organization', 'enforcement', 'active']
+tier: "1"
+---
+
+# File Organization Enforcement Rule
+
+**CRITICAL**: This rule ACTIVELY enforces proper file organization during all development activities.
+
+**INTEGRATION**: File organization enforcement is integrated with our existing Hilbert Formal Consistency Validation system (`scripts/hilbert_consistency_validator.py`) and pre-commit hooks (`scripts/pre_commit_hilbert_validation.py`).
+
+## Automatic File Organization Enforcement
+
+### Before Creating ANY File
+1. **MANDATORY Check**: Determine correct directory based on file type and purpose
+2. **MANDATORY Validation**: Verify the intended location matches organizational standards
+3. **MANDATORY Correction**: If location is wrong, suggest correct path and refuse to proceed
+
+### File Organization Standards
+
+#### Python Files (.py)
+```yaml
+test_*.py: "tests/[category]/"
+*_test.py: "tests/[category]/"
+agents/*.py: "agents/[category]/"
+utils/*.py: "utils/[category]/"
+scripts/*.py: "scripts/"
+apps/*.py: "apps/[app_name]/"
+```
+
+#### Documentation Files (.md)
+```yaml
+README.md: "Project root OR module root"
+docs/*.md: "docs/[category]/"
+agile/*.md: "docs/agile/[subcategory]/"
+architecture/*.md: "docs/architecture/"
+```
+
+#### Configuration Files
+```yaml
+*.toml: "Project root"
+*.yaml/*.yml: "workflow/ OR templates/"
+*.json: "prompts/templates/ OR monitoring/"
+```
+
+#### Rule Files (.mdc)
+```yaml
+*.mdc: ".cursor/rules/[category]/"
+```
+
+### Enforcement Actions
+
+#### When File Creation is Attempted
+```python
+# REQUIRED: Execute this check BEFORE creating any file
+def enforce_file_organization(filename: str, intended_path: str) -> bool:
+    """
+    Enforce file organization standards.
+    
+    Returns:
+        True if path is correct, False if violation detected
+    """
+    correct_path = determine_correct_path(filename)
+    
+    if intended_path != correct_path:
+        print(f"🚨 FILE ORGANIZATION VIOLATION")
+        print(f"File: {filename}")
+        print(f"❌ Intended: {intended_path}")
+        print(f"✅ Correct:  {correct_path}")
+        print(f"🛡️ BLOCKED: Please use correct path")
+        return False
+    
+    return True
+```
+
+#### File Type Classification
+```python
+def determine_correct_path(filename: str) -> str:
+    """Determine correct path based on filename and purpose."""
+    
+    # Test files
+    if filename.startswith('test_') or filename.endswith('_test.py'):
+        if 'mcp' in filename.lower():
+            return f"tests/mcp/{filename}"
+        elif 'integration' in filename.lower():
+            return f"tests/integration/{filename}"
+        elif 'unit' in filename.lower():
+            return f"tests/unit/{filename}"
+        else:
+            return f"tests/{filename}"
+    
+    # Agent files
+    if 'agent' in filename.lower():
+        return f"agents/{determine_agent_category(filename)}/{filename}"
+    
+    # Utility files
+    if filename.endswith('.py') and not filename.startswith('app'):
+        return f"utils/{determine_util_category(filename)}/{filename}"
+    
+    # Documentation
+    if filename.endswith('.md'):
+        if 'README' in filename:
+            return filename  # Can be in root or module root
+        else:
+            return f"docs/{determine_doc_category(filename)}/{filename}"
+    
+    # Scripts
+    if filename.endswith('.py') and is_script_file(filename):
+        return f"scripts/{filename}"
+    
+    # Default to root for configuration files
+    if filename.endswith(('.toml', '.ini', '.cfg')):
+        return filename
+    
+    return filename  # Default case
+```
+
+### Integration with Development Workflow
+
+#### Pre-Commit Hook Integration
+```bash
+#!/bin/bash
+# Automatically check file organization before commits
+
+echo "🛡️ Checking file organization..."
+
+# Get list of files to be committed
+files=$(git diff --cached --name-only)
+
+violations=()
+for file in $files; do
+    # Check if file is in correct location
+    if ! check_file_organization "$file"; then
+        violations+=("$file")
+    fi
+done
+
+if [ ${#violations[@]} -gt 0 ]; then
+    echo "🚨 FILE ORGANIZATION VIOLATIONS:"
+    for violation in "${violations[@]}"; do
+        echo "❌ $violation"
+    done
+    echo "🛡️ Commit blocked - fix organization first"
+    exit 1
+fi
+
+echo "✅ File organization verified"
+```
+
+#### IDE Integration
+- **Auto-suggest**: When creating files, suggest correct paths
+- **Auto-move**: Offer to move misplaced files to correct locations
+- **Validation**: Real-time validation of file paths during editing
+
+### Enforcement Levels
+
+#### Level 1: Warning
+- Display warning for minor violations
+- Allow continuation with acknowledgment
+
+#### Level 2: Blocking (DEFAULT)
+- Block file creation/modification
+- Require correction before proceeding
+
+#### Level 3: Auto-Correction
+- Automatically move files to correct locations
+- Log all corrections for review
+
+### Exception Handling
+
+#### Temporary Files
+```yaml
+Allowed in root:
+  - "test_*.py" (during development, must be moved before commit)
+  - "debug_*.py" (temporary debugging, auto-delete after session)
+  - "temp_*.py" (temporary files, auto-delete after session)
+```
+
+#### Legacy Files
+```yaml
+Grandfathered files:
+  - Existing files in wrong locations (gradual migration)
+  - Third-party files with fixed locations
+  - Generated files with specific requirements
+```
+
+## Implementation Commands
+
+### For Cursor Integration
+```javascript
+// Add to Cursor settings
+{
+  "cursor.rules.fileOrganization": {
+    "enabled": true,
+    "enforcement": "blocking",
+    "autoSuggest": true,
+    "preCommitCheck": true
+  }
+}
+```
+
+### For Development Team
+```bash
+# Install file organization hooks
+./scripts/setup_file_organization_hooks.sh
+
+# Validate current repository
+./scripts/validate_file_organization.sh
+
+# Auto-fix violations (with confirmation)
+./scripts/fix_file_organization.sh --interactive
+```
+
+## Success Metrics
+
+- **Zero** files in wrong locations
+- **100%** compliance with organization standards  
+- **Instant** developer feedback on file placement
+- **Automatic** correction suggestions
+
+## Remember
+
+**"Every file in its right place, every place with its right files."**
+
+This rule ensures our codebase remains beautifully organized and easily navigable for all team members.

@@ -1,11 +1,11 @@
 ---
-description: "Auto-generated description for FILE_ORGANIZATION_SACRED_RULE.md"
-category: "general"
+description: "Sacred file organization rule - ALWAYS enforced for all file operations"
+category: "core"
 priority: "critical"
-alwaysApply: false
+alwaysApply: true
 globs: ["**/*"]
-tags: ['general']
-tier: "2"
+tags: ['file-organization', 'sacred', 'core']
+tier: "1"
 ---
 
 # FILE ORGANIZATION SACRED RULE - NEVER VIOLATE

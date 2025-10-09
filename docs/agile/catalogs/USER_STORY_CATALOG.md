@@ -36,13 +36,14 @@ This catalog provides an **honest, evidence-based view** of all user stories acr
 | **US-MODESTY-001** | **Rule System Optimization** | ✅ 78→8 rules implemented | ✅ **COMPLETED** | 13 | **REAL** |
 | **US-MONITOR-001** | **Rule Monitor Dashboard** | ✅ Advanced Dynamic System with real data | ✅ **COMPLETED** | 21 | **REAL** |
 | **US-000** | **Fix All Test Failures** | ✅ 580 tests passing, 0 failures | ✅ **COMPLETED** | 15 | **HONEST** |
-| **US-RAG-001** | **RAG-Enhanced IDE Integration** | 📝 Architecture only, no implementation | 🔄 **PLANNING ONLY** | 21 | **REALISTIC** |
+| **US-RAG-001** | **Comprehensive RAG System with Management UI** | 🔄 Updated with full UI requirements, document loading, website scraping, MCP management, agent swarm chat | 🔄 **IN PROGRESS** | 34 | **COMPREHENSIVE** |
+| **US-SWARM-UI-001** | **Modular Agent Swarm Management Application** | 🏗️ Clean modular architecture to replace bloated universal_composition_app with agent building, MCP config, RAG management, logging | 🔄 **READY FOR SPRINT** | 55 | **ARCHITECTURAL** |
 | **US-RESEARCH-001** | **Research Implementation** | ✅ ComprehensiveResearchAgent with multi-domain capabilities, web search, database caching, Streamlit UI integration | ✅ **INFRASTRUCTURE COMPLETED** | 21 | **REAL SYSTEM** |
 | **US-DD-001** | **Data-Driven Development** | ❌ No evidence of implementation | ⏳ **NOT STARTED** | 13 | **TRUTH** |
 | **US-DD-007** | **Quality Metrics** | ❌ No evidence of implementation | ⏳ **NOT STARTED** | 8 | **TRUTH** |
 | **US-EXTRACT-001** | **Code Extraction** | ❌ No evidence of implementation | ⏳ **NOT STARTED** | 13 | **TRUTH** |
 
-**REALISTIC TOTAL**: 8 stories, 125 points *(34 completed, 57 in progress, 34 not started)* - **27% actual completion rate**
+**REALISTIC TOTAL**: 9 stories, 180 points *(34 completed, 112 in progress, 34 not started)* - **19% actual completion rate**
 
 ### **🚀 Sprint 0** 
 **Status**: 1/3 completed (33.3%)

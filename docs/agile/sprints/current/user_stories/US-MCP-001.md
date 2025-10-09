@@ -32,11 +32,14 @@ Building on the successful completion of US-RAG-001 (RAG-Enhanced IDE Integratio
 - [ ] **AC-1.3**: MCP client library integrated with agent system
 - [ ] **AC-1.4**: Universal Agent Tracker captures MCP tool usage events
 
-### Phase 2: RAG-MCP Integration (Week 2)
+### Phase 2: RAG-MCP Integration (Week 2) - **🚨 PENDING IMPLEMENTATION**
 - [ ] **AC-2.1**: RAG system analyzes tool usage patterns and suggests optimal tools
-- [ ] **AC-2.2**: Context-aware tool routing based on project intelligence
+- [ ] **AC-2.2**: Context-aware tool routing based on project intelligence  
 - [ ] **AC-2.3**: Tool execution results enrich RAG knowledge base
 - [ ] **AC-2.4**: Intelligent error prevention using historical patterns
+- [ ] **AC-2.5**: **NEW**: RAG-specific MCP tools for semantic search and context analysis
+- [ ] **AC-2.6**: **NEW**: Integration of existing context_engine.py with MCP server
+- [ ] **AC-2.7**: **NEW**: Agent swarm coordination through RAG-enhanced tool selection
 
 ### Phase 3: Agent Enhancement (Week 3)
 - [ ] **AC-3.1**: All existing agents enhanced with MCP tool capabilities
@@ -249,10 +252,10 @@ CORE_TOOL_SUITE = {
 - **Days 3-4**: MCP client integration with agents
 - **Day 5**: Universal Agent Tracker integration
 
-### Week 2: Intelligence Integration
-- **Days 1-2**: RAG-MCP integration layer
-- **Days 3-4**: Context-aware tool routing
-- **Day 5**: Pattern learning and optimization
+### Week 2: Intelligence Integration - **🚨 CURRENT FOCUS**
+- **Days 1-2**: RAG-MCP Integration - Create RAG-specific MCP tools for semantic search (CRITICAL DEPENDENCY)
+- **Days 3-4**: RAG MCP Tools - Implement semantic search, context analysis, knowledge base tools
+- **Day 5**: Context-Aware Routing - Intelligent tool selection using RAG intelligence
 
 ### Week 3: Enhancement & Validation
 - **Days 1-2**: Agent enhancement with MCP capabilities

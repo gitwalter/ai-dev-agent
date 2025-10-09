@@ -30,6 +30,8 @@ class ComprehensiveKeywordDetector:
         self.keywords_map = self._build_comprehensive_keyword_map()
         self.current_context = "SYSTEM_STARTUP"
         self.context_history = []
+        # Initialize with real session ID for actual user interactions  
+        import uuid
         self.session_id = str(uuid.uuid4())
         
         # Initialize database connection
@@ -411,7 +413,7 @@ class ComprehensiveKeywordDetector:
         event = {
             'event_id': str(uuid.uuid4()),
             'keyword': keyword,
-            'new_context': config['context'],
+            'context': config['context'],
             'agent_type': config['agent_type'],
             'rules': config['rules'],
             'rules_count': len(config['rules']),

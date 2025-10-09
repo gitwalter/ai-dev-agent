@@ -5,7 +5,7 @@
 **Story Points**: 8  
 **Priority**: HIGH  
 **Created**: 2025-09-26  
-**Status**: In Progress  
+**Status**: 🔄 REOPENED - Critical Missing: Real Cursor Conversation Monitoring  
 
 ## Story Description
 
@@ -45,6 +45,7 @@ We have a comprehensive `optimized_context_rule_mappings.yaml` configuration tha
    - [x] Update universal agent tracker with context changes
    - [x] Record rule activations for each context switch
    - [ ] Show context switches immediately in live monitor
+   - [ ] **🎯 CRITICAL: Capture actual Cursor conversation keywords in real-time**
 
 4. **Agent Monitor Integration**
    - [x] Replace old detection systems with unified detector in main app
@@ -93,6 +94,15 @@ We have a comprehensive `optimized_context_rule_mappings.yaml` configuration tha
    - [ ] Test that different rules load for different contexts
    - [ ] Confirm real-time updates in agent monitor
    - [ ] Validate accurate "last keyword" reporting
+
+**🚨 CRITICAL MISSING TASK:**
+
+6. **Real Cursor Conversation Integration** (2 points) ⚠️ CRITICAL GAP
+   - [ ] **Hook into actual Cursor AI chat conversation interface**
+   - [ ] **Capture keywords typed in this conversation in real-time**
+   - [ ] **Log actual user messages (@agile test message) to database**
+   - [ ] **Show TODAY'S actual keyword usage in agent monitor**
+   - [ ] **Replace old simulated data with real conversation data**
 
 4. **Legacy System Cleanup** (1 point) 🔄 IN PROGRESS
    - [ ] Remove old hardcoded keyword detection systems

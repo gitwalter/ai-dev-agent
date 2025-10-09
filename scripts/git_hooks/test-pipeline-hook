@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""
+Git Hook for Automated Testing Pipeline
+======================================
+
+This hook integrates the automated testing pipeline with git workflow
+to ensure quality gates are enforced on commits and pushes.
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from scripts.automated_testing_pipeline import AutomatedTestingPipeline
+
+def main():
+    """Main hook execution."""
+    hook_type = sys.argv[1] if len(sys.argv) > 1 else "pre-commit"
+    
+    print(f"🔍 Executing {hook_type} testing pipeline...")
+    
+    pipeline = AutomatedTestingPipeline()
+    
+    if hook_type == "pre-commit":
+        # Quick validation for pre-commit
+        pipeline.test_categories = {
+            k: v for k, v in pipeline.test_categories.items() 
+            if k in ["unit"] and v["timeout"] <= 30
+        }
+        result = pipeline.run_full_pipeline()
+        
+        if not result.overall_success:
+            print("❌ Pre-commit tests failed. Commit blocked.")
+            sys.exit(1)
+        else:
+            print("✅ Pre-commit tests passed. Commit allowed.")
+            sys.exit(0)
+            
+    elif hook_type == "pre-push":
+        # Full validation for pre-push
+        result = pipeline.run_full_pipeline()
+        
+        if not result.overall_success:
+            print("❌ Test pipeline failed. Push blocked.")
+            sys.exit(1)
+        else:
+            print("✅ All tests passed. Push allowed.")
+            sys.exit(0)
+    
+    else:
+        print(f"❌ Unknown hook type: {hook_type}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

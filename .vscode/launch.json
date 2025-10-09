@@ -247,6 +247,31 @@
             "autoReload": {
                 "enable": true
             }
+        },
+        {
+            "name": "🔍 RAG Management App",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/rag_management_app.py",
+                "--server.port",
+                "8510",
+                "--server.headless",
+                "true"
+            ],
+            "python": "${config:ai-dev-agent.pythonPath}",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
         }
     ]
 }

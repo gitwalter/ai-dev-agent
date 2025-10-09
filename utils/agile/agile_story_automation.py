@@ -585,16 +585,58 @@ def update_artifacts(story: UserStory, action: str = "updated") -> None:
 
 
 if __name__ == "__main__":
-    # Example usage
+    import argparse
+    import sys
+    
+    parser = argparse.ArgumentParser(description='Agile Story Automation System')
+    parser.add_argument('--context', type=str, help='Context description for completed work')
+    parser.add_argument('--related-stories', type=str, help='Related story IDs (comma-separated)')
+    parser.add_argument('--title', type=str, help='Custom story title')
+    parser.add_argument('--priority', type=str, choices=['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'], 
+                       default='HIGH', help='Story priority')
+    parser.add_argument('--points', type=int, help='Story points')
+    parser.add_argument('--epic', type=str, default='Repository Excellence & CI/CD', help='Epic name')
+    
+    args = parser.parse_args()
+    
     automation = AgileStoryAutomation()
     
-    # Create example story
-    story = automation.create_complete_story_workflow(
-        title="Example Automated Story Creation",
-        description="This is an example of how the automated story creation system works with full artifact integration.",
-        business_justification="Demonstrates the automated agile workflow system for improved development efficiency.",
-        priority=Priority.MEDIUM,
-        story_points=5
-    )
-    
-    print(f"Created story {story.story_id} with {len(story.tasks)} tasks")
+    if args.context:
+        # Create story from context description
+        if not args.title:
+            # Auto-generate title from context
+            context_words = args.context.split()[:8]
+            args.title = ' '.join(context_words) + ("..." if len(args.context.split()) > 8 else "")
+        
+        # Map priority string to enum
+        priority_map = {
+            'CRITICAL': Priority.CRITICAL,
+            'HIGH': Priority.HIGH, 
+            'MEDIUM': Priority.MEDIUM,
+            'LOW': Priority.LOW
+        }
+        priority = priority_map.get(args.priority, Priority.HIGH)
+        
+        # Create story from context
+        story = automation.create_complete_story_workflow(
+            title=args.title,
+            description=f"Work completed:\n{args.context}",
+            business_justification=f"This work addresses critical system needs: {args.context[:200]}...",
+            priority=priority,
+            epic=args.epic,
+            story_points=args.points or 5,
+            dependencies=args.related_stories.split(',') if args.related_stories else None
+        )
+        
+        print(f"Created story {story.story_id} with {len(story.tasks)} tasks")
+    else:
+        # Create example story if no context provided
+        story = automation.create_complete_story_workflow(
+            title="Example Automated Story Creation",
+            description="This is an example of how the automated story creation system works with full artifact integration.",
+            business_justification="Demonstrates the automated agile workflow system for improved development efficiency.",
+            priority=Priority.MEDIUM,
+            story_points=5
+        )
+        
+        print(f"Created story {story.story_id} with {len(story.tasks)} tasks")

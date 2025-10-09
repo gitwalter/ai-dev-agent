@@ -414,22 +414,27 @@ class AgentLoggingCoordinator:
         """
         import uuid
         
-        # Base data that applies to most tables
+        # Generate required IDs if not provided
+        import uuid
+        if "session_id" not in context_data:
+            context_data["session_id"] = str(uuid.uuid4())
+        
+        # Base data that applies to most tables - only real data
         base_data = {
             "timestamp": timestamp,
             "agent_id": agent_id,
             "event_type": event_type,
-            "session_id": context_data.get("session_id", f"session_{int(time.time())}"),
+            "session_id": context_data["session_id"],  # Must be real
             "context": json.dumps(context_data),
-            "metadata": json.dumps({"logged_by": "agent_logging_coordinator"}),
-            "id": str(uuid.uuid4()),
+            "metadata": json.dumps({"logged_by": "agent_logging_coordinator", "authentic_data_only": True}),
+            "id": context_data.get("id"),  # Only if real ID provided
             "agent_type": context_data.get("agent_type", "unknown"),
             "status": "active",
             "description": f"{event_type} for agent {agent_id}",
             "details": json.dumps(context_data),
             "from_context": context_data.get("from_context", "unknown"),
             "to_context": context_data.get("to_context", "unknown"),
-            "switch_id": str(uuid.uuid4()),
+            "switch_id": context_data.get("switch_id"),  # Only if real switch ID provided
             "trigger_type": context_data.get("trigger_type", event_type),
             "trigger_details": json.dumps(context_data.get("trigger_details", {})),
             "created_at": timestamp,

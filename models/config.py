@@ -39,19 +39,21 @@ class AgentConfig(BaseModel):
     """Configuration for individual agents."""
     
     agent_id: str = Field(..., description="Unique identifier for the agent")
-    name: str
-    description: str
+    name: str = Field(default="Agent", description="Agent name")
+    description: str = Field(default="", description="Agent description")
     enabled: bool = True
     max_retries: int = 3
     timeout: int = 300  # seconds
-    prompt_template: str
-    system_prompt: str
+    prompt_template: str = Field(default="", description="Prompt template for agent")
+    system_prompt: str = Field(default="You are a helpful AI assistant.", description="System prompt for agent")
     parameters: Dict[str, Any] = Field(default_factory=dict)
     optimization_enabled: bool = Field(default=True, description="Enable optimization features")
     performance_monitoring: bool = Field(default=True, description="Enable performance monitoring")
     error_recovery: bool = Field(default=True, description="Enable automatic error recovery")
-    model_name: str = Field(default="gemini-2.0-flash-exp", description="Name of the LLM model to use")
+    model_name: str = Field(default="gemini-2.5-flash", description="Name of the LLM model to use")
     temperature: float = Field(default=0.1, description="Temperature for LLM generation")
+    role: str = Field(default="assistant", description="Agent role")
+    capabilities: List[str] = Field(default_factory=list, description="Agent capabilities")
 
 
 class WorkflowConfig(BaseModel):

@@ -204,7 +204,7 @@ class YamlBasedKeywordDetector:
         event = {
             'event_id': str(uuid.uuid4()),
             'keyword': keyword,
-            'new_context': config['context'],
+            'context': config['context'],
             'agent_type': config['agent_type'],
             'rules': config['rules'],
             'rules_count': len(config['rules']),
@@ -223,7 +223,7 @@ class YamlBasedKeywordDetector:
         self.context_history.append({
             'timestamp': event['timestamp'],
             'from_context': event['previous_context'],
-            'to_context': event['new_context'],
+            'to_context': event['context'],
             'trigger': keyword,
             'event_id': event['event_id']
         })

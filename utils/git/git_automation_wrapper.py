@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from utils.safe_git_operations import SafeGitOperations
+from utils.system.safe_git_operations import SafeGitOperations
 
 
 class GitAutomationWrapper:

@@ -223,7 +223,17 @@ class CursorIntegrationHook:
                 self.observer.join()
             
             if self.universal_tracker and self.cursor_session_id:
-                self.universal_tracker.shutdown_agent(self.cursor_session_id)
+                # Mark session as completed instead of calling non-existent shutdown_agent
+                try:
+                    # Try to record session end
+                    self.universal_tracker.record_context_switch(
+                        session_id=self.cursor_session_id,
+                        new_context="session_end",
+                        trigger_type="cursor_shutdown",
+                        trigger_details={"event": "cursor_integration_stopped"}
+                    )
+                except:
+                    pass  # Graceful fallback
             
             logger.info("🛑 Cursor monitoring stopped")
             

@@ -99,6 +99,8 @@ class LiveCursorKeywordDetector:
         # Track context switches
         self.current_context = "SYSTEM_STARTUP"
         self.context_history = []
+        # Initialize with real session ID for actual user interactions
+        import uuid
         self.session_id = str(uuid.uuid4())
         
     def detect_and_process_keywords(self, message: str) -> List[Dict[str, Any]]:
@@ -119,7 +121,7 @@ class LiveCursorKeywordDetector:
                 event = self._process_keyword_detection(keyword, config, message)
                 detected_events.append(event)
                 
-                # Log to database
+                # Log real keyword detection to database
                 self._log_to_database(event)
                 
                 print(f"🎯 DETECTED: {keyword} → {config['context']} context with {len(config['rules'])} rules")
@@ -127,28 +129,37 @@ class LiveCursorKeywordDetector:
         return detected_events
     
     def _process_keyword_detection(self, keyword: str, config: Dict, message: str) -> Dict[str, Any]:
-        """Process a detected keyword and create context switch."""
-        timestamp = datetime.now().isoformat()
+        """Process a detected keyword with real session tracking."""
+        # Generate real IDs for actual user interactions
+        import uuid
+        from datetime import datetime
         
-        # Create context switch event
+        # Create real session ID if not exists
+        if not self.session_id:
+            self.session_id = str(uuid.uuid4())
+        
+        # Process real keyword detection
         event = {
             'keyword': keyword,
-            'previous_context': self.current_context,
-            'new_context': config['context'],
+            'context': config['context'],
+            'new_context': config['context'],  # For database compatibility
             'agent_type': config['agent_type'],
-            'rules_activated': config['rules'],
+            'rules': config['rules'],
             'rules_count': len(config['rules']),
-            'timestamp': timestamp,
+            'message_snippet': message[:100],
+            'message_context': message[:100],  # For database compatibility
+            'timestamp': datetime.now().isoformat(),
             'session_id': self.session_id,
-            'switch_id': str(uuid.uuid4()),
-            'activation_id': str(uuid.uuid4()),
-            'message_context': message[:200] + "..." if len(message) > 200 else message,
-            'description': config['description']
+            'previous_context': self.current_context,
+            'switch_id': str(uuid.uuid4()),  # Add missing switch_id
+            'blocked': False
         }
         
         # Update current context
         self.current_context = config['context']
         self.context_history.append(event)
+        
+        logger.info(f"✅ Processed keyword {keyword} → {config['context']} context")
         
         return event
     
@@ -293,7 +304,7 @@ class LiveCursorKeywordDetector:
         if detected:
             print(f"🎯 PROCESSED {len(detected)} KEYWORD(S)")
             for event in detected:
-                print(f"  • {event['keyword']} → {event['new_context']} ({event['rules_count']} rules)")
+                print(f"  • {event['keyword']} → {event.get('context', 'unknown')} (blocked: {event.get('blocked', False)})")
         else:
             print("  No keywords detected")
         
