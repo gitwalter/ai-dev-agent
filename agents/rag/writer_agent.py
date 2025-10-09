@@ -289,15 +289,30 @@ Guidelines:
         return response
     
     def _extract_sources(self, response_text: str, context_results: List[Dict]) -> List[str]:
-        """Extract which sources were cited in response."""
+        """Extract which sources were used from context results with chunk details."""
         
         sources = []
-        for result in context_results:
-            source = result.get('source', result.get('file', ''))
-            if source and source in response_text:
-                sources.append(source)
+        for idx, result in enumerate(context_results, 1):
+            # Try different metadata fields for source
+            metadata = result.get('metadata', {})
+            source = (
+                metadata.get('source') or 
+                metadata.get('file_path') or 
+                result.get('source') or 
+                result.get('file_path') or
+                result.get('file')
+            )
+            
+            # Get chunk information
+            chunk_index = metadata.get('chunk_index', result.get('chunk_index', 'unknown'))
+            relevance = result.get('relevance_score', result.get('combined_score', 0))
+            
+            if source:
+                # Format: "document.pdf [chunk 3, relevance: 0.85]"
+                source_detail = f"{source} [chunk {chunk_index}, score: {relevance:.2f}]"
+                sources.append(source_detail)
         
-        return list(set(sources))  # Unique sources
+        return sources  # Return all sources with details
     
     def _determine_style(self, intent: str) -> str:
         """Determine writing style based on intent."""

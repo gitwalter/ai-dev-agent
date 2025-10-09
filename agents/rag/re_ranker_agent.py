@@ -62,7 +62,7 @@ class ReRankerAgent(EnhancedBaseAgent):
                 - search_results: List[Dict] from RetrievalSpecialistAgent
                 - query_analysis: Dict from QueryAnalystAgent
                 - top_k: int (optional, default 10)
-                - min_score: float (optional, default 0.3)
+                - min_score: float (optional, default 0.4)
                 
         Returns:
             Dictionary with ranked and filtered results
@@ -70,7 +70,7 @@ class ReRankerAgent(EnhancedBaseAgent):
         search_results = task.get('search_results', [])
         query_analysis = task.get('query_analysis', {})
         top_k = task.get('top_k', 10)
-        min_score = task.get('min_score', 0.3)
+        min_score = task.get('min_score', 0.4)  # Increased from 0.3 for better precision
         
         if not search_results:
             logger.warning(f"⚠️ {self.name}: No search results to rank")
@@ -152,8 +152,20 @@ class ReRankerAgent(EnhancedBaseAgent):
                 result['combined_score'] = final_scores[i]
                 result['scoring_details'] = final_details[i]
             
-            logger.info(f"✅ {self.name}: Ranked to {len(final_results)} results "
-                       f"(removed {dedup_removed} duplicates, {filter_removed} low-quality)")
+            # Log top results with scores for debugging
+            if final_results:
+                logger.info(f"✅ {self.name}: Ranked to {len(final_results)} results "
+                           f"(removed {dedup_removed} duplicates, {filter_removed} low-quality)")
+                logger.info(f"   Top 3 scores: {final_scores[:3]}")
+                for i, result in enumerate(final_results[:3]):
+                    source = result.get('metadata', {}).get('source', 'unknown')[:50]
+                    score = final_scores[i]
+                    details = final_details[i]
+                    logger.info(f"   {i+1}. {source}... | Score: {score:.3f} | "
+                              f"Semantic: {details['base']:.3f}, Keyword: {details['keyword']:.3f}")
+            else:
+                logger.info(f"✅ {self.name}: Ranked to {len(final_results)} results "
+                           f"(removed {dedup_removed} duplicates, {filter_removed} low-quality)")
             
             return {
                 'status': 'success',
@@ -232,12 +244,12 @@ class ReRankerAgent(EnhancedBaseAgent):
         # Signal 4: Diversity (placeholder for now)
         diversity_score = 0.5  # Could be enhanced with semantic similarity to other results
         
-        # Weighted combination
+        # Weighted combination (increased keyword weight for phrase matching)
         combined = (
-            0.40 * semantic_score +
-            0.25 * keyword_score +
-            0.20 * quality_score +
-            0.15 * diversity_score
+            0.35 * semantic_score +     # Semantic similarity (embeddings)
+            0.35 * keyword_score +      # Keyword/phrase matching (exact matches prioritized)
+            0.20 * quality_score +      # Content quality
+            0.10 * diversity_score      # Diversity
         )
         
         return {
@@ -254,23 +266,65 @@ class ReRankerAgent(EnhancedBaseAgent):
         query: str, 
         key_concepts: List[str]
     ) -> float:
-        """Calculate keyword overlap score."""
+        """
+        Calculate keyword overlap score with phrase matching and metadata awareness.
+        
+        RAG Best Practice: Leverage document metadata for intelligent selection.
+        Prioritizes:
+        1. Title matches (document-level)
+        2. Keyword metadata matches 
+        3. Exact phrase matches in content
+        4. Concept matches
+        """
         content = result.get('content', '').lower()
+        metadata = result.get('metadata', {})
+        query_lower = query.lower()
         
-        # Combine query and key concepts
-        query_terms = query.lower().split()
-        all_terms = set(query_terms + key_concepts)
+        # CRITICAL: Check metadata first (document-level intelligence)
+        title = (metadata.get('title') or '').lower()
+        doc_keywords = [kw.lower() for kw in metadata.get('keywords', [])]
+        doc_summary = (metadata.get('summary') or '').lower()
         
-        if not all_terms:
-            return 0.5
+        # Score component 1: Title match (huge boost)
+        title_match_score = 0.0
+        if title:
+            if query_lower in title:
+                title_match_score = 0.7  # Exact query in title = very relevant!
+            elif any(word in title for word in query_lower.split() if len(word) > 3):
+                title_match_score = 0.4  # Partial title match
         
-        # Count matching terms
-        matches = sum(1 for term in all_terms if term.lower() in content)
+        # Score component 2: Keyword metadata match
+        keyword_match_score = 0.0
+        if doc_keywords:
+            query_words = set(query_lower.split())
+            matching_keywords = sum(1 for kw in doc_keywords if kw in query_lower or any(word in kw for word in query_words))
+            keyword_match_score = min(0.3, matching_keywords * 0.15)
         
-        # Normalize by total terms
-        score = matches / len(all_terms)
+        # Score component 3: Summary match (if no title match)
+        summary_match_score = 0.0
+        if not title_match_score and doc_summary:
+            if query_lower in doc_summary:
+                summary_match_score = 0.3
         
-        return min(score, 1.0)
+        # Score component 4: Content exact phrase match
+        content_phrase_score = 0.4 if query_lower in content else 0.0
+        
+        # Score component 5: Key concept matches in content
+        key_phrase_matches = sum(1 for concept in key_concepts if concept.lower() in content)
+        concept_score = min(0.2, key_phrase_matches * 0.1)
+        
+        # Combine scores (prioritize metadata over content)
+        if title_match_score > 0:
+            # Title match found - use title + keywords + concepts
+            final_score = title_match_score + keyword_match_score * 0.5 + concept_score * 0.5
+        elif summary_match_score > 0:
+            # Summary match found
+            final_score = summary_match_score + keyword_match_score + concept_score
+        else:
+            # Fall back to content matching
+            final_score = content_phrase_score + keyword_match_score + concept_score
+        
+        return min(final_score, 1.0)
     
     def _calculate_quality_score(self, result: Dict) -> float:
         """

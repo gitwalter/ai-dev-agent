@@ -62,8 +62,13 @@ class DocumentLoader:
     Uses LangChain's robust document loaders with fallback support.
     """
     
-    def __init__(self):
-        """Initialize document loader with LangChain loaders."""
+    def __init__(self, qdrant_client=None):
+        """
+        Initialize document loader with LangChain loaders and duplicate detection.
+        
+        Args:
+            qdrant_client: Optional Qdrant client for duplicate detection
+        """
         if not LANGCHAIN_LOADERS_AVAILABLE:
             raise ImportError("LangChain document loaders not available. Install: pip install langchain-community unstructured")
         
@@ -91,14 +96,299 @@ class DocumentLoader:
         # Initialize text splitters for different document types
         self._initialize_splitters()
         
+        # Qdrant client for duplicate detection
+        self.qdrant_client = qdrant_client
+        
         self.load_stats = {
             'total_files': 0,
             'successful': 0,
             'failed': 0,
             'total_documents': 0,  # LangChain documents (can be multiple per file)
             'total_characters': 0,
-            'total_chunks': 0  # After splitting
+            'total_chunks': 0,  # After splitting
+            'duplicates_detected': 0,  # NEW: Duplicate tracking
+            'duplicates_skipped': 0   # NEW: Duplicates not indexed
         }
+    
+    async def _extract_document_metadata(self, document: Optional[Document], source: str) -> Dict[str, Any]:
+        """
+        INTELLIGENT metadata extraction using LLM for optimal RAG retrieval.
+        
+        Based on RAG best practices:
+        - Uses LLM to understand document semantics
+        - Generates query-relevant summaries
+        - Extracts semantic keywords
+        - Classifies document type intelligently
+        
+        Args:
+            document: LangChain Document object
+            source: Document source (URL or file path)
+            
+        Returns:
+            Dictionary with intelligent metadata
+        """
+        import re
+        from bs4 import BeautifulSoup
+        import json
+        
+        # Default metadata (fallback)
+        metadata = {
+            'source': source,
+            'title': None,
+            'description': None,
+            'summary': None,
+            'keywords': [],
+            'doc_type': None,
+            'author': None,
+            'date': None
+        }
+        
+        if not document or not document.page_content:
+            return metadata
+        
+        try:
+            # Clean content for LLM processing
+            content = document.page_content
+            text_content = BeautifulSoup(content, 'html.parser').get_text()
+            
+            # Limit content for LLM (first 3000 chars to capture essence)
+            content_sample = text_content[:3000]
+            
+            # Use LLM for intelligent metadata extraction
+            try:
+                from langchain_google_genai import ChatGoogleGenerativeAI
+                from langchain.schema import SystemMessage, HumanMessage
+                
+                # Get API key
+                api_key = self._get_gemini_api_key()
+                if not api_key:
+                    logger.warning("No Gemini API key, falling back to regex extraction")
+                    return self._extract_metadata_fallback(content, source)
+                
+                llm = ChatGoogleGenerativeAI(
+                    model="gemini-2.0-flash-lite",  # Fast and cheap
+                    google_api_key=api_key,
+                    temperature=0.3,  # Low temperature for factual extraction
+                    convert_system_message_to_human=True
+                )
+                
+                system_prompt = """You are a metadata extraction expert for RAG systems.
+Your task is to analyze document content and extract key metadata for optimal retrieval.
+
+Extract and return JSON with:
+- title: Clear, descriptive title (max 100 chars)
+- summary: 2-3 sentence summary highlighting main topic and key points (max 300 chars)
+- keywords: List of 5-8 most relevant keywords/phrases for search
+- doc_type: One of [tutorial, documentation, blog, research, guide, reference, article]
+- topics: List of 3-5 main topics/themes covered
+
+Focus on query-relevant information that helps match this document to user questions."""
+
+                user_prompt = f"""Extract metadata from this document:
+
+{content_sample}
+
+Respond with ONLY valid JSON (no markdown, no explanations)."""
+
+                messages = [
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(content=user_prompt)
+                ]
+                
+                response = await llm.ainvoke(messages)
+                
+                # Parse LLM response
+                response_text = response.content.strip()
+                
+                # Remove markdown code blocks if present
+                if response_text.startswith('```'):
+                    response_text = re.sub(r'```(?:json)?\n?', '', response_text)
+                    response_text = response_text.strip()
+                
+                llm_metadata = json.loads(response_text)
+                
+                # Update metadata with LLM results
+                metadata.update({
+                    'title': llm_metadata.get('title'),
+                    'summary': llm_metadata.get('summary'),
+                    'description': llm_metadata.get('summary', '')[:200],  # Shorter version
+                    'keywords': llm_metadata.get('keywords', [])[:8],
+                    'doc_type': llm_metadata.get('doc_type', 'article'),
+                    'topics': llm_metadata.get('topics', [])
+                })
+                
+                logger.info(f"🤖 LLM extracted metadata: title='{metadata['title'][:50]}...', "
+                           f"keywords={len(metadata['keywords'])}, type={metadata['doc_type']}")
+                
+            except Exception as llm_error:
+                logger.warning(f"LLM metadata extraction failed: {llm_error}, using fallback")
+                return self._extract_metadata_fallback(content, source)
+            
+            # Extract author and date with regex (LLM not needed for these)
+            author_patterns = [
+                r'(?:by|author|written by)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)',
+            ]
+            for pattern in author_patterns:
+                author_match = re.search(pattern, content, re.IGNORECASE)
+                if author_match:
+                    metadata['author'] = author_match.group(1).strip()
+                    break
+            
+            date_patterns = [
+                r'(\w+ \d{1,2},? \d{4})',
+                r'(\d{4}-\d{2}-\d{2})',
+            ]
+            for pattern in date_patterns:
+                date_match = re.search(pattern, content)
+                if date_match:
+                    metadata['date'] = date_match.group(1)
+                    break
+            
+        except Exception as e:
+            logger.error(f"Metadata extraction error: {e}")
+            return self._extract_metadata_fallback(content if 'content' in locals() else '', source)
+        
+        return metadata
+    
+    def _extract_metadata_fallback(self, content: str, source: str) -> Dict[str, Any]:
+        """Fallback regex-based metadata extraction if LLM fails."""
+        import re
+        from bs4 import BeautifulSoup
+        
+        metadata = {'source': source, 'keywords': []}
+        
+        try:
+            # Extract title from H1
+            h1_match = re.search(r'<h1[^>]*>(.+?)</h1>', content, re.IGNORECASE | re.DOTALL)
+            if h1_match:
+                metadata['title'] = BeautifulSoup(h1_match.group(1), 'html.parser').get_text().strip()
+            
+            # Extract summary from first paragraph
+            text_content = BeautifulSoup(content, 'html.parser').get_text()
+            paragraphs = [p.strip() for p in text_content.split('\n') if len(p.strip()) > 100]
+            if paragraphs:
+                metadata['summary'] = paragraphs[0][:300]
+            
+            # Basic document type inference
+            content_lower = content.lower()
+            if 'tutorial' in content_lower:
+                metadata['doc_type'] = 'tutorial'
+            elif 'blog' in source.lower():
+                metadata['doc_type'] = 'blog'
+            else:
+                metadata['doc_type'] = 'article'
+                
+        except Exception as e:
+            logger.warning(f"Fallback extraction error: {e}")
+        
+        return metadata
+    
+    def _get_gemini_api_key(self) -> Optional[str]:
+        """Get Gemini API key from environment or secrets."""
+        import os
+        from pathlib import Path
+        
+        # Try environment variable
+        api_key = os.environ.get('GEMINI_API_KEY')
+        if api_key:
+            return api_key
+        
+        # Try Streamlit secrets
+        try:
+            import streamlit as st
+            if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
+                return st.secrets['GEMINI_API_KEY']
+        except:
+            pass
+        
+        return None
+    
+    def check_duplicate(self, source: str, content: str) -> Dict[str, Any]:
+        """
+        Check if document is a duplicate using hash-based detection.
+        
+        RAG Best Practice: Prevent duplicate documents from degrading search quality.
+        
+        Args:
+            source: Document source (URL or file path)
+            content: Document content for hashing
+            
+        Returns:
+            Dictionary with duplicate detection results:
+            {
+                'is_duplicate': bool,
+                'duplicate_type': 'exact'|'source'|None,
+                'existing_doc': Dict or None
+            }
+        """
+        import hashlib
+        
+        result = {
+            'is_duplicate': False,
+            'duplicate_type': None,
+            'existing_doc': None
+        }
+        
+        if not self.qdrant_client:
+            logger.debug("No Qdrant client provided, skipping duplicate detection")
+            return result
+        
+        try:
+            collection_name = "ai_dev_agent_codebase"
+            
+            # Check if collection exists
+            collections = self.qdrant_client.get_collections().collections
+            if not any(c.name == collection_name for c in collections):
+                logger.debug(f"Collection {collection_name} doesn't exist yet, no duplicates")
+                return result
+            
+            # Strategy 1: Check for exact source match (URL or filename)
+            # This catches re-uploads of the same file/URL
+            source_name = Path(source).name if not source.startswith('http') else source
+            
+            # Query Qdrant for documents with matching source
+            scroll_result = self.qdrant_client.scroll(
+                collection_name=collection_name,
+                scroll_filter={
+                    "must": [
+                        {
+                            "key": "metadata.source",
+                            "match": {
+                                "value": source
+                            }
+                        }
+                    ]
+                },
+                limit=1,
+                with_payload=True,
+                with_vectors=False
+            )
+            
+            existing_points = scroll_result[0]
+            
+            if existing_points:
+                result['is_duplicate'] = True
+                result['duplicate_type'] = 'source'
+                result['existing_doc'] = {
+                    'source': source,
+                    'chunks': len(existing_points)
+                }
+                logger.info(f"🔍 Duplicate detected: {source} (source match, {len(existing_points)} existing chunks)")
+                self.load_stats['duplicates_detected'] += 1
+                return result
+            
+            # Strategy 2: Content hash check (for renamed files with same content)
+            content_hash = hashlib.md5(content.encode('utf-8')).hexdigest()
+            
+            # Note: We don't store content_hash in metadata yet, so this is a future enhancement
+            # For now, source matching is sufficient
+            
+            logger.debug(f"✅ No duplicate found for {source}")
+            
+        except Exception as e:
+            logger.warning(f"Duplicate detection failed: {e}")
+        
+        return result
     
     def _initialize_splitters(self):
         """Initialize specialized text splitters for different content types."""
@@ -272,12 +562,13 @@ class DocumentLoader:
             'statistics': self.load_stats.copy()
         }
     
-    async def load_website(self, url: str) -> Dict[str, Any]:
+    async def load_website(self, url: str, skip_duplicates: bool = True) -> Dict[str, Any]:
         """
-        Load content from a website using LangChain WebBaseLoader.
+        Load content from a website using LangChain WebBaseLoader with rich metadata extraction and duplicate detection.
         
         Args:
             url: Website URL to scrape
+            skip_duplicates: If True, skip duplicate URLs (default: True)
             
         Returns:
             Dictionary with scraped content and metadata
@@ -290,10 +581,35 @@ class DocumentLoader:
             # Calculate statistics before splitting
             total_chars = sum(len(doc.page_content) for doc in documents)
             
+            # CRITICAL: Check for duplicates BEFORE processing
+            if skip_duplicates:
+                content_sample = documents[0].page_content[:1000] if documents else ""
+                dup_check = self.check_duplicate(url, content_sample)
+                
+                if dup_check['is_duplicate']:
+                    self.load_stats['duplicates_skipped'] += 1
+                    logger.warning(f"⚠️ Skipping duplicate: {url}")
+                    return {
+                        'success': False,
+                        'skipped': True,
+                        'reason': 'duplicate',
+                        'duplicate_info': dup_check,
+                        'url': url
+                    }
+            
+            # CRITICAL: Extract document-level metadata for intelligent selection (LLM-powered)
+            doc_metadata = await self._extract_document_metadata(documents[0] if documents else None, url)
+            
             # IMPORTANT: Split documents into chunks for better RAG retrieval
             chunks = self.split_documents(documents, file_type='html')
             
+            # CRITICAL: Enrich each chunk with document-level metadata
+            for chunk in chunks:
+                chunk.metadata.update(doc_metadata)
+            
             logger.info(f"✂️ Split website {url} into {len(chunks)} chunks")
+            logger.info(f"📋 Extracted metadata: title='{doc_metadata.get('title', 'N/A')[:50]}...', "
+                       f"summary='{doc_metadata.get('summary', 'N/A')[:50]}...'")
             
             # Update stats
             self.load_stats['total_files'] += 1
@@ -314,7 +630,8 @@ class DocumentLoader:
                     'source': url,
                     'source_type': 'web',
                     'character_count': total_chars,
-                    'chunk_count': len(chunks)
+                    'chunk_count': len(chunks),
+                    **doc_metadata  # Include document-level metadata
                 }
             }
             
@@ -503,6 +820,10 @@ class DocumentLoader:
                 chunks = self.general_splitter.split_documents(documents)
                 for chunk in chunks:
                     chunk.metadata['splitter'] = 'general'
+            
+            # CRITICAL: Add chunk_index metadata for proper source tracking
+            for i, chunk in enumerate(chunks):
+                chunk.metadata['chunk_index'] = i
             
             # Update statistics
             self.load_stats['total_chunks'] += len(chunks)

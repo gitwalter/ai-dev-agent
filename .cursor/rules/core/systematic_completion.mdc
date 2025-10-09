@@ -503,6 +503,40 @@ The following conditions will BLOCK task completion:
 5. **Quality Issues**: Below excellence standards
 6. **Technical Debt**: Shortcuts or compromises added
 
+### **Documentation Discipline**
+
+**CRITICAL**: Minimize unnecessary documentation overhead:
+
+```python
+# FORBIDDEN: Unsolicited status reports, summaries, or documentation
+def complete_feature():
+    implement_feature()
+    # ❌ DON'T create summary documents unless user asks
+    # create_status_report()  # FORBIDDEN
+    # create_summary_document()  # FORBIDDEN
+    # create_analysis_document()  # FORBIDDEN
+
+# REQUIRED: Only create documentation when explicitly requested
+def handle_user_request(request):
+    if "create summary" in request or "document this" in request:
+        create_documentation()  # ✅ User asked for it
+    else:
+        complete_work_silently()  # ✅ Just do the work
+```
+
+**Rules**:
+- **No Status Reports**: Don't create status/summary documents unless explicitly requested
+- **No Analysis Documents**: Don't create analysis files unless user asks
+- **No Progress Reports**: Don't create progress documentation unless requested
+- **Just Code**: Focus on implementation, not meta-documentation
+- **User-Driven**: Only create documentation when user explicitly asks
+
+**Exceptions**:
+- **User Stories/Tasks**: Update acceptance criteria and task status as required
+- **Code Documentation**: Always document code (docstrings, comments)
+- **Technical Docs**: Update architecture/design docs when they become stale
+- **Bug Fixes**: Document in commit messages, not separate files
+
 ## Remember
 
 **"Always leave things better than you found them."**

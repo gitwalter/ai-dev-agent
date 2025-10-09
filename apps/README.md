@@ -45,6 +45,19 @@ Our comprehensive application suite offers four specialized interfaces, each opt
   - RAG document management and processing
   - Version control, A/B testing, and collaboration tools
 
+### **🔧 MCP Management App** (`mcp_management_app.py`)
+**Port 8505** | **MCP Server & Tool Management**
+
+- **Purpose**: Comprehensive management interface for Model Context Protocol infrastructure
+- **Target Users**: System administrators, MCP developers, integration engineers
+- **Key Features**:
+  - Tool Registry: Browse, search, and test 47 MCP tools across 6 categories
+  - Prompt Database: Manage and test prompt templates
+  - Server Monitoring: Real-time server status and performance metrics
+  - Interactive Testing: Execute tools and test prompts with live results
+  - Security Management: View access levels and permissions
+  - Performance Analytics: Tool execution metrics and optimization insights
+
 ### **🌈 Vibe Coding App** (`vibe_coding_app.py`)
 **Port 8503** | **Emotional Intelligence Interface**
 
@@ -88,6 +101,12 @@ streamlit run apps/universal_composition_app.py --server.port 8502
 
 # Run the original Vibe Coding App (Port 8503)
 streamlit run apps/vibe_coding_app.py --server.port 8503
+
+# Run the Prompt Manager App (Port 8504)
+streamlit run apps/prompt_manager_app.py --server.port 8504
+
+# Run the MCP Management App (Port 8505)
+streamlit run apps/mcp_management_app.py --server.port 8505
 ```
 
 ### VS Code Launch Configurations

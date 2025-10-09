@@ -159,7 +159,12 @@ st.markdown("""
 if 'rag_engine' not in st.session_state:
     st.session_state.rag_engine = None
 if 'doc_loader' not in st.session_state:
-    st.session_state.doc_loader = DocumentLoader()
+    # Initialize with None, will be updated when rag_engine is available
+    st.session_state.doc_loader = DocumentLoader(qdrant_client=None)
+
+# Update doc_loader with Qdrant client when rag_engine is available
+if st.session_state.rag_engine and st.session_state.rag_engine.qdrant_client:
+    st.session_state.doc_loader.qdrant_client = st.session_state.rag_engine.qdrant_client
 if 'indexed_documents' not in st.session_state:
     st.session_state.indexed_documents = []
 if 'search_history' not in st.session_state:
@@ -768,7 +773,61 @@ def website_scraping_page():
         help="Enter the URL of the website to scrape"
     )
     
-    if st.button("🔍 Scrape Website", type="primary", disabled=not url):
+    # Enhanced scraping options
+    with st.expander("⚙️ Advanced Scraping Options", expanded=False):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            recursive = st.checkbox(
+                "Recursive Crawling",
+                value=False,
+                help="Crawl linked pages recursively"
+            )
+            
+            max_depth = st.slider(
+                "Max Depth",
+                min_value=1,
+                max_value=5,
+                value=1,
+                disabled=not recursive,
+                help="Maximum depth for recursive crawling"
+            )
+            
+            max_pages = st.slider(
+                "Max Pages",
+                min_value=1,
+                max_value=50,
+                value=10,
+                disabled=not recursive,
+                help="Maximum number of pages to scrape"
+            )
+        
+        with col2:
+            css_selector = st.text_input(
+                "CSS Selector (optional)",
+                placeholder="article, .content, #main",
+                help="CSS selector to extract specific content"
+            )
+            
+            rate_limit = st.slider(
+                "Rate Limit (seconds)",
+                min_value=0.0,
+                max_value=5.0,
+                value=1.0,
+                step=0.5,
+                help="Delay between requests (respectful crawling)"
+            )
+            
+            same_domain_only = st.checkbox(
+                "Same Domain Only",
+                value=True,
+                disabled=not recursive,
+                help="Only crawl links within the same domain"
+            )
+    
+    scrape_button_label = "🕷️ Recursive Scrape" if recursive else "🔍 Scrape Website"
+    
+    if st.button(scrape_button_label, type="primary", disabled=not url):
         if url:
             # Check for duplicate URL
             existing_urls = [doc.get('file_name') for doc in st.session_state.indexed_documents if doc.get('file_type') == 'website']
@@ -777,16 +836,101 @@ def website_scraping_page():
                 st.info("This URL is already in the vector store. Delete it first if you want to re-scrape.")
                 return
             
-            with st.spinner(f"Scraping {url}..."):
+            with st.spinner(f"Scraping {url}... {'(recursive mode)' if recursive else ''}"):
                 try:
-                    result = asyncio.run(st.session_state.doc_loader.load_website(url))
+                    # Use WebScrapingSpecialistAgent for advanced scraping
+                    if recursive or css_selector:
+                        from agents.rag.web_scraping_specialist_agent import WebScrapingSpecialistAgent
+                        from models.config import AgentConfig
+                        
+                        config = AgentConfig(
+                            agent_id="web_scraper",
+                            name="Web Scraping Specialist",
+                            role="web_scraping"
+                        )
+                        
+                        scraper_agent = WebScrapingSpecialistAgent(
+                            config, 
+                            document_loader=st.session_state.doc_loader
+                        )
+                        
+                        result = asyncio.run(scraper_agent.execute({
+                            'start_url': url,
+                            'recursive': recursive,
+                            'max_depth': max_depth,
+                            'css_selector': css_selector if css_selector else None,
+                            'rate_limit': rate_limit,
+                            'max_pages': max_pages,
+                            'same_domain_only': same_domain_only,
+                            'skip_duplicates': True
+                        }))
+                        
+                        if result['status'] == 'success':
+                            # Agent returns multiple documents
+                            all_documents = []
+                            pages_visited = 0
+                            
+                            for doc_result in result['documents']:
+                                # Count all visited pages (success + skipped duplicates)
+                                if doc_result.get('success') or doc_result.get('skipped'):
+                                    pages_visited += 1
+                                
+                                # Only add NEW documents (not skipped duplicates)
+                                if doc_result.get('success'):
+                                    # Check for both 'documents' and 'chunks' keys
+                                    docs_to_add = doc_result.get('documents') or doc_result.get('chunks')
+                                    if docs_to_add:
+                                        all_documents.extend(docs_to_add)
+                            
+                            result = {
+                                'success': True,
+                                'documents': all_documents,
+                                'document_count': len(all_documents),
+                                'pages_visited': pages_visited,
+                                'url': url,
+                                'stats': result.get('stats', {})
+                            }
+                        else:
+                            result = {'success': False, 'error': result.get('error', 'Unknown error')}
+                    else:
+                        # Simple single-page scraping
+                        result = asyncio.run(st.session_state.doc_loader.load_website(url))
                     
                     if result['success']:
                         st.success(f"✅ Successfully scraped {url}")
                         
+                        # Show detailed stats if advanced scraping was used
+                        if 'stats' in result and result['stats']:
+                            stats = result['stats']
+                            
+                            # Display detailed metrics
+                            metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
+                            
+                            pages_visited = result.get('pages_visited', stats.get('total_urls_discovered', 0))
+                            new_pages = stats.get('urls_scraped', 0)
+                            duplicates = stats.get('duplicates_detected', 0)
+                            
+                            with metric_col1:
+                                st.metric("Pages Visited", pages_visited, help="Total pages crawled (new + duplicates)")
+                            with metric_col2:
+                                st.metric("New Pages", new_pages, help="New pages added to database")
+                            with metric_col3:
+                                st.metric("Duplicates", duplicates, help="Pages already in database")
+                            with metric_col4:
+                                st.metric("Errors", stats.get('errors', 0))
+                            
+                            if recursive:
+                                st.info(f"⏱️ Average scrape time: {stats.get('average_scrape_time', 0):.2f}s per page")
+                        
                         # Add to RAG engine
                         if st.session_state.rag_engine and result.get('documents'):
+                            doc_count_before = len(st.session_state.rag_engine.documents)
                             st.session_state.rag_engine.documents.extend(result['documents'])
+                            doc_count_after = len(st.session_state.rag_engine.documents)
+                            new_docs_added = doc_count_after - doc_count_before
+                            
+                            if new_docs_added > 0:
+                                st.success(f"📄 Added {new_docs_added} document chunks to RAG engine")
                             
                             # Create/update vector store
                             try:
@@ -1003,13 +1147,15 @@ def agent_chat_page():
     st.markdown('<div class="sub-header">💬 Context-Aware Agent Chat</div>', unsafe_allow_html=True)
     st.markdown("**Test context-aware agents with real-time RAG context visualization**")
     
-    # Initialize chat history
+    # Initialize chat history and settings
     if 'chat_messages' not in st.session_state:
         st.session_state.chat_messages = []
     if 'selected_agent' not in st.session_state:
         st.session_state.selected_agent = None
     if 'context_debug_mode' not in st.session_state:
         st.session_state.context_debug_mode = True
+    if 'selected_documents_for_rag' not in st.session_state:
+        st.session_state.selected_documents_for_rag = []  # Empty = use all documents
     
     # Check if RAG system is initialized
     if not st.session_state.rag_engine:
@@ -1100,6 +1246,96 @@ def agent_chat_page():
     
     st.markdown("---")
     
+    # Quality Control Parameters
+    with st.expander("⚙️ Advanced RAG Settings", expanded=False):
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            quality_threshold = st.slider(
+                "Quality Threshold",
+                min_value=0.3,
+                max_value=0.7,
+                value=0.45,
+                step=0.05,
+                help="Score below which re-retrieval is triggered (default: 0.45)"
+            )
+        
+        with col2:
+            min_quality_score = st.slider(
+                "Minimum Score",
+                min_value=0.2,
+                max_value=0.5,
+                value=0.4,
+                step=0.05,
+                help="Minimum acceptable score to proceed (default: 0.4)"
+            )
+        
+        with col3:
+            max_re_retrieval = st.slider(
+                "Max Re-retrieval",
+                min_value=0,
+                max_value=3,
+                value=1,
+                step=1,
+                help="Maximum re-retrieval attempts (default: 1)"
+            )
+    
+    st.markdown("---")
+    
+    # Document Scope Parameter (UI Control → Swarm Parameter)
+    st.markdown("### 📚 Document Scope")
+    
+    # Load available documents
+    available_docs = load_documents_from_qdrant(show_debug=False)
+    
+    if available_docs:
+        doc_col1, doc_col2 = st.columns([3, 1])
+        
+        with doc_col1:
+            # Document selection as a UI parameter
+            doc_options = [
+                f"{doc['file_name']} ({doc.get('file_type', 'unknown')}, {doc.get('chunk_count', 0)} chunks)"
+                for doc in available_docs
+            ]
+            
+            selected_doc_display = st.multiselect(
+                "Focus on specific documents (optional)",
+                options=doc_options,
+                default=[],
+                help="🤖 Swarm will intelligently search within selected documents. Leave empty for automatic document discovery."
+            )
+            
+            # Convert to document names
+            if selected_doc_display:
+                st.session_state.selected_documents_for_rag = [
+                    doc['file_name'] for doc in available_docs
+                    if f"{doc['file_name']} ({doc.get('file_type', 'unknown')}, {doc.get('chunk_count', 0)} chunks)" in selected_doc_display
+                ]
+            else:
+                st.session_state.selected_documents_for_rag = []
+        
+        with doc_col2:
+            if not st.session_state.selected_documents_for_rag:
+                st.success(
+                    f"🤖 **Automatic**\n\n"
+                    f"{len(available_docs)} docs\n\n"
+                    f"Swarm finds relevant ones"
+                )
+            else:
+                total_chunks = sum(
+                    doc.get('chunk_count', 0) for doc in available_docs
+                    if doc['file_name'] in st.session_state.selected_documents_for_rag
+                )
+                st.info(
+                    f"🎯 **Focused**\n\n"
+                    f"{len(st.session_state.selected_documents_for_rag)} docs\n"
+                    f"{total_chunks} chunks"
+                )
+    else:
+        st.info("📁 No documents indexed yet")
+    
+    st.markdown("---")
+    
     # Main chat interface
     chat_col, context_col = st.columns([3, 2] if st.session_state.context_debug_mode else [1, 0])
     
@@ -1143,19 +1379,29 @@ def agent_chat_page():
                             os.environ['GEMINI_API_KEY'] = st.secrets['GEMINI_API_KEY']
                         
                         if use_swarm:
-                            # Use RAG Agent Swarm
+                            # Use RAG Agent Swarm with intelligent document selection
                             from agents.rag import RAGSwarmCoordinator
                             
                             # Initialize swarm coordinator
                             swarm = RAGSwarmCoordinator(st.session_state.rag_engine)
                             
-                            # Execute pipeline
+                            # Build document scope parameter (if any documents selected)
+                            document_scope = None
+                            if st.session_state.selected_documents_for_rag:
+                                document_scope = {
+                                    'source': st.session_state.selected_documents_for_rag
+                                }
+                            
+                            # Execute pipeline - pass document scope as parameter to swarm
                             result = asyncio.run(
                                 swarm.execute({
                                     'query': user_input,
                                     'max_results': 10,
-                                    'quality_threshold': 0.7,
-                                    'enable_re_retrieval': True
+                                    'quality_threshold': quality_threshold,
+                                    'min_quality_score': min_quality_score,
+                                    'max_re_retrieval_attempts': max_re_retrieval,
+                                    'enable_re_retrieval': max_re_retrieval > 0,  # Disable if max = 0
+                                    'document_filters': document_scope  # UI parameter → Swarm
                                 })
                             )
                             
@@ -1176,7 +1422,7 @@ def agent_chat_page():
                             }
                             
                         else:
-                            # Use single ContextAwareAgent (original)
+                            # Use single ContextAwareAgent
                             from agents.core.context_aware_agent import ContextAwareAgent
                             from models.config import AgentConfig
                             
@@ -1191,7 +1437,7 @@ def agent_chat_page():
                                 context_engine=st.session_state.rag_engine
                             )
                             
-                            # Execute with context
+                            # Execute with context - agent intelligently finds relevant documents
                             result = asyncio.run(
                                 agent.execute_with_context({
                                     'query': user_input,
@@ -1205,6 +1451,12 @@ def agent_chat_page():
                         
                         # Display response
                         st.markdown(response_text)
+                        
+                        # Display sources used (always visible)
+                        if use_swarm and result.get('sources_cited'):
+                            with st.expander("📚 Sources Used", expanded=False):
+                                for i, source in enumerate(result.get('sources_cited', []), 1):
+                                    st.markdown(f"**{i}.** `{source}`")
                         
                         # Display context stats if in debug mode
                         if st.session_state.context_debug_mode:
@@ -1306,11 +1558,20 @@ def agent_chat_page():
                                         stage_name = key.replace('_time', '').replace('_', ' ').title()
                                         st.text(f"{stage_name}: {value:.3f}s")
                         
-                        # Sources cited
+                        # Sources cited and document analysis
                         if stats.get('sources_cited'):
-                            with st.expander("📚 Sources Cited", expanded=False):
+                            with st.expander("📚 Documents Found by Agent", expanded=True):
+                                st.markdown("**Intelligent Document Selection:**")
                                 for source in stats['sources_cited']:
-                                    st.text(f"• {source}")
+                                    st.text(f"✓ {source}")
+                                
+                                # Show if filtering was applied
+                                if st.session_state.selected_documents_for_rag:
+                                    st.markdown("---")
+                                    st.markdown(f"🎯 **Filter Applied**: {len(st.session_state.selected_documents_for_rag)} docs")
+                                else:
+                                    st.markdown("---")
+                                    st.markdown(f"🤖 **Automatic Selection**: Agent searched all {len(available_docs)} docs")
                     
                     else:
                         # Single Agent View (original)
@@ -1762,7 +2023,9 @@ def run_transparent_test(query: str, show_rewriting: bool, show_stages: bool, sh
             response = asyncio.run(swarm.execute({
                 'query': query,
                 'max_results': 10,
-                'quality_threshold': 0.7,
+                'quality_threshold': 0.45,  # Realistic default
+                'min_quality_score': 0.4,   # Minimum acceptable
+                'max_re_retrieval_attempts': 1,
                 'enable_re_retrieval': True
             }))
             retrieval_time = time.time() - retrieval_start

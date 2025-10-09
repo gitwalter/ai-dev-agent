@@ -103,6 +103,31 @@
             }
         },
         {
+            "name": "🔧 MCP Management App",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "apps/mcp_management_app.py",
+                "--server.port",
+                "8505",
+                "--server.headless",
+                "true"
+            ],
+            "python": "${config:ai-dev-agent.pythonPath}",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": false,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
             "name": "🔧 Main CLI App (Debug)",
             "type": "python",
             "request": "launch",

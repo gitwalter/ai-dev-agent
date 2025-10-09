@@ -33,8 +33,11 @@ class RAGSwarmState(TypedDict):
     # Input
     query: Annotated[str, "User's original query"]
     max_results: Annotated[int, "Maximum results to return"]
-    quality_threshold: Annotated[float, "Quality threshold for re-retrieval"]
+    quality_threshold: Annotated[float, "Quality threshold for re-retrieval (default: 0.45)"]
+    min_quality_score: Annotated[float, "Minimum acceptable quality score (default: 0.4)"]
+    max_re_retrieval_attempts: Annotated[int, "Maximum re-retrieval attempts (default: 1)"]
     enable_re_retrieval: Annotated[bool, "Enable automatic re-retrieval"]
+    document_filters: Annotated[Optional[Dict[str, Any]], "Optional document scope filters"]
     
     # Agent outputs
     query_analysis: Annotated[Dict[str, Any], "Output from QueryAnalystAgent"]
@@ -187,7 +190,8 @@ class RAGSwarmCoordinator:
         try:
             result = await self.retrieval_specialist.execute({
                 'query_analysis': query_analysis,
-                'max_results': state['max_results'] * 2  # Get more for ranking
+                'max_results': state['max_results'] * 2,  # Get more for ranking
+                'document_filters': state.get('document_filters')  # Pass document scope filtering
             })
             
             state['retrieval_results'] = result.get('search_results', [])
@@ -309,11 +313,16 @@ class RAGSwarmCoordinator:
         
         State mutations happen in NODES, not in conditional functions.
         The re_retrieval_done flag is set in the QA node.
+        
+        Enforces:
+        - max_re_retrieval_attempts limit
+        - quality_threshold from state
+        - min_quality_score floor
         """
         
-        # Rule 1: Already did re-retrieval? → STOP
+        # Rule 1: Already hit max re-retrieval attempts? → STOP
         if state.get('re_retrieval_done', False):
-            logger.info(f"⛔ FLAG SET - Already decided to re-retrieve, now GENERATE")
+            logger.info(f"⛔ Max re-retrieval attempts reached - GENERATE")
             return "generate"
         
         # Rule 2: Re-retrieval disabled?
@@ -321,22 +330,32 @@ class RAGSwarmCoordinator:
             logger.info(f"⛔ Re-retrieval disabled - GENERATE")
             return "generate"
         
-        # Rule 3: Check quality
+        # Rule 3: Check quality against thresholds
         quality_report = state.get('quality_report', {})
         quality_score = quality_report.get('quality_score', 1.0)
         needs_re_retrieval = quality_report.get('needs_re_retrieval', False)
         
+        quality_threshold = state.get('quality_threshold', 0.45)
+        min_quality_score = state.get('min_quality_score', 0.4)
+        
         logger.info(f"🔍 RE-RETRIEVAL DECISION:")
         logger.info(f"   - Quality score: {quality_score:.2f}")
+        logger.info(f"   - Quality threshold: {quality_threshold:.2f}")
+        logger.info(f"   - Min quality score: {min_quality_score:.2f}")
         logger.info(f"   - Needs re-retrieval: {needs_re_retrieval}")
-        logger.info(f"   - Flag set: {state.get('re_retrieval_done', False)}")
         
-        if needs_re_retrieval and quality_score < 0.6:
-            logger.info(f"🔄 Quality low - RE-RETRIEVE")
+        # Rule 4: Below minimum? Can't help with more retrieval
+        if quality_score < min_quality_score:
+            logger.info(f"⚠️ Below minimum quality ({min_quality_score}) - GENERATE with what we have")
+            return "generate"
+        
+        # Rule 5: Check if we should re-retrieve based on threshold
+        if needs_re_retrieval and quality_score < quality_threshold:
+            logger.info(f"🔄 Quality below threshold ({quality_threshold}) - RE-RETRIEVE")
             return "re_retrieve"
         
-        # Quality OK - generate answer
-        logger.info(f"✅ Quality acceptable - GENERATE")
+        # Quality acceptable - generate answer
+        logger.info(f"✅ Quality acceptable (>= {quality_threshold}) - GENERATE")
         return "generate"
     
     async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
@@ -361,8 +380,11 @@ class RAGSwarmCoordinator:
         initial_state: RAGSwarmState = {
             'query': task.get('query', ''),
             'max_results': task.get('max_results', 50),
-            'quality_threshold': task.get('quality_threshold', 0.6),
-            'enable_re_retrieval': task.get('enable_re_retrieval', True),  # ✅ ENABLED by default (max 1 re-retrieval)
+            'quality_threshold': task.get('quality_threshold', 0.45),  # Realistic threshold
+            'min_quality_score': task.get('min_quality_score', 0.4),  # Minimum to proceed
+            'max_re_retrieval_attempts': task.get('max_re_retrieval_attempts', 1),  # Max loops
+            'enable_re_retrieval': task.get('enable_re_retrieval', True),
+            'document_filters': task.get('document_filters'),  # Optional document scope filtering
             'query_analysis': {},
             'retrieval_results': [],
             'ranked_results': [],

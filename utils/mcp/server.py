@@ -480,58 +480,59 @@ class MCPToolRegistry:
                     name="Build Comprehensive Software Catalog",
                     description="Build comprehensive catalog of all project components for anti-duplication",
                     category=ToolCategory.AI,
-                    security_level=SecurityLevel.RESTRICTED,
-                    parameters={
+                    access_level=AccessLevel.RESTRICTED,
+                    source_module="utils.mcp.tools.software_catalog_tools",
+                    function_name="build_comprehensive_catalog",
+                    parameters_schema={
                         "force_rebuild": {"type": "boolean", "description": "Force rebuild catalog from scratch", "default": False}
                     },
-                    handler=lambda params: get_software_catalog_rag_tools().build_comprehensive_catalog(
-                        force_rebuild=params.get("force_rebuild", False)
-                    )
+                    returns_schema={"type": "object", "properties": {"components_cataloged": {"type": "integer"}, "status": {"type": "string"}}},
+                    cache_ttl=0
                 ),
                 ToolDefinition(
                     tool_id="catalog.search_semantic",
                     name="Semantic Catalog Search",
                     description="Search software catalog using semantic similarity for component discovery",
                     category=ToolCategory.AI,
-                    security_level=SecurityLevel.PUBLIC,
-                    parameters={
+                    access_level=AccessLevel.PUBLIC,
+                    source_module="utils.mcp.tools.software_catalog_tools",
+                    function_name="search_catalog_semantic",
+                    parameters_schema={
                         "query": {"type": "string", "description": "Search query describing desired functionality", "required": True},
                         "component_types": {"type": "array", "description": "Filter by component types", "default": None},
                         "limit": {"type": "integer", "description": "Maximum results", "default": 10}
                     },
-                    handler=lambda params: get_software_catalog_rag_tools().search_catalog_semantic(
-                        query=params["query"],
-                        component_types=params.get("component_types"),
-                        limit=params.get("limit", 10)
-                    )
+                    returns_schema={"type": "object", "properties": {"results": {"type": "array"}, "total_found": {"type": "integer"}}},
+                    cache_ttl=60
                 ),
                 ToolDefinition(
                     tool_id="catalog.find_similar_components",
                     name="Find Similar Components",
                     description="Find components similar to described functionality for anti-duplication",
                     category=ToolCategory.AI,
-                    security_level=SecurityLevel.PUBLIC,
-                    parameters={
+                    access_level=AccessLevel.PUBLIC,
+                    source_module="utils.mcp.tools.software_catalog_tools",
+                    function_name="find_similar_components",
+                    parameters_schema={
                         "component_description": {"type": "string", "description": "Description of desired component", "required": True},
                         "exclude_types": {"type": "array", "description": "Component types to exclude", "default": None}
                     },
-                    handler=lambda params: get_software_catalog_rag_tools().find_similar_components(
-                        component_description=params["component_description"],
-                        exclude_types=params.get("exclude_types")
-                    )
+                    returns_schema={"type": "object", "properties": {"similar_components": {"type": "array"}, "similarity_scores": {"type": "array"}}},
+                    cache_ttl=120
                 ),
                 ToolDefinition(
                     tool_id="catalog.get_component_dependencies",
                     name="Get Component Dependencies",
                     description="Analyze component dependencies and relationships for integration planning",
                     category=ToolCategory.AI,
-                    security_level=SecurityLevel.PUBLIC,
-                    parameters={
+                    access_level=AccessLevel.PUBLIC,
+                    source_module="utils.mcp.tools.software_catalog_tools",
+                    function_name="get_component_dependencies",
+                    parameters_schema={
                         "component_id": {"type": "string", "description": "Catalog ID of component", "required": True}
                     },
-                    handler=lambda params: get_software_catalog_rag_tools().get_component_dependencies(
-                        component_id=params["component_id"]
-                    )
+                    returns_schema={"type": "object", "properties": {"dependencies": {"type": "array"}, "dependents": {"type": "array"}}},
+                    cache_ttl=300
                 )
             ]
             

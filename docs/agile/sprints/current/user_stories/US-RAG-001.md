@@ -109,12 +109,12 @@ Implement a comprehensive RAG system with full-featured management UI that provi
 - [ ] **AC-1.4**: Document versioning and duplicate detection system
 - [ ] **AC-1.5**: Error handling and recovery for failed document processing
 
-### **Phase 2: Website Content Scraping (Week 1)**
-- [ ] **AC-2.1**: Single URL content extraction with cleaning
-- [ ] **AC-2.2**: Recursive site crawling with configurable depth limits
-- [ ] **AC-2.3**: CSS selector-based content filtering
-- [ ] **AC-2.4**: Rate limiting and respectful crawling policies
-- [ ] **AC-2.5**: Metadata extraction (title, description, keywords, structure)
+### **Phase 2: Website Content Scraping (Week 1) - ✅ COMPLETE**
+- [x] **AC-2.1**: Single URL content extraction with cleaning - ✅ **COMPLETE**
+- [x] **AC-2.2**: Recursive site crawling with configurable depth limits - ✅ **FIXED** (UI + agent improvements)
+- [x] **AC-2.3**: CSS selector-based content filtering - ✅ **COMPLETE**
+- [x] **AC-2.4**: Rate limiting and respectful crawling policies - ✅ **COMPLETE**
+- [x] **AC-2.5**: Metadata extraction (title, description, keywords, structure) - ✅ **COMPLETE** (LLM-powered)
 
 ### **Phase 3: Enhanced RAG System (Week 2) - ✅ CORE COMPLETE**
 - [x] **AC-3.1**: QdrantVectorStore with hybrid search (BM25 + semantic) - ✅ **COMPLETE**
@@ -127,12 +127,12 @@ Implement a comprehensive RAG system with full-featured management UI that provi
 - [x] **AC-3.8**: Language-aware code splitting (Python, JS, TS, Java, C++, Go) - ✅ **COMPLETE**
 - [x] **AC-3.9**: Controlled re-retrieval with quality assessment - ✅ **COMPLETE**
 
-### **Phase 4: MCP Server Management UI (Week 2)**
-- [ ] **AC-4.1**: Visual tool registry with real-time status monitoring
-- [ ] **AC-4.2**: Centralized prompt database with version control
-- [ ] **AC-4.3**: Tool configuration interface with parameter validation
-- [ ] **AC-4.4**: Interactive tool testing with result visualization
-- [ ] **AC-4.5**: Server performance metrics and usage analytics
+### **Phase 4: MCP Server Management UI (Week 2) - ✅ COMPLETE**
+- [x] **AC-4.1**: Visual tool registry with real-time status monitoring - ✅ **COMPLETE**
+- [x] **AC-4.2**: Centralized prompt database with version control - ✅ **COMPLETE**
+- [x] **AC-4.3**: Tool configuration interface with parameter validation - ✅ **COMPLETE**
+- [x] **AC-4.4**: Interactive tool testing with result visualization - ✅ **COMPLETE**
+- [x] **AC-4.5**: Server performance metrics and usage analytics - ✅ **COMPLETE**
 
 ### **Phase 5: Context-Aware Agents (Week 3 - PRIORITY)**
 - [ ] **AC-5.1**: `ContextAwareAgent` base class created in `agents/core/`

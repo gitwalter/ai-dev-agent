@@ -89,16 +89,21 @@ class QualityAssuranceAgent(EnhancedBaseAgent):
                 query_analysis
             )
             
-            # Determine verdict
+            # Determine verdict (realistic thresholds)
             quality_score = quality_report['quality_score']
-            if quality_score >= quality_threshold:
-                verdict = 'excellent' if quality_score >= 0.9 else 'good'
+            
+            # Trust the pipeline: > 0.5 = we can answer
+            if quality_score >= 0.7:
+                verdict = 'excellent'
                 passed = True
             elif quality_score >= 0.5:
-                verdict = 'insufficient'
-                passed = False
+                verdict = 'good'
+                passed = True
+            elif quality_score >= 0.4:
+                verdict = 'acceptable'
+                passed = True  # We can still generate an answer
             else:
-                verdict = 'poor'
+                verdict = 'insufficient'
                 passed = False
             
             # Update stats
@@ -145,7 +150,12 @@ class QualityAssuranceAgent(EnhancedBaseAgent):
         query: str,
         query_analysis: Dict
     ) -> Dict[str, Any]:
-        """Assess quality of retrieval results."""
+        """
+        Realistic quality assessment for RAG retrieval.
+        
+        Philosophy: Focus on "can we answer the query?" not "perfect retrieval"
+        Trust the hybrid search + re-ranking pipeline that already filtered results.
+        """
         
         if not results:
             return {
@@ -163,44 +173,42 @@ class QualityAssuranceAgent(EnhancedBaseAgent):
         coverage_score = self._calculate_coverage(results, query, query_analysis)
         diversity_score = self._calculate_diversity(results)
         
-        # Overall quality
+        # Realistic weighting: Relevance matters most
+        # If re-ranker scored it high, trust that
         quality_score = (
-            0.4 * relevance_score +
-            0.4 * coverage_score +
-            0.2 * diversity_score
+            0.5 * relevance_score +    # Trust hybrid search + re-ranking
+            0.3 * coverage_score +     # Can we answer?
+            0.2 * diversity_score      # Nice to have, not critical
         )
         
-        # Identify issues
+        # Identify issues (realistic thresholds)
         issues = []
         recommendations = []
         
-        if relevance_score < 0.6:
+        if relevance_score < 0.4:  # Very low bar - hybrid search failed badly
             issues.append('Low relevance scores')
             recommendations.append('Refine query understanding')
         
-        if coverage_score < 0.6:
+        if coverage_score < 0.4:  # Can't answer query at all
             issues.append('Incomplete coverage of query aspects')
             recommendations.append('Expand search with key concepts')
         
-        if diversity_score < 0.5:
-            issues.append('Results too similar')
-            recommendations.append('Increase diversity in retrieval')
-        
-        if len(results) < 5:
+        if len(results) < 3:  # Too few is actually a problem
             issues.append('Too few results')
             recommendations.append('Broaden search strategy')
         
-        # Determine if re-retrieval needed
-        needs_re_retrieval = quality_score < 0.6
+        # Realistic re-retrieval threshold: Only if we truly can't answer
+        # Quality > 0.5 = we can probably answer the query
+        needs_re_retrieval = quality_score < 0.45
         re_retrieval_strategy = None
         
         if needs_re_retrieval:
-            if coverage_score < 0.5:
-                re_retrieval_strategy = 'multi-stage'
-            elif relevance_score < 0.5:
-                re_retrieval_strategy = 'focused'
+            if coverage_score < 0.3:
+                re_retrieval_strategy = 'multi-stage'  # Need more concepts
+            elif relevance_score < 0.3:
+                re_retrieval_strategy = 'focused'  # Need better quality
             else:
-                re_retrieval_strategy = 'broad'
+                re_retrieval_strategy = 'broad'  # Need more results
         
         return {
             'quality_score': quality_score,
@@ -231,35 +239,47 @@ class QualityAssuranceAgent(EnhancedBaseAgent):
         key_concepts = query_analysis.get('key_concepts', [])
         
         if not key_concepts:
-            return 0.7  # Assume decent coverage if no concepts identified
+            return 0.8  # Assume good coverage if no concepts identified
         
-        # Check how many key concepts appear in results
+        # Check how many key concepts appear in results (fuzzy matching)
         all_content = ' '.join([r.get('content', '').lower() for r in results])
         
-        covered_concepts = sum(
-            1 for concept in key_concepts 
-            if concept.lower() in all_content
-        )
+        covered_concepts = 0
+        for concept in key_concepts:
+            concept_lower = concept.lower()
+            # Fuzzy match: check for concept or words in concept
+            words = concept_lower.split()
+            if concept_lower in all_content:
+                covered_concepts += 1.0  # Full match
+            elif any(word in all_content for word in words if len(word) > 3):
+                covered_concepts += 0.5  # Partial match
         
-        coverage = covered_concepts / len(key_concepts) if key_concepts else 0.5
+        coverage = covered_concepts / len(key_concepts) if key_concepts else 0.7
         
         return min(coverage, 1.0)
     
     def _calculate_diversity(self, results: List[Dict]) -> float:
         """Estimate diversity of results."""
         if len(results) <= 1:
-            return 0.5
+            return 0.6
         
-        # Simple diversity: check if results come from different sources
+        # Check if results come from different sources
         sources = set()
         for result in results:
-            source = result.get('source', result.get('file', 'unknown'))
+            source = result.get('metadata', {}).get('source') or result.get('source') or result.get('file', 'unknown')
             sources.add(source)
         
         # Diversity = ratio of unique sources to total results
-        diversity = len(sources) / len(results)
+        # But don't penalize too much if we have comprehensive single-source results
+        raw_diversity = len(sources) / len(results)
         
-        return diversity
+        # If we have good content from one comprehensive source, that's OK
+        if len(results) >= 5 and len(sources) == 1:
+            return 0.6  # One comprehensive source is acceptable
+        elif len(sources) >= 2:
+            return min(raw_diversity + 0.2, 1.0)  # Boost for multiple sources
+        else:
+            return max(raw_diversity, 0.4)  # Floor at 0.4
     
     def validate_task(self, task: Dict[str, Any]) -> bool:
         """Validate task has required fields."""

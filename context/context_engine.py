@@ -648,21 +648,36 @@ class ContextEngine:
         
         return results
     
-    async def semantic_search(self, query: str, limit: int = 10, context_filter: str = None) -> Dict[str, Any]:
+    async def semantic_search(self, query: str, limit: int = 10, context_filter: str = None, document_filters: Dict = None) -> Dict[str, Any]:
         """
-        Public semantic search method for RAG integration.
+        Public semantic search method for RAG integration with selective document filtering.
         
         Args:
             query: Search query
             limit: Maximum number of results
-            context_filter: Optional context filter
-            
+            context_filter: Optional context filter (legacy)
+            document_filters: Optional Qdrant metadata filters for selective RAG
+                Example: {'source': ['file1.pdf', 'file2.pdf']} to search only those documents
+                
         Returns:
             Dictionary with search results and metadata
         """
         try:
-            # Use existing search_context method
-            results = self.search_context(query, limit)
+            # DEBUG: Log filter state
+            self.logger.info(f"🔍 semantic_search called with document_filters: {document_filters}")
+            
+            # Use selective search if document filters provided
+            if document_filters and self.vector_store:
+                self.logger.info(f"🎯 Using FILTERED search for {len(document_filters.get('source', []))} documents")
+                results = self._search_with_filters(query, limit, document_filters)
+            else:
+                # Use existing search_context method (searches all documents)
+                results = self.search_context(query, limit)
+            
+            # Smart summarization: compress results if we have too many
+            if len(results) > limit * 2:  # If we got way more than requested
+                self.logger.info(f"🗜️ Compressing {len(results)} results to {limit} most relevant")
+                results = self._compress_context(results, limit)
             
             # Format results for RAG integration
             formatted_results = []
@@ -726,6 +741,162 @@ class ContextEngine:
         except Exception as e:
             self.logger.error(f"Semantic search error: {e}")
             return []
+    
+    def _search_with_filters(self, query: str, limit: int, document_filters: Dict) -> List[Dict[str, Any]]:
+        """
+        Perform semantic search with Qdrant metadata filters for selective RAG.
+        
+        Args:
+            query: Search query
+            limit: Maximum results
+            document_filters: Metadata filters, e.g. {'source': ['file1.pdf', 'file2.pdf']}
+            
+        Returns:
+            Filtered search results
+        """
+        try:
+            from qdrant_client.models import Filter, FieldCondition, MatchAny
+            
+            # Build Qdrant filter
+            # Support filtering by 'source' field (file name)
+            conditions = []
+            if 'source' in document_filters and document_filters['source']:
+                self.logger.info(f"🔍 DEBUG: Requested filter for sources: {document_filters['source']}")
+                
+                # Filter by multiple source values
+                conditions.append(
+                    FieldCondition(
+                        key="metadata.source",
+                        match=MatchAny(any=document_filters['source'])
+                    )
+                )
+            
+            # Create filter object
+            qdrant_filter = Filter(must=conditions) if conditions else None
+            
+            if qdrant_filter:
+                self.logger.info(f"🎯 Selective RAG: Filtering by {len(document_filters.get('source', []))} documents: {document_filters['source']}")
+            
+            # Perform filtered search
+            if QDRANT_NEW_API:
+                # New API: QdrantVectorStore with filter parameter
+                docs_with_scores = self.vector_store.similarity_search_with_score(
+                    query, k=limit * 2, filter=qdrant_filter  # Get extra for compression
+                )
+            else:
+                # Legacy API fallback
+                docs_with_scores = self.vector_store.similarity_search_with_score(
+                    query, k=limit * 2
+                )
+                # Manual filtering if legacy API
+                if document_filters.get('source'):
+                    filtered_docs = []
+                    for doc, score in docs_with_scores:
+                        doc_source = doc.metadata.get('source') or doc.metadata.get('file_path')
+                        if doc_source in document_filters['source']:
+                            filtered_docs.append((doc, score))
+                    docs_with_scores = filtered_docs
+            
+            # Format results
+            results = []
+            for doc, score in docs_with_scores:
+                similarity_score = 1.0 - score if score < 1.0 else 1.0 / (1.0 + score)
+                result = {
+                    "content": doc.page_content,
+                    "metadata": doc.metadata,
+                    "relevance_score": similarity_score,
+                    "search_type": "semantic_filtered",
+                    "file_path": doc.metadata.get("file_path") or doc.metadata.get("source", "unknown"),
+                    "chunk_index": doc.metadata.get("chunk_index", 0)
+                }
+                results.append(result)
+                
+                # DEBUG: Log actual source values found
+                if len(results) <= 3:  # Only log first 3
+                    actual_source = doc.metadata.get("source", "NO_SOURCE")
+                    self.logger.info(f"🔍 DEBUG: Found doc with metadata.source = '{actual_source}'")
+            
+            if len(results) == 0:
+                self.logger.warning(f"⚠️ Filtered search returned 0 results! Requested sources: {document_filters['source']}")
+            else:
+                self.logger.info(f"✅ Filtered search returned {len(results)} results from selected documents")
+            
+            return results
+            
+        except Exception as e:
+            self.logger.error(f"Filtered search error: {e}")
+            # Fallback to unfiltered search
+            return self.search_context(query, limit)
+    
+    def _compress_context(self, results: List[Dict[str, Any]], target_count: int) -> List[Dict[str, Any]]:
+        """
+        Compress retrieved context using smart selection strategies.
+        
+        Based on LangChain best practices:
+        - Remove redundant chunks from same document
+        - Keep highest relevance scores
+        - Maintain diversity across documents
+        
+        Args:
+            results: Search results to compress
+            target_count: Target number of results
+            
+        Returns:
+            Compressed results list
+        """
+        if len(results) <= target_count:
+            return results
+        
+        try:
+            # Strategy 1: Remove duplicates and very similar chunks
+            unique_results = []
+            seen_contents = set()
+            
+            for result in results:
+                content_hash = hash(result['content'][:200])  # First 200 chars
+                if content_hash not in seen_contents:
+                    unique_results.append(result)
+                    seen_contents.add(content_hash)
+            
+            # Strategy 2: Keep diverse documents (don't take all chunks from one doc)
+            doc_distribution = {}
+            for result in unique_results:
+                doc_name = result.get('file_path', 'unknown')
+                if doc_name not in doc_distribution:
+                    doc_distribution[doc_name] = []
+                doc_distribution[doc_name].append(result)
+            
+            # Strategy 3: Take top chunks from each document proportionally
+            compressed = []
+            chunks_per_doc = max(1, target_count // len(doc_distribution))
+            
+            for doc_name, doc_results in doc_distribution.items():
+                # Sort by relevance within each document
+                doc_results.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+                # Take top chunks from this document
+                compressed.extend(doc_results[:chunks_per_doc])
+            
+            # If we haven't reached target, add more high-scoring chunks
+            if len(compressed) < target_count:
+                remaining = [r for r in unique_results if r not in compressed]
+                remaining.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+                compressed.extend(remaining[:target_count - len(compressed)])
+            
+            # Final sort by relevance
+            compressed.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
+            
+            self.logger.info(
+                f"📊 Context compression: {len(results)} → {len(compressed[:target_count])} "
+                f"(from {len(doc_distribution)} documents)"
+            )
+            
+            return compressed[:target_count]
+            
+        except Exception as e:
+            self.logger.error(f"Context compression error: {e}")
+            # Fallback: simple truncation by relevance
+            sorted_results = sorted(results, key=lambda x: x.get('relevance_score', 0), reverse=True)
+            return sorted_results[:target_count]
     
     def _reciprocal_rank_fusion(
         self, 

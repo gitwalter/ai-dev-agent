@@ -91,22 +91,25 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         rewritten_queries = query_analysis.get('rewritten_queries', [original_query])
         key_concepts = query_analysis.get('key_concepts', [])
         search_strategy = query_analysis.get('search_strategy', 'focused')
+        document_filters = task.get('document_filters')  # NEW: Selective RAG filters
         
+        if document_filters:
+            logger.info(f"🎯 {self.name}: Using selective RAG with {len(document_filters.get('source', []))} documents")
         logger.info(f"📚 {self.name}: Retrieving context with strategy '{search_strategy}'")
         
         start_time = time.time()
         
         try:
-            # Execute retrieval based on strategy
+            # Execute retrieval based on strategy (with optional document filtering)
             if search_strategy == 'focused':
-                results = await self._focused_retrieval(original_query, max_results)
+                results = await self._focused_retrieval(original_query, max_results, document_filters)
             elif search_strategy == 'broad':
-                results = await self._broad_retrieval(rewritten_queries, key_concepts, max_results)
+                results = await self._broad_retrieval(rewritten_queries, key_concepts, max_results, document_filters)
             elif search_strategy == 'multi-stage':
-                results = await self._multi_stage_retrieval(rewritten_queries, key_concepts, max_results)
+                results = await self._multi_stage_retrieval(rewritten_queries, key_concepts, max_results, document_filters)
             else:
                 # Default to broad
-                results = await self._broad_retrieval(rewritten_queries, key_concepts, max_results)
+                results = await self._broad_retrieval(rewritten_queries, key_concepts, max_results, document_filters)
             
             retrieval_time = time.time() - start_time
             
@@ -143,7 +146,7 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
                 'search_results': []
             }
     
-    async def _focused_retrieval(self, query: str, max_results: int) -> List[Dict]:
+    async def _focused_retrieval(self, query: str, max_results: int, document_filters: Dict = None) -> List[Dict]:
         """
         Focused retrieval - single high-precision search with higher limits.
         
@@ -153,7 +156,11 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         
         # INCREASED: Get more results for better coverage
         search_limit = max(max_results * 2, 40)  # At least 40 results
-        search_results = await self.context_engine.semantic_search(query, limit=search_limit)
+        search_results = await self.context_engine.semantic_search(
+            query, 
+            limit=search_limit,
+            document_filters=document_filters  # NEW: Selective RAG
+        )
         self.retrieval_stats['total_searches'] += 1
         
         return search_results.get('results', [])
@@ -162,7 +169,8 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         self, 
         query_variants: List[str], 
         key_concepts: List[str],
-        max_results: int
+        max_results: int,
+        document_filters: Dict = None
     ) -> List[Dict]:
         """
         Broad retrieval - AGGRESSIVE multiple searches for comprehensive coverage.
@@ -178,14 +186,22 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         # Search with ALL query variants (not just top 3)
         for i, query in enumerate(query_variants[:5], 1):  # Top 5 variants
             logger.info(f"  Search {i}/{len(query_variants[:5])}: '{query[:40]}...'")
-            search_results = await self.context_engine.semantic_search(query, limit=results_per_query)
+            search_results = await self.context_engine.semantic_search(
+                query, 
+                limit=results_per_query,
+                document_filters=document_filters  # NEW: Selective RAG
+            )
             all_results.extend(search_results.get('results', []))
             self.retrieval_stats['total_searches'] += 1
         
         # Search with ALL key concepts (more aggressive)
         for i, concept in enumerate(key_concepts[:5], 1):  # Top 5 concepts
             logger.info(f"  Concept {i}/{len(key_concepts[:5])}: '{concept}'")
-            search_results = await self.context_engine.semantic_search(concept, limit=results_per_query)
+            search_results = await self.context_engine.semantic_search(
+                concept, 
+                limit=results_per_query,
+                document_filters=document_filters  # NEW: Selective RAG
+            )
             all_results.extend(search_results.get('results', []))
             self.retrieval_stats['total_searches'] += 1
         
@@ -196,7 +212,8 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         self,
         query_variants: List[str],
         key_concepts: List[str],
-        max_results: int
+        max_results: int,
+        document_filters: Dict = None
     ) -> List[Dict]:
         """
         Multi-stage retrieval - THOROUGH progressive refinement.
@@ -215,14 +232,14 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         # Stage 1: Initial search with top variants (INCREASED from 8 to 20)
         logger.info(f"  Stage 1: Initial search (20 results per query)")
         for query in query_variants[:3]:  # Top 3 variants
-            search_results = await self.context_engine.semantic_search(query, limit=20)
+            search_results = await self.context_engine.semantic_search(query, limit=20, document_filters=document_filters)
             all_results.extend(search_results.get('results', []))
             self.retrieval_stats['total_searches'] += 1
         
         # Stage 2: Concept expansion (INCREASED from 5 to 15)
         logger.info(f"  Stage 2: Concept expansion (15 results per concept)")
         for concept in key_concepts[:5]:  # Top 5 concepts
-            search_results = await self.context_engine.semantic_search(concept, limit=15)
+            search_results = await self.context_engine.semantic_search(concept, limit=15, document_filters=document_filters)
             all_results.extend(search_results.get('results', []))
             self.retrieval_stats['total_searches'] += 1
         
@@ -230,7 +247,7 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         logger.info(f"  Stage 3: Refinement (20 results)")
         if len(key_concepts) >= 2:
             combined_query = f"{query_variants[0]} {' '.join(key_concepts[:3])}"
-            search_results = await self.context_engine.semantic_search(combined_query, limit=20)
+            search_results = await self.context_engine.semantic_search(combined_query, limit=20, document_filters=document_filters)
             all_results.extend(search_results.get('results', []))
             self.retrieval_stats['total_searches'] += 1
         
@@ -238,7 +255,7 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         if len(all_results) < 50:
             logger.info(f"  Stage 4: Additional broad search")
             for concept in key_concepts[5:8]:  # Additional concepts
-                search_results = await self.context_engine.semantic_search(concept, limit=10)
+                search_results = await self.context_engine.semantic_search(concept, limit=10, document_filters=document_filters)
                 all_results.extend(search_results.get('results', []))
                 self.retrieval_stats['total_searches'] += 1
         
