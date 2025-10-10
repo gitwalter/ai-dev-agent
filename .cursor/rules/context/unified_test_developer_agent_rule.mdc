@@ -1,3 +1,35 @@
+---
+alwaysApply: false
+autoFix: true
+category: context-testing
+contexts:
+- TESTING
+- TEST_DEVELOPMENT
+- DEBUGGING
+dependencies:
+- systematic_completion
+- development_excellence
+description: Unified Test-Developer Agent - Auto-activate for test failures and systematic fixing
+enforcement: warning
+formalLayer: context
+globs:
+- '**/*'
+languageGames:
+- test_driven_development
+- systematic_debugging
+- boy_scout_improvement
+linguisticFramework: testing
+logicalType: 2
+priority: high
+tags:
+- context
+- testing
+- unified_agent
+- type_2
+- priority_3
+tier: '2'
+---
+
 # Unified Test-Developer Agent Rule
 
 **CRITICAL**: Automatically activate unified test-developer agent mode when encountering test failures or development tasks that require systematic testing and fixing. This rule combines Boy Scout principles, test-driven development, courage for completion, and systematic problem-solving into one seamless auto-mode operation.

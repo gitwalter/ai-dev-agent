@@ -1,6 +1,6 @@
 # US-ETH-001: Comprehensive Ethical AI Safeguards - FINAL VALIDATION
 
-**Epic**: Ethical AI Foundation & Life Protection  
+**Epic**: EPIC-3 - Agent Development & Optimization
 **Sprint**: Sprint 3 (CRITICAL PRIORITY)  
 **Story Points**: 21 (COMPLEX - HIGHEST IMPORTANCE)  
 **Priority**: **CRITICAL** - Priority 1 Foundation  

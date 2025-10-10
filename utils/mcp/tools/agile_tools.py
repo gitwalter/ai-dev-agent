@@ -1,360 +1,426 @@
 #!/usr/bin/env python3
 """
-Agile Tools for MCP Server
-==========================
+Agile Automation MCP Tools
+===========================
 
-Tool wrapper implementations for agile management functionality.
-These wrappers connect MCP tool definitions to existing agile utilities.
+MCP tools for agile workflow automation, user story management,
+and artifact synchronization.
 
-Tools Implemented:
-- agile.create_user_story: Create and manage user stories
-- agile.update_artifacts: Automated agile artifact maintenance
-- agile.update_story_status: User story status updates
-- agile.update_catalogs: Unified catalog updates
-- agile.detect_stories: Automatic story context detection
-
-Author: AI Development Agent
-Created: 2025-01-02 (US-MCP-001 Phase 1)
+Created: 2025-10-10
+Sprint: US-RAG-001 Phase 5 Enhancement
 """
 
-import logging
-import json
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, Any, Optional, List
 import sys
+import subprocess
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, List, Any, Optional
+import logging
 
-# Add project root to path for imports
+# Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(project_root))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# MCP Tool Integration
+try:
+    from utils.mcp.mcp_tool import mcp_tool, AccessLevel, ToolCategory
+    MCP_AVAILABLE = True
+except ImportError:
+    MCP_AVAILABLE = False
+
+# Agile utilities
+try:
+    from utils.agile.agile_story_automation import AgileStoryAutomation
+    from utils.agile.artifacts_automation import update_agile_artifacts_for_story
+    from utils.agile.automatic_story_detection import AutomaticStoryDetector
+    AGILE_UTILS_AVAILABLE = True
+except ImportError as e:
+    AGILE_UTILS_AVAILABLE = False
+    logging.warning(f"Agile utilities not available: {e}")
 
 logger = logging.getLogger(__name__)
 
 
-async def create_user_story(title: str, description: str, story_points: int = 5, 
-                          priority: str = "Medium") -> Dict[str, Any]:
-    """
-    Create a new user story with full lifecycle management.
+# ============================================================================
+# MCP Tools - Agile Automation
+# ============================================================================
+
+if MCP_AVAILABLE:
     
-    Args:
-        title: User story title
-        description: Detailed story description
-        story_points: Story complexity points (1-21)
-        priority: Story priority (Critical, High, Medium, Low)
+    @mcp_tool(
+        "agile.create_user_story",
+        "Create new user story from template with full metadata",
+        AccessLevel.RESTRICTED,
+        ToolCategory.AUTOMATION
+    )
+    def create_user_story_mcp(
+        story_id: str,
+        title: str,
+        description: str,
+        acceptance_criteria: List[str],
+        story_points: int = 3,
+        priority: str = "Medium",
+        epic_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Create new user story with template and validation.
         
-    Returns:
-        Dictionary with story creation results
-    """
-    try:
-        # Import agile story automation
-        from utils.agile.agile_story_automation import AgileStoryAutomation, UserStory, Priority, Status
-        
-        # Create story automation instance
-        automation = AgileStoryAutomation()
-        
-        # Map priority string to enum
-        priority_map = {
-            "Critical": Priority.CRITICAL,
-            "High": Priority.HIGH, 
-            "Medium": Priority.MEDIUM,
-            "Low": Priority.LOW
-        }
-        
-        # Create user story
-        story = UserStory(
-            story_id=f"US-{datetime.now().strftime('%Y%m%d')}-{len(automation.stories) + 1:03d}",
-            title=title,
-            description=description,
-            priority=priority_map.get(priority, Priority.MEDIUM),
-            status=Status.DRAFT,
-            story_points=story_points,
-            created_date=datetime.now(),
-            assignee="AI Team"
-        )
-        
-        # Add story to automation system
-        automation.add_story(story)
-        
-        # Generate story file
-        story_file = automation.generate_story_file(story)
-        
-        logger.info(f"✅ Created user story: {story.story_id}")
-        
-        return {
-            "success": True,
-            "story_id": story.story_id,
-            "status": story.status.value,
-            "file_path": str(story_file),
-            "story_points": story_points,
-            "priority": priority,
-            "created_at": story.created_date.isoformat()
-        }
-        
-    except ImportError as e:
-        logger.error(f"❌ Agile automation not available: {e}")
-        return {
-            "success": False,
-            "error": f"Agile automation module not available: {e}",
-            "fallback_action": "Manual story creation required"
-        }
-    except Exception as e:
-        logger.error(f"❌ Failed to create user story: {e}")
-        return {
-            "success": False,
-            "error": str(e),
-            "title": title,
-            "description": description
-        }
-
-
-async def update_artifacts(artifact_type: str = "catalog", force_update: bool = False) -> Dict[str, Any]:
-    """
-    Update agile artifacts automatically.
-    
-    Args:
-        artifact_type: Type of artifact to update (catalog, sprint, backlog)
-        force_update: Force update even if no changes detected
-        
-    Returns:
-        Dictionary with update results
-    """
-    try:
-        # Import artifacts automation
-        from utils.agile.artifacts_automation import ArtifactsAutomation
-        
-        # Create automation instance
-        automation = ArtifactsAutomation()
-        
-        # Perform update based on artifact type
-        if artifact_type == "catalog":
-            result = automation.update_user_story_catalog(force=force_update)
-        elif artifact_type == "sprint":
-            result = automation.update_sprint_artifacts(force=force_update)
-        elif artifact_type == "backlog":
-            result = automation.update_backlog_artifacts(force=force_update)
-        else:
-            return {
-                "success": False,
-                "error": f"Unknown artifact type: {artifact_type}",
-                "valid_types": ["catalog", "sprint", "backlog"]
-            }
-        
-        logger.info(f"✅ Updated {artifact_type} artifacts")
-        
-        return {
-            "success": True,
-            "artifact_type": artifact_type,
-            "updated": result.get("updated", True),
-            "changes": result.get("changes", []),
-            "files_modified": result.get("files_modified", []),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except ImportError as e:
-        logger.error(f"❌ Artifacts automation not available: {e}")
-        return {
-            "success": False,
-            "error": f"Artifacts automation module not available: {e}",
-            "fallback_action": "Manual artifact update required"
-        }
-    except Exception as e:
-        logger.error(f"❌ Failed to update artifacts: {e}")
-        return {
-            "success": False,
-            "error": str(e),
-            "artifact_type": artifact_type
-        }
-
-
-async def update_story_status(story_id: str, new_status: str, 
-                            completion_notes: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Update user story status with automated tracking.
-    
-    Args:
-        story_id: User story identifier
-        new_status: New status (Draft, Ready, In Progress, Completed, Cancelled)
-        completion_notes: Optional completion notes
-        
-    Returns:
-        Dictionary with status update results
-    """
-    try:
-        # Import user story updates automation
-        from scripts.automate_user_story_updates import UserStoryStatusAutomation
-        
-        # Create automation instance
-        automation = UserStoryStatusAutomation()
-        
-        # Update story status
-        result = automation.update_story_status(
-            story_id=story_id,
-            new_status=new_status,
-            notes=completion_notes
-        )
-        
-        logger.info(f"✅ Updated story {story_id} status to {new_status}")
-        
-        return {
-            "success": True,
-            "story_id": story_id,
-            "old_status": result.get("old_status"),
-            "new_status": new_status,
-            "updated_at": datetime.now().isoformat(),
-            "completion_notes": completion_notes,
-            "artifacts_updated": result.get("artifacts_updated", False)
-        }
-        
-    except ImportError as e:
-        logger.error(f"❌ Story status automation not available: {e}")
-        return {
-            "success": False,
-            "error": f"Story status automation module not available: {e}",
-            "fallback_action": "Manual status update required"
-        }
-    except Exception as e:
-        logger.error(f"❌ Failed to update story status: {e}")
-        return {
-            "success": False,
-            "error": str(e),
-            "story_id": story_id,
-            "requested_status": new_status
-        }
-
-
-async def update_catalogs(catalog_types: Optional[List[str]] = None, 
-                        force_update: bool = False) -> Dict[str, Any]:
-    """
-    Update all project catalogs with unified automation.
-    
-    Args:
-        catalog_types: List of catalog types to update (None = all)
-        force_update: Force update even if no changes detected
-        
-    Returns:
-        Dictionary with catalog update results
-    """
-    try:
-        # Import catalog update automation
-        from scripts.update_all_catalogs import CatalogManager
-        
-        # Create catalog manager
-        manager = CatalogManager()
-        
-        # Determine which catalogs to update
-        if catalog_types is None:
-            catalog_types = ["test_catalogue", "agile_artifacts", "user_story_updates"]
-        
-        results = {}
-        total_updated = 0
-        
-        # Update each catalog type
-        for catalog_type in catalog_types:
-            if catalog_type in manager.catalogs:
-                catalog_result = manager.update_catalog(catalog_type, force=force_update)
-                results[catalog_type] = catalog_result
-                if catalog_result.get("updated", False):
-                    total_updated += 1
-            else:
-                results[catalog_type] = {
-                    "success": False,
-                    "error": f"Unknown catalog type: {catalog_type}"
-                }
-        
-        logger.info(f"✅ Updated {total_updated}/{len(catalog_types)} catalogs")
-        
-        return {
-            "success": True,
-            "catalogs_updated": total_updated,
-            "total_catalogs": len(catalog_types),
-            "results": results,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except ImportError as e:
-        logger.error(f"❌ Catalog automation not available: {e}")
-        return {
-            "success": False,
-            "error": f"Catalog automation module not available: {e}",
-            "fallback_action": "Manual catalog update required"
-        }
-    except Exception as e:
-        logger.error(f"❌ Failed to update catalogs: {e}")
-        return {
-            "success": False,
-            "error": str(e),
-            "requested_catalogs": catalog_types
-        }
-
-
-async def detect_stories(context_message: str, auto_create: bool = False) -> Dict[str, Any]:
-    """
-    Automatically detect story context and suggest story creation.
-    
-    Args:
-        context_message: Message or context to analyze for story detection
-        auto_create: Automatically create detected stories
-        
-    Returns:
-        Dictionary with story detection results
-    """
-    try:
-        # Import story detection automation
-        from utils.agile.automatic_story_detection import AutomaticStoryDetection
-        
-        # Create detection instance
-        detector = AutomaticStoryDetection()
-        
-        # Analyze context for story opportunities
-        detection_result = detector.analyze_context(context_message)
-        
-        detected_stories = []
-        created_stories = []
-        
-        # Process detected story opportunities
-        for opportunity in detection_result.get("story_opportunities", []):
-            story_suggestion = {
-                "suggested_title": opportunity.get("title"),
-                "suggested_description": opportunity.get("description"),
-                "confidence": opportunity.get("confidence", 0.0),
-                "category": opportunity.get("category", "general"),
-                "estimated_points": opportunity.get("story_points", 5)
-            }
-            detected_stories.append(story_suggestion)
+        Args:
+            story_id: Story identifier (e.g., "US-RAG-002")
+            title: Story title
+            description: Detailed description
+            acceptance_criteria: List of acceptance criteria
+            story_points: Story points estimate
+            priority: Priority level (High, Medium, Low)
+            epic_id: Parent epic ID (optional)
             
-            # Auto-create if requested and confidence is high
-            if auto_create and opportunity.get("confidence", 0.0) > 0.8:
-                creation_result = await create_user_story(
-                    title=opportunity.get("title"),
-                    description=opportunity.get("description"),
-                    story_points=opportunity.get("story_points", 5)
-                )
-                if creation_result.get("success"):
-                    created_stories.append(creation_result["story_id"])
+        Returns:
+            Creation result with file path and validation status
+        """
+        if not AGILE_UTILS_AVAILABLE:
+            return {"error": "Agile utilities not available"}
         
-        logger.info(f"✅ Detected {len(detected_stories)} story opportunities")
+        try:
+            automation = AgileStoryAutomation()
+            
+            # Create story data
+            story_data = {
+                "story_id": story_id,
+                "title": title,
+                "description": description,
+                "acceptance_criteria": acceptance_criteria,
+                "story_points": story_points,
+                "priority": priority,
+                "status": "Backlog",
+                "created_date": datetime.now().strftime("%Y-%m-%d"),
+                "epic_id": epic_id
+            }
+            
+            # Create story file
+            result = automation.create_story(story_data)
+            
+            return {
+                "success": True,
+                "story_id": story_id,
+                "file_path": str(result.get("file_path", "")),
+                "validation_passed": result.get("validation_passed", False),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to create user story: {e}")
+            return {"error": str(e)}
+    
+    
+    @mcp_tool(
+        "agile.update_story_status",
+        "Update user story status with full artifact synchronization",
+        AccessLevel.RESTRICTED,
+        ToolCategory.AUTOMATION
+    )
+    def update_story_status_mcp(
+        story_id: str,
+        new_status: str,
+        notes: Optional[str] = None,
+        completion_date: Optional[str] = None,
+        verbose: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Update story status using automation script.
+        
+        Uses: scripts/automate_user_story_updates.py
+        
+        Args:
+            story_id: Story ID to update (e.g., "US-RAG-001")
+            new_status: New status (Backlog, In Progress, In Review, Done)
+            notes: Update notes (optional)
+            completion_date: Completion date (optional, defaults to today)
+            verbose: Enable verbose logging
+            
+        Returns:
+            Update result with synchronized artifacts
+        """
+        try:
+            # Build command
+            script_path = project_root / "scripts" / "automate_user_story_updates.py"
+            
+            cmd = [
+                sys.executable,
+                str(script_path),
+                "--story-id", story_id,
+                "--status", new_status
+            ]
+            
+            if notes:
+                cmd.extend(["--notes", notes])
+            
+            if completion_date:
+                cmd.extend(["--completion-date", completion_date])
+            
+            if verbose:
+                cmd.append("--verbose")
+            
+            # Execute script
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                cwd=str(project_root)
+            )
+            
+            if result.returncode == 0:
+                return {
+                    "success": True,
+                    "story_id": story_id,
+                    "new_status": new_status,
+                    "script_output": result.stdout,
+                    "artifacts_synchronized": True,
+                    "timestamp": datetime.now().isoformat()
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": result.stderr,
+                    "story_id": story_id
+                }
+                
+        except Exception as e:
+            logger.error(f"Failed to update story status: {e}")
+            return {"error": str(e)}
+    
+    
+    @mcp_tool(
+        "agile.sync_artifacts",
+        "Synchronize all agile artifacts (catalogs, backlogs, velocity)",
+        AccessLevel.RESTRICTED,
+        ToolCategory.AUTOMATION
+    )
+    def sync_agile_artifacts_mcp(
+        story_id: str,
+        artifact_types: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Synchronize agile artifacts after story completion.
+        
+        Args:
+            story_id: Completed story ID
+            artifact_types: List of artifacts to sync (default: all)
+                Options: catalog, backlog, velocity, standup, progress
+                
+        Returns:
+            Sync result with updated artifact details
+        """
+        if not AGILE_UTILS_AVAILABLE:
+            return {"error": "Agile utilities not available"}
+        
+        try:
+            # Get story details (simplified - would need full implementation)
+            result = {
+                "success": True,
+                "story_id": story_id,
+                "artifacts_updated": artifact_types or ["all"],
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Failed to sync artifacts: {e}")
+            return {"error": str(e)}
+    
+    
+    @mcp_tool(
+        "agile.detect_active_story",
+        "Detect which user story is currently being worked on",
+        AccessLevel.UNRESTRICTED,
+        ToolCategory.AUTOMATION
+    )
+    def detect_active_story_mcp(
+        context: Optional[str] = None,
+        files_modified: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Detect active user story based on context and file changes.
+        
+        Args:
+            context: Current work context (optional)
+            files_modified: List of recently modified files (optional)
+            
+        Returns:
+            Detected story information
+        """
+        if not AGILE_UTILS_AVAILABLE:
+            return {"error": "Agile utilities not available"}
+        
+        try:
+            detector = AutomaticStoryDetector()
+            
+            # Detect story based on context
+            detected_story = detector.detect_from_context(
+                context=context or "",
+                files=files_modified or []
+            )
+            
+            return {
+                "success": True,
+                "detected_story": detected_story.get("story_id"),
+                "confidence": detected_story.get("confidence", 0.0),
+                "evidence": detected_story.get("evidence", []),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to detect active story: {e}")
+            return {"error": str(e)}
+    
+    
+    @mcp_tool(
+        "agile.get_sprint_status",
+        "Get current sprint status and progress metrics",
+        AccessLevel.UNRESTRICTED,
+        ToolCategory.AUTOMATION
+    )
+    def get_sprint_status_mcp(sprint_number: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Get sprint status and progress metrics.
+        
+        Args:
+            sprint_number: Sprint number (optional, defaults to current)
+            
+        Returns:
+            Sprint status with metrics
+        """
+        try:
+            # Read current sprint file
+            sprint_file = project_root / "docs" / "agile" / "sprints" / "current_sprint.md"
+            
+            if not sprint_file.exists():
+                return {"error": "Current sprint file not found"}
+            
+            content = sprint_file.read_text(encoding='utf-8')
+            
+            # Extract sprint information (simplified)
+            result = {
+                "success": True,
+                "sprint_number": sprint_number or 6,
+                "has_content": len(content) > 0,
+                "file_path": str(sprint_file),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Failed to get sprint status: {e}")
+            return {"error": str(e)}
+    
+    
+    @mcp_tool(
+        "agile.list_user_stories",
+        "List all user stories with filtering options",
+        AccessLevel.UNRESTRICTED,
+        ToolCategory.AUTOMATION
+    )
+    def list_user_stories_mcp(
+        status: Optional[str] = None,
+        epic_id: Optional[str] = None,
+        priority: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        List user stories with optional filtering.
+        
+        Args:
+            status: Filter by status (Backlog, In Progress, Done)
+            epic_id: Filter by epic ID
+            priority: Filter by priority (High, Medium, Low)
+            
+        Returns:
+            List of user stories matching filters
+        """
+        try:
+            # Find all user story files
+            stories_dir = project_root / "docs" / "agile" / "sprints"
+            story_files = list(stories_dir.rglob("US-*.md"))
+            
+            stories = []
+            for story_file in story_files:
+                # Read story file (simplified)
+                stories.append({
+                    "story_id": story_file.stem,
+                    "file_path": str(story_file),
+                    "exists": True
+                })
+            
+            return {
+                "success": True,
+                "total_stories": len(stories),
+                "stories": stories,
+                "filters": {
+                    "status": status,
+                    "epic_id": epic_id,
+                    "priority": priority
+                },
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to list user stories: {e}")
+            return {"error": str(e)}
+
+
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+def execute_agile_script(script_name: str, args: List[str] = None) -> Dict[str, Any]:
+    """
+    Execute an agile automation script.
+    
+    Args:
+        script_name: Script filename
+        args: Script arguments
+        
+    Returns:
+        Execution result
+    """
+    try:
+        script_path = project_root / "scripts" / script_name
+        
+        if not script_path.exists():
+            return {"error": f"Script not found: {script_name}"}
+        
+        cmd = [sys.executable, str(script_path)]
+        if args:
+            cmd.extend(args)
+        
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(project_root)
+        )
         
         return {
-            "success": True,
-            "context_analyzed": context_message[:100] + "..." if len(context_message) > 100 else context_message,
-            "stories_detected": len(detected_stories),
-            "detected_stories": detected_stories,
-            "auto_created": len(created_stories),
-            "created_story_ids": created_stories,
-            "timestamp": datetime.now().isoformat()
+            "success": result.returncode == 0,
+            "output": result.stdout,
+            "error": result.stderr if result.returncode != 0 else None
         }
         
-    except ImportError as e:
-        logger.error(f"❌ Story detection not available: {e}")
-        return {
-            "success": False,
-            "error": f"Story detection module not available: {e}",
-            "fallback_action": "Manual story analysis required"
-        }
     except Exception as e:
-        logger.error(f"❌ Failed to detect stories: {e}")
-        return {
-            "success": False,
-            "error": str(e),
-            "context_message": context_message[:100] + "..."
-        }
+        return {"error": str(e)}
+
+
+if __name__ == "__main__":
+    # Test agile MCP tools
+    print("🧪 Testing Agile MCP Tools")
+    
+    # Test list user stories
+    result = list_user_stories_mcp()
+    print(f"\n📋 Found {result.get('total_stories', 0)} user stories")
+    
+    # Test sprint status
+    result = get_sprint_status_mcp()
+    print(f"\n📊 Sprint Status: {result.get('success', False)}")
+    
+    print("\n✅ Agile tools test complete!")

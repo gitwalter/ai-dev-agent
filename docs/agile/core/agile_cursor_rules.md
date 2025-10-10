@@ -13,7 +13,8 @@
 
 ### **Current Sprint**
 - **Daily Standup**: `docs/agile/daily_standup.md`
-- **Current Sprint Folder**: `docs/agile/sprints/current/`
+- **Current Sprint Reference**: `docs/agile/sprints/current_sprint.md` (pointer to active sprint)
+- **Active Sprint Folder**: Check `current_sprint.md` for the current numbered sprint directory
 
 ### **All Sprints**
 - **Sprint 0**: `docs/agile/sprints/sprint_0/`
@@ -59,6 +60,76 @@ git add . && git commit --no-verify -m "test: [description]" && git push
 ```
 
 📋 **See**: `docs/agile/core/COMMAND_CONFIGURATION.md` for full configuration options
+
+## ⚙️ **Automation-First Principle**
+
+**CRITICAL**: Always use automation scripts for agile artifact updates. **NEVER manually edit** user stories, catalogs, or agile documents when automation scripts exist.
+
+### **User Story Updates**
+```bash
+# REQUIRED: Use automation script for story status updates
+python scripts/automate_user_story_updates.py --story-id US-XXX-NNN --status "In Progress" --notes "Detailed status notes"
+
+# Examples:
+python scripts/automate_user_story_updates.py --story-id US-RAG-001 --status "In Progress" --notes "Phase 4 complete"
+python scripts/automate_user_story_updates.py --story-id US-MCP-001 --status Done --completion-date 2025-10-10
+```
+
+### **Automation Script Usage**
+- ✅ **ALWAYS use**: `scripts/automate_user_story_updates.py` for story updates
+- ✅ **ALWAYS use**: `scripts/automate_test_catalogue.py` for test catalog updates
+- ✅ **ALWAYS use**: `utils/agile/agile_story_automation.py` for story creation
+- ❌ **NEVER**: Manually edit user story status fields
+- ❌ **NEVER**: Manually update story metadata
+
+### **Benefits of Automation**
+- ✅ Consistent formatting across all agile artifacts
+- ✅ Automatic catalog synchronization
+- ✅ Timestamp and audit trail generation
+- ✅ Validation of status transitions
+- ✅ Prevents human error and inconsistencies
+
+**Remember**: Automation ensures consistency and maintainability. Update the story, not just for now, but for the entire project's agile process integrity.
+
+## 📋 **TODO List Requirement**
+
+**CRITICAL**: ALWAYS maintain a TODO list during work sessions. This is a MANDATORY practice in Cursor IDE.
+
+### **When to Create TODO Lists**
+```bash
+# REQUIRED: For any multi-step task (3+ steps)
+# REQUIRED: When user requests multiple changes
+# REQUIRED: For complex implementation work
+# REQUIRED: During sprint planning and execution
+```
+
+### **TODO List Best Practices**
+- ✅ **Create at start**: Create TODO list when beginning work
+- ✅ **Update frequently**: Mark tasks completed as you progress
+- ✅ **Track current work**: Always have one task "in_progress"
+- ✅ **Complete all tasks**: Don't stop with unfinished TODOs
+- ❌ **NEVER skip**: Don't work on complex tasks without TODO list
+
+### **Example Workflow**
+```python
+# 1. User requests: "Update user story and test MCP integration"
+todo_write(todos=[
+    {"id": "assess-status", "content": "Assess current story status", "status": "in_progress"},
+    {"id": "use-automation", "content": "Use automate_user_story_updates.py", "status": "pending"},
+    {"id": "test-mcp", "content": "Test MCP integration in UI", "status": "pending"},
+    {"id": "document-findings", "content": "Document test results", "status": "pending"}
+])
+
+# 2. Complete first task
+todo_write(todos=[
+    {"id": "assess-status", "status": "completed"},
+    {"id": "use-automation", "status": "in_progress"}
+], merge=True)
+
+# 3. Continue until all tasks completed
+```
+
+**Remember**: TODO lists demonstrate systematic thinking and ensure nothing is forgotten. This is part of our formal rule system for systematic completion.
 
 ## 🎯 **Agile Manifesto Integration**
 

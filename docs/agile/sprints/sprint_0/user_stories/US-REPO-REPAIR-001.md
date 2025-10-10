@@ -1,4 +1,7 @@
 # User Story: Repository Disaster Recovery and Repair
+
+**Epic**: EPIC-6 - Full Cursor Automation
+
 **Story ID**: US-REPO-REPAIR-001  
 **Sprint**: Sprint 0  
 **Priority**: BLOCKER  

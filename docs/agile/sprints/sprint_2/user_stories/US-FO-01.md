@@ -1,6 +1,6 @@
 # US-FO-01: Project File Organization Excellence
 
-**Epic**: Epic 2: Agent Development & Intelligence Excellence  
+**Epic**: EPIC-7 - Formal Principles Excellence
 **Sprint**: Sprint 2  
 **Story Points**: 8  
 **Priority**: CRITICAL  

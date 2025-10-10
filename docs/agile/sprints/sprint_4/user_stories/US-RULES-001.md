@@ -2,7 +2,7 @@
 
 **Story ID**: US-RULES-001  
 **Title**: Implement Systematic Scientific Verification Rule System  
-**Epic**: Development Excellence  
+**Epic**: EPIC-7 - Formal Principles Excellence
 **Sprint**: Sprint 4  
 **Priority**: Critical  
 **Estimate**: 8 Story Points  

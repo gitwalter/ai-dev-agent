@@ -1,6 +1,6 @@
 # US-CORE-001: Unhackable Ethical Core Implementation - QUANTUM EVOLUTION COMPLETE
 
-**Epic**: Unhackable AI Ethics Foundation  
+**Epic**: EPIC-7 - Formal Principles Excellence
 **Sprint**: Sprint 3 (CRITICAL PRIORITY)  
 **Story Points**: 34 (COMPLEX - HIGHEST SECURITY IMPORTANCE)  
 **Priority**: **CRITICAL** - Core Security Foundation  

@@ -81,6 +81,58 @@ def agile_coordination_system(context: AgileContext) -> CoordinationResult:
     return coordination
 ```
 
+## Sprint Directory Organization
+
+### **CRITICAL: Numbered Sprint Structure**
+```yaml
+# MANDATORY: All sprint work uses numbered directories
+sprint_structure:
+  canonical_directories:
+    - "docs/agile/sprints/sprint_0/"  # Sprint 0
+    - "docs/agile/sprints/sprint_1/"  # Sprint 1
+    - "docs/agile/sprints/sprint_N/"  # Future sprints
+  
+  pointer_file:
+    location: "docs/agile/sprints/current_sprint.md"
+    purpose: "Quick reference dashboard pointing to active sprint"
+    content: "High-level status, links to full sprint directory"
+  
+  # FORBIDDEN: Do not create these directories
+  forbidden:
+    - "docs/agile/sprints/current/"        # Use numbered sprints
+    - "docs/agile/sprints/sprint_current/" # Use numbered sprints
+    - "docs/agile/sprints/active/"         # Use current_sprint.md file
+
+# Sprint Directory Contents (for each sprint_N/)
+sprint_directory_structure:
+  required_files:
+    - "README.md"           # Sprint overview
+    - "backlog.md"          # Sprint backlog
+    - "planning.md"         # Planning documents
+    - "review.md"           # Sprint review
+    - "retrospective.md"    # Retrospective
+  
+  required_directories:
+    - "user_stories/"       # All user stories for this sprint
+    - "analysis/"           # Analysis documents
+    - "planning/"           # Detailed planning docs
+    - "completion_summaries/" # Story completion summaries
+  
+  optional_directories:
+    - "daily_standups/"     # Daily standup notes
+    - "metrics/"            # Sprint metrics
+    - "blockers/"           # Blocker tracking
+    - "retrospectives/"     # Detailed retrospectives
+
+# Usage Pattern
+workflow:
+  1_check_active_sprint: "Read docs/agile/sprints/current_sprint.md"
+  2_work_in_numbered_sprint: "All work goes in sprint_N/ directory"
+  3_update_pointer: "Update current_sprint.md with progress"
+  4_close_sprint: "Complete all artifacts in sprint_N/"
+  5_start_next_sprint: "Create sprint_N+1/ directory"
+```
+
 ## 1. Systematic Artifact Management
 
 ### **Live Artifact System**
@@ -92,6 +144,7 @@ class AgileArtifactSystem:
     def __init__(self):
         self.artifact_registry = self._load_artifact_registry()
         self.automation_engine = ArtifactAutomationEngine()
+        self.sprint_organizer = SprintDirectoryOrganizer()
         
     def maintain_artifacts(self, change_context: ChangeContext) -> ArtifactMaintenance:
         """Automatically maintain artifacts based on changes."""
@@ -123,6 +176,14 @@ class AgileArtifactSystem:
         if context.involves_user_stories:
             affected.append(self.artifact_registry.user_story_catalog)
             affected.append(self.artifact_registry.sprint_summary)
+            
+            # CRITICAL: Ensure user story is in correct sprint directory
+            sprint_num = self._get_active_sprint_number()
+            user_story_path = f"docs/agile/sprints/sprint_{sprint_num}/user_stories/"
+            self.sprint_organizer.ensure_story_in_sprint_directory(
+                context.user_story_id, 
+                user_story_path
+            )
         
         # Code changes affect epic overview
         if context.involves_code_changes:
@@ -131,23 +192,38 @@ class AgileArtifactSystem:
         # Sprint changes affect all sprint artifacts
         if context.involves_sprint_activities:
             affected.extend(self.artifact_registry.sprint_artifacts)
+            
+            # Update current_sprint.md pointer
+            self.sprint_organizer.update_current_sprint_pointer(context)
         
         return affected
+    
+    def _get_active_sprint_number(self) -> int:
+        """Get active sprint number from current_sprint.md."""
+        current_sprint_file = Path("docs/agile/sprints/current_sprint.md")
+        if current_sprint_file.exists():
+            content = current_sprint_file.read_text()
+            # Extract sprint number from "Sprint Number: 6" format
+            import re
+            match = re.search(r'Sprint Number[:\s]+(\d+)', content)
+            if match:
+                return int(match.group(1))
+        return 0  # Default to sprint 0 if not found
 ```
 
 ### **Artifact Types and Automation**
 ```yaml
 # Core Agile Artifacts
 EPIC_OVERVIEW:
-  location: "docs/agile/EPIC_OVERVIEW.md"
+  location: "docs/agile/catalogs/epic-overview.md"
   automation: "Update on epic completion or modification"
   
 USER_STORY_CATALOG:
-  location: "docs/agile/USER_STORY_CATALOG.md"
+  location: "docs/agile/catalogs/USER_STORY_CATALOG.md"
   automation: "Update on any user story status change"
   
 SPRINT_SUMMARY:
-  location: "docs/agile/SPRINT_SUMMARY.md"
+  location: "docs/agile/catalogs/SPRINT_SUMMARY.md"
   automation: "Update daily with sprint progress"
   
 SPRINT_ARTIFACTS:

@@ -38,6 +38,10 @@ class RAGSwarmState(TypedDict):
     max_re_retrieval_attempts: Annotated[int, "Maximum re-retrieval attempts (default: 1)"]
     enable_re_retrieval: Annotated[bool, "Enable automatic re-retrieval"]
     document_filters: Annotated[Optional[Dict[str, Any]], "Optional document scope filters"]
+    # NEW: Adaptive retrieval parameters (US-RAG-003)
+    retrieval_mode: Annotated[str, "Retrieval mode: auto, manual, or performance"]
+    manual_chunk_count: Annotated[Optional[int], "Manual chunk count (if manual mode)"]
+    available_doc_count: Annotated[int, "Number of documents available for retrieval"]
     
     # Agent outputs
     query_analysis: Annotated[Dict[str, Any], "Output from QueryAnalystAgent"]
@@ -45,6 +49,7 @@ class RAGSwarmState(TypedDict):
     ranked_results: Annotated[List[Dict], "Output from ReRankerAgent"]
     quality_report: Annotated[Dict[str, Any], "Output from QualityAssuranceAgent"]
     final_response: Annotated[Dict[str, Any], "Output from WriterAgent"]
+    adaptive_decision: Annotated[Optional[Dict[str, Any]], "Adaptive retrieval decision info (US-RAG-003)"]
     
     # Workflow control
     current_stage: Annotated[str, "Current pipeline stage"]
@@ -191,10 +196,16 @@ class RAGSwarmCoordinator:
             result = await self.retrieval_specialist.execute({
                 'query_analysis': query_analysis,
                 'max_results': state['max_results'] * 2,  # Get more for ranking
-                'document_filters': state.get('document_filters')  # Pass document scope filtering
+                'document_filters': state.get('document_filters'),  # Pass document scope filtering
+                # NEW: Pass adaptive retrieval parameters (US-RAG-003)
+                'retrieval_mode': state.get('retrieval_mode', 'auto'),
+                'manual_chunk_count': state.get('manual_chunk_count'),
+                'available_doc_count': state.get('available_doc_count', 100)
             })
             
             state['retrieval_results'] = result.get('search_results', [])
+            # NEW: Store adaptive decision info (US-RAG-003)
+            state['adaptive_decision'] = result.get('search_metadata', {}).get('adaptive_decision')
             if 'retrieval' not in state['stages_completed']:
                 state['stages_completed'].append('retrieval')
             state['metrics']['retrieval_time'] = time.time() - start_time
@@ -221,10 +232,19 @@ class RAGSwarmCoordinator:
         logger.info("[3/5] Re-ranking stage")
         start_time = time.time()
         
+        # Use adaptive chunk count if available, otherwise fall back to max_results
+        adaptive_chunk_count = (
+            state['adaptive_decision']['chunk_count'] 
+            if state.get('adaptive_decision') 
+            else state['max_results']
+        )
+        
+        logger.info(f"📊 Re-ranking to top {adaptive_chunk_count} chunks (adaptive)")
+        
         result = await self.re_ranker.execute({
             'search_results': state['retrieval_results'],
             'query_analysis': state['query_analysis'],
-            'top_k': state['max_results']
+            'top_k': adaptive_chunk_count  # Use adaptive count, not hardcoded max_results
         })
         
         state['ranked_results'] = result.get('ranked_results', [])
@@ -385,11 +405,16 @@ class RAGSwarmCoordinator:
             'max_re_retrieval_attempts': task.get('max_re_retrieval_attempts', 1),  # Max loops
             'enable_re_retrieval': task.get('enable_re_retrieval', True),
             'document_filters': task.get('document_filters'),  # Optional document scope filtering
+            # NEW: Adaptive retrieval parameters (US-RAG-003)
+            'retrieval_mode': task.get('retrieval_mode', 'auto'),
+            'manual_chunk_count': task.get('manual_chunk_count'),
+            'available_doc_count': task.get('available_doc_count', 100),
             'query_analysis': {},
             'retrieval_results': [],
             'ranked_results': [],
             'quality_report': {},
             'final_response': {},
+            'adaptive_decision': None,  # Will be populated by retrieval specialist
             'current_stage': 'query_analysis',
             'stages_completed': [],
             'needs_re_retrieval': False,
@@ -423,7 +448,9 @@ class RAGSwarmCoordinator:
                     'ranked_results': final_state['ranked_results'],
                     'quality_report': final_state['quality_report'],
                     'stages_completed': final_state['stages_completed'],
-                    'metrics': final_state['metrics']
+                    'metrics': final_state['metrics'],
+                    # NEW: Include adaptive decision info (US-RAG-003)
+                    'adaptive_decision': final_state.get('adaptive_decision')
                 }
             }
             

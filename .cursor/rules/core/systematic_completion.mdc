@@ -537,6 +537,46 @@ def handle_user_request(request):
 - **Technical Docs**: Update architecture/design docs when they become stale
 - **Bug Fixes**: Document in commit messages, not separate files
 
+### **TODO List Discipline**
+
+**CRITICAL**: ALWAYS maintain an active TODO list during work sessions:
+
+```python
+# REQUIRED: Start every work session by creating/updating TODO list
+def start_work_session():
+    todo_write(todos=[
+        {"id": "task-1", "content": "Description", "status": "in_progress"},
+        {"id": "task-2", "content": "Description", "status": "pending"}
+    ])
+    
+# REQUIRED: Update TODO list as work progresses
+def complete_task():
+    complete_implementation()
+    todo_write(todos=[
+        {"id": "task-1", "status": "completed"}
+    ], merge=True)
+    
+# FORBIDDEN: Working without an active TODO list
+def work_without_tracking():
+    # ❌ No TODO list = No systematic completion
+    do_work_blindly()  # FORBIDDEN
+```
+
+**TODO List Requirements**:
+- ✅ **ALWAYS create** TODO list for multi-step tasks (3+ steps)
+- ✅ **ALWAYS update** TODO status as tasks complete
+- ✅ **ALWAYS mark** current task as "in_progress"
+- ✅ **ALWAYS complete** all TODOs before ending session
+- ❌ **NEVER work** without active TODO list on complex tasks
+- ❌ **NEVER leave** unfinished TODOs without user input
+
+**Benefits of TODO Lists**:
+- ✅ Systematic tracking of progress
+- ✅ Clear visibility of remaining work
+- ✅ Prevents forgotten tasks
+- ✅ Demonstrates thoroughness
+- ✅ User can see progress at any time
+
 ## Remember
 
 **"Always leave things better than you found them."**

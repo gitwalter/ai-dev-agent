@@ -1,6 +1,6 @@
 # Test Catalogue - Comprehensive Test Documentation
 
-**Generated**: 2025-09-04 18:00:44  
+**Generated**: 2025-10-10 11:56:33  
 **Generator**: Test Catalogue Generator v1.0  
 **Purpose**: Complete inventory and documentation of all test cases
 
@@ -8,25 +8,25 @@
 
 | Metric | Value |
 |--------|--------|
-| **Total Test Files** | 49 |
-| **Total Test Classes** | 130 |
-| **Total Test Functions** | 502 |
-| **Total Tests** | 632 |
-| **Total Size** | 811.3 KB |
+| **Total Test Files** | 61 |
+| **Total Test Classes** | 164 |
+| **Total Test Functions** | 545 |
+| **Total Tests** | 709 |
+| **Total Size** | 946.5 KB |
 | **Coverage Categories** | 10 |
 
 ## 🎯 **Test Categories**
 
 - **Agile Tests**: 1 files, 14 tests
 - **Infrastructure Tests**: 2 files, 52 tests
-- **Integration Tests**: 9 files, 95 tests
+- **Integration Tests**: 13 files, 112 tests
 - **Isolated Tests**: 1 files, 1 tests
 - **LangGraph Tests**: 4 files, 24 tests
-- **Root Tests**: 12 files, 138 tests
+- **Root Tests**: 20 files, 208 tests
 - **Security Tests**: 1 files, 14 tests
 - **Supervisor Tests**: 2 files, 21 tests
 - **System Tests**: 1 files, 0 tests
-- **Unit Tests**: 16 files, 273 tests
+- **Unit Tests**: 16 files, 263 tests
 
 
 ## 📁 **Agile Tests**
@@ -227,7 +227,7 @@ Excellence Standards Applied:
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 15.0 KB |
+| **File Size** | 15.1 KB |
 | **Test Classes** | 4 |
 | **Test Functions** | 19 |
 | **Total Tests** | 23 |
@@ -578,6 +578,28 @@ Version: 2.
 
 ---
 
+### `integration\test_adaptive_retrieval_comprehensive.py` (2 tests)
+
+**Description**: Comprehensive integration tests for Adaptive Retrieval System.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 20.9 KB |
+| **Test Classes** | 2 |
+| **Test Functions** | 0 |
+| **Total Tests** | 2 |
+
+#### Test Classes
+
+- **`TestComprehensiveAdaptiveRetrieval`** (Line 25)
+  - *Comprehensive tests for adaptive retrieval with diverse query types*
+  - Category: General
+- **`TestPerformanceBenchmarking`** (Line 391)
+  - *Performance benchmarking tests for adaptive retrieval*
+  - Category: Performance
+
+---
+
 ### `integration\test_agent_execution.py` (2 tests)
 
 **Description**: Tests for actual agent execution to identify and fix the "src property must be a valid json object" error.
@@ -616,6 +638,41 @@ Version: 2.
 - **`test_api_key`** (Line 9)
   - *Test if the API key is valid using Streamlit secrets*
   - Category: Integration
+
+---
+
+### `integration\test_context_aware_agent.py` (5 tests)
+
+**Description**: Integration Tests for Context-Aware Agents
+==========================================
+
+Tests the complete integration of ContextEngine with agents,
+demonstrating real-world usage patterns.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 15.5 KB |
+| **Test Classes** | 5 |
+| **Test Functions** | 0 |
+| **Total Tests** | 5 |
+
+#### Test Classes
+
+- **`TestContextAwareAgentBasics`** (Line 33)
+  - *Test basic ContextAwareAgent functionality*
+  - Category: General
+- **`TestContextRetrieval`** (Line 78)
+  - *Test context retrieval functionality*
+  - Category: General
+- **`TestContextAwareExecution`** (Line 142)
+  - *Test execute_with_context functionality*
+  - Category: General
+- **`TestRealWorldScenarios`** (Line 198)
+  - *Test real-world usage scenarios*
+  - Category: General
+- **`TestPerformance`** (Line 283)
+  - *Test performance characteristics*
+  - Category: Performance
 
 ---
 
@@ -662,6 +719,28 @@ Version: 2.
 - **`test_context_history_tracking`** (Line 150)
   - *Test context history and tracking functionality*
   - Category: General
+
+---
+
+### `integration\test_cursor_integration.py` (1 tests)
+
+**Description**: Test Cursor Integration
+======================
+
+Debug script to test cursor integration functionality.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 1.9 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 1 |
+| **Total Tests** | 1 |
+
+#### Test Functions
+
+- **`test_cursor_integration`** (Line 17)
+  - *Test cursor integration step by step*
+  - Category: Integration
 
 ---
 
@@ -738,6 +817,52 @@ Version: 2.
 
 ---
 
+### `integration\test_ui_adaptive_retrieval.py` (9 tests)
+
+**Description**: Integration tests for Adaptive Retrieval UI components.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 10.5 KB |
+| **Test Classes** | 1 |
+| **Test Functions** | 8 |
+| **Total Tests** | 9 |
+
+#### Test Classes
+
+- **`TestAdaptiveRetrievalUIIntegration`** (Line 20)
+  - *Integration tests for the Adaptive Retrieval UI components*
+  - Category: Integration
+
+#### Test Functions
+
+- **`test_ui_integration_imports`** (Line 236)
+  - *Test that all required modules can be imported*
+  - Category: Integration
+- **`test_retrieval_mode_selection`** (Line 55)
+  - *Test retrieval mode selection updates session state correctly*
+  - Category: General
+- **`test_manual_chunk_count_validation`** (Line 78)
+  - *Test manual chunk count slider validation and feedback*
+  - Category: General
+- **`test_swarm_parameter_passing`** (Line 102)
+  - *Test that adaptive retrieval parameters are correctly passed to swarm*
+  - Category: General
+- **`test_adaptive_decision_display`** (Line 141)
+  - *Test adaptive decision info is properly displayed in debug mode*
+  - Category: General
+- **`test_session_state_initialization`** (Line 173)
+  - *Test session state is properly initialized for adaptive retrieval*
+  - Category: General
+- **`test_mode_specific_ui_visibility`** (Line 190)
+  - *Test UI elements appear/disappear based on mode selection*
+  - Category: General
+- **`test_help_text_comprehensiveness`** (Line 207)
+  - *Test that help text provides comprehensive guidance*
+  - Category: General
+
+---
+
 ### `langgraph\integration\test_workflow_integration.py` (2 tests)
 
 **Description**: Integration tests for complete workflow orchestration.
@@ -794,14 +919,14 @@ Version: 2.
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 15.8 KB |
+| **File Size** | 15.7 KB |
 | **Test Classes** | 2 |
 | **Test Functions** | 8 |
 | **Total Tests** | 10 |
 
 #### Test Classes
 
-- **`TestBasicLangGraphWorkflow`** (Line 36)
+- **`TestBasicLangGraphWorkflow`** (Line 56)
   - *Basic tests for LangGraph workflow functionality*
   - Category: System
 - **`TestRequirementsAnalysisNode`** (Line 293)
@@ -879,7 +1004,7 @@ Version: 2.
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 14.8 KB |
+| **File Size** | 14.9 KB |
 | **Test Classes** | 2 |
 | **Test Functions** | 10 |
 | **Total Tests** | 12 |
@@ -954,166 +1079,508 @@ Support for:
 
 ---
 
-### `monitoring\test_monitoring_core.py` (29 tests)
+### `mcp\test_agent_swarm_workflow.py` (12 tests)
 
-**Description**: Unit tests for monitoring core components.
+**Description**: Agent Swarm Workflow Tests
+==========================
+
+Comprehensive tests for MCP-powered agent swarm workflows:
+- Swarm Coordinator functionality
+- Agent role specialization
+- Workflow execution and coordination
+- Inter-agent communication through MCP
+- Performance and scalability testing
+
+Author: AI Development Agent
+Created: 2025-01-02 (US-MCP-001 Phase 3).
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 23.3 KB |
-| **Test Classes** | 5 |
-| **Test Functions** | 24 |
-| **Total Tests** | 29 |
+| **File Size** | 17.6 KB |
+| **Test Classes** | 4 |
+| **Test Functions** | 8 |
+| **Total Tests** | 12 |
 
 #### Test Classes
 
-- **`TestDataModels`** (Line 23)
-  - *Test core data models*
+- **`TestSwarmCoordinator`** (Line 44)
+  - *Test suite for Swarm Coordinator*
   - Category: General
-- **`TestMonitoringBase`** (Line 259)
-  - *Test MonitoringBase abstract class*
-  - Category: General
-- **`TestMonitoringRegistry`** (Line 329)
-  - *Test MonitoringRegistry functionality*
-  - Category: General
-- **`TestUtilities`** (Line 414)
-  - *Test utility classes and functions*
-  - Category: General
-- **`TestMonitoringComponent`** (Line 265)
+- **`TestSwarmWorkflow`** (Line 182)
+  - *Test suite for Swarm Workflow functionality*
+  - Category: System
+- **`TestSwarmIntegrationScenarios`** (Line 283)
+  - *Test real-world swarm integration scenarios*
+  - Category: Integration
+- **`TestSwarmFactoryFunctions`** (Line 430)
+  - *Test swarm factory functions*
   - Category: General
 
 #### Test Functions
 
-- **`test_health_status_enum`** (Line 30)
-  - *Test HealthStatus enum functionality*
-  - Category: General
-- **`test_metric_value_creation`** (Line 47)
-  - *Test MetricValue creation and validation*
-  - Category: General
-- **`test_metric_value_serialization`** (Line 84)
-  - *Test MetricValue to_dict and from_dict methods*
-  - Category: General
-- **`test_component_health_creation`** (Line 109)
-  - *Test ComponentHealth creation and methods*
-  - Category: General
-- **`test_system_health_report_creation`** (Line 145)
-  - *Test SystemHealthReport creation and aggregation*
+- **`test_agent_swarm_workflow_components`** (Line 450)
+  - *Main test function for pytest integration*
   - Category: System
-- **`test_performance_metrics_creation`** (Line 179)
-  - *Test PerformanceMetrics creation and methods*
-  - Category: Performance
-- **`test_alert_creation_and_resolution`** (Line 209)
-  - *Test Alert creation and resolution*
+- **`test_coordinator_initialization`** (Line 51)
+  - *Test swarm coordinator initialization*
   - Category: General
-- **`test_monitoring_configuration`** (Line 239)
-  - *Test MonitoringConfiguration creation and serialization*
+- **`test_agent_capabilities_mapping`** (Line 94)
+  - *Test agent capabilities are correctly mapped*
   - Category: General
-- **`test_initialization`** (Line 277)
-  - *Test MonitoringBase initialization*
+- **`test_workflow_creation_from_definition`** (Line 111)
+  - *Test workflow creation from definition*
+  - Category: System
+- **`test_task_validation`** (Line 147)
+  - *Test task validation*
   - Category: General
-- **`test_lifecycle_management`** (Line 285)
-  - *Test start/stop lifecycle*
+- **`test_swarm_status`** (Line 164)
+  - *Test swarm status retrieval*
   - Category: General
-- **`test_error_handling`** (Line 298)
-  - *Test error handling and tracking*
+- **`test_create_swarm_coordinator`** (Line 433)
+  - *Test swarm coordinator factory function*
   - Category: General
-- **`test_status_info`** (Line 310)
-  - *Test status information retrieval*
-  - Category: General
-- **`test_context_manager`** (Line 321)
-  - *Test context manager functionality*
-  - Category: General
-- **`test_component_registration`** (Line 351)
-  - *Test component registration and retrieval*
-  - Category: General
-- **`test_component_unregistration`** (Line 368)
-  - *Test component unregistration*
-  - Category: General
-- **`test_lifecycle_management`** (Line 381)
-  - *Test start_all and stop_all functionality*
-  - Category: General
-- **`test_overall_health_calculation`** (Line 397)
-  - *Test overall health calculation*
-  - Category: General
-- **`test_metric_calculator_basic_stats`** (Line 428)
-  - *Test basic statistical calculations*
-  - Category: General
-- **`test_metric_calculator_percentiles`** (Line 449)
-  - *Test percentile calculations*
-  - Category: General
-- **`test_metric_calculator_outliers`** (Line 465)
-  - *Test outlier detection*
-  - Category: General
-- **`test_metric_calculator_trends`** (Line 481)
-  - *Test trend calculation*
-  - Category: General
-- **`test_timestamp_utils`** (Line 509)
-  - *Test timestamp utility functions*
-  - Category: General
-- **`test_configuration_manager`** (Line 539)
-  - *Test configuration management*
-  - Category: General
-- **`test_data_converter`** (Line 559)
-  - *Test data conversion utilities*
+- **`test_create_swarm_coordinator_default_id`** (Line 441)
+  - *Test swarm coordinator with default ID*
   - Category: General
 
 ---
 
-### `monitoring\test_monitoring_integration.py` (13 tests)
+### `mcp\test_langchain_mcp_integration.py` (24 tests)
 
-**Description**: Integration tests for the complete monitoring system.
+**Description**: LangChain-MCP Integration Tests
+==============================
+
+Comprehensive tests for LangChain-MCP integration:
+- MCPTool: LangChain tool wrapper functionality
+- MCPToolkit: Tool collection and management
+- MCPAgentMixin: Agent integration capabilities
+- MCPEnhancedAgent: Complete agent with MCP tools
+
+Author: AI Development Agent
+Created: 2025-01-02 (US-MCP-001 Phase 2).
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 19.6 KB |
-| **Test Classes** | 2 |
-| **Test Functions** | 11 |
-| **Total Tests** | 13 |
+| **File Size** | 14.5 KB |
+| **Test Classes** | 9 |
+| **Test Functions** | 15 |
+| **Total Tests** | 24 |
 
 #### Test Classes
 
-- **`TestMonitoringSystemIntegration`** (Line 25)
-  - *Test complete monitoring system integration*
+- **`TestLangChainMCPCompatibility`** (Line 52)
+  - *Test LangChain-MCP compatibility checking*
+  - Category: General
+- **`TestMCPTool`** (Line 72)
+  - *Test MCPTool LangChain wrapper*
+  - Category: General
+- **`TestMCPToolkit`** (Line 162)
+  - *Test MCPToolkit functionality*
+  - Category: General
+- **`TestMCPAgentMixin`** (Line 201)
+  - *Test MCPAgentMixin functionality*
+  - Category: General
+- **`TestMCPEnhancedAgent`** (Line 233)
+  - *Test MCPEnhancedAgent functionality*
+  - Category: General
+- **`TestFactoryFunctions`** (Line 294)
+  - *Test factory functions for easy integration*
+  - Category: General
+- **`TestIntegrationScenarios`** (Line 315)
+  - *Test real-world integration scenarios*
   - Category: Integration
-- **`TestMonitoringSystemConfiguration`** (Line 424)
-  - *Test monitoring system configuration and customization*
-  - Category: System
+- **`TestAgent`** (Line 207)
+  - Category: General
+- **`TestAgent`** (Line 220)
+  - Category: General
 
 #### Test Functions
 
-- **`test_complete_monitoring_workflow`** (Line 88)
-  - *Test complete end-to-end monitoring workflow*
-  - Category: System
-- **`test_alert_triggering_workflow`** (Line 127)
-  - *Test alert triggering and notification workflow*
-  - Category: System
-- **`test_health_monitoring_integration`** (Line 178)
-  - *Test health monitoring integration with other components*
+- **`test_langchain_mcp_integration_components`** (Line 369)
+  - *Main test function for pytest integration*
   - Category: Integration
-- **`test_metrics_collection_integration`** (Line 207)
-  - *Test metrics collection integration with storage and analysis*
+- **`test_compatibility_check`** (Line 55)
+  - *Test compatibility checking function*
+  - Category: General
+- **`test_mcp_tool_initialization`** (Line 91)
+  - *Test MCPTool initialization*
+  - Category: General
+- **`test_mcp_tool_metrics`** (Line 143)
+  - *Test tool metrics collection*
+  - Category: General
+- **`test_toolkit_initialization`** (Line 169)
+  - *Test toolkit initialization*
+  - Category: General
+- **`test_toolkit_metrics_empty`** (Line 176)
+  - *Test toolkit metrics when no tools are loaded*
+  - Category: General
+- **`test_get_tools_empty`** (Line 188)
+  - *Test getting tools when none are available*
+  - Category: General
+- **`test_get_tool_by_name_not_found`** (Line 194)
+  - *Test getting tool by name when it doesn't exist*
+  - Category: General
+- **`test_mcp_agent_mixin_creation`** (Line 204)
+  - *Test MCPAgentMixin can be instantiated*
+  - Category: General
+- **`test_get_mcp_tools_not_initialized`** (Line 218)
+  - *Test getting MCP tools when not initialized*
+  - Category: General
+- **`test_agent_initialization`** (Line 245)
+  - *Test agent initialization*
+  - Category: General
+- **`test_task_validation`** (Line 254)
+  - *Test task validation*
+  - Category: General
+- **`test_agent_status`** (Line 281)
+  - *Test agent status retrieval*
+  - Category: General
+- **`test_create_mcp_toolkit`** (Line 297)
+  - *Test MCP toolkit factory function*
+  - Category: General
+- **`test_create_mcp_enhanced_agent`** (Line 305)
+  - *Test MCP enhanced agent factory function*
+  - Category: General
+
+---
+
+### `mcp\test_mcp_client_unit.py` (22 tests)
+
+**Description**: MCP Client Unit Tests
+====================
+
+Comprehensive unit tests for MCP client components:
+- MCPClient: Main client functionality
+- MCPConnection: Server connection management
+- MCPClientConfig: Configuration management
+- Tool discovery and execution
+
+Author: AI Development Agent
+Created: 2025-01-02 (US-MCP-001 Phase 1).
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 11.3 KB |
+| **Test Classes** | 5 |
+| **Test Functions** | 17 |
+| **Total Tests** | 22 |
+
+#### Test Classes
+
+- **`TestMCPClientConfig`** (Line 43)
+  - *Test suite for MCP Client Configuration*
+  - Category: General
+- **`TestMCPServerInfo`** (Line 80)
+  - *Test suite for MCP Server Info*
+  - Category: General
+- **`TestMCPToolRequest`** (Line 105)
+  - *Test suite for MCP Tool Request*
+  - Category: General
+- **`TestMCPClient`** (Line 144)
+  - *Test suite for MCP Client*
+  - Category: General
+- **`TestMCPConnection`** (Line 230)
+  - *Test suite for MCP Connection*
+  - Category: General
+
+#### Test Functions
+
+- **`test_create_mcp_client`** (Line 278)
+  - *Test MCP client factory function*
+  - Category: General
+- **`test_create_mcp_client_with_kwargs`** (Line 289)
+  - *Test MCP client factory function with additional kwargs*
+  - Category: General
+- **`test_mcp_client_components`** (Line 307)
+  - *Main test function for pytest integration*
+  - Category: General
+- **`test_config_creation`** (Line 46)
+  - *Test MCP client configuration creation*
+  - Category: General
+- **`test_config_custom_values`** (Line 59)
+  - *Test MCP client configuration with custom values*
+  - Category: General
+- **`test_server_info_creation`** (Line 83)
+  - *Test MCP server info creation*
+  - Category: General
+- **`test_tool_request_creation`** (Line 108)
+  - *Test MCP tool request creation*
+  - Category: General
+- **`test_tool_request_with_custom_values`** (Line 124)
+  - *Test MCP tool request with custom values*
+  - Category: General
+- **`test_client_creation`** (Line 156)
+  - *Test MCP client creation*
+  - Category: General
+- **`test_cache_key_generation`** (Line 175)
+  - *Test cache key generation*
+  - Category: General
+- **`test_client_stats`** (Line 194)
+  - *Test client statistics retrieval*
+  - Category: General
+- **`test_find_tool_connection_no_connections`** (Line 211)
+  - *Test finding tool connection when no connections exist*
+  - Category: General
+- **`test_get_available_tools_no_connections`** (Line 216)
+  - *Test getting available tools when no connections exist*
+  - Category: General
+- **`test_get_server_info_no_connections`** (Line 222)
+  - *Test getting server info when no connections exist*
+  - Category: General
+- **`test_connection_creation`** (Line 250)
+  - *Test MCP connection creation*
+  - Category: General
+- **`test_get_tool_info_no_tools`** (Line 259)
+  - *Test getting tool info when no tools are available*
+  - Category: General
+- **`test_list_tools_no_tools`** (Line 264)
+  - *Test listing tools when no tools are available*
+  - Category: General
+
+---
+
+### `mcp\test_mcp_end_to_end.py` (3 tests)
+
+**Description**: MCP End-to-End Tests
+===================
+
+Complete end-to-end tests for the MCP system:
+- Full system workflow testing
+- Real tool execution scenarios
+- Performance validation
+- Production readiness verification
+
+Author: AI Development Agent
+Created: 2025-01-02 (US-MCP-001 Phase 1).
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 11.6 KB |
+| **Test Classes** | 1 |
+| **Test Functions** | 2 |
+| **Total Tests** | 3 |
+
+#### Test Classes
+
+- **`TestMCPEndToEnd`** (Line 39)
+  - *End-to-end tests for complete MCP system*
+  - Category: General
+
+#### Test Functions
+
+- **`test_mcp_end_to_end_components`** (Line 310)
+  - *Main test function for pytest integration*
+  - Category: General
+- **`test_mcp_system_configuration`** (Line 200)
+  - *Test MCP system configuration and setup*
+  - Category: System
+
+---
+
+### `mcp\test_mcp_integration.py` (8 tests)
+
+**Description**: MCP Integration Tests
+====================
+
+Integration tests for MCP server and client working together:
+- Server-Client communication
+- Tool discovery and execution
+- Universal Agent Tracker integration
+- Performance and caching
+- Error handling and recovery
+
+Author: AI Development Agent
+Created: 2025-01-02 (US-MCP-001 Phase 1).
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 10.3 KB |
+| **Test Classes** | 4 |
+| **Test Functions** | 4 |
+| **Total Tests** | 8 |
+
+#### Test Classes
+
+- **`TestMCPServerClientIntegration`** (Line 41)
+  - *Integration tests for MCP server and client*
   - Category: Integration
-- **`test_cross_component_data_flow`** (Line 238)
-  - *Test data flow between monitoring components*
+- **`TestMCPToolExecution`** (Line 123)
+  - *Integration tests for MCP tool execution*
   - Category: General
-- **`test_simulated_system_stress`** (Line 267)
-  - *Test monitoring system under simulated stress conditions*
-  - Category: System
-- **`test_monitoring_system_recovery`** (Line 326)
-  - *Test monitoring system recovery from component failures*
-  - Category: System
-- **`test_alert_resolution_workflow`** (Line 353)
-  - *Test complete alert lifecycle including resolution*
-  - Category: System
-- **`test_performance_baseline_establishment`** (Line 395)
-  - *Test establishment of performance baselines*
-  - Category: Performance
-- **`test_custom_configuration`** (Line 439)
-  - *Test monitoring system with custom configuration*
+- **`TestMCPPerformanceIntegration`** (Line 179)
+  - *Performance integration tests for MCP system*
+  - Category: Integration
+- **`TestMCPErrorHandling`** (Line 240)
+  - *Error handling integration tests for MCP system*
   - Category: General
-- **`test_storage_configuration`** (Line 457)
-  - *Test monitoring system storage configuration*
+
+#### Test Functions
+
+- **`test_mcp_integration_components`** (Line 285)
+  - *Main test function for pytest integration*
+  - Category: Integration
+- **`test_server_client_component_integration`** (Line 96)
+  - *Test that server and client components integrate properly*
+  - Category: Integration
+- **`test_server_tool_count`** (Line 108)
+  - *Test server has expected number of tools*
   - Category: General
+- **`test_server_categories`** (Line 113)
+  - *Test server has expected tool categories*
+  - Category: General
+
+---
+
+### `mcp\test_mcp_server_unit.py` (16 tests)
+
+**Description**: MCP Server Unit Tests
+====================
+
+Comprehensive unit tests for MCP server components:
+- MCPToolRegistry: Tool registration and management
+- MCPSecurityManager: Access control and security
+- MCPExecutionEngine: Tool execution and monitoring
+- MCPServer: Main server functionality
+
+Author: AI Development Agent
+Created: 2025-01-02 (US-MCP-001 Phase 1).
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 11.7 KB |
+| **Test Classes** | 4 |
+| **Test Functions** | 12 |
+| **Total Tests** | 16 |
+
+#### Test Classes
+
+- **`TestMCPToolRegistry`** (Line 43)
+  - *Test suite for MCP Tool Registry*
+  - Category: General
+- **`TestMCPSecurityManager`** (Line 120)
+  - *Test suite for MCP Security Manager*
+  - Category: Security
+- **`TestMCPExecutionEngine`** (Line 185)
+  - *Test suite for MCP Execution Engine*
+  - Category: General
+- **`TestMCPServer`** (Line 241)
+  - *Test suite for MCP Server*
+  - Category: General
+
+#### Test Functions
+
+- **`test_mcp_server_components`** (Line 306)
+  - *Main test function for pytest integration*
+  - Category: General
+- **`test_registry_initialization`** (Line 50)
+  - *Test tool registry initialization*
+  - Category: General
+- **`test_critical_tools_registered`** (Line 56)
+  - *Test that all critical tools are registered*
+  - Category: General
+- **`test_tool_categories`** (Line 82)
+  - *Test tool categorization*
+  - Category: General
+- **`test_tool_access_levels`** (Line 92)
+  - *Test tool access level assignments*
+  - Category: General
+- **`test_tool_filtering`** (Line 104)
+  - *Test tool filtering by category and access level*
+  - Category: General
+- **`test_security_manager_initialization`** (Line 127)
+  - *Test security manager initialization*
+  - Category: Security
+- **`test_security_audit_logging`** (Line 163)
+  - *Test security audit logging*
+  - Category: Security
+- **`test_execution_engine_initialization`** (Line 194)
+  - *Test execution engine initialization*
+  - Category: General
+- **`test_server_creation`** (Line 248)
+  - *Test MCP server creation*
+  - Category: General
+- **`test_server_components_initialization`** (Line 255)
+  - *Test server component initialization*
+  - Category: General
+- **`test_server_info`** (Line 273)
+  - *Test server information retrieval*
+  - Category: General
+
+---
+
+### `mcp\test_rag_mcp_comprehensive.py` (0 tests)
+
+**Description**: RAG-MCP Integration Test with Real Documents and Websites
+========================================================
+
+Comprehensive test of RAG-MCP integration using real documents and websites
+to validate the vector database functionality and semantic search capabilities.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 30.2 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 0 |
+| **Total Tests** | 0 |
+
+---
+
+### `mcp\test_rag_mcp_simple.py` (3 tests)
+
+**Description**: Simple RAG-MCP Integration Test
+==============================
+
+A simplified test to validate RAG-MCP integration step by step.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 7.3 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 3 |
+| **Total Tests** | 3 |
+
+#### Test Functions
+
+- **`test_imports`** (Line 24)
+  - *Test if all required imports work*
+  - Category: General
+- **`test_context_engine_initialization`** (Line 51)
+  - *Test ContextEngine initialization*
+  - Category: General
+- **`test_rag_tools_initialization`** (Line 81)
+  - *Test RAG-MCP tools initialization*
+  - Category: General
+
+---
+
+### `mcp\test_software_catalog_comprehensive.py` (1 tests)
+
+**Description**: Comprehensive Software Catalog RAG System Test
+==============================================
+
+Tests the complete software catalog system including:
+- Component discovery and cataloging
+- Semantic search capabilities
+- Anti-duplication intelligence
+- Agent swarm context enhancement
+- Cursor rule system integration
+
+Author: AI Development Agent
+Created: 2025-01-02
+Purpose: Validate software catalog RAG integration.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 15.8 KB |
+| **Test Classes** | 1 |
+| **Test Functions** | 0 |
+| **Total Tests** | 1 |
+
+#### Test Classes
+
+- **`TestSoftwareCatalogSystem`** (Line 32)
+  - *Comprehensive test suite for software catalog RAG system*
+  - Category: System
 
 ---
 
@@ -1163,16 +1630,113 @@ MISSION: Prove Wu Wei + Sun Tzu efficiency works in practice.
 
 ---
 
-### `scripts\test_health_monitoring.py` (0 tests)
+### `test_imports.py` (5 tests)
 
-**Description**: US-001 Validation Script - Test Health Monitoring System.
+**Description**: Test that reorganized imports work correctly.
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 26.5 KB |
-| **Test Classes** | 0 |
-| **Test Functions** | 0 |
-| **Total Tests** | 0 |
+| **File Size** | 2.4 KB |
+| **Test Classes** | 1 |
+| **Test Functions** | 4 |
+| **Total Tests** | 5 |
+
+#### Test Classes
+
+- **`TestReorganizedImports`** (Line 7)
+  - *Test reorganized imports after file restructuring*
+  - Category: General
+
+#### Test Functions
+
+- **`test_core_utilities_import`** (Line 10)
+  - *Test core utilities import properly*
+  - Category: General
+- **`test_system_utilities_import`** (Line 30)
+  - *Test system utilities import properly*
+  - Category: System
+- **`test_prompt_utilities_import`** (Line 44)
+  - *Test prompt utilities import properly*
+  - Category: General
+- **`test_main_utils_import`** (Line 58)
+  - *Test main utils import properly*
+  - Category: General
+
+---
+
+### `test_mcp_server.py` (18 tests)
+
+**Description**: MCP Server Unit Tests
+====================
+
+Unit tests for MCP server components moved to tests/mcp/ directory.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 17.7 KB |
+| **Test Classes** | 6 |
+| **Test Functions** | 12 |
+| **Total Tests** | 18 |
+
+#### Test Classes
+
+- **`TestMCPToolRegistry`** (Line 45)
+  - *Test suite for MCP Tool Registry*
+  - Category: General
+- **`TestMCPSecurityManager`** (Line 117)
+  - *Test suite for MCP Security Manager*
+  - Category: Security
+- **`TestMCPExecutionEngine`** (Line 183)
+  - *Test suite for MCP Execution Engine*
+  - Category: General
+- **`TestMCPServer`** (Line 240)
+  - *Test suite for MCP Server*
+  - Category: General
+- **`TestMCPIntegration`** (Line 306)
+  - *Integration tests for MCP components*
+  - Category: Integration
+- **`TestMCPPerformance`** (Line 359)
+  - *Performance tests for MCP server*
+  - Category: Performance
+
+#### Test Functions
+
+- **`test_registry_initialization`** (Line 54)
+  - *Test tool registry initialization*
+  - Category: General
+- **`test_critical_tools_registered`** (Line 60)
+  - *Test that all 12 critical tools are registered*
+  - Category: General
+- **`test_tool_categories`** (Line 80)
+  - *Test tool categorization*
+  - Category: General
+- **`test_tool_access_levels`** (Line 90)
+  - *Test tool access level assignments*
+  - Category: General
+- **`test_tool_filtering`** (Line 102)
+  - *Test tool filtering by category and access level*
+  - Category: General
+- **`test_security_manager_initialization`** (Line 126)
+  - *Test security manager initialization*
+  - Category: Security
+- **`test_security_audit_logging`** (Line 162)
+  - *Test security audit logging*
+  - Category: Security
+- **`test_execution_engine_initialization`** (Line 194)
+  - *Test execution engine initialization*
+  - Category: General
+- **`test_server_creation`** (Line 249)
+  - *Test MCP server creation*
+  - Category: General
+- **`test_server_components_initialization`** (Line 256)
+  - *Test server component initialization*
+  - Category: General
+- **`test_server_info`** (Line 274)
+  - *Test server information retrieval*
+  - Category: General
+- **`test_tool_registry_security_integration`** (Line 343)
+  - *Test integration between tool registry and security manager*
+  - Category: Integration
 
 ---
 
@@ -2249,99 +2813,153 @@ Tests the advanced prompt management infrastructure including:
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 22.8 KB |
+| **File Size** | 24.2 KB |
 | **Test Classes** | 5 |
 | **Test Functions** | 23 |
 | **Total Tests** | 28 |
 
 #### Test Classes
 
-- **`TestPromptAnalytics`** (Line 27)
+- **`TestPromptAnalytics`** (Line 66)
   - *Test the prompt analytics engine*
   - Category: General
-- **`TestPromptWebInterface`** (Line 212)
+- **`TestPromptWebInterface`** (Line 230)
   - *Test the web interface components*
   - Category: General
-- **`TestIntegrationWithExistingSystems`** (Line 264)
+- **`TestIntegrationWithExistingSystems`** (Line 282)
   - *Test integration with existing prompt management systems*
   - Category: Integration
-- **`TestPerformanceAndScalability`** (Line 421)
+- **`TestPerformanceAndScalability`** (Line 439)
   - *Test performance and scalability of the infrastructure*
   - Category: Performance
-- **`TestErrorHandlingAndEdgeCases`** (Line 504)
+- **`TestErrorHandlingAndEdgeCases`** (Line 522)
   - *Test error handling and edge cases*
   - Category: General
 
 #### Test Functions
 
-- **`test_analytics_initialization`** (Line 92)
+- **`test_analytics_initialization`** (Line 110)
   - *Test analytics engine initialization*
   - Category: General
-- **`test_record_performance_metrics`** (Line 97)
+- **`test_record_performance_metrics`** (Line 115)
   - *Test recording performance metrics*
   - Category: Performance
-- **`test_record_cost_metrics`** (Line 102)
+- **`test_record_cost_metrics`** (Line 120)
   - *Test recording cost metrics*
   - Category: General
-- **`test_record_quality_metrics`** (Line 107)
+- **`test_record_quality_metrics`** (Line 125)
   - *Test recording quality metrics*
   - Category: General
-- **`test_get_performance_summary`** (Line 112)
+- **`test_get_performance_summary`** (Line 130)
   - *Test getting performance summary*
   - Category: Performance
-- **`test_get_cost_summary`** (Line 124)
+- **`test_get_cost_summary`** (Line 142)
   - *Test getting cost summary*
   - Category: General
-- **`test_get_quality_summary`** (Line 136)
+- **`test_get_quality_summary`** (Line 154)
   - *Test getting quality summary*
   - Category: General
-- **`test_generate_optimization_recommendations`** (Line 148)
+- **`test_generate_optimization_recommendations`** (Line 166)
   - *Test generating optimization recommendations*
   - Category: General
-- **`test_get_trend_analysis`** (Line 172)
+- **`test_get_trend_analysis`** (Line 190)
   - *Test trend analysis functionality*
   - Category: General
-- **`test_get_comprehensive_analytics`** (Line 193)
+- **`test_get_comprehensive_analytics`** (Line 211)
   - *Test comprehensive analytics generation*
   - Category: General
-- **`test_web_interface_initialization`** (Line 227)
+- **`test_web_interface_initialization`** (Line 245)
   - *Test web interface initialization*
   - Category: General
-- **`test_get_total_prompts`** (Line 234)
+- **`test_get_total_prompts`** (Line 252)
   - *Test getting total prompts count*
   - Category: General
-- **`test_get_active_templates`** (Line 240)
+- **`test_get_active_templates`** (Line 258)
   - *Test getting active templates count*
   - Category: General
-- **`test_get_prompt_ids`** (Line 246)
+- **`test_get_prompt_ids`** (Line 264)
   - *Test getting prompt IDs list*
   - Category: General
-- **`test_dashboard_metrics`** (Line 253)
+- **`test_dashboard_metrics`** (Line 271)
   - *Test dashboard metrics calculation*
   - Category: General
-- **`test_template_creation_with_analytics`** (Line 287)
+- **`test_template_creation_with_analytics`** (Line 305)
   - *Test creating templates and tracking analytics*
   - Category: General
-- **`test_optimization_with_analytics`** (Line 323)
+- **`test_optimization_with_analytics`** (Line 341)
   - *Test optimization with analytics tracking*
   - Category: General
-- **`test_comprehensive_workflow`** (Line 355)
+- **`test_comprehensive_workflow`** (Line 373)
   - *Test a comprehensive workflow with all components*
   - Category: System
-- **`test_bulk_metrics_recording`** (Line 432)
+- **`test_bulk_metrics_recording`** (Line 450)
   - *Test recording many metrics efficiently*
   - Category: General
-- **`test_concurrent_analytics_access`** (Line 461)
+- **`test_concurrent_analytics_access`** (Line 479)
   - *Test concurrent access to analytics*
   - Category: General
-- **`test_invalid_metrics_handling`** (Line 515)
+- **`test_invalid_metrics_handling`** (Line 533)
   - *Test handling of invalid metrics*
   - Category: General
-- **`test_missing_data_handling`** (Line 537)
+- **`test_missing_data_handling`** (Line 555)
   - *Test handling of missing data*
   - Category: General
-- **`test_database_corruption_handling`** (Line 548)
+- **`test_database_corruption_handling`** (Line 566)
   - *Test handling of database corruption scenarios*
+  - Category: General
+
+---
+
+### `unit\test_adaptive_retrieval.py` (11 tests)
+
+**Description**: Unit Tests for Adaptive RAG Chunk Retrieval System
+
+Tests for QueryAnalyzer and AdaptiveRetrievalStrategy components.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 16.1 KB |
+| **Test Classes** | 2 |
+| **Test Functions** | 9 |
+| **Total Tests** | 11 |
+
+#### Test Classes
+
+- **`TestQueryAnalyzer`** (Line 16)
+  - *Test suite for QueryAnalyzer*
+  - Category: General
+- **`TestAdaptiveRetrievalStrategy`** (Line 158)
+  - *Test suite for AdaptiveRetrievalStrategy*
+  - Category: General
+
+#### Test Functions
+
+- **`test_simple_factual_query`** (Line 24)
+  - *Test classification of simple factual queries*
+  - Category: General
+- **`test_moderate_conceptual_query`** (Line 39)
+  - *Test classification of moderate conceptual queries*
+  - Category: General
+- **`test_complex_conceptual_query`** (Line 52)
+  - *Test classification of complex conceptual queries*
+  - Category: General
+- **`test_multi_hop_reasoning_query`** (Line 66)
+  - *Test classification of multi-hop reasoning queries*
+  - Category: General
+- **`test_complexity_score_calculation`** (Line 79)
+  - *Test complexity score calculation*
+  - Category: General
+- **`test_specificity_calculation`** (Line 97)
+  - *Test specificity score calculation*
+  - Category: General
+- **`test_multiple_concepts_detection`** (Line 111)
+  - *Test detection of multiple concepts in query*
+  - Category: General
+- **`test_reasoning_detection`** (Line 125)
+  - *Test detection of reasoning requirements*
+  - Category: General
+- **`test_characteristics_summary`** (Line 144)
+  - *Test generation of characteristics summary*
   - Category: General
 
 ---
@@ -2421,91 +3039,6 @@ Tests the advanced prompt management infrastructure including:
   - Category: General
 - **`test_update_state_with_result`** (Line 308)
   - *Test state update with results*
-  - Category: General
-
----
-
-### `unit\test_context_sensitive_rule_system.py` (21 tests)
-
-**Description**: Test Context-Sensitive Rule System
-==================================
-
-Comprehensive tests for the integrated context detection and rule activation system.
-
-| Metric | Value |
-|--------|--------|
-| **File Size** | 13.3 KB |
-| **Test Classes** | 4 |
-| **Test Functions** | 17 |
-| **Total Tests** | 21 |
-
-#### Test Classes
-
-- **`TestContextSpecificRuleDetector`** (Line 29)
-  - *Test the context-specific rule detector*
-  - Category: General
-- **`TestLanguageLayerActivator`** (Line 101)
-  - *Test the language layer activator*
-  - Category: General
-- **`TestIntegratedContextSystem`** (Line 180)
-  - *Test the integrated context system*
-  - Category: System
-- **`TestContextSwitching`** (Line 288)
-  - *Test context switching scenarios*
-  - Category: General
-
-#### Test Functions
-
-- **`test_agile_context_detection`** (Line 36)
-  - *Test detection of agile development context*
-  - Category: General
-- **`test_coding_context_detection`** (Line 49)
-  - *Test detection of code development context*
-  - Category: General
-- **`test_testing_context_detection`** (Line 61)
-  - *Test detection of testing context*
-  - Category: General
-- **`test_git_context_detection`** (Line 73)
-  - *Test detection of git operations context*
-  - Category: General
-- **`test_mixed_context_detection`** (Line 84)
-  - *Test detection with mixed signals*
-  - Category: General
-- **`test_technical_layer_activation`** (Line 108)
-  - *Test activation of technical language layer*
-  - Category: General
-- **`test_business_layer_activation`** (Line 126)
-  - *Test activation of business language layer*
-  - Category: General
-- **`test_documentation_layer_activation`** (Line 144)
-  - *Test activation of documentation language layer*
-  - Category: General
-- **`test_philosophical_layer_activation`** (Line 161)
-  - *Test activation of philosophical language layer*
-  - Category: General
-- **`test_agile_integration`** (Line 187)
-  - *Test integrated context analysis for agile development*
-  - Category: Integration
-- **`test_coding_integration`** (Line 201)
-  - *Test integrated context analysis for coding*
-  - Category: Integration
-- **`test_testing_integration`** (Line 220)
-  - *Test integrated context analysis for testing*
-  - Category: Integration
-- **`test_integration_score_calculation`** (Line 232)
-  - *Test integration score calculation*
-  - Category: Integration
-- **`test_optimization_suggestions`** (Line 244)
-  - *Test generation of optimization suggestions*
-  - Category: General
-- **`test_git_integration`** (Line 258)
-  - *Test git status integration*
-  - Category: Integration
-- **`test_rule_deduplication`** (Line 275)
-  - *Test that recommended rules are deduplicated*
-  - Category: General
-- **`test_context_transition`** (Line 295)
-  - *Test smooth transition between contexts*
   - Category: General
 
 ---
@@ -2782,7 +3315,7 @@ Tests the distinction between checking rule applicability and selective applicat
 
 | Metric | Value |
 |--------|--------|
-| **File Size** | 21.5 KB |
+| **File Size** | 22.3 KB |
 | **Test Classes** | 1 |
 | **Test Functions** | 20 |
 | **Total Tests** | 21 |
@@ -2837,22 +3370,22 @@ Tests the distinction between checking rule applicability and selective applicat
 - **`test_code_implementation_rule_selection`** (Line 378)
   - *Test rule selection for code implementation tasks*
   - Category: General
-- **`test_complexity_based_rule_selection`** (Line 395)
+- **`test_complexity_based_rule_selection`** (Line 407)
   - *Test rule selection based on task complexity*
   - Category: General
-- **`test_risk_based_rule_selection`** (Line 423)
+- **`test_risk_based_rule_selection`** (Line 435)
   - *Test rule selection based on risk level*
   - Category: General
-- **`test_quality_requirements_rule_selection`** (Line 453)
+- **`test_quality_requirements_rule_selection`** (Line 465)
   - *Test rule selection based on quality requirements*
   - Category: General
-- **`test_caching_mechanism`** (Line 483)
+- **`test_caching_mechanism`** (Line 495)
   - *Test caching mechanism for rule selections*
   - Category: General
-- **`test_database_recording`** (Line 498)
+- **`test_database_recording`** (Line 510)
   - *Test database recording of rule selections*
   - Category: General
-- **`test_optimization_report_generation`** (Line 509)
+- **`test_optimization_report_generation`** (Line 521)
   - *Test optimization report generation*
   - Category: General
 
@@ -2897,26 +3430,27 @@ Tests the distinction between checking rule applicability and selective applicat
 
 ## 📋 **Test Organization Analysis**
 
-### Directory Structure (21 directories)
+### Directory Structure (22 directories)
 
+- `./` - 2 files, 23 tests
 - `agile/` - 1 files, 14 tests
 - `config/` - 1 files, 0 tests
 - `infrastructure/` - 2 files, 52 tests
-- `integration/` - 6 files, 21 tests
+- `integration/` - 10 files, 38 tests
 - `integration\agents/` - 1 files, 41 tests
 - `integration\prompts/` - 1 files, 31 tests
 - `isolated/` - 1 files, 1 tests
 - `langgraph/` - 4 files, 24 tests
 - `langgraph\integration/` - 1 files, 2 tests
 - `langgraph\unit/` - 2 files, 19 tests
-- `monitoring/` - 2 files, 42 tests
+- `mcp/` - 9 files, 89 tests
 - `optimization/` - 2 files, 1 tests
-- `scripts/` - 2 files, 0 tests
+- `scripts/` - 1 files, 0 tests
 - `security/` - 1 files, 14 tests
 - `supervisor/` - 2 files, 21 tests
 - `system/` - 1 files, 0 tests
 - `test_utils\automated_testing/` - 1 files, 1 tests
-- `unit/` - 7 files, 135 tests
+- `unit/` - 7 files, 125 tests
 - `unit\agents/` - 3 files, 37 tests
 - `unit\prompts/` - 4 files, 82 tests
 - `workflow/` - 4 files, 94 tests
@@ -2925,15 +3459,15 @@ Tests the distinction between checking rule applicability and selective applicat
 
 | Category | Test Count | Percentage |
 |----------|------------|------------|
-| Unit Tests | 273 | 43.2% |
-| Root Tests | 138 | 21.8% |
-| Integration Tests | 95 | 15.0% |
-| Infrastructure Tests | 52 | 8.2% |
-| LangGraph Tests | 24 | 3.8% |
-| Supervisor Tests | 21 | 3.3% |
-| Agile Tests | 14 | 2.2% |
-| Security Tests | 14 | 2.2% |
-| Isolated Tests | 1 | 0.2% |
+| Unit Tests | 263 | 37.1% |
+| Root Tests | 208 | 29.3% |
+| Integration Tests | 112 | 15.8% |
+| Infrastructure Tests | 52 | 7.3% |
+| LangGraph Tests | 24 | 3.4% |
+| Supervisor Tests | 21 | 3.0% |
+| Agile Tests | 14 | 2.0% |
+| Security Tests | 14 | 2.0% |
+| Isolated Tests | 1 | 0.1% |
 | System Tests | 0 | 0.0% |
 
 
@@ -2943,7 +3477,7 @@ Tests the distinction between checking rule applicability and selective applicat
 
 1. 📝 **Add documentation** to 3 test files without docstrings
 2. 🧹 **Remove or implement** 7 empty test files
-3. ⚖️ **Increase unit test coverage** - Currently 43.2%, recommended >60%
+3. ⚖️ **Increase unit test coverage** - Currently 37.1%, recommended >60%
 
 ### Best Practices Checklist
 

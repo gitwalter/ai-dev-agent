@@ -1,11 +1,30 @@
 ---
-description: "Active file organization enforcement - prevents misplaced files"
-category: "core"
-priority: "critical"
 alwaysApply: true
-globs: ["**/*"]
-tags: ['file-organization', 'enforcement', 'active']
-tier: "1"
+autoFix: true
+category: core-organization
+contexts:
+- ALL
+dependencies:
+- safety_first_principle
+- systematic_completion
+description: Active file organization enforcement - prevents misplaced files
+enforcement: error
+formalLayer: core
+globs:
+- '**/*'
+languageGames:
+- file_organization
+- project_structure
+linguisticFramework: foundational
+logicalType: 1
+priority: critical
+tags:
+- core
+- file-organization
+- enforcement
+- active
+- type_1
+tier: '1'
 ---
 
 # File Organization Enforcement Rule

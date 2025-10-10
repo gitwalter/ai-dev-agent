@@ -2,7 +2,7 @@
 
 **Story ID**: US-UI-001  
 **Title**: Agent Swarm User Interface Testing and Manual Control Validation  
-**Epic**: Agent Swarm Development  
+**Epic**: EPIC-8 - Developer Delight & Maximum Usefulness
 **Sprint**: Sprint 4  
 **Priority**: High  
 **Estimate**: 8 Story Points  

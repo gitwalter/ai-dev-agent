@@ -1,6 +1,6 @@
 # 🌈 **US-035: Vibe Coder Agent Builder Interface**
 
-**Epic**: Vibe-Driven Development Platform  
+**Epic**: EPIC-8 - Developer Delight & Maximum Usefulness
 **Sprint**: Sprint 1  
 **Story Points**: 21 (XL - Complex UI/UX with multiple integration points)  
 **Priority**: CRITICAL  

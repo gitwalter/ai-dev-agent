@@ -1,0 +1,758 @@
+{
+  "total_files": 105,
+  "successful_assignments": 105,
+  "failed_assignments": 0,
+  "assignments_by_epic": {
+    "EPIC-7": [
+      "US-PHIL-001.md",
+      "US-RULE-01.md",
+      "US-029.md",
+      "US-031.md",
+      "US-036.md",
+      "US-A002.md",
+      "US-D001.md",
+      "US-D002.md",
+      "US-F001.md",
+      "US-FO-01.md",
+      "US-H003.md",
+      "US-L0-01.md",
+      "US-W001.md",
+      "US-CORE-001-completion-report.md",
+      "US-CORE-001-progress-report.md",
+      "US-CORE-001-security-policy-analysis.md",
+      "US-CORE-001.md",
+      "US-RULES-001.md",
+      "US-TEST-RECOVERY-001-completion-report.md",
+      "US-TEAM-001.md"
+    ],
+    "EPIC-0": [
+      "US-AUTO-001_lessons_learned.md",
+      "US-MCP-001.md",
+      "US-RAG-002.md",
+      "US-SWARM-UI-001.md",
+      "US-000.md",
+      "US-001.md",
+      "US-002.md",
+      "US-003.md",
+      "US-004.md",
+      "US-005.md",
+      "US-022.md",
+      "US-024.md",
+      "US-025.md",
+      "US-026.md",
+      "US-028.md",
+      "US-030.md",
+      "US-032.md",
+      "US-033.md",
+      "US-035.md",
+      "US-036-VIBE_AGILE_FUSION_SYSTEM.md",
+      "US-037.md",
+      "US-038.md",
+      "US-INFRA-001_COMPLETION_SUMMARY.md",
+      "US-008.md",
+      "US-014.md",
+      "US-015.md",
+      "US-H001.md",
+      "US-H002.md",
+      "US-TST-002-test-suite-import-fixes.md",
+      "US-DOC-001.md",
+      "US-E4-015.md",
+      "US-E4-016.md",
+      "US-E4-017.md",
+      "US-GIT-001.md",
+      "US-RAG-001-PHASE-4-COMPLETE.md",
+      "US-MCP-001.md",
+      "US-RAG-002.md",
+      "US-SEMANTIC-001.md",
+      "US-SWARM-UI-001.md",
+      "US-DD-001.md",
+      "US-RESEARCH-001.md",
+      "US-006-001_refactor_universal_composition_app.md",
+      "US-AUTO-001-full-cursor-automation.md",
+      "US-INFRA-001-langchain-pydantic-v2-migration.md"
+    ],
+    "EPIC-8": [
+      "US-MONITOR-001.md",
+      "US-021.md",
+      "US-023.md",
+      "US-035-VIBE_CODER_AGENT_BUILDER.md",
+      "US-PE-02.md",
+      "US-PE-03.md",
+      "US-UKD-001-unified-keyword-detection-system.md",
+      "US-PE-05.md",
+      "US-UI-001-progress-report.md",
+      "US-UI-001.md",
+      "US-CORE-003_COMPLETION_SUMMARY.md",
+      "US-MONITOR-001.md",
+      "US-DD-007.md",
+      "US-DOC-001_COMPLETION_SUMMARY.md"
+    ],
+    "EPIC-4": [
+      "US-RAG-001.md",
+      "US-C001.md",
+      "US-E0-009.md",
+      "US-ETH-001.md",
+      "US-PE-03.md",
+      "US-META-001.md",
+      "US-MODESTY-001.md",
+      "US-RAG-001.md",
+      "US-RAG-003.md",
+      "US-007-001_comprehensive_agent_ontological_logging.md"
+    ],
+    "EPIC-6": [
+      "US-E0-010_COMPLETION_SUMMARY.md",
+      "US-REPO-REPAIR-001.md",
+      "US-034.md",
+      "US-CORE-003-streamlined-git-workflow.md"
+    ],
+    "EPIC-3": [
+      "US-006.md",
+      "US-007.md",
+      "US-A001.md",
+      "US-WO-01-completion-summary.md",
+      "US-ETH-001-final-validation.md",
+      "US-ARCH-001.md",
+      "US-E4-018.md",
+      "US-DOC-PROFESSIONAL-001.md",
+      "US-EXTRACT-001.md",
+      "US-023-continuous-self-optimization-rule.md"
+    ],
+    "EPIC-2": [
+      "US-AG-01.md",
+      "US-PE-01.md",
+      "US-022-prompt-database-reorganization.md"
+    ]
+  },
+  "assignment_details": [
+    {
+      "file": "docs\\agile\\backlog\\US-PHIL-001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 27, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\retrospectives\\US-AUTO-001_lessons_learned.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\current\\user_stories\\US-MCP-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\current\\user_stories\\US-MONITOR-001.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 22, Matches: ['keyword: UX', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\current\\user_stories\\US-RAG-001.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 26, Matches: ['keyword: intelligence', 'keyword: learning', 'keyword: reasoning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\current\\user_stories\\US-RAG-002.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 7, Matches: ['keyword: test', 'keyword: testing', 'keyword: foundation']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\current\\user_stories\\US-SWARM-UI-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_0\\US-E0-010_COMPLETION_SUMMARY.md",
+      "assigned_epic": "EPIC-6",
+      "reasoning": "Score: 13, Matches: ['keyword: cursor', 'keyword: automation', 'keyword: workflow']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_0\\US-RULE-01.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 24, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_0\\user_stories\\US-REPO-REPAIR-001.md",
+      "assigned_epic": "EPIC-6",
+      "reasoning": "Score: 15, Matches: ['keyword: cursor', 'keyword: automation', 'keyword: workflow']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-000.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 17, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-002.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-003.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 16, Matches: ['keyword: test', 'keyword: testing', 'keyword: architecture']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-004.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 18, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-005.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 14, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-021.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 13, Matches: ['keyword: UI', 'keyword: interface', 'keyword: dashboard']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-022.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 10, Matches: ['keyword: test', 'keyword: testing', 'keyword: technical debt']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-023.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 17, Matches: ['keyword: UI', 'keyword: interface', 'keyword: user interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-024.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 15, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-025.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 13, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-026.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 11, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-028.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 19, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-029.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: systematic']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-030.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 22, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-031.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 24, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-032.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 17, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-033.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 14, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-034.md",
+      "assigned_epic": "EPIC-6",
+      "reasoning": "Score: 12, Matches: ['keyword: cursor', 'keyword: automation', 'keyword: workflow']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-035-VIBE_CODER_AGENT_BUILDER.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 19, Matches: ['keyword: user experience', 'keyword: UX', 'keyword: UI']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-035.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 16, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-036-VIBE_AGILE_FUSION_SYSTEM.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 16, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-036.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-037.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 13, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_1\\user_stories\\US-038.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 13, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\US-INFRA-001_COMPLETION_SUMMARY.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 11, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-006.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 16, Matches: ['keyword: agent', 'keyword: swarm', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-007.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 13, Matches: ['keyword: agent', 'keyword: swarm', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-008.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 11, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-014.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 14, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-015.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 12, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-A001.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 15, Matches: ['keyword: agent', 'keyword: agent framework', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-A002.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 21, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-AG-01.md",
+      "assigned_epic": "EPIC-2",
+      "reasoning": "Score: 12, Matches: ['keyword: prompt', 'keyword: engineering', 'keyword: optimization']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-C001.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 15, Matches: ['keyword: intelligence', 'keyword: learning', 'keyword: knowledge']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-D001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-D002.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 18, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-E0-009.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 13, Matches: ['keyword: intelligence', 'keyword: learning', 'keyword: knowledge']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-F001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 24, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-FO-01.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: logical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-H001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 14, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-H002.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 17, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-H003.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 18, Matches: ['keyword: formal', 'keyword: principles', 'keyword: logical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-L0-01.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 21, Matches: ['keyword: formal', 'keyword: principles', 'keyword: logical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-PE-01.md",
+      "assigned_epic": "EPIC-2",
+      "reasoning": "Score: 10, Matches: ['keyword: prompt', 'keyword: engineering', 'keyword: optimization']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-PE-02.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 16, Matches: ['keyword: UI', 'keyword: interface', 'keyword: dashboard']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-PE-03.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 20, Matches: ['keyword: user experience', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-W001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 12, Matches: ['keyword: formal', 'keyword: principles', 'keyword: logical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_2\\user_stories\\US-WO-01-completion-summary.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 17, Matches: ['keyword: agent', 'keyword: swarm', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_3\\user_stories\\US-CORE-001-completion-report.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_3\\user_stories\\US-CORE-001-progress-report.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_3\\user_stories\\US-CORE-001-security-policy-analysis.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_3\\user_stories\\US-CORE-001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: mathematical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_3\\user_stories\\US-ETH-001-final-validation.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 16, Matches: ['keyword: agent', 'keyword: swarm', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_3\\user_stories\\US-ETH-001.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 18, Matches: ['keyword: intelligence', 'keyword: learning', 'keyword: reasoning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\US-TST-002-test-suite-import-fixes.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 10, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\US-UKD-001-unified-keyword-detection-system.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 19, Matches: ['keyword: UX', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-ARCH-001.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 18, Matches: ['keyword: agent', 'keyword: swarm', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-DOC-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 11, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-E4-015.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 9, Matches: ['keyword: test', 'keyword: testing', 'keyword: architecture']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-E4-016.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 10, Matches: ['keyword: test', 'keyword: testing', 'keyword: architecture']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-E4-017.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 12, Matches: ['keyword: test', 'keyword: testing', 'keyword: architecture']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-E4-018.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 9, Matches: ['keyword: agent', 'keyword: agent development', 'keyword: agent system']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-GIT-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 11, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-PE-03.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 16, Matches: ['keyword: intelligence', 'keyword: learning', 'keyword: context']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-PE-05.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 22, Matches: ['keyword: UX', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-RULES-001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 15, Matches: ['keyword: formal', 'keyword: principles', 'keyword: systematic']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-TEST-RECOVERY-001-completion-report.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 21, Matches: ['keyword: formal', 'keyword: principles', 'keyword: logical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-UI-001-progress-report.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 26, Matches: ['keyword: user experience', 'keyword: UX', 'keyword: UI']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_4\\user_stories\\US-UI-001.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 23, Matches: ['keyword: user experience', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\completion_summaries\\US-CORE-003_COMPLETION_SUMMARY.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 17, Matches: ['keyword: user experience', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\completion_summaries\\US-RAG-001-PHASE-4-COMPLETE.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 14, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-DOC-PROFESSIONAL-001.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 17, Matches: ['keyword: agent', 'keyword: agent framework', 'keyword: agent development']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-MCP-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-META-001.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 21, Matches: ['keyword: intelligence', 'keyword: cognitive', 'keyword: learning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-MODESTY-001.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 15, Matches: ['keyword: intelligence', 'keyword: cognitive', 'keyword: learning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-MONITOR-001.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 22, Matches: ['keyword: UX', 'keyword: UI', 'keyword: interface']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-RAG-001.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 26, Matches: ['keyword: intelligence', 'keyword: learning', 'keyword: reasoning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-RAG-002.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 7, Matches: ['keyword: test', 'keyword: testing', 'keyword: foundation']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-RAG-003.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 16, Matches: ['keyword: intelligence', 'keyword: cognitive', 'keyword: learning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-SEMANTIC-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 8, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_6\\user_stories\\US-SWARM-UI-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 20, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_current\\user_stories\\US-DD-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 19, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_current\\user_stories\\US-DD-007.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 13, Matches: ['keyword: UX', 'keyword: UI', 'keyword: developer experience']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_current\\user_stories\\US-EXTRACT-001.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 15, Matches: ['keyword: agent', 'keyword: swarm', 'keyword: agent framework']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_current\\user_stories\\US-RESEARCH-001.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 15, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\sprints\\sprint_current\\user_stories\\US-TEAM-001.md",
+      "assigned_epic": "EPIC-7",
+      "reasoning": "Score: 18, Matches: ['keyword: formal', 'keyword: principles', 'keyword: logical']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\US-DOC-001_COMPLETION_SUMMARY.md",
+      "assigned_epic": "EPIC-8",
+      "reasoning": "Score: 16, Matches: ['keyword: user experience', 'keyword: UI', 'keyword: usability']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-006-001_refactor_universal_composition_app.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 22, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-007-001_comprehensive_agent_ontological_logging.md",
+      "assigned_epic": "EPIC-4",
+      "reasoning": "Score: 33, Matches: ['keyword: intelligence', 'keyword: cognitive', 'keyword: learning']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-022-prompt-database-reorganization.md",
+      "assigned_epic": "EPIC-2",
+      "reasoning": "Score: 10, Matches: ['keyword: prompt', 'keyword: engineering', 'keyword: optimization']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-023-continuous-self-optimization-rule.md",
+      "assigned_epic": "EPIC-3",
+      "reasoning": "Score: 7, Matches: ['keyword: agent', 'keyword: agent development', 'keyword: agent system']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-AUTO-001-full-cursor-automation.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 21, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-CORE-003-streamlined-git-workflow.md",
+      "assigned_epic": "EPIC-6",
+      "reasoning": "Score: 12, Matches: ['keyword: cursor', 'keyword: automation', 'keyword: workflow']",
+      "success": true
+    },
+    {
+      "file": "docs\\agile\\user_stories\\US-INFRA-001-langchain-pydantic-v2-migration.md",
+      "assigned_epic": "EPIC-0",
+      "reasoning": "Score: 10, Matches: ['keyword: test', 'keyword: testing', 'keyword: quality']",
+      "success": true
+    }
+  ]
+}

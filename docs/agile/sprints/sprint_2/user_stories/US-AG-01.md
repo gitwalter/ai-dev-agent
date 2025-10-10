@@ -1,6 +1,6 @@
 # US-AG-01: Core Agent Framework
 
-**Epic**: Epic 3 - Agent Development & Prompt Optimization  
+**Epic**: EPIC-2 - Intelligent Prompt Engineering
 **Sprint**: Sprint 2  
 **Story Points**: 8  
 **Priority**: 🔴 CRITICAL  

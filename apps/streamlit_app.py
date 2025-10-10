@@ -1391,6 +1391,35 @@ def display_project_management():
                     st.error(message)
 
 
+def _discover_agents():
+    """
+    Dynamically discover agents from the agents directory.
+    
+    Returns:
+        List of agent names found in agents/development and agents/security
+    """
+    from pathlib import Path
+    
+    agents = []
+    
+    # Scan development agents
+    dev_agents_dir = Path("agents/development")
+    if dev_agents_dir.exists():
+        for agent_file in dev_agents_dir.glob("*.py"):
+            if agent_file.stem not in ["__init__"]:
+                agents.append(agent_file.stem)
+    
+    # Scan security agents
+    security_agents_dir = Path("agents/security")
+    if security_agents_dir.exists():
+        for agent_file in security_agents_dir.glob("*.py"):
+            if agent_file.stem == "security_analyst":
+                agents.append(agent_file.stem)
+    
+    # Sort alphabetically
+    return sorted(agents)
+
+
 def display_project_info():
     """Display project information and statistics."""
     st.header("📈 Project Statistics")
@@ -1448,11 +1477,15 @@ def display_prompt_manager():
     # Initialize components
     prompt_editor = get_prompt_editor()
     
-    # Agent selection
-    agents = [
-        "requirements_analyst", "architecture_designer", "code_generator",
-        "test_generator", "code_reviewer", "security_analyst", "documentation_generator"
-    ]
+    # Dynamically discover agents from agents directory
+    agents = _discover_agents()
+    
+    # Display agent type mapping info
+    with st.expander("ℹ️ Agent Name Mapping Info"):
+        st.write("**Agent names are mapped to template agent_type values:**")
+        for agent_name in agents:
+            mapped_type = prompt_editor.AGENT_NAME_MAPPING.get(agent_name, agent_name)
+            st.write(f"- `{agent_name}` → `{mapped_type}`")
     
     selected_agent = st.selectbox("Select Agent:", agents)
     
@@ -1636,9 +1669,8 @@ def display_rag_documents():
     prompt_editor = get_prompt_editor()
     rag_processor = get_rag_processor()
     
-    # Agent filter
-    agents = ["All", "requirements_analyst", "architecture_designer", "code_generator",
-              "test_generator", "code_reviewer", "security_analyst", "documentation_generator"]
+    # Agent filter - dynamically discover agents
+    agents = ["All"] + _discover_agents()
     selected_agent = st.selectbox("Filter by Agent:", agents)
     
     # Get RAG documents
@@ -1740,8 +1772,7 @@ def display_rag_documents():
         with st.form("new_url_document"):
             url = st.text_input("URL:")
             agent_name = st.selectbox("Associated Agent (optional):", 
-                                    ["None"] + ["requirements_analyst", "architecture_designer", "code_generator",
-                                               "test_generator", "code_reviewer", "security_analyst", "documentation_generator"])
+                                    ["None"] + _discover_agents())
             tags = st.text_input("Tags (comma-separated):")
             
             submitted = st.form_submit_button("Process URL")
@@ -1804,8 +1835,7 @@ def display_rag_documents():
             uploaded_file = st.file_uploader("Choose a file:", 
                                            type=['txt', 'md', 'py', 'js', 'html', 'css', 'json'])
             agent_name = st.selectbox("Associated Agent (optional):", 
-                                    ["None"] + ["requirements_analyst", "architecture_designer", "code_generator",
-                                               "test_generator", "code_reviewer", "security_analyst", "documentation_generator"])
+                                    ["None"] + _discover_agents())
             tags = st.text_input("Tags (comma-separated):")
             
             submitted = st.form_submit_button("Process File")

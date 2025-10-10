@@ -240,29 +240,29 @@ class UserStoryEpicAssigner:
                     "success": success
                 })
                 
-                print(f"✅ {file_path.name} → {assigned_epic}")
+                print(f"[OK] {file_path.name} -> {assigned_epic}")
                 
             except Exception as e:
                 results["failed_assignments"] += 1
-                print(f"❌ Error processing {file_path.name}: {e}")
+                print(f"[ERROR] Error processing {file_path.name}: {e}")
         
         return results
 
 def main():
     """Main function to run the epic assignment process."""
-    print("🎯 Starting User Story Epic Assignment Process...")
+    print("[START] Starting User Story Epic Assignment Process...")
     print("=" * 60)
     
     assigner = UserStoryEpicAssigner()
     results = assigner.assign_all_user_stories()
     
     print("\n" + "=" * 60)
-    print("📊 ASSIGNMENT RESULTS:")
+    print("[RESULTS] ASSIGNMENT RESULTS:")
     print(f"Total Files Processed: {results['total_files']}")
     print(f"Successful Assignments: {results['successful_assignments']}")
     print(f"Failed Assignments: {results['failed_assignments']}")
     
-    print("\n📋 ASSIGNMENTS BY EPIC:")
+    print("\n[ASSIGNMENTS] ASSIGNMENTS BY EPIC:")
     for epic_id, files in results["assignments_by_epic"].items():
         print(f"{epic_id}: {len(files)} stories")
         for file in files[:5]:  # Show first 5
@@ -275,8 +275,8 @@ def main():
     with open(results_file, 'w') as f:
         json.dump(results, f, indent=2, default=str)
     
-    print(f"\n💾 Detailed results saved to: {results_file}")
-    print("🎉 Epic assignment process completed!")
+    print(f"\n[SAVED] Detailed results saved to: {results_file}")
+    print("[SUCCESS] Epic assignment process completed!")
 
 if __name__ == "__main__":
     main()

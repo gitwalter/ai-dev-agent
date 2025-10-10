@@ -1,6 +1,6 @@
 # US-PE-03: Scientific Prompt Optimization UI
 
-**Epic**: Epic 2: Intelligent Prompt Engineering & Optimization  
+**Epic**: EPIC-8 - Developer Delight & Maximum Usefulness
 **Sprint**: Sprint 2  
 **Story Points**: 13  
 **Priority**: HIGH  

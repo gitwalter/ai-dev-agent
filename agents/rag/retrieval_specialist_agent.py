@@ -1,7 +1,8 @@
 """
 Retrieval Specialist Agent for RAG Swarm
 
-This agent specializes in optimal context retrieval using multiple search strategies.
+This agent specializes in optimal context retrieval using multiple search strategies
+with adaptive chunk retrieval based on query characteristics.
 """
 
 import logging
@@ -12,6 +13,7 @@ import time
 from agents.core.enhanced_base_agent import EnhancedBaseAgent
 from models.config import AgentConfig
 from context.context_engine import ContextEngine
+from utils.rag.adaptive_retrieval_strategy import AdaptiveRetrievalStrategy, RetrievalContext
 
 logger = logging.getLogger(__name__)
 
@@ -55,30 +57,34 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         
         super().__init__(config)
         self.context_engine = context_engine
+        self.adaptive_strategy = AdaptiveRetrievalStrategy()
         self.retrieval_stats = {
             'total_retrievals': 0,
             'total_searches': 0,
             'total_results': 0,
             'avg_results_per_search': 0,
-            'avg_retrieval_time': 0
+            'avg_retrieval_time': 0,
+            'last_retrieval_quality': 0.7  # Track quality for adaptive decisions
         }
         
-        logger.info(f"✅ {self.name} initialized with ContextEngine")
+        logger.info(f"✅ {self.name} initialized with ContextEngine and Adaptive Retrieval")
     
     async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Retrieve relevant context using optimal search strategies.
+        Retrieve relevant context using optimal search strategies with adaptive chunk retrieval.
         
         Args:
             task: Dictionary containing:
                 - query_analysis: Dict from QueryAnalystAgent
-                - max_results: int (optional, default 20)
+                - max_results: int (optional, will be determined adaptively)
+                - retrieval_mode: str (optional: "auto", "manual", "performance")
+                - manual_chunk_count: int (optional, for manual mode)
+                - available_doc_count: int (optional, for context)
                 
         Returns:
-            Dictionary with retrieval results
+            Dictionary with retrieval results and adaptive decision info
         """
         query_analysis = task.get('query_analysis')
-        max_results = task.get('max_results', 20)
         
         if not query_analysis:
             return {
@@ -91,11 +97,37 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
         rewritten_queries = query_analysis.get('rewritten_queries', [original_query])
         key_concepts = query_analysis.get('key_concepts', [])
         search_strategy = query_analysis.get('search_strategy', 'focused')
-        document_filters = task.get('document_filters')  # NEW: Selective RAG filters
+        document_filters = task.get('document_filters')  # Selective RAG filters
+        
+        # Adaptive retrieval mode
+        retrieval_mode = task.get('retrieval_mode', 'auto')
+        manual_chunk_count = task.get('manual_chunk_count')
+        
+        # Build retrieval context
+        retrieval_context = RetrievalContext(
+            available_doc_count=task.get('available_doc_count', 100),
+            last_retrieval_quality=self.retrieval_stats.get('last_retrieval_quality', 0.7),
+            performance_mode=(retrieval_mode == 'performance')
+        )
+        
+        # Get optimal chunk count using adaptive strategy
+        adaptive_decision = await self.adaptive_strategy.get_optimal_chunk_count(
+            query=original_query,
+            mode=retrieval_mode,
+            manual_count=manual_chunk_count,
+            context=retrieval_context
+        )
+        
+        max_results = adaptive_decision['chunk_count']
         
         if document_filters:
             logger.info(f"🎯 {self.name}: Using selective RAG with {len(document_filters.get('source', []))} documents")
-        logger.info(f"📚 {self.name}: Retrieving context with strategy '{search_strategy}'")
+        
+        logger.info(
+            f"📚 {self.name}: Retrieving {max_results} chunks "
+            f"(mode={retrieval_mode}, strategy={search_strategy})"
+        )
+        logger.info(f"   Rationale: {adaptive_decision['rationale']}")
         
         start_time = time.time()
         
@@ -132,7 +164,8 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
                     'searches_performed': self.retrieval_stats['total_searches'],
                     'total_candidates': len(results),
                     'retrieval_time': retrieval_time,
-                    'strategy_used': search_strategy
+                    'strategy_used': search_strategy,
+                    'adaptive_decision': adaptive_decision  # Include adaptive decision info
                 },
                 'stats': self.retrieval_stats
             }

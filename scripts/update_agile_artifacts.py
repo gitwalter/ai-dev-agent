@@ -159,30 +159,30 @@ Examples:
 def print_story_summary(completion: StoryCompletion):
     """Print a summary of the story completion."""
     print("\n" + "="*60)
-    print("📋 STORY COMPLETION SUMMARY")
+    print("[STORY] COMPLETION SUMMARY")
     print("="*60)
-    print(f"📌 Story ID: {completion.story_id}")
-    print(f"📝 Title: {completion.title}")
-    print(f"🎯 Story Points: {completion.story_points}")
-    print(f"📅 Completion Date: {completion.completion_date}")
-    print(f"✅ Status: {completion.status}")
+    print(f"[ID] Story ID: {completion.story_id}")
+    print(f"[TITLE] Title: {completion.title}")
+    print(f"[POINTS] Story Points: {completion.story_points}")
+    print(f"[DATE] Completion Date: {completion.completion_date}")
+    print(f"[STATUS] Status: {completion.status}")
     
     if completion.acceptance_criteria:
-        print(f"📋 Acceptance Criteria ({len(completion.acceptance_criteria)}):")
+        print(f"[CRITERIA] Acceptance Criteria ({len(completion.acceptance_criteria)}):")
         for i, criteria in enumerate(completion.acceptance_criteria, 1):
             print(f"   {i}. {criteria}")
     
     if completion.tasks_completed and completion.tasks_total:
-        print(f"📊 Tasks: {completion.tasks_completed}/{completion.tasks_total} completed")
+        print(f"[TASKS] Tasks: {completion.tasks_completed}/{completion.tasks_total} completed")
     
     if completion.notes:
-        print(f"📝 Notes: {completion.notes}")
+        print(f"[NOTES] Notes: {completion.notes}")
     
     if completion.implementation_method:
-        print(f"🔧 Implementation Method: {completion.implementation_method}")
+        print(f"[METHOD] Implementation Method: {completion.implementation_method}")
     
     if completion.test_results:
-        print(f"🧪 Test Results: {completion.test_results}")
+        print(f"[TESTS] Test Results: {completion.test_results}")
     
     print("="*60)
 
@@ -190,13 +190,13 @@ def print_story_summary(completion: StoryCompletion):
 def print_update_results(result):
     """Print the results of the artifact updates."""
     print("\n" + "="*60)
-    print("🚀 AGILE ARTIFACTS UPDATE RESULTS")
+    print("[UPDATE] AGILE ARTIFACTS UPDATE RESULTS")
     print("="*60)
     
     if result.success:
-        print("✅ **SUCCESSFUL UPDATE**")
-        print(f"📊 Artifacts Updated: {result.artifacts_updated}/5")
-        print(f"⏰ Timestamp: {result.timestamp}")
+        print("[SUCCESS] **SUCCESSFUL UPDATE**")
+        print(f"[COUNT] Artifacts Updated: {result.artifacts_updated}/5")
+        print(f"[TIME] Timestamp: {result.timestamp}")
         
         # Show which artifacts were updated
         artifacts = [
@@ -207,22 +207,22 @@ def print_update_results(result):
             ("User Stories", result.user_stories_updated)
         ]
         
-        print("\n📋 Updated Artifacts:")
+        print("\n[ARTIFACTS] Updated Artifacts:")
         for artifact_name, updated in artifacts:
-            status = "✅" if updated else "❌"
+            status = "[OK]" if updated else "[FAIL]"
             print(f"   {status} {artifact_name}")
         
         if result.backup_created:
-            print(f"\n💾 Backup Created: {result.backup_location}")
+            print(f"\n[BACKUP] Backup Created: {result.backup_location}")
         
     else:
-        print("❌ **UPDATE FAILED**")
-        print(f"📊 Artifacts Updated: {result.artifacts_updated}/5")
+        print("[FAIL] **UPDATE FAILED**")
+        print(f"[COUNT] Artifacts Updated: {result.artifacts_updated}/5")
         
         if result.errors:
-            print("\n🚨 Errors:")
+            print("\n[ERRORS] Errors:")
             for error in result.errors:
-                print(f"   • {error}")
+                print(f"   - {error}")
     
     print("="*60)
 
@@ -258,20 +258,20 @@ def main():
     print_story_summary(completion)
     
     if args.dry_run:
-        print("\n🔍 DRY RUN MODE - No changes will be made")
-        print("✅ Story information validated successfully")
-        print("🚀 Would update all 5 agile artifacts")
+        print("\n[DRY-RUN] DRY RUN MODE - No changes will be made")
+        print("[OK] Story information validated successfully")
+        print("[INFO] Would update all 5 agile artifacts")
         return 0
     
     try:
         # Find docs directory
         docs_dir = project_root / "docs" / "agile"
         if not docs_dir.exists():
-            logger.error(f"❌ Docs directory not found: {docs_dir}")
-            print(f"\n❌ ERROR: Docs directory not found: {docs_dir}")
+            logger.error(f"[ERROR] Docs directory not found: {docs_dir}")
+            print(f"\n[ERROR] Docs directory not found: {docs_dir}")
             return 1
         
-        logger.info(f"📁 Using docs directory: {docs_dir}")
+        logger.info(f"[INFO] Using docs directory: {docs_dir}")
         
         # Initialize automator
         automator = AgileArtifactsAutomator(
@@ -281,7 +281,7 @@ def main():
         )
         
         # Update all artifacts
-        logger.info(f"🚀 Updating agile artifacts for {completion.story_id}")
+        logger.info(f"[INFO] Updating agile artifacts for {completion.story_id}")
         result = automator.update_all_artifacts(completion, include_timestamps=True)
         
         # Print results
@@ -289,22 +289,22 @@ def main():
         
         # Validate if requested
         if args.validate and result.success:
-            print("\n🔍 Validating artifact consistency...")
+            print("\n[VALIDATE] Validating artifact consistency...")
             validation_result = automator.validate_artifact_consistency(completion)
             
             if validation_result.is_consistent:
-                print("✅ All artifacts are consistent")
+                print("[OK] All artifacts are consistent")
             else:
-                print("⚠️  Inconsistencies detected:")
+                print("[WARNING] Inconsistencies detected:")
                 for inconsistency in validation_result.inconsistencies:
-                    print(f"   • {inconsistency}")
+                    print(f"   - {inconsistency}")
         
         # Return appropriate exit code
         return 0 if result.success else 1
         
     except Exception as e:
-        logger.exception("❌ Unexpected error occurred")
-        print(f"\n❌ UNEXPECTED ERROR: {e}")
+        logger.exception("[ERROR] Unexpected error occurred")
+        print(f"\n[ERROR] UNEXPECTED ERROR: {e}")
         return 1
 
 

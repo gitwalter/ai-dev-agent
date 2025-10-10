@@ -1,6 +1,6 @@
 # User Story US-ETH-001: Comprehensive Ethical AI Safeguards & Harm Prevention
 
-**Epic**: Ethical AI Foundation & Life Protection  
+**Epic**: EPIC-4 - Integrated System Intelligence & Organic Metabolic Architecture
 **Sprint**: Sprint 3 (CRITICAL PRIORITY)  
 **Story Points**: 21 (COMPLEX - HIGHEST IMPORTANCE)  
 **Priority**: **CRITICAL** - Foundation for all future development  

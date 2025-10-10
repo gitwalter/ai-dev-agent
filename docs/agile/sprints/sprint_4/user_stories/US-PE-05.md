@@ -2,7 +2,7 @@
 
 **Story ID**: US-PE-05  
 **Title**: Performance Monitoring & System Health Implementation  
-**Epic**: Performance Optimization  
+**Epic**: EPIC-8 - Developer Delight & Maximum Usefulness
 **Sprint**: Sprint 4  
 **Priority**: HIGH  
 **Estimate**: 5 Story Points  

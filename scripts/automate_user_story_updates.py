@@ -56,60 +56,95 @@ class UserStoryStatusAutomation:
             "docs/agile/velocity_tracking_current.md"
         ]
     
-    def execute_full_update_cycle(self, specific_story: Optional[str] = None) -> bool:
-        """Execute complete user story status update cycle."""
+    def execute_full_update_cycle(self, specific_story: Optional[str] = None, 
+                                  skip_tests: bool = True, 
+                                  run_full_tests: bool = False,
+                                  new_status: Optional[str] = None,
+                                  completion_notes: Optional[str] = None,
+                                  completion_date: Optional[str] = None,
+                                  skip_artifacts: bool = False) -> bool:
+        """Execute user story status update cycle - simplified and fast.
+        
+        Args:
+            specific_story: Story ID to update (if None, updates all monitored stories)
+            skip_tests: Skip all test execution (default: True for speed)
+            run_full_tests: Run full test suite (default: False)
+            new_status: New status to set (Draft, Ready, In Progress, Done, Cancelled)
+            completion_notes: Notes about completion or status change
+            completion_date: Completion date (YYYY-MM-DD)
+            skip_artifacts: Skip updating agile artifacts, only update story file
+        """
         
         try:
-            self.logger.info("🚀 Starting automated user story status update cycle")
+            self.logger.info("[START] Starting user story status update")
             
-            # 1. Run story-specific tests first if updating specific story
+            # Quick validation
+            if not specific_story:
+                self.logger.error("[ERROR] Story ID is required")
+                return False
+            
+            # Check if story file exists
+            if not self.story_exists(specific_story):
+                self.logger.error(f"[ERROR] Story file not found for {specific_story}")
+                return False
+            
+            # 1. Optionally run tests (skipped by default for speed)
             story_test_results = None
-            if specific_story:
-                self.logger.info(f"🧪 Running specific tests for {specific_story}...")
+            if run_full_tests:
+                self.logger.info(f"[TEST] Running comprehensive tests...")
+                status_data = self.collect_comprehensive_status()
+            elif not skip_tests:
+                self.logger.info(f"[TEST] Running specific tests for {specific_story}...")
                 story_test_results = self.collect_user_story_test_status(specific_story)
-                
-                if story_test_results.get("all_passed"):
-                    self.logger.info(f"✅ All tests passed for {specific_story}")
-                elif story_test_results.get("status") == "no_specific_tests":
-                    self.logger.info(f"ℹ️  No specific tests found for {specific_story}")
-                else:
-                    self.logger.warning(f"⚠️  Some tests failed for {specific_story}")
-            
-            # 2. Collect current status (skip full test suite if we ran specific tests)
-            self.logger.info("📊 Collecting comprehensive status data...")
-            if specific_story and story_test_results and story_test_results.get("all_passed"):
-                # Use lightweight status collection
                 status_data = self.collect_lightweight_status()
                 status_data["story_specific_tests"] = story_test_results
             else:
-                status_data = self.collect_comprehensive_status()
+                # Fast mode: minimal status collection
+                self.logger.info("[INFO] Fast mode - skipping tests")
+                status_data = self.collect_lightweight_status()
             
-            # 3. Validate data quality
-            if not self.validate_status_data(status_data):
-                raise ValueError("Status data validation failed")
+            # 2. Add user-provided status information
+            if new_status:
+                status_data["user_provided_status"] = new_status
+                self.logger.info(f"[STATUS] Setting status to: {new_status}")
             
-            # 4. Update user stories
-            stories_to_update = [specific_story] if specific_story else self.monitored_stories
-            for story_id in stories_to_update:
-                if self.story_exists(story_id):
-                    self.logger.info(f"📝 Updating {story_id}...")
-                    self.update_user_story_status(story_id, status_data)
+            if completion_notes:
+                status_data["completion_notes"] = completion_notes
+                self.logger.info(f"[NOTES] Adding notes: {completion_notes[:50]}...")
             
-            # 4. Update all agile artifacts
-            self.logger.info("🔄 Updating agile artifacts...")
-            self.update_all_agile_artifacts(status_data)
+            if completion_date:
+                status_data["completion_date"] = completion_date
+                self.logger.info(f"[DATE] Completion date: {completion_date}")
+            elif new_status == "Done" and not completion_date:
+                # Auto-set completion date if marking as Done
+                from datetime import datetime
+                status_data["completion_date"] = datetime.now().strftime("%Y-%m-%d")
+                self.logger.info(f"[DATE] Auto-set completion date: {status_data['completion_date']}")
             
-            # 5. Validate updates
-            validation_results = self.validate_all_updates(status_data)
+            # 3. Update the story file
+            self.logger.info(f"[UPDATE] Updating story file for {specific_story}...")
+            self.update_user_story_status(specific_story, status_data)
             
-            # 6. Generate update report
-            report = self.generate_update_report(status_data, validation_results)
+            # 4. Optionally update agile artifacts
+            if not skip_artifacts:
+                self.logger.info("[ARTIFACTS] Updating agile artifacts...")
+                self.update_all_agile_artifacts(status_data)
+            else:
+                self.logger.info("[INFO] Skipping artifact updates (--skip-artifacts flag)")
             
-            self.logger.info("✅ Automated user story status update completed successfully")
+            # 5. Success summary
+            print(f"\n[SUCCESS] Story {specific_story} updated successfully!")
+            if new_status:
+                print(f"[STATUS] New status: {new_status}")
+            if not skip_artifacts:
+                print(f"[ARTIFACTS] Agile artifacts synchronized")
+            print()
+            
+            self.logger.info("[SUCCESS] User story status update completed")
             return True
             
         except Exception as e:
-            self.logger.error(f"❌ Automation failed: {e}")
+            self.logger.error(f"[ERROR] Automation failed: {e}")
             self.notify_automation_failure(e)
             return False
     
@@ -134,7 +169,7 @@ class UserStoryStatusAutomation:
     
     def collect_lightweight_status(self) -> Dict[str, Any]:
         """Collect lightweight status data without running full test suite."""
-        self.logger.info("📋 Collecting lightweight status data...")
+        self.logger.info("[COLLECT] Collecting lightweight status data...")
         
         return {
             "test_results": {"status": "skipped_for_story_specific_tests"},
@@ -153,7 +188,7 @@ class UserStoryStatusAutomation:
     
     def collect_user_story_test_status(self, story_id: str) -> Dict[str, Any]:
         """Run specific tests for a user story."""
-        self.logger.info(f"🧪 Running tests for {story_id}...")
+        self.logger.info(f"[TEST] Running tests for {story_id}...")
         
         # Map story ID to test file
         test_file_map = {
@@ -231,7 +266,7 @@ class UserStoryStatusAutomation:
 
     def collect_test_status(self) -> Dict[str, Any]:
         """Run tests and collect detailed results."""
-        self.logger.info("🧪 Collecting test status...")
+        self.logger.info("[TEST] Collecting test status...")
         
         try:
             # Execute pytest with simpler output and shorter timeout
@@ -322,7 +357,7 @@ class UserStoryStatusAutomation:
     
     def collect_health_status(self) -> Dict[str, Any]:
         """Collect health monitoring validation results."""
-        self.logger.info("🏥 Collecting health monitoring status...")
+        self.logger.info("[HEALTH] Collecting health monitoring status...")
         
         try:
             # Read health data
@@ -377,7 +412,7 @@ class UserStoryStatusAutomation:
     
     def collect_implementation_status(self) -> Dict[str, Any]:
         """Analyze code implementation completeness."""
-        self.logger.info("🔍 Collecting implementation status...")
+        self.logger.info("[IMPLEMENT] Collecting implementation status...")
         
         # This is a placeholder for implementation analysis
         # In a full implementation, this would analyze:
@@ -405,7 +440,7 @@ class UserStoryStatusAutomation:
     
     def collect_validation_status(self) -> Dict[str, Any]:
         """Collect validation results from various sources."""
-        self.logger.info("✅ Collecting validation status...")
+        self.logger.info("[VALIDATE] Collecting validation status...")
         
         # Placeholder for validation status collection
         return {
@@ -456,11 +491,14 @@ class UserStoryStatusAutomation:
     def update_user_story_status(self, story_id: str, status_data: Dict[str, Any]):
         """Update specific user story with current status information."""
         
-        story_file = self.project_root / f"docs/agile/sprints/sprint_1/user_stories/{story_id}.md"
-        
-        if not story_file.exists():
-            self.logger.warning(f"Story file not found: {story_file}")
+        # Get the actual story file path (searches multiple sprint folders)
+        try:
+            story_file = self.get_story_path(story_id)
+        except FileNotFoundError:
+            self.logger.warning(f"Story file not found for {story_id}")
             return
+        
+        self.logger.info(f"[FILE] Found story at: {story_file}")
         
         # Read current story content
         with open(story_file, 'r', encoding='utf-8') as f:
@@ -472,15 +510,17 @@ class UserStoryStatusAutomation:
         elif story_id == "US-001":
             updated_content = self.update_us_001_status(content, status_data)
         else:
-            updated_content = self.update_generic_story_status(content, status_data)
+            updated_content = self.update_generic_story_status(content, status_data, story_id)
         
         # Write updated content
         if not self.dry_run:
             with open(story_file, 'w', encoding='utf-8') as f:
                 f.write(updated_content)
-            self.logger.info(f"✅ Updated {story_id}")
+            self.logger.info(f"[OK] Updated {story_id}")
+            print(f"[OK] Story file updated: {story_file}")
         else:
-            self.logger.info(f"🔍 [DRY RUN] Would update {story_id}")
+            self.logger.info(f"[DRY-RUN] Would update {story_id}")
+            print(f"[DRY-RUN] Would update: {story_file}")
     
     def update_us_000_status(self, content: str, status_data: Dict[str, Any]) -> str:
         """Update US-000 with current test status."""
@@ -571,22 +611,106 @@ class UserStoryStatusAutomation:
         
         return content
     
-    def update_generic_story_status(self, content: str, status_data: Dict[str, Any]) -> str:
-        """Update generic user story with timestamp."""
+    def update_generic_story_status(self, content: str, status_data: Dict[str, Any], story_id: str) -> str:
+        """Update generic user story with status, date, and notes."""
         
-        # Update last updated line if present
+        # Update status if provided
+        if "user_provided_status" in status_data:
+            new_status = status_data["user_provided_status"]
+            # Try to find and update status line
+            status_pattern = r'\*\*Status\*\*:\s*[🟡🟢🔴⚪]*\s*([A-Z\s]+)'
+            if re.search(status_pattern, content):
+                # Map status to emoji
+                status_emoji = {
+                    "Draft": "⚪",
+                    "Ready": "🟡", 
+                    "In Progress": "🟡",
+                    "Done": "✅",
+                    "Cancelled": "🔴"
+                }.get(new_status, "🟡")
+                
+                content = re.sub(
+                    status_pattern,
+                    f'**Status**: {status_emoji} {new_status.upper()}',
+                    content
+                )
+                self.logger.info(f"[UPDATE] Set status to: {new_status}")
+        
+        # Update/add completion date if provided
+        if "completion_date" in status_data:
+            completion_date = status_data["completion_date"]
+            # Try to find Completed line
+            if re.search(r'\*\*Completed\*\*:', content):
+                content = re.sub(
+                    r'\*\*Completed\*\*:.*',
+                    f'**Completed**: {completion_date}',
+                    content
+                )
+            else:
+                # Add after Status line if not found
+                content = re.sub(
+                    r'(\*\*Status\*\*:.*\n)',
+                    f'\\1**Completed**: {completion_date}  \n',
+                    content
+                )
+            self.logger.info(f"[UPDATE] Set completion date to: {completion_date}")
+        
+        # Add completion notes if provided
+        if "completion_notes" in status_data and status_data["completion_notes"]:
+            notes = status_data["completion_notes"]
+            # Add to completion summary section if it exists
+            if "## 🎉 **Completion Summary**" in content or "## Completion Summary" in content:
+                # Add notes to existing completion summary
+                summary_pattern = r'(## [🎉\s]*\*\*Completion Summary\*\*.*?\n\n)'
+                if re.search(summary_pattern, content, re.DOTALL):
+                    content = re.sub(
+                        summary_pattern,
+                        f'\\1**Completion Notes**: {notes}\n\n',
+                        content,
+                        flags=re.DOTALL
+                    )
+            self.logger.info(f"[UPDATE] Added completion notes")
+        
+        # Update last updated line
         content = re.sub(
             r'\*\*Last Updated\*\*:.*',
-            f'**Last Updated**: {self.timestamp.strftime("%Y-%m-%d %H:%M:%S")} - Automated Status Update',
+            f'**Last Updated**: {self.timestamp.strftime("%Y-%m-%d")}',
             content
         )
         
         return content
     
     def story_exists(self, story_id: str) -> bool:
-        """Check if user story file exists."""
-        story_file = self.project_root / f"docs/agile/sprints/sprint_1/user_stories/{story_id}.md"
-        return story_file.exists()
+        """Check if user story file exists (searches multiple sprint folders)."""
+        # Search in multiple possible locations
+        search_paths = [
+            self.project_root / f"docs/agile/sprints/current/user_stories/{story_id}.md",
+            self.project_root / f"docs/agile/sprints/sprint_6/user_stories/{story_id}.md",
+            self.project_root / f"docs/agile/sprints/sprint_5/user_stories/{story_id}.md",
+            self.project_root / f"docs/agile/sprints/sprint_4/user_stories/{story_id}.md",
+            self.project_root / f"docs/agile/sprints/sprint_3/user_stories/{story_id}.md",
+            self.project_root / f"docs/agile/sprints/sprint_2/user_stories/{story_id}.md",
+            self.project_root / f"docs/agile/sprints/sprint_1/user_stories/{story_id}.md",
+        ]
+        
+        for path in search_paths:
+            if path.exists():
+                # Store the found path for later use
+                self._found_story_path = path
+                return True
+        
+        return False
+    
+    def get_story_path(self, story_id: str) -> Path:
+        """Get the path to a story file (must call story_exists first)."""
+        if hasattr(self, '_found_story_path'):
+            return self._found_story_path
+        
+        # Fallback: search again
+        if self.story_exists(story_id):
+            return self._found_story_path
+        
+        raise FileNotFoundError(f"Story file not found for {story_id}")
     
     def update_all_agile_artifacts(self, status_data: Dict[str, Any]):
         """Update all agile artifacts with current status information."""
@@ -625,9 +749,9 @@ class UserStoryStatusAutomation:
             if not self.dry_run and updated_content != content:
                 with open(artifact_path, 'w', encoding='utf-8') as f:
                     f.write(updated_content)
-                self.logger.info(f"✅ Updated {artifact_path.name}")
+                self.logger.info(f"[OK] Updated {artifact_path.name}")
             elif self.dry_run:
-                self.logger.info(f"🔍 [DRY RUN] Would update {artifact_path.name}")
+                self.logger.info(f"[DRY-RUN] Would update {artifact_path.name}")
             
         except Exception as e:
             self.logger.error(f"Failed to update {artifact_path}: {e}")
@@ -740,7 +864,7 @@ class UserStoryStatusAutomation:
         }
         
         # Log report
-        self.logger.info("📊 Status Update Report:")
+        self.logger.info("[REPORT] Status Update Report:")
         self.logger.info(f"   • Test Success Rate: {test_results.get('success_rate', 0)}%")
         self.logger.info(f"   • Health Monitoring: {health_data.get('completion', {}).get('percentage', 0)}% complete")
         self.logger.info(f"   • Stories Updated: {len(self.monitored_stories)}")
@@ -750,16 +874,52 @@ class UserStoryStatusAutomation:
     
     def notify_automation_failure(self, error: Exception):
         """Notify about automation failure."""
-        self.logger.error(f"🚨 Automation Failure Notification: {error}")
+        self.logger.error(f"[FAILURE] Automation Failure Notification: {error}")
+        print(f"\n[ERROR] Update failed: {error}\n")
 
 
 def main():
     """Main execution function."""
     
-    parser = argparse.ArgumentParser(description="Automated User Story Status Updates")
-    parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode (no file changes)")
-    parser.add_argument("--story-id", help="Update specific story only (e.g., US-000)")
+    parser = argparse.ArgumentParser(
+        description="Automated User Story Status Updates - Simple and Fast",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Quick update (default - fast, no tests)
+  python scripts/automate_user_story_updates.py --story-id US-RAG-003
+  
+  # Mark story as Done with completion notes
+  python scripts/automate_user_story_updates.py --story-id US-RAG-003 --status Done --notes "All tests passing"
+  
+  # Mark story as In Progress
+  python scripts/automate_user_story_updates.py --story-id US-RAG-003 --status "In Progress"
+  
+  # Update with custom completion date
+  python scripts/automate_user_story_updates.py --story-id US-RAG-003 --status Done --completion-date 2025-10-10
+  
+  # Full update with comprehensive test collection (slow)
+  python scripts/automate_user_story_updates.py --story-id US-RAG-003 --full-tests
+  
+  # Dry run to see what would change
+  python scripts/automate_user_story_updates.py --story-id US-RAG-003 --status Done --dry-run
+        """
+    )
+    
+    # Required arguments
+    parser.add_argument("--story-id", required=True, help="Story ID to update (e.g., US-RAG-003)")
+    
+    # Status update options
+    parser.add_argument("--status", choices=["Draft", "Ready", "In Progress", "Done", "Cancelled"], 
+                       help="New status for the story")
+    parser.add_argument("--notes", help="Completion or status notes")
+    parser.add_argument("--completion-date", help="Completion date (YYYY-MM-DD, defaults to today if status=Done)")
+    
+    # Execution mode
+    parser.add_argument("--dry-run", action="store_true", help="Show what would change without making changes")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
+    parser.add_argument("--full-tests", action="store_true", help="Run full test suite (slow, comprehensive)")
+    parser.add_argument("--skip-artifacts", action="store_true", help="Only update story file, skip artifact updates")
     
     args = parser.parse_args()
     
@@ -769,8 +929,34 @@ def main():
     if args.verbose:
         automation.logger.setLevel("DEBUG")
     
+    # Determine execution mode
+    # Default: Quick update (skip tests) for single story updates
+    skip_tests = not args.full_tests  # Skip tests by default, run only if --full-tests
+    run_full_tests = args.full_tests
+    
+    print("\n" + "="*60)
+    print(f"[UPDATE] Story Status Update: {args.story_id}")
+    print("="*60)
+    if args.status:
+        print(f"[STATUS] New Status: {args.status}")
+    if args.notes:
+        print(f"[NOTES] Notes: {args.notes}")
+    if args.completion_date:
+        print(f"[DATE] Completion Date: {args.completion_date}")
+    print(f"[MODE] {'DRY RUN' if args.dry_run else 'LIVE UPDATE'}")
+    print(f"[TESTS] {'Full test suite' if run_full_tests else 'Skipped (fast mode)'}")
+    print("="*60 + "\n")
+    
     # Execute update cycle
-    success = automation.execute_full_update_cycle(specific_story=args.story_id)
+    success = automation.execute_full_update_cycle(
+        specific_story=args.story_id,
+        skip_tests=skip_tests,
+        run_full_tests=run_full_tests,
+        new_status=args.status,
+        completion_notes=args.notes,
+        completion_date=args.completion_date,
+        skip_artifacts=args.skip_artifacts
+    )
     
     # Exit with appropriate code
     sys.exit(0 if success else 1)

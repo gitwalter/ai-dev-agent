@@ -1,7 +1,7 @@
 # User Story US-023: Establish Continuous Self-Optimization Rule
 
 **Story ID**: US-023  
-**Epic**: Epic 2 - Agent Development & Integration  
+**Epic**: EPIC-3 - Agent Development & Optimization
 **Sprint**: Sprint 2  
 **Priority**: CRITICAL  
 **Story Points**: 13  

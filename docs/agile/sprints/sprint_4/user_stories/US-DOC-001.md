@@ -1,5 +1,8 @@
 # User Story: US-DOC-001 - Agile Project Management Documentation
 
+**Epic**: EPIC-0 - Development Excellence
+
+
 ## Title
 Document Comprehensive Agile Framework Implementation Guide
 

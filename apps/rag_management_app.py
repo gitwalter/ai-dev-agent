@@ -126,9 +126,12 @@ st.markdown("""
     .transparency-panel {
         padding: 1rem;
         border-radius: 0.5rem;
-        background-color: #ffffff;
+        background-color: #f8f9fa;
+        color: #212529;
         border: 2px solid #007bff;
         margin: 1rem 0;
+        font-size: 1rem;
+        line-height: 1.6;
     }
     .score-high {
         color: #28a745;
@@ -1336,6 +1339,86 @@ def agent_chat_page():
     
     st.markdown("---")
     
+    # Adaptive Retrieval Strategy (NEW: US-RAG-003)
+    st.markdown("### 🎯 Adaptive Retrieval Strategy")
+    
+    # Initialize session state for retrieval settings
+    if 'retrieval_mode' not in st.session_state:
+        st.session_state.retrieval_mode = 'auto'
+    if 'manual_chunk_count' not in st.session_state:
+        st.session_state.manual_chunk_count = 15
+    
+    retrieval_col1, retrieval_col2 = st.columns([2, 1])
+    
+    with retrieval_col1:
+        retrieval_mode = st.selectbox(
+            "Retrieval Strategy",
+            ["🤖 Auto (Recommended)", "👤 Manual Control", "⚡ Performance Mode"],
+            index=0,
+            help=(
+                "**Auto**: Agent intelligently determines optimal chunk count based on query complexity\n\n"
+                "**Manual**: You specify exact chunk count (5-50)\n\n"
+                "**Performance**: Fast mode with focused retrieval (8 chunks)"
+            )
+        )
+        
+        # Extract mode from display text
+        if "Auto" in retrieval_mode:
+            st.session_state.retrieval_mode = "auto"
+        elif "Manual" in retrieval_mode:
+            st.session_state.retrieval_mode = "manual"
+        else:
+            st.session_state.retrieval_mode = "performance"
+    
+    with retrieval_col2:
+        if st.session_state.retrieval_mode == "auto":
+            st.success(
+                "🤖 **Intelligent**\n\n"
+                "Adapts to query\n\n"
+                "5-50 chunks"
+            )
+        elif st.session_state.retrieval_mode == "performance":
+            st.info(
+                "⚡ **Fast**\n\n"
+                "Quick response\n\n"
+                "8 chunks"
+            )
+        else:
+            st.info(
+                "👤 **Manual**\n\n"
+                "Full control\n\n"
+                f"{st.session_state.manual_chunk_count} chunks"
+            )
+    
+    # Manual control slider (only show in manual mode)
+    if st.session_state.retrieval_mode == "manual":
+        st.session_state.manual_chunk_count = st.slider(
+            "Number of Chunks to Retrieve",
+            min_value=5,
+            max_value=50,
+            value=st.session_state.manual_chunk_count,
+            step=1,
+            help=(
+                "Specify exact number of document chunks to retrieve.\n\n"
+                "💡 **Tip**: 10-20 chunks works well for most queries.\n\n"
+                "**Guidelines:**\n"
+                "- Simple questions: 5-15 chunks\n"
+                "- Moderate queries: 15-25 chunks\n"
+                "- Complex analysis: 25-40 chunks\n"
+                "- Multi-step reasoning: 35-50 chunks"
+            )
+        )
+        
+        # Show real-time feedback
+        if st.session_state.manual_chunk_count < 10:
+            st.warning("⚠️ Low chunk count - may miss relevant context")
+        elif st.session_state.manual_chunk_count > 40:
+            st.warning("⚠️ High chunk count - may include noise")
+        else:
+            st.success("✅ Good chunk count for balanced results")
+    
+    st.markdown("---")
+    
     # Main chat interface
     chat_col, context_col = st.columns([3, 2] if st.session_state.context_debug_mode else [1, 0])
     
@@ -1392,16 +1475,21 @@ def agent_chat_page():
                                     'source': st.session_state.selected_documents_for_rag
                                 }
                             
-                            # Execute pipeline - pass document scope as parameter to swarm
+                            # Execute pipeline with adaptive retrieval settings
+                            # NOTE: max_results is now determined by adaptive system, set to max allowed
                             result = asyncio.run(
                                 swarm.execute({
                                     'query': user_input,
-                                    'max_results': 10,
+                                    'max_results': 50,  # Max allowed, adaptive system determines actual count
                                     'quality_threshold': quality_threshold,
                                     'min_quality_score': min_quality_score,
                                     'max_re_retrieval_attempts': max_re_retrieval,
-                                    'enable_re_retrieval': max_re_retrieval > 0,  # Disable if max = 0
-                                    'document_filters': document_scope  # UI parameter → Swarm
+                                    'enable_re_retrieval': max_re_retrieval > 0,
+                                    'document_filters': document_scope,
+                                    # NEW: Adaptive retrieval parameters (US-RAG-003)
+                                    'retrieval_mode': st.session_state.retrieval_mode,
+                                    'manual_chunk_count': st.session_state.manual_chunk_count if st.session_state.retrieval_mode == 'manual' else None,
+                                    'available_doc_count': len(available_docs) if available_docs else 100
                                 })
                             )
                             
@@ -1418,7 +1506,9 @@ def agent_chat_page():
                                 'confidence': result.get('confidence', 0),
                                 'sources_cited': result.get('sources_cited', []),
                                 'pipeline_metrics': pipeline_state.get('metrics', {}),
-                                'stages_completed': pipeline_state.get('stages_completed', [])
+                                'stages_completed': pipeline_state.get('stages_completed', []),
+                                # NEW: Include adaptive decision info (US-RAG-003)
+                                'adaptive_decision': pipeline_state.get('adaptive_decision')
                             }
                             
                         else:
@@ -1548,6 +1638,24 @@ def agent_chat_page():
                                 "Confidence",
                                 f"{conf_color} {confidence:.2f}"
                             )
+                        
+                        # NEW: Adaptive Decision Info (US-RAG-003)
+                        if stats.get('adaptive_decision'):
+                            st.markdown("#### 🎯 Adaptive Retrieval")
+                            adaptive = stats['adaptive_decision']
+                            
+                            adapt_col1, adapt_col2 = st.columns(2)
+                            with adapt_col1:
+                                st.metric("Query Type", adaptive.get('query_type', 'unknown'))
+                            with adapt_col2:
+                                st.metric("Chunks Retrieved", adaptive.get('chunk_count', 0))
+                            
+                            if adaptive.get('query_analysis'):
+                                analysis = adaptive['query_analysis']
+                                st.caption(f"🔍 Complexity: {analysis.get('complexity_score', 0):.2f} | "
+                                         f"Specificity: {analysis.get('specificity_score', 0):.2f}")
+                            
+                            st.info(f"💡 {adaptive.get('rationale', 'No rationale provided')}")
                         
                         # Pipeline timing
                         if 'pipeline_metrics' in stats:
@@ -1798,6 +1906,143 @@ def testing_evaluation_page():
             help="Enter any question or query to test the RAG system"
         )
         
+        st.markdown("---")
+        
+        # Document Scope (same as Agent Chat)
+        st.markdown("### 📚 Document Scope")
+        available_docs = load_documents_from_qdrant(show_debug=False)
+        
+        if available_docs:
+            doc_col1, doc_col2 = st.columns([3, 1])
+            
+            with doc_col1:
+                doc_options = [
+                    f"{doc['file_name']} ({doc.get('file_type', 'unknown')}, {doc.get('chunk_count', 0)} chunks)"
+                    for doc in available_docs
+                ]
+                
+                selected_doc_display = st.multiselect(
+                    "Focus on specific documents (optional)",
+                    options=doc_options,
+                    default=[],
+                    help="🤖 Test will search within selected documents. Leave empty for automatic document discovery.",
+                    key="test_doc_scope"
+                )
+                
+                # Convert to document names
+                if selected_doc_display:
+                    test_selected_docs = [
+                        doc['file_name'] for doc in available_docs
+                        if f"{doc['file_name']} ({doc.get('file_type', 'unknown')}, {doc.get('chunk_count', 0)} chunks)" in selected_doc_display
+                    ]
+                else:
+                    test_selected_docs = []
+            
+            with doc_col2:
+                if not test_selected_docs:
+                    st.success(
+                        f"🤖 **Automatic**\n\n"
+                        f"{len(available_docs)} docs\n\n"
+                        f"Test searches all"
+                    )
+                else:
+                    total_chunks = sum(
+                        doc.get('chunk_count', 0) for doc in available_docs
+                        if doc['file_name'] in test_selected_docs
+                    )
+                    st.info(
+                        f"🎯 **Focused**\n\n"
+                        f"{len(test_selected_docs)} docs\n"
+                        f"{total_chunks} chunks"
+                    )
+        else:
+            st.info("📁 No documents indexed yet")
+            test_selected_docs = []
+        
+        st.markdown("---")
+        
+        # Adaptive Retrieval Strategy (same as Agent Chat)
+        st.markdown("### 🎯 Adaptive Retrieval Strategy")
+        
+        # Initialize test session state for retrieval settings
+        if 'test_retrieval_mode' not in st.session_state:
+            st.session_state.test_retrieval_mode = 'auto'
+        if 'test_manual_chunk_count' not in st.session_state:
+            st.session_state.test_manual_chunk_count = 15
+        
+        retrieval_col1, retrieval_col2 = st.columns([2, 1])
+        
+        with retrieval_col1:
+            test_retrieval_mode = st.selectbox(
+                "Retrieval Strategy",
+                ["🤖 Auto (Recommended)", "👤 Manual Control", "⚡ Performance Mode"],
+                index=0,
+                help=(
+                    "**Auto**: Agent intelligently determines optimal chunk count based on query complexity\n\n"
+                    "**Manual**: You specify exact chunk count (5-50)\n\n"
+                    "**Performance**: Fast mode with focused retrieval (8 chunks)"
+                ),
+                key="test_retrieval_mode_select"
+            )
+            
+            # Extract mode from display text
+            if "Auto" in test_retrieval_mode:
+                st.session_state.test_retrieval_mode = "auto"
+            elif "Manual" in test_retrieval_mode:
+                st.session_state.test_retrieval_mode = "manual"
+            else:
+                st.session_state.test_retrieval_mode = "performance"
+        
+        with retrieval_col2:
+            if st.session_state.test_retrieval_mode == "auto":
+                st.success(
+                    "🤖 **Intelligent**\n\n"
+                    "Adapts to query\n\n"
+                    "5-50 chunks"
+                )
+            elif st.session_state.test_retrieval_mode == "performance":
+                st.info(
+                    "⚡ **Fast**\n\n"
+                    "Quick response\n\n"
+                    "8 chunks"
+                )
+            else:
+                st.info(
+                    "👤 **Manual**\n\n"
+                    "Full control\n\n"
+                    f"{st.session_state.test_manual_chunk_count} chunks"
+                )
+        
+        # Manual control slider (only show in manual mode)
+        if st.session_state.test_retrieval_mode == "manual":
+            st.session_state.test_manual_chunk_count = st.slider(
+                "Number of Chunks to Retrieve",
+                min_value=5,
+                max_value=50,
+                value=st.session_state.test_manual_chunk_count,
+                step=1,
+                help=(
+                    "Specify exact number of document chunks to retrieve.\n\n"
+                    "💡 **Tip**: 10-20 chunks works well for most queries.\n\n"
+                    "**Guidelines:**\n"
+                    "- Simple questions: 5-15 chunks\n"
+                    "- Moderate queries: 15-25 chunks\n"
+                    "- Complex analysis: 25-40 chunks\n"
+                    "- Multi-step reasoning: 35-50 chunks"
+                ),
+                key="test_manual_chunk_slider"
+            )
+            
+            # Show real-time feedback
+            if st.session_state.test_manual_chunk_count < 10:
+                st.warning("⚠️ Low chunk count - may miss relevant context")
+            elif st.session_state.test_manual_chunk_count > 40:
+                st.warning("⚠️ High chunk count - may include noise")
+            else:
+                st.success("✅ Good chunk count for balanced results")
+        
+        st.markdown("---")
+        
         # Test configuration
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -1810,11 +2055,20 @@ def testing_evaluation_page():
         if st.button("🚀 Run Test", type="primary", use_container_width=True):
             if test_query:
                 with st.spinner("Processing query with full transparency..."):
+                    # Build document filters
+                    test_doc_filters = None
+                    if test_selected_docs:
+                        test_doc_filters = {'source': test_selected_docs}
+                    
                     test_result = run_transparent_test(
                         test_query,
                         show_query_rewriting,
                         show_retrieval_stages,
-                        show_scoring_details
+                        show_scoring_details,
+                        retrieval_mode=st.session_state.test_retrieval_mode,
+                        manual_chunk_count=st.session_state.test_manual_chunk_count if st.session_state.test_retrieval_mode == 'manual' else None,
+                        document_filters=test_doc_filters,
+                        available_doc_count=len(available_docs) if available_docs else 100
                     )
                     
                     # Display transparency report
@@ -2000,7 +2254,17 @@ def testing_evaluation_page():
             st.rerun()
 
 
-def run_transparent_test(query: str, show_rewriting: bool, show_stages: bool, show_scoring: bool, use_swarm: bool = True) -> Dict:
+def run_transparent_test(
+    query: str, 
+    show_rewriting: bool, 
+    show_stages: bool, 
+    show_scoring: bool, 
+    use_swarm: bool = True,
+    retrieval_mode: str = 'auto',
+    manual_chunk_count: int = None,
+    document_filters: Dict = None,
+    available_doc_count: int = 100
+) -> Dict:
     """Run a test query with full transparency."""
     import time
     
@@ -2022,11 +2286,16 @@ def run_transparent_test(query: str, show_rewriting: bool, show_stages: bool, sh
             retrieval_start = time.time()
             response = asyncio.run(swarm.execute({
                 'query': query,
-                'max_results': 10,
+                'max_results': 50,  # Max allowed, adaptive system determines actual count
                 'quality_threshold': 0.45,  # Realistic default
                 'min_quality_score': 0.4,   # Minimum acceptable
                 'max_re_retrieval_attempts': 1,
-                'enable_re_retrieval': True
+                'enable_re_retrieval': True,
+                'document_filters': document_filters,  # Pass document scope
+                # Adaptive retrieval parameters from UI
+                'retrieval_mode': retrieval_mode,
+                'manual_chunk_count': manual_chunk_count,
+                'available_doc_count': available_doc_count
             }))
             retrieval_time = time.time() - retrieval_start
             
@@ -2132,7 +2401,12 @@ def display_transparency_report(result: Dict):
     
     # Response
     st.markdown("### 💬 Generated Response")
-    st.markdown(f'<div class="transparency-panel">{result.get("response", "No response")}</div>', unsafe_allow_html=True)
+    response_text = result.get("response", "No response")
+    if response_text and response_text != "No response":
+        # Use st.info for better visibility with proper text rendering
+        st.info(response_text)
+    else:
+        st.warning("⚠️ No response generated - check if the query was processed successfully")
     
     # Context details
     with st.expander("🔍 Retrieved Context Details", expanded=True):

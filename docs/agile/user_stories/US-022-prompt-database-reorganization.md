@@ -1,7 +1,7 @@
 # User Story US-022: Prompt Database Reorganization and Cleanup
 
 **Story ID**: US-022  
-**Epic**: EPIC-2 - Intelligent Prompt Engineering  
+**Epic**: EPIC-2 - Intelligent Prompt Engineering
 **Sprint**: Sprint 2  
 **Priority**: HIGH  
 **Story Points**: 8  

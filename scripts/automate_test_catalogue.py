@@ -207,7 +207,7 @@ class TestCatalogueAutomation:
         # Check if our automation is already in the hook
         automation_marker = "# Test catalogue automation"
         if automation_marker in hook_content:
-            self.logger.info("✅ Test catalogue automation already in git hook")
+            self.logger.info("[OK] Test catalogue automation already in git hook")
             return True
         
         # Add our automation to the hook
@@ -232,11 +232,11 @@ python scripts/automate_test_catalogue.py --git-hook
             if os.name != 'nt':
                 os.chmod(hook_file, 0o755)
             
-            self.logger.info("✅ Git hook configured for test catalogue automation")
+            self.logger.info("[OK] Git hook configured for test catalogue automation")
             return True
             
         except Exception as e:
-            self.logger.error(f"❌ Failed to setup git hook: {e}")
+            self.logger.error(f"[ERROR] Failed to setup git hook: {e}")
             return False
     
     def run_scheduled_updates(self, interval_minutes: int = 10) -> None:
@@ -251,22 +251,22 @@ python scripts/automate_test_catalogue.py --git-hook
                     time.sleep(interval_minutes * 60)
                     
                 except KeyboardInterrupt:
-                    self.logger.info("🛑 Scheduled updates stopped by user")
+                    self.logger.info("[STOP] Scheduled updates stopped by user")
                     break
                 except Exception as e:
-                    self.logger.error(f"❌ Error in scheduled update: {e}")
+                    self.logger.error(f"[ERROR] Error in scheduled update: {e}")
                     time.sleep(30)  # Wait 30 seconds before retrying
                     
         except Exception as e:
-            self.logger.error(f"❌ Scheduled updates failed: {e}")
+            self.logger.error(f"[ERROR] Scheduled updates failed: {e}")
     
     def validate_catalogue_integrity(self) -> bool:
         """Validate that the catalogue is consistent with actual test files."""
         
-        self.logger.info("🔍 Validating test catalogue integrity...")
+        self.logger.info("[VALIDATE] Validating test catalogue integrity...")
         
         if not self.catalogue_file.exists():
-            self.logger.error("❌ Test catalogue file doesn't exist")
+            self.logger.error("[ERROR] Test catalogue file doesn't exist")
             return False
         
         # Run validator
@@ -276,14 +276,14 @@ python scripts/automate_test_catalogue.py --git-hook
             ], capture_output=True, text=True, timeout=60)
             
             if result.returncode == 0:
-                self.logger.info("✅ Test catalogue integrity validated")
+                self.logger.info("[OK] Test catalogue integrity validated")
                 return True
             else:
-                self.logger.error(f"❌ Catalogue validation failed: {result.stderr}")
+                self.logger.error(f"[ERROR] Catalogue validation failed: {result.stderr}")
                 return False
                 
         except Exception as e:
-            self.logger.error(f"❌ Failed to validate catalogue: {e}")
+            self.logger.error(f"[ERROR] Failed to validate catalogue: {e}")
             return False
     
     def get_catalogue_stats(self) -> Dict[str, Any]:

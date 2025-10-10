@@ -1,6 +1,6 @@
 # US-PE-03: Advanced Prompt Optimization
 
-**Epic**: Epic 2: Intelligent Prompt Engineering & Optimization  
+**Epic**: EPIC-4 - Integrated System Intelligence & Organic Metabolic Architecture
 **Sprint**: Sprint 4  
 **Story Points**: 8  
 **Priority**: HIGH  

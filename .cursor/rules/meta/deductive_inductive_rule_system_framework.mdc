@@ -6,7 +6,7 @@ contexts:
 - ALL
 dependencies: []
 description: Deductive-Inductive Rule System Framework - Meta-governance for rule hierarchy and application
-enforcement: foundational
+enforcement: blocking
 formalLayer: meta
 globs:
 - '**/*'

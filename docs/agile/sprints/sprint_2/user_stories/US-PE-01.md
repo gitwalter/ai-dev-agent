@@ -1,6 +1,6 @@
 # US-PE-01: Prompt Engineering Core System
 
-**Epic**: Epic 2: Intelligent Prompt Engineering & Optimization  
+**Epic**: EPIC-2 - Intelligent Prompt Engineering
 **Sprint**: Sprint 2  
 **Story Points**: 13  
 **Priority**: CRITICAL  

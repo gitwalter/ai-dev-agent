@@ -258,10 +258,20 @@ Guidelines:
         
         for idx, result in enumerate(context_results[:10], 1):  # Top 10
             content = result.get('content', '')
-            source = result.get('source', result.get('file', 'unknown'))
-            score = result.get('combined_score', 0)
+            # Try multiple possible source locations
+            metadata = result.get('metadata', {})
+            source = (
+                result.get('file_path') or  # From context_engine.py line 809
+                metadata.get('source') or 
+                metadata.get('file_path') or
+                result.get('source') or
+                result.get('file') or
+                'unknown'
+            )
+            score = result.get('combined_score', result.get('relevance_score', 0))
+            chunk_idx = result.get('chunk_index', metadata.get('chunk_index', '?'))
             
-            prompt += f"[Context {idx}] (Relevance: {score:.2f}, Source: {source})\n"
+            prompt += f"[Context {idx}] (Source: {source}, Chunk: {chunk_idx}, Relevance: {score:.2f})\n"
             prompt += f"{content[:500]}...\n\n"  # First 500 chars
         
         # Add quality context
@@ -283,7 +293,15 @@ Guidelines:
         
         for idx, result in enumerate(context_results[:3], 1):
             content = result.get('content', '')[:200]
-            source = result.get('source', 'unknown')
+            # Try multiple possible source locations
+            metadata = result.get('metadata', {})
+            source = (
+                result.get('file_path') or
+                metadata.get('source') or
+                metadata.get('file_path') or
+                result.get('source') or
+                'unknown'
+            )
             response += f"{idx}. From {source}: {content}...\n\n"
         
         return response

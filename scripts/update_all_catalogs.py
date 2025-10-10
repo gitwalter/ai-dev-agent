@@ -87,17 +87,17 @@ class CatalogManager:
             )
             
             if result.returncode == 0:
-                self.logger.info(f"✅ {script_path} completed successfully")
+                self.logger.info(f"[OK] {script_path} completed successfully")
                 return True
             else:
-                self.logger.error(f"❌ {script_path} failed: {result.stderr}")
+                self.logger.error(f"[ERROR] {script_path} failed: {result.stderr}")
                 return False
                 
         except subprocess.TimeoutExpired:
-            self.logger.error(f"⏰ {script_path} timed out")
+            self.logger.error(f"[TIMEOUT] {script_path} timed out")
             return False
         except Exception as e:
-            self.logger.error(f"❌ Failed to run {script_path}: {e}")
+            self.logger.error(f"[ERROR] Failed to run {script_path}: {e}")
             return False
     
     def update_test_catalogue(self, force: bool = False) -> bool:
@@ -157,10 +157,10 @@ class CatalogManager:
         all_valid = all(validation_results.values())
         
         if all_valid:
-            self.logger.info("✅ All catalogs validated successfully")
+            self.logger.info("[OK] All catalogs validated successfully")
         else:
             failed = [k for k, v in validation_results.items() if not v]
-            self.logger.error(f"❌ Validation failed for: {failed}")
+            self.logger.error(f"[ERROR] Validation failed for: {failed}")
         
         return all_valid
     
@@ -228,7 +228,7 @@ class CatalogManager:
     def update_all(self, force: bool = False, test_only: bool = False, agile_only: bool = False) -> bool:
         """Update all catalogs."""
         
-        self.logger.info("🚀 Starting comprehensive catalog update...")
+        self.logger.info("[START] Starting comprehensive catalog update...")
         
         results = {}
         
@@ -248,14 +248,14 @@ class CatalogManager:
         successful = sum(1 for success in results.values() if success)
         total = len(results)
         
-        self.logger.info(f"📊 Catalog update summary: {successful}/{total} successful")
+        self.logger.info(f"[SUMMARY] Catalog update summary: {successful}/{total} successful")
         
         if successful == total:
-            self.logger.info("🎉 All catalog updates completed successfully")
+            self.logger.info("[SUCCESS] All catalog updates completed successfully")
             return True
         else:
             failed_tasks = [task for task, success in results.items() if not success]
-            self.logger.error(f"❌ Failed tasks: {failed_tasks}")
+            self.logger.error(f"[ERROR] Failed tasks: {failed_tasks}")
             return False
     
     def setup_automation(self) -> bool:
@@ -305,11 +305,11 @@ if __name__ == "__main__":
             with open(automation_script, 'w', encoding='utf-8') as f:
                 f.write(automation_content)
             
-            self.logger.info("✅ Automation script created")
+            self.logger.info("[OK] Automation script created")
             return True
             
         except Exception as e:
-            self.logger.error(f"❌ Failed to create automation script: {e}")
+            self.logger.error(f"[ERROR] Failed to create automation script: {e}")
             return False
 
 def main():

@@ -1,5 +1,8 @@
 # US-CORE-003: Streamlined Git Workflow Implementation
 
+**Epic**: EPIC-6 - Full Cursor Automation
+
+
 **Priority**: HIGH | **Story Points**: 5 | **Sprint**: Current | **Status**: ✅ **COMPLETED**
 
 ## User Story

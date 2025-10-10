@@ -152,6 +152,32 @@ setup_automated_git_pull.py:
   mandatory_for: ["repository synchronization", "automatic updates"]
 ```
 
+### **File Operations & Link Integrity** (MANDATORY USAGE)
+```yaml
+link_healing_system.py:
+  location: "scripts/link_healing_system.py"
+  mcp_tools: "utils/mcp/tools/link_integrity_tools.py"
+  triggers: ["file rename", "file move", "directory reorganization", "link validation"]
+  mandatory_for: ["any file operations that could break documentation links"]
+  description: "Prevents broken links during file operations"
+  
+  # MCP Tool Integration (5 tools available)
+  mcp_tool_ids:
+    - "link.scan_all" (scan project for all links)
+    - "link.validate" (validate and find broken links)
+    - "link.heal" (heal links after file renames)
+    - "link.generate_report" (generate link analysis report)
+    - "link.check_before_move" (check impact before moving files)
+    
+  # Usage Pattern
+  workflow:
+    1_before_rename: "python scripts/link_healing_system.py  # Scan and validate"
+    2_check_impact: "Use link.check_before_move MCP tool"
+    3_perform_rename: "Rename/move files"
+    4_heal_links: "Use link.heal MCP tool with rename mapping"
+    5_verify: "Use link.validate to confirm no broken links"
+```
+
 ## 2. Enforcement Mechanisms
 
 ### **Operation Interception**
@@ -207,6 +233,12 @@ class ContextAutomationEnforcer:
         "BUILD_DEPLOY": {
             "daily_builds": ["daily_build_automation.py"],
             "setup_validation": ["setup_status_automation.py"]
+        },
+        "FILE_OPERATIONS": {
+            "file_rename": ["link_healing_system.py"],
+            "file_move": ["link_healing_system.py"],
+            "directory_reorganization": ["link_healing_system.py"],
+            "link_validation": ["link_healing_system.py"]
         }
     }
     
@@ -271,6 +303,29 @@ def enforce_git_automation(operation):
         raise AutomationRequiredError(
             f"Use automation script: {get_required_git_script(operation)}"
         )
+```
+
+### **File Operations & Link Healing** (ZERO TOLERANCE)
+```python
+# FORBIDDEN: File renames/moves without link healing
+def manual_file_rename(old_path: str, new_path: str):
+    os.rename(old_path, new_path)  # BLOCKED - use link_healing_system.py
+
+def manual_directory_move(old_dir: str, new_dir: str):
+    shutil.move(old_dir, new_dir)  # BLOCKED - breaks documentation links
+
+# REQUIRED: Link healing enforcement
+def enforce_link_healing(operation):
+    if operation.type in ["file_rename", "file_move", "directory_reorganization"]:
+        # MANDATORY: Check link impact first
+        impact = check_link_impact(operation.old_path, operation.new_path)
+        
+        if impact.links_affected > 0:
+            # MANDATORY: Use link healing system
+            raise AutomationRequiredError(
+                f"LINK HEALING REQUIRED: {impact.links_affected} links affected. "
+                f"Use: python scripts/link_healing_system.py"
+            )
 ```
 
 ## 4. Script Execution Framework

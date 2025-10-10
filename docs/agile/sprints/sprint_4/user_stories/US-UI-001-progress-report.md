@@ -1,5 +1,8 @@
 # Progress Report: US-UI-001 - Agent Swarm UI Testing and Validation
 
+**Epic**: EPIC-8 - Developer Delight & Maximum Usefulness
+
+
 **Report Date**: 2025-08-31  
 **Story ID**: US-UI-001  
 **Story Title**: Agent Swarm UI Testing and Validation  

@@ -2,7 +2,7 @@
 
 **Story ID**: US-ARCH-001  
 **Title**: Logical Agents Folder Architecture Based on Structural Language Laws  
-**Epic**: Architecture Excellence  
+**Epic**: EPIC-3 - Agent Development & Optimization
 **Sprint**: Sprint 4  
 **Priority**: High  
 **Estimate**: 13 Story Points  

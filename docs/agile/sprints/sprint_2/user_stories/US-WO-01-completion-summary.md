@@ -1,6 +1,6 @@
 # US-WO-01: Basic Workflow Orchestration - COMPLETION SUMMARY
 
-**Epic**: Epic 2: Agent Development & Intelligence Excellence  
+**Epic**: EPIC-3 - Agent Development & Optimization
 **Sprint**: Sprint 2  
 **Story Points**: 8  
 **Priority**: HIGH  

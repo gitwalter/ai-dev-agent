@@ -1,5 +1,8 @@
 # 🎼 User Story US-036: Vibe-Agile Fusion System
 
+**Epic**: EPIC-0 - Development Excellence
+
+
 ## 📖 **User Story**
 
 **As a** developer using the Universal Composition Layer  

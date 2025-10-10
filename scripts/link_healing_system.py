@@ -47,11 +47,11 @@ class LinkHealingSystem:
         
     def scan_all_links(self) -> Dict[str, List[Dict]]:
         """
-        🔍 COMPREHENSIVE LINK DISCOVERY
+        COMPREHENSIVE LINK DISCOVERY
         
         Find every single link in the project that could break during renames.
         """
-        print("🔍 Starting comprehensive link scan...")
+        print("[INFO] Starting comprehensive link scan...")
         
         all_links = {
             "markdown_files": [],
@@ -92,7 +92,7 @@ class LinkHealingSystem:
                             "content_preview": content[:200] + "..." if len(content) > 200 else content
                         })
                 except Exception as e:
-                    print(f"⚠️  Could not read {config_file}: {e}")
+                    print(f"[WARNING] Could not read {config_file}: {e}")
         
         self.all_links = all_links
         return all_links
@@ -125,7 +125,7 @@ class LinkHealingSystem:
             return links
             
         except Exception as e:
-            print(f"⚠️  Error reading {file_path}: {e}")
+            print(f"[WARNING] Error reading {file_path}: {e}")
             return []
     
     def _extract_doc_references_from_python(self, file_path: Path) -> List[str]:
@@ -135,16 +135,16 @@ class LinkHealingSystem:
             doc_refs = re.findall(r'["\']([^"\']*docs/[^"\']*\.md)["\']', content)
             return doc_refs
         except Exception as e:
-            print(f"⚠️  Error reading Python file {file_path}: {e}")
+            print(f"[WARNING] Error reading Python file {file_path}: {e}")
             return []
     
     def validate_all_links(self) -> Dict[str, List]:
         """
-        ✅ LINK VALIDATION
+        LINK VALIDATION
         
         Check every discovered link to see if it resolves correctly.
         """
-        print("✅ Validating all discovered links...")
+        print("[INFO] Validating all discovered links...")
         
         validation_results = {
             "valid_links": [],
@@ -198,19 +198,19 @@ class LinkHealingSystem:
             return resolved.resolve()
             
         except Exception as e:
-            print(f"⚠️  Could not resolve path {link_path}: {e}")
+            print(f"[WARNING] Could not resolve path {link_path}: {e}")
             return None
     
     def create_rename_mapping(self, rename_plan: Dict[str, str]) -> Dict[str, str]:
         """
-        🗺️  CREATE RENAME MAPPING
+        CREATE RENAME MAPPING
         
         Create a comprehensive mapping of old paths to new paths.
         
         Args:
             rename_plan: Dictionary of {old_path: new_path}
         """
-        print("🗺️  Creating comprehensive rename mapping...")
+        print("[INFO] Creating comprehensive rename mapping...")
         
         # Normalize paths and create both absolute and relative mappings
         mapping = {}
@@ -231,11 +231,11 @@ class LinkHealingSystem:
     
     def heal_all_links(self, rename_mapping: Dict[str, str]) -> Dict[str, int]:
         """
-        🔧 HEAL ALL LINKS
+        HEAL ALL LINKS
         
         Update all links to point to new file locations.
         """
-        print("🔧 Starting comprehensive link healing...")
+        print("[INFO] Starting comprehensive link healing...")
         
         healing_stats = {
             "files_updated": 0,
@@ -278,7 +278,7 @@ class LinkHealingSystem:
                 # Write updated content
                 file_path.write_text(updated_content, encoding='utf-8')
                 
-                print(f"✅ Healed {links_healed_in_file} links in {file_info['file']}")
+                print(f"[OK] Healed {links_healed_in_file} links in {file_info['file']}")
                 healing_stats["files_updated"] += 1
                 healing_stats["links_healed"] += links_healed_in_file
             
@@ -322,7 +322,7 @@ class LinkHealingSystem:
         """Generate comprehensive link analysis report."""
         
         report = []
-        report.append("# 🔗 Link Healing Analysis Report")
+        report.append("# Link Healing Analysis Report")
         report.append(f"**Generated**: {datetime.now().isoformat()}")
         report.append("")
         
@@ -331,7 +331,7 @@ class LinkHealingSystem:
         broken_count = len(self.broken_links)
         valid_count = total_links - broken_count
         
-        report.append("## 📊 Summary Statistics")
+        report.append("## Summary Statistics")
         report.append(f"- **Total Links Found**: {total_links}")
         report.append(f"- **Valid Links**: {valid_count}")
         report.append(f"- **Broken Links**: {broken_count}")
@@ -340,7 +340,7 @@ class LinkHealingSystem:
         
         # Broken links details
         if self.broken_links:
-            report.append("## 🚨 Broken Links Requiring Attention")
+            report.append("## Broken Links Requiring Attention")
             report.append("")
             for link in self.broken_links:
                 report.append(f"### {link['path']}")
@@ -355,35 +355,35 @@ class LinkHealingSystem:
 
 def main():
     """
-    🚀 MAIN EXECUTION
+    MAIN EXECUTION
     
     Run comprehensive link analysis and healing for naming convention cleanup.
     """
-    print("🔗 Link Healing System - Starting Analysis")
+    print("Link Healing System - Starting Analysis")
     print("=" * 60)
     
     # Initialize system
     healer = LinkHealingSystem()
     
     # Phase 1: Discover all links
-    print("\n🔍 Phase 1: Link Discovery")
+    print("\nPhase 1: Link Discovery")
     all_links = healer.scan_all_links()
     
-    print(f"✅ Found {len(all_links['discovered_links'])} total links")
-    print(f"📄 Scanned {len(all_links['markdown_files'])} markdown files")
-    print(f"🐍 Found {len(all_links['python_files'])} Python files with doc references")
-    print(f"⚙️  Found {len(all_links['config_files'])} config files with doc references")
+    print(f"[OK] Found {len(all_links['discovered_links'])} total links")
+    print(f"[INFO] Scanned {len(all_links['markdown_files'])} markdown files")
+    print(f"[INFO] Found {len(all_links['python_files'])} Python files with doc references")
+    print(f"[INFO] Found {len(all_links['config_files'])} config files with doc references")
     
     # Phase 2: Validate links
-    print("\n✅ Phase 2: Link Validation")
+    print("\nPhase 2: Link Validation")
     validation_results = healer.validate_all_links()
     
-    print(f"✅ Valid links: {len(validation_results['valid_links'])}")
-    print(f"🚨 Broken links: {len(validation_results['broken_links'])}")
-    print(f"🌐 External links: {len(validation_results['external_links'])}")
+    print(f"[OK] Valid links: {len(validation_results['valid_links'])}")
+    print(f"[WARNING] Broken links: {len(validation_results['broken_links'])}")
+    print(f"[INFO] External links: {len(validation_results['external_links'])}")
     
     # Phase 3: Generate report
-    print("\n📊 Phase 3: Report Generation")
+    print("\nPhase 3: Report Generation")
     report = healer.generate_link_report()
     
     # Save report
@@ -391,14 +391,14 @@ def main():
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report, encoding='utf-8')
     
-    print(f"📊 Report saved to: {report_path}")
+    print(f"[INFO] Report saved to: {report_path}")
     
     # Phase 4: Demonstrate healing capability
-    print("\n🔧 Phase 4: Healing System Ready")
-    print("🎯 To heal links after renames, call:")
+    print("\nPhase 4: Healing System Ready")
+    print("[INFO] To heal links after renames, call:")
     print("   healer.heal_all_links(rename_mapping)")
     print()
-    print("✅ Link Healing System Analysis Complete!")
+    print("[OK] Link Healing System Analysis Complete!")
     
     return healer
 

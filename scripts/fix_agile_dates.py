@@ -19,7 +19,7 @@ import datetime
 def fix_agile_dates():
     """Fix all incorrect dates in agile documents."""
     
-    print("🔧 **Fixing Agile Document Dates**")
+    print("[FIX] **Fixing Agile Document Dates**")
     print("Project started: August 2025")
     print("Correcting all dates before August 2025...")
     
@@ -70,16 +70,16 @@ def fix_agile_dates():
                 if changes > 0:
                     corrections_made += changes
                     files_processed += 1
-                    print(f"✅ Fixed {md_file.relative_to(Path.cwd())}")
+                    print(f"[OK] Fixed {md_file.relative_to(Path.cwd())}")
         
         except Exception as e:
-            print(f"❌ Error processing {md_file}: {e}")
+            print(f"[ERROR] Error processing {md_file}: {e}")
     
-    print(f"\n📊 **Date Correction Summary**")
+    print(f"\n[SUMMARY] **Date Correction Summary**")
     print(f"Files processed: {files_processed}")
     print(f"Date corrections: {corrections_made}")
     print(f"New date standard: {current_date}")
-    print(f"✅ All dates now conform to project timeline (August 2025 onwards)")
+    print(f"[OK] All dates now conform to project timeline (August 2025 onwards)")
 
 
 if __name__ == "__main__":
