@@ -1,0 +1,30 @@
+{
+  "project_context": "Build a modern e-commerce platform for selling handmade crafts. The platform needs to support multiple vendors, handle payments securely, manage inventory, and provide a seamless shopping experience for customers. Target audience is small craft businesses and art collectors.",
+  "project_name": "CraftMarket Platform",
+  "additional_details": {
+    "target_users": ["craft vendors", "art collectors", "gift shoppers"],
+    "expected_scale": "Start with 100 vendors, grow to 1000+ in first year",
+    "budget": "moderate",
+    "timeline": "6 months MVP, 12 months full launch",
+    "must_have_features": [
+      "Vendor onboarding and store management",
+      "Product catalog with images and descriptions",
+      "Shopping cart and checkout",
+      "Payment processing (credit cards, PayPal)",
+      "Order management and tracking",
+      "Customer reviews and ratings"
+    ],
+    "nice_to_have": [
+      "Mobile app",
+      "Social media integration",
+      "Recommendation engine",
+      "Live chat support"
+    ],
+    "technical_preferences": {
+      "backend": "Python/Django or Node.js",
+      "frontend": "React or Vue.js",
+      "database": "PostgreSQL",
+      "hosting": "AWS or Google Cloud"
+    }
+  }
+}

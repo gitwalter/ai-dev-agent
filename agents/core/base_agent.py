@@ -26,13 +26,13 @@ except ImportError:
 class AgentConfig:
     """Configuration for agent instances."""
     agent_id: str
-    agent_type: str
-    prompt_template_id: str
+    agent_type: str = "base_agent"
+    prompt_template_id: str = "default"
     optimization_enabled: bool = True
     performance_monitoring: bool = True
     max_retries: int = 3
     timeout_seconds: int = 30
-    model_name: str = "gemini-2.5-flash-lite"
+    model_name: str = "gemini-2.5-flash"
     temperature: float = 0.1
 
 @dataclass

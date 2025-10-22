@@ -6,7 +6,8 @@ and agent handover visibility.
 """
 
 import logging
-from typing import Dict, Any, List, TypedDict, Annotated, Optional
+from typing import Dict, Any, List, Optional
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 try:
@@ -27,39 +28,42 @@ from agents.rag.writer_agent import WriterAgent
 logger = logging.getLogger(__name__)
 
 
-class RAGSwarmState(TypedDict):
-    """State for RAG agent swarm workflow."""
+class RAGSwarmState(BaseModel):
+    """State for RAG agent swarm workflow using Pydantic BaseModel."""
     
     # Input
-    query: Annotated[str, "User's original query"]
-    max_results: Annotated[int, "Maximum results to return"]
-    quality_threshold: Annotated[float, "Quality threshold for re-retrieval (default: 0.45)"]
-    min_quality_score: Annotated[float, "Minimum acceptable quality score (default: 0.4)"]
-    max_re_retrieval_attempts: Annotated[int, "Maximum re-retrieval attempts (default: 1)"]
-    enable_re_retrieval: Annotated[bool, "Enable automatic re-retrieval"]
-    document_filters: Annotated[Optional[Dict[str, Any]], "Optional document scope filters"]
-    # NEW: Adaptive retrieval parameters (US-RAG-003)
-    retrieval_mode: Annotated[str, "Retrieval mode: auto, manual, or performance"]
-    manual_chunk_count: Annotated[Optional[int], "Manual chunk count (if manual mode)"]
-    available_doc_count: Annotated[int, "Number of documents available for retrieval"]
+    query: str = Field(..., description="User's original query")
+    max_results: int = Field(default=10, description="Maximum results to return")
+    quality_threshold: float = Field(default=0.45, description="Quality threshold for re-retrieval")
+    min_quality_score: float = Field(default=0.4, description="Minimum acceptable quality score")
+    max_re_retrieval_attempts: int = Field(default=1, description="Maximum re-retrieval attempts")
+    enable_re_retrieval: bool = Field(default=True, description="Enable automatic re-retrieval")
+    document_filters: Optional[Dict[str, Any]] = Field(default=None, description="Optional document scope filters")
+    retrieval_mode: str = Field(default="auto", description="Retrieval mode: auto, manual, or performance")
+    manual_chunk_count: Optional[int] = Field(default=None, description="Manual chunk count (if manual mode)")
+    available_doc_count: int = Field(default=0, description="Number of documents available for retrieval")
     
     # Agent outputs
-    query_analysis: Annotated[Dict[str, Any], "Output from QueryAnalystAgent"]
-    retrieval_results: Annotated[List[Dict], "Output from RetrievalSpecialistAgent"]
-    ranked_results: Annotated[List[Dict], "Output from ReRankerAgent"]
-    quality_report: Annotated[Dict[str, Any], "Output from QualityAssuranceAgent"]
-    final_response: Annotated[Dict[str, Any], "Output from WriterAgent"]
-    adaptive_decision: Annotated[Optional[Dict[str, Any]], "Adaptive retrieval decision info (US-RAG-003)"]
+    query_analysis: Dict[str, Any] = Field(default_factory=dict, description="Output from QueryAnalystAgent")
+    retrieval_results: List[Dict] = Field(default_factory=list, description="Output from RetrievalSpecialistAgent")
+    ranked_results: List[Dict] = Field(default_factory=list, description="Output from ReRankerAgent")
+    quality_report: Dict[str, Any] = Field(default_factory=dict, description="Output from QualityAssuranceAgent")
+    final_response: Dict[str, Any] = Field(default_factory=dict, description="Output from WriterAgent")
+    adaptive_decision: Optional[Dict[str, Any]] = Field(default=None, description="Adaptive retrieval decision info (US-RAG-003)")
     
     # Workflow control
-    current_stage: Annotated[str, "Current pipeline stage"]
-    stages_completed: Annotated[List[str], "Completed stages"]
-    needs_re_retrieval: Annotated[bool, "Whether re-retrieval is needed"]
-    re_retrieval_done: Annotated[bool, "Flag to prevent infinite re-retrieval loops"]
-    errors: Annotated[List[str], "Error messages"]
+    current_stage: str = Field(default="initialized", description="Current pipeline stage")
+    stages_completed: List[str] = Field(default_factory=list, description="Completed stages")
+    needs_re_retrieval: bool = Field(default=False, description="Whether re-retrieval is needed")
+    re_retrieval_done: bool = Field(default=False, description="Flag to prevent infinite re-retrieval loops")
+    errors: List[str] = Field(default_factory=list, description="Error messages")
     
     # Metrics
-    metrics: Annotated[Dict[str, float], "Pipeline timing metrics"]
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Pipeline timing metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
 
 
 class RAGSwarmCoordinator:
@@ -90,9 +94,9 @@ class RAGSwarmCoordinator:
         
         # Build LangGraph workflow
         self.workflow = self._build_workflow()
-        self.app = self.workflow.compile(checkpointer=MemorySaver())
+        self.app = self.workflow.compile()
         
-        logger.info("✅ RAG Swarm Coordinator (LangGraph) initialized with 5 specialized agents")
+        logger.info("RAG Swarm Coordinator (LangGraph) initialized with 5 specialized agents")
     
     def _build_workflow(self) -> StateGraph:
         """Build LangGraph workflow for RAG pipeline."""

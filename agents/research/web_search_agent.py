@@ -54,9 +54,19 @@ class WebSearchAgent(EnhancedBaseAgent):
         
         self.search_enabled = self._check_search_availability()
         self.max_retries = 3
-        self.rate_limit_delay = 1.0  # seconds
-        
-        logger.info(f"✅ WebSearchAgent initialized (search enabled: {self.search_enabled})")
+        self.rate_limit_delay = 1.0
+        logger.info(f"WebSearchAgent initialized (search enabled: {self.search_enabled})")
+    
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """Validate task has required search terms."""
+        return isinstance(task, dict) and 'search_terms' in task
+    
+    async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute web search."""
+        search_terms = task.get('search_terms', [])
+        max_results = task.get('max_results', 10)
+        results = await self.search(search_terms, max_results)
+        return {'success': True, 'results': results}
     
     def _check_search_availability(self) -> bool:
         """Check if web search dependencies are available."""

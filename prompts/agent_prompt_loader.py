@@ -1,38 +1,75 @@
 """
-Agent Prompt Loader.
+Agent Prompt Loader with LangSmith Integration.
 
 This module provides utilities for agents to load and use their system prompts.
+Implements a hybrid approach: LangSmith Hub -> Local DB -> Hardcoded Fallback
 """
 
+import logging
 from typing import Dict, Any, Optional
-from utils.prompt_management.prompt_manager import get_prompt_manager
+
+logger = logging.getLogger(__name__)
+
+# Try to import LangSmith loader
+try:
+    from utils.prompt_management.langsmith_prompt_loader import get_langsmith_loader
+    LANGSMITH_AVAILABLE = True
+except ImportError:
+    LANGSMITH_AVAILABLE = False
+    logger.debug("LangSmith loader not available")
 
 class AgentPromptLoader:
     """Utility class for agents to load their prompts."""
     
-    def __init__(self, agent_name: str):
+    def __init__(self, agent_name: str, use_langsmith: bool = True):
+        """
+        Initialize the agent prompt loader.
+        
+        Args:
+            agent_name: Name of the agent
+            use_langsmith: Whether to try loading from LangSmith (default: True)
+        """
         self.agent_name = agent_name
-        self.prompt_manager = get_prompt_manager()
+        self.use_langsmith = use_langsmith
+        self._langsmith_loader = None
+        
+        if use_langsmith and LANGSMITH_AVAILABLE:
+            try:
+                self._langsmith_loader = get_langsmith_loader()
+            except Exception as e:
+                logger.debug(f"Could not initialize LangSmith loader: {e}")
     
-    def get_system_prompt(self, use_enhanced: bool = True) -> str:
-        """Get the system prompt for this agent."""
-        # First try to get simplified prompt (preferred)
-        simplified_prompt = self.prompt_manager.get_simplified_prompt(self.agent_name)
-        if simplified_prompt:
-            return simplified_prompt
+    def get_system_prompt(self, use_enhanced: bool = True, force_refresh: bool = False) -> str:
+        """
+        Get the system prompt for this agent using hybrid approach.
         
-        # Then try enhanced prompt
-        if use_enhanced:
-            enhanced_prompt = self.prompt_manager.get_enhanced_prompt(self.agent_name)
-            if enhanced_prompt:
-                return enhanced_prompt
+        Loading Strategy (in order):
+        1. LangSmith Prompt Hub (if enabled and available)
+        2. Hardcoded fallback
         
-        # Fall back to database prompt
-        best_prompt = self.prompt_manager.get_best_prompt(self.agent_name)
-        if best_prompt:
-            return best_prompt['template']
+        Args:
+            use_enhanced: Deprecated (kept for backwards compatibility)
+            force_refresh: Force reload from LangSmith (bypass cache)
+            
+        Returns:
+            System prompt text
+        """
+        # STEP 1: Try LangSmith Prompt Hub first
+        if self.use_langsmith and self._langsmith_loader:
+            try:
+                langsmith_prompt = self._langsmith_loader.load_from_langsmith(
+                    self.agent_name, 
+                    version="latest",
+                    use_cache=not force_refresh
+                )
+                if langsmith_prompt:
+                    logger.debug(f"[LANGSMITH] Using prompt from LangSmith for {self.agent_name}")
+                    return langsmith_prompt
+            except Exception as e:
+                logger.debug(f"LangSmith load failed for {self.agent_name}: {e}")
         
-        # Fall back to default prompt
+        # STEP 2: Fall back to hardcoded default
+        logger.debug(f"[FALLBACK] Using hardcoded prompt for {self.agent_name}")
         return self.get_default_prompt()
     
     def get_default_prompt(self) -> str:
@@ -379,11 +416,10 @@ Please generate the code files with clear structure and organization.'''
     def format_prompt(self, variables: Dict[str, Any]) -> str:
         """Format the system prompt with variables."""
         prompt = self.get_system_prompt()
-        return self.prompt_manager.format_prompt(prompt, variables)
-    
-    def log_usage(self, prompt_id: int, success: bool, response_time: float = None):
-        """Log prompt usage."""
-        self.prompt_manager.log_prompt_usage(prompt_id, success, response_time)
+        # Simple variable substitution
+        for key, value in variables.items():
+            prompt = prompt.replace(f"{{{key}}}", str(value))
+        return prompt
 
 def get_agent_prompt_loader(agent_name: str) -> AgentPromptLoader:
     """Get a prompt loader for a specific agent."""

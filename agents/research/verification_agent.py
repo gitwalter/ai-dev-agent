@@ -44,7 +44,18 @@ class VerificationAgent(EnhancedBaseAgent):
             timeout_seconds=30
         )
         super().__init__(config)
-        logger.info("✅ VerificationAgent initialized")
+        logger.info("VerificationAgent initialized")
+    
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """Validate task has required content."""
+        return isinstance(task, dict) and 'parsed_content' in task
+    
+    async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute content verification."""
+        parsed_content = task.get('parsed_content', [])
+        query = task.get('query', '')
+        verified = await self.verify(parsed_content, query)
+        return {'success': True, 'verified_content': verified}
     
     async def verify(
         self,

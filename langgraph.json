@@ -1,0 +1,28 @@
+{
+  "dependencies": [
+    "requirements.txt"
+  ],
+  "graphs": {
+    "architecture_designer": "agents/langgraph_studio/architecture_designer_graph.py:graph",
+    "code_generator": "agents/langgraph_studio/code_generator_graph.py:graph",
+    "code_reviewer": "agents/langgraph_studio/code_reviewer_graph.py:graph",
+    "development_workflow": "agents/langgraph_studio/development_workflow_graph.py:graph",
+    "documentation_generator": "agents/langgraph_studio/documentation_generator_graph.py:graph",
+    "rag_swarm": "agents/langgraph_studio/rag_swarm_graph.py:graph",
+    "requirements_analyst": "agents/langgraph_studio/requirements_analyst_graph.py:graph",
+    "security_analyst": "agents/langgraph_studio/security_analyst_graph.py:graph",
+    "swarm_coordinator": "agents/langgraph_studio/swarm_coordinator_graph.py:graph",
+    "test_generator": "agents/langgraph_studio/test_generator_graph.py:graph"
+  },
+  "env": {
+    "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+    "LANGCHAIN_API_KEY": "${LANGCHAIN_API_KEY}",
+    "LANGCHAIN_TRACING_V2": "true",
+    "LANGCHAIN_PROJECT": "ai-dev-agent",
+    "PYTHONPATH": ".",
+    "DATABASE_URI": "sqlite://:memory:",
+    "REDIS_URI": "redis://localhost:6379"
+  },
+  "python_version": "3.11",
+  "dockerfile_lines": []
+}

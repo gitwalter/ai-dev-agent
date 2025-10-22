@@ -62,7 +62,17 @@ class ContentParserAgent(EnhancedBaseAgent):
         super().__init__(config)
         
         self.parser_available = self._check_parser_availability()
-        logger.info(f"✅ ContentParserAgent initialized (parser available: {self.parser_available})")
+        logger.info(f"ContentParserAgent initialized (parser available: {self.parser_available})")
+    
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """Validate task has required raw content."""
+        return isinstance(task, dict) and 'raw_content' in task
+    
+    async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute content parsing."""
+        raw_content = task.get('raw_content', [])
+        parsed = await self.parse_content(raw_content)
+        return {'success': True, 'parsed_content': parsed}
     
     def _check_parser_availability(self) -> bool:
         """Check if HTML parsing libraries are available."""

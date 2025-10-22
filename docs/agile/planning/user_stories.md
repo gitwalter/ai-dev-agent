@@ -97,7 +97,7 @@ This document contains detailed user stories for the AI-Dev-Agent system, organi
 **Completion Date**: 2025-09-14  
 **Dependencies**: US-001
 
-## 🏗️ **Epic 2: Agent Development & Integration**
+## 🏗️ **EPIC-2: Software Development Agents**
 
 ### **US-004: Requirements Analysis Agent**
 **As a** product manager  
@@ -256,7 +256,7 @@ This document contains detailed user stories for the AI-Dev-Agent system, organi
 **Completion Date**: 2025-09-14  
 **Dependencies**: US-006
 
-## 🔄 **Epic 3: Workflow & Process Management**
+## 🔄 **EPIC-4: Developer Experience & Automation** (Workflow Management)
 
 ### **US-011: Workflow Orchestration**
 **As a** project manager  
@@ -471,7 +471,7 @@ This document contains detailed user stories for the AI-Dev-Agent system, organi
 
 ---
 
-## 🧠 **Epic 2: Intelligent Prompt Engineering & Optimization**
+## 🧠 **EPIC-1: AI Intelligence Foundation** (Prompt Engineering)
 
 ### **US-PE-01: Prompt Engineering Core System** ✅ **COMPLETED**
 **As a** development team  

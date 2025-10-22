@@ -15,7 +15,7 @@
 
 ## Epic Context
 
-This story supports **Epic 0: Development Excellence & Process Optimization** by establishing the foundational monitoring and optimization infrastructure that enables continuous improvement of our development processes.
+This story supports **EPIC-1: AI Intelligence Foundation** by establishing the foundational monitoring and optimization infrastructure that enables continuous improvement of our development processes.
 
 ## Story Details
 

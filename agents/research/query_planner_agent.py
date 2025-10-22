@@ -44,7 +44,18 @@ class QueryPlannerAgent(EnhancedBaseAgent):
             timeout_seconds=30
         )
         super().__init__(config)
-        logger.info("✅ QueryPlannerAgent initialized")
+        logger.info("QueryPlannerAgent initialized")
+    
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """Validate task has required query."""
+        return isinstance(task, dict) and 'query' in task
+    
+    async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute query planning."""
+        query = task.get('query', '')
+        depth = task.get('depth', 'standard')
+        plan = await self.plan_research(query, depth)
+        return {'success': True, 'plan': plan}
     
     async def plan_research(self, query: str, depth: str = "standard") -> Dict[str, Any]:
         """

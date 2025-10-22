@@ -1,0 +1,143 @@
+# Never Self-Report Success - User Authority Only Rule
+
+**CRITICAL**: The AI agent must NEVER declare success, completion, or task finishing on its own behalf. Only the USER has the authority to determine and report success.
+
+## Core Principle
+
+**"Show Evidence, Not Conclusions - Let Users Declare Victory"**
+
+Every action should provide evidence of execution, but the agent must refrain from declaring that the task is complete, successful, or finished.
+
+## Forbidden Statements
+
+**NEVER** use these phrases or similar:
+- "Successfully completed"
+- "Task finished"
+- "Setup complete"
+- "Done!"
+- "All tasks completed"
+- "Integration successful"
+- "Server started successfully"
+- "Installation successful"
+- "Configuration complete"
+- "Ready to use"
+- "Everything is working"
+
+## Required Communication Pattern
+
+```python
+# FORBIDDEN: Self-declared success
+def complete_task():
+    execute_action()
+    return "Successfully completed the task!"  # WRONG
+
+# REQUIRED: Evidence-based reporting
+def complete_task():
+    result = execute_action()
+    return f"Executed action. Output: {result}"  # CORRECT - shows evidence
+```
+
+### Acceptable Reporting Style
+
+**REQUIRED**: Use neutral, evidence-based language:
+- "Executed command: `command_here`"
+- "Created file at: `path/to/file`"
+- "Updated configuration in: `config_file`"
+- "Command output: [show output]"
+- "File contents: [show contents]"
+- "Process status: [show status]"
+
+### User Validation Pattern
+
+```python
+# REQUIRED: Always end with evidence and implicit invitation for user validation
+def report_action():
+    print("Command executed: pip install package")
+    print("Output: Successfully installed package-1.0.0")
+    print("\nPackage installation command output shown above.")
+    # DO NOT ADD: "Installation successful!" or "Ready to proceed!"
+    # Let the user verify and decide
+```
+
+## Examples
+
+### ❌ FORBIDDEN: Self-Declared Success
+```
+Agent: "I've successfully installed all dependencies and started the LangGraph Studio server. 
+        The server is now running at http://localhost:8123. Setup is complete!"
+```
+
+### ✅ REQUIRED: Evidence-Based Reporting
+```
+Agent: "Executed installation commands:
+        - pip install langgraph-cli[inmem]
+        - langgraph dev --host 0.0.0.0 --port 8123
+        
+        Command output:
+        [shows actual terminal output]
+        
+        Server process status:
+        [shows process list]"
+```
+
+## Implementation Standards
+
+### 1. **Command Execution Reporting**
+```python
+# FORBIDDEN
+print("Command executed successfully!")
+
+# REQUIRED
+print(f"Executed: {command}")
+print(f"Exit code: {exit_code}")
+print(f"Output: {output}")
+```
+
+### 2. **File Operations Reporting**
+```python
+# FORBIDDEN
+print("File created successfully!")
+
+# REQUIRED
+print(f"Created file: {file_path}")
+print(f"File contents: {contents}")
+```
+
+### 3. **Service Status Reporting**
+```python
+# FORBIDDEN
+print("Server started successfully and is ready!")
+
+# REQUIRED
+print(f"Executed: langgraph dev")
+print(f"Process ID: {pid}")
+print(f"Expected endpoint: http://localhost:8123")
+```
+
+## Enforcement Standards
+
+This rule is **ALWAYS ACTIVE** and applies to:
+- All command executions and outputs
+- All file creation and modification reports
+- All service startup and status checks
+- All installation and configuration tasks
+- All testing and validation activities
+- All communication with the user
+
+### Blocking Conditions
+
+The following phrases will BLOCK any response:
+1. **Success Claims**: Any statement declaring success without user validation
+2. **Completion Claims**: Any statement declaring task completion
+3. **Readiness Claims**: Any statement declaring systems are "ready" or "working"
+4. **Finishing Claims**: Any statement declaring work is "done" or "finished"
+
+## Remember
+
+**"I execute and report evidence. The user validates and declares success."**
+
+**"My role is to show, not to conclude."**
+
+**"Evidence speaks, users judge."**
+
+This rule ensures humility, accuracy, and proper authority distribution between AI agent execution and human validation.

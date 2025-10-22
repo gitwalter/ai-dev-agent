@@ -17,7 +17,7 @@ Part of: Web Research Swarm
 """
 
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 import json
 
@@ -46,7 +46,19 @@ class SynthesisAgent(EnhancedBaseAgent):
             timeout_seconds=60
         )
         super().__init__(config)
-        logger.info("✅ SynthesisAgent initialized")
+        logger.info("SynthesisAgent initialized")
+    
+    def validate_task(self, task: Dict[str, Any]) -> bool:
+        """Validate task has required content."""
+        return isinstance(task, dict) and ('verified_content' in task or 'query' in task)
+    
+    async def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute synthesis."""
+        query = task.get('query', '')
+        verified_content = task.get('verified_content', [])
+        research_plan = task.get('research_plan')
+        synthesis = await self.synthesize(query, verified_content, research_plan)
+        return {'success': True, 'synthesis': synthesis}
     
     async def synthesize(
         self,

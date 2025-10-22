@@ -18,14 +18,12 @@ try:
     from langchain_core.runnables import RunnablePassthrough
     from langchain_google_genai import ChatGoogleGenerativeAI
     from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-    from langchain.agents import AgentExecutor, create_openai_functions_agent
-    from langchain.tools import BaseTool, tool
     from pydantic import BaseModel, Field
     LANGGRAPH_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     LANGGRAPH_AVAILABLE = False
     ChatGoogleGenerativeAI = None
-    logging.warning("LangGraph not available, using fallback")
+    logging.warning(f"LangGraph not available: {e}")
 
 from utils.core.structured_outputs import (
     RequirementsAnalysisOutput, ArchitectureDesignOutput, CodeGenerationOutput,

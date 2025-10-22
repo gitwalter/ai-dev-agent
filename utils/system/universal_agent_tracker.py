@@ -15,6 +15,12 @@ class AgentType(Enum):
     CURSOR_AI = "cursor_ai"
     USER_INTERFACE = "user_interface"
     PROJECT_AGENT = "project_agent"
+    CUSTOM_AGENT = "custom_agent"
+    SWARM_MEMBER = "swarm_member"
+    RULE_AGENT = "rule_agent"
+    BASE_AGENT = "base_agent"
+    ENHANCED_AGENT = "enhanced_agent"
+    RESEARCH_AGENT = "research_agent"
 
 
 class ContextType(Enum):

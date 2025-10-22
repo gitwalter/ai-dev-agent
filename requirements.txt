@@ -48,7 +48,13 @@ langchain-community==0.3.29  # Includes HuggingFace embeddings
 langchain-huggingface==0.3.1  # Updated HuggingFace embeddings (no deprecation warnings)
 langchain-google-genai==2.1.9
 langchain-text-splitters==0.3.9
-langgraph==0.2.28
+
+# LangGraph and Studio (Updated for LangGraph Studio integration)
+langgraph>=0.2.50  # Latest stable version for Studio support
+langgraph-cli[inmem]>=0.1.55  # CLI with in-memory support for local Studio server
+langgraph-checkpoint>=2.0.0  # Checkpointing support for human-in-the-loop
+trustcall>=0.0.39  # Structured LLM calling with validation
+langsmith>=0.1.147  # LangSmith SDK for prompt management and tracing
 
 # RAG and Embeddings (for US-RAG-001) - NumPy 2.0 compatible versions
 torch>=2.5.1  # PyTorch with NumPy 2.0 support

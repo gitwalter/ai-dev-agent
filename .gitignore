@@ -120,6 +120,13 @@ Thumbs.db
 .streamlit/
 .streamlit/secrets.toml
 
+# LangGraph / LangGraph Studio
+.langgraph_api/
+.langgraph/
+langgraph_storage/
+.langgraph_checkpoints/
+langgraph_data/
+
 # Temporary files
 *.tmp
 *.temp

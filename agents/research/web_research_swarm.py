@@ -102,7 +102,7 @@ class WebResearchSwarmCoordinator:
         
         # Build LangGraph workflow
         self.workflow = self._build_workflow()
-        self.app = self.workflow.compile(checkpointer=MemorySaver())
+        self.app = self.workflow.compile()
         
         logger.info(
             "✅ Web Research Swarm Coordinator initialized with 5 specialized agents "

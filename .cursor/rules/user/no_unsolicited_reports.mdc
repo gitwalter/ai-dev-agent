@@ -1,0 +1,106 @@
+# No Unsolicited Reports Rule
+
+**CRITICAL**: Do NOT create summary reports, status documents, completion reports, migration summaries, or analysis documents unless the user EXPLICITLY requests them.
+
+## Core Principle
+
+**"Implementation First, Reports Only When Asked"**
+
+Users want **working code and systems**, not meta-documentation about what you did. Focus on implementation work, not self-reporting.
+
+## What NOT to Create (Unless Asked)
+
+❌ **Forbidden Without Explicit Request**:
+- Migration completion reports
+- Status summaries  
+- Work completion documents
+- Implementation analysis documents
+- "What we accomplished" summaries
+- "Next steps" planning documents
+- Progress reports
+- Achievement summaries
+- Any document that describes work done rather than technical documentation
+
+## What TO Create (Without Being Asked)
+
+✅ **Always Create**:
+- Code files
+- Configuration files
+- Technical documentation (README.md, API docs)
+- Inline code comments
+- Error handling
+- Tests
+
+✅ **Create When Stale**:
+- README.md updates when features change
+- API documentation when interfaces change
+- Architecture docs when design changes
+- Integration guides when dependencies change
+
+## User Phrases That Mean "Create a Report"
+
+Only create reports when user says:
+- "create a report"
+- "write a summary"
+- "document what you did"
+- "summarize the work"
+- "create a migration report"
+- "write up the results"
+
+## Examples
+
+### ❌ WRONG (Unsolicited Report)
+
+```markdown
+# LangSmith Migration Complete
+
+## Summary
+Successfully migrated all prompts to LangSmith...
+
+## What Was Accomplished
+- ✅ Migrated 8 prompts
+- ✅ Created hybrid system
+...
+```
+
+**Why Wrong**: User didn't ask for a summary. Just do the work and stop.
+
+### ✅ CORRECT (Just Do the Work)
+
+```
+[Migrates prompts]
+[Updates code]
+[Tests system]
+
+User: "Looks good!"
+```
+
+**Why Correct**: Work is done, system works. No unsolicited report needed.
+
+### ✅ CORRECT (When User Asks)
+
+User: "Can you summarize what you just did?"
+
+```markdown
+# Migration Summary
+
+Migrated 8 prompts to LangSmith...
+```
+
+**Why Correct**: User explicitly requested a summary.
+
+## Enforcement
+
+**Before creating ANY document**, ask:
+1. Is this technical documentation needed for the system to work?
+2. Did the user explicitly ask for this report/summary?
+
+If both answers are NO → **Don't create it!**
+
+## Remember
+
+**"Users want action, not reports about action."**
+
+**"Show, don't tell."**
+
+**"Code speaks louder than status documents."**
