@@ -5,13 +5,24 @@ Uses LangChain JsonOutputParser for stable JSON parsing.
 """
 
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from models.state import AgentState
 from models.responses import ArchitectureDesignResponse
 from models.simplified_responses import SimplifiedComponent, SimplifiedArchitectureResponse, create_simplified_architecture_response
-from ..core.base_agent import BaseAgent
+from agents.core.base_agent import BaseAgent
 from prompts import get_agent_prompt_loader
 import google.generativeai as genai
+
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
 
 try:
     from langchain_core.output_parsers import JsonOutputParser
@@ -21,6 +32,26 @@ try:
 except ImportError:
     LANGCHAIN_AVAILABLE = False
 
+
+
+
+class ArchitectureDesignerState(BaseModel):
+    """State for ArchitectureDesigner LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
 
 class ArchitectureDesigner(BaseAgent):
     """
@@ -38,6 +69,17 @@ class ArchitectureDesigner(BaseAgent):
         else:
             self.json_parser = None
     
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+
     def validate_task(self, task: Any) -> bool:
         """
         Validate that the task is appropriate for architecture design.
@@ -542,3 +584,61 @@ class ArchitectureDesigner(BaseAgent):
             # Don't fail, just warn - we can still design basic architecture
         
         return True
+
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for ArchitectureDesigner."""
+        workflow = StateGraph(ArchitectureDesignerState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: ArchitectureDesignerState) -> ArchitectureDesignerState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        from utils.llm.gemini_client_factory import get_gemini_client
+        
+        config = AgentConfig(
+            agent_id='architecture_designer',
+            name='ArchitectureDesigner',
+            description='ArchitectureDesigner agent',
+            model_name='gemini-2.5-flash'
+        )
+        client = get_gemini_client(agent_name='architecture_designer')
+        _default_instance = ArchitectureDesigner(config, gemini_client=client)
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

@@ -114,9 +114,11 @@ class GeminiClientFactory:
         try:
             client = ChatGoogleGenerativeAI(
                 model=model_name,
-                temperature=temperature,
-                max_tokens=max_tokens,
                 google_api_key=api_key,
+                temperature=temperature,
+                convert_system_message_to_human=True,  # Required for Gemini
+                max_retries=5,  # Retry on API errors
+                timeout=120,  # 2 minute timeout
                 **kwargs
             )
             logger.info(f"✅ Created LangChain Gemini client: {model_name}")

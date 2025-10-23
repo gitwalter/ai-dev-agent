@@ -389,3 +389,20 @@ if __name__ == "__main__":
             print(f"\n❌ Error: {result.get('error')}")
     
     asyncio.run(test_research_swarm())
+
+
+# ============================================================================
+# Export for LangGraph Studio
+# ============================================================================
+
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        _default_instance = WebResearchSwarmCoordinator()
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

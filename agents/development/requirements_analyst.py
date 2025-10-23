@@ -1,6 +1,10 @@
 """
 Requirements Analyst Agent for AI Development Agent System.
 Analyzes project requirements and generates comprehensive requirements documentation.
+
+This is a unified LangGraph-native implementation that can work both:
+1. Standalone with LangGraph workflow 
+2. As a traditional agent in existing workflows (backward compatible)
 """
 
 import asyncio
@@ -9,8 +13,9 @@ import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
+from pydantic import BaseModel, Field
 
-from ..core.enhanced_base_agent import EnhancedBaseAgent
+from agents.core.enhanced_base_agent import EnhancedBaseAgent
 from models.responses import AgentResult, AgentStatus
 from models.state import AgentState
 
@@ -33,6 +38,15 @@ try:
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
 
 
 @dataclass
@@ -80,6 +94,35 @@ class RequirementsAnalysis:
     analysis_metadata: Dict[str, Any]
 
 
+class RequirementsAnalystState(BaseModel):
+    """State for Requirements Analyst LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input (required fields)
+    project_context: str = Field(..., description="Project description and context")
+    project_name: str = Field(..., description="Name of the project")
+    additional_details: Optional[Dict[str, Any]] = Field(default=None, description="Additional project details")
+    
+    # Agent outputs (initialized with defaults)
+    requirements_analysis: Dict[str, Any] = Field(default_factory=dict, description="Complete requirements analysis")
+    functional_requirements: List[Dict] = Field(default_factory=list, description="Functional requirements")
+    non_functional_requirements: List[Dict] = Field(default_factory=list, description="Non-functional requirements")
+    user_stories: List[Dict] = Field(default_factory=list, description="User stories")
+    technical_constraints: List[str] = Field(default_factory=list, description="Technical constraints")
+    risks: List[str] = Field(default_factory=list, description="Identified risks")
+    
+    # Workflow control (initialized with defaults)
+    current_stage: str = Field(default="initialized", description="Current analysis stage")
+    stages_completed: List[str] = Field(default_factory=list, description="Completed stages")
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    
+    # Metrics (automatically initialized as empty dict)
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Analysis timing metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
+
+
 class RequirementsAnalyst(EnhancedBaseAgent):
     """
     Requirements Analyst Agent that analyzes project requirements.
@@ -109,6 +152,68 @@ class RequirementsAnalyst(EnhancedBaseAgent):
         
         # Set ai_client for compatibility with execute method
         self.ai_client = gemini_client
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for requirements analysis."""
+        workflow = StateGraph(RequirementsAnalystState)
+        
+        # Simple workflow: just execute the analysis
+        workflow.add_node("analyze", self._langgraph_analyze_node)
+        workflow.set_entry_point("analyze")
+        workflow.add_edge("analyze", END)
+        
+        return workflow
+    
+    async def _langgraph_analyze_node(self, state: RequirementsAnalystState) -> RequirementsAnalystState:
+        """Execute requirements analysis in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            task = {
+                'project_context': state.project_context,
+                'project_name': state.project_name,
+                'description': state.project_context,
+                'additional_details': state.additional_details
+            }
+            
+            result = await self.execute(task)
+            
+            # Update state with results
+            if result.get('success'):
+                analysis = result.get('requirements_analysis', {})
+                state.requirements_analysis = analysis
+                state.functional_requirements = analysis.get('functional_requirements', [])
+                state.non_functional_requirements = analysis.get('non_functional_requirements', [])
+                state.user_stories = analysis.get('user_stories', [])
+                state.technical_constraints = analysis.get('technical_constraints', [])
+                state.risks = analysis.get('risks', [])
+                state.current_stage = 'complete'
+                state.stages_completed.append('analyze')
+            else:
+                state.errors.append(result.get('error', 'Unknown error'))
+                state.current_stage = 'failed'
+            
+            state.metrics['execution_time'] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph analysis failed: {e}")
+            state.errors.append(str(e))
+            state.current_stage = 'failed'
+            state.metrics['execution_time'] = time.time() - start
+        
+        return state
     
     def validate_task(self, task: Any) -> bool:
         """
@@ -1006,3 +1111,27 @@ Provide a comprehensive analysis that covers all aspects of the project requirem
             })
         
         return requirements
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        from utils.llm.gemini_client_factory import get_gemini_client
+        
+        config = AgentConfig(
+            agent_id='requirements_analyst',
+            name='Requirements Analyst',
+            description='Requirements Analyst agent',
+            model_name='gemini-2.5-flash'
+        )
+        client = get_gemini_client(agent_name='requirements_analyst')
+        _default_instance = RequirementsAnalyst(config, gemini_client=client)
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

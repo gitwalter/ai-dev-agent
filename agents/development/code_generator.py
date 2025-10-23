@@ -12,6 +12,17 @@ import time
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
 # Add project root to path for utils imports
 project_root = Path(__file__).parent.parent.parent
 if str(project_root) not in sys.path:
@@ -20,7 +31,7 @@ if str(project_root) not in sys.path:
 from models.state import AgentState
 from models.responses import CodeGenerationResponse
 from models.simplified_responses import SimplifiedCodeFile, SimplifiedCodeResponse, create_simplified_code_response
-from ..core.enhanced_base_agent import EnhancedBaseAgent
+from agents.core.enhanced_base_agent import EnhancedBaseAgent
 from prompts import get_agent_prompt_loader
 import google.generativeai as genai
 # Import with robust path handling and debugging
@@ -72,6 +83,26 @@ except ImportError:
     LANGCHAIN_AVAILABLE = False
 
 
+
+
+class CodeGeneratorState(BaseModel):
+    """State for CodeGenerator LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
+
 class CodeGenerator(EnhancedBaseAgent):
     """
     Agent responsible for generating code based on architecture and requirements.
@@ -114,6 +145,17 @@ class CodeGenerator(EnhancedBaseAgent):
         # Initialize the legacy parser with format instructions
         self.parser = OutputParserFactory.get_parser("code_generator")
     
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+
     def get_enhanced_prompt(self, base_prompt: str) -> str:
         """
         Enhance prompt with masters principles guidance.
@@ -1354,3 +1396,61 @@ NEVER violate file organization rules!
         except Exception as e:
             self.logger.error(f"Failed to create simplified code output: {e}")
             return None
+
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for CodeGenerator."""
+        workflow = StateGraph(CodeGeneratorState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: CodeGeneratorState) -> CodeGeneratorState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        from utils.llm.gemini_client_factory import get_gemini_client
+        
+        config = AgentConfig(
+            agent_id='code_generator',
+            name='CodeGenerator',
+            description='CodeGenerator agent',
+            model_name='gemini-2.5-flash'
+        )
+        client = get_gemini_client(agent_name='code_generator')
+        _default_instance = CodeGenerator(config, gemini_client=client)
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

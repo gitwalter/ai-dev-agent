@@ -25,9 +25,20 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 import sqlite3
 
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
 # Core imports
-from ..core.enhanced_base_agent import EnhancedBaseAgent
-from ..core.base_agent import AgentConfig
+from agents.core.enhanced_base_agent import EnhancedBaseAgent
+from agents.core.base_agent import AgentConfig
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -114,6 +125,26 @@ class ResearchRecommendation:
     confidence_score: float
     created_at: str
 
+
+
+class ComprehensiveResearchAgentState(BaseModel):
+    """State for ComprehensiveResearchAgent LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
+
 class ComprehensiveResearchAgent(EnhancedBaseAgent):
     """
     Enhanced research agent with multi-domain capabilities, web search integration,
@@ -158,6 +189,17 @@ class ComprehensiveResearchAgent(EnhancedBaseAgent):
         logger.info(f"📂 Research database: {self.research_db_path}")
         logger.info(f"🌐 Web search available: {self.web_search_enabled}")
     
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+
     def execute_sync(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """Synchronous wrapper for execute method."""
         import asyncio
@@ -852,6 +894,39 @@ class ComprehensiveResearchAgent(EnhancedBaseAgent):
                 })
         
         return authoritative
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for ComprehensiveResearchAgent."""
+        workflow = StateGraph(ComprehensiveResearchAgentState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: ComprehensiveResearchAgentState) -> ComprehensiveResearchAgentState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
 
 
 # Factory function for easy instantiation
@@ -886,3 +961,25 @@ if __name__ == "__main__":
     import asyncio
     result = asyncio.run(test_research_agent())
     print("🎉 Research agent test completed!")
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        
+        config = AgentConfig(
+            agent_id='comprehensive_research_agent',
+            name='ComprehensiveResearchAgent',
+            description='ComprehensiveResearchAgent agent',
+            model_name='gemini-2.5-flash'
+        )
+        _default_instance = ComprehensiveResearchAgent(".", config)
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

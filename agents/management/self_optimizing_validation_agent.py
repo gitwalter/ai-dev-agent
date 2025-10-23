@@ -11,10 +11,22 @@ before declaring success.
 
 import os
 import subprocess
-from typing import Dict, List, Tuple, Optional
+import logging
+from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
 from dataclasses import dataclass
 from datetime import datetime
+
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
 
 @dataclass
 class ValidationResult:
@@ -25,6 +37,26 @@ class ValidationResult:
     remaining_issues: List[str]
     recommendations: List[str]
     timestamp: datetime
+
+
+
+class SelfOptimizingValidationAgentState(BaseModel):
+    """State for SelfOptimizingValidationAgent LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
 
 class SelfOptimizingValidationAgent:
     """
@@ -42,6 +74,17 @@ class SelfOptimizingValidationAgent:
         self.directory_principles = self._load_directory_principles()
         self.optimization_history = []
         
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            logging.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            logging.info("⚠️ LangGraph not available - using legacy mode")
+
     def _load_directory_principles(self) -> Dict[str, str]:
         """Load directory structure principles (agent DNA)"""
         return {
@@ -411,6 +454,45 @@ This validation agent eliminates the need for user intervention by:
 **Next time, this agent will run automatically after any file organization task!**
 """
         return report
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for SelfOptimizingValidationAgent."""
+        workflow = StateGraph(SelfOptimizingValidationAgentState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: SelfOptimizingValidationAgentState) -> SelfOptimizingValidationAgentState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's perform_comprehensive_validation method
+            result = self.perform_comprehensive_validation()
+            
+            # Update state with results
+            state.output_data = {
+                'success': result.success,
+                'violations_found': result.violations_found,
+                'violations_fixed': result.violations_fixed,
+                'remaining_issues': result.remaining_issues,
+                'recommendations': result.recommendations
+            }
+            state.status = "completed" if result.success else "failed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            logging.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
 
 def main():
     """Run self-optimization validation"""
@@ -427,3 +509,20 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        from utils.llm.gemini_client_factory import get_gemini_client
+        
+        _default_instance = SelfOptimizingValidationAgent()
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

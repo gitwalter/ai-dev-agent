@@ -10,7 +10,18 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
-from ..core.base_agent import BaseAgent
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
+from agents.core.base_agent import BaseAgent
 from models.responses import AgentResult, AgentStatus
 from models.state import AgentState
 from prompts import get_agent_prompt_loader
@@ -42,6 +53,26 @@ class DecisionPoint:
     resolution: Optional[Dict[str, Any]] = None
 
 
+
+
+class ProjectManagerState(BaseModel):
+    """State for ProjectManager LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
+
 class ProjectManagerAgent(BaseAgent):
     """
     Project Manager Agent that coordinates the development workflow.
@@ -63,6 +94,17 @@ class ProjectManagerAgent(BaseAgent):
         self.iteration_count = 0
         self.max_iterations = 3
     
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+
     def get_prompt_template(self) -> str:
         """
         Get the prompt template from the database.
@@ -423,3 +465,43 @@ class ProjectManagerAgent(BaseAgent):
                 "pending_decisions": len([d for d in self.decision_points if d.status == "pending"])
             }
         }
+
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for ProjectManager."""
+        workflow = StateGraph(ProjectManagerState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: ProjectManagerState) -> ProjectManagerState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
+
+
+# Export for LangGraph Studio
+# Note: ProjectManagerAgent doesn't have LangGraph workflow yet
+# This is kept for compatibility but returns None
+graph = None

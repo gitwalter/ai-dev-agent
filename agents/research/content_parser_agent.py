@@ -19,6 +19,17 @@ import logging
 from typing import Dict, List, Any
 from datetime import datetime
 
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
 from agents.core.enhanced_base_agent import EnhancedBaseAgent
 from models.config import AgentConfig
 
@@ -40,6 +51,26 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+
+
+
+class ContentParserAgentState(BaseModel):
+    """State for ContentParserAgent LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
 
 class ContentParserAgent(EnhancedBaseAgent):
     """
@@ -64,6 +95,17 @@ class ContentParserAgent(EnhancedBaseAgent):
         self.parser_available = self._check_parser_availability()
         logger.info(f"ContentParserAgent initialized (parser available: {self.parser_available})")
     
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+
     def validate_task(self, task: Dict[str, Any]) -> bool:
         """Validate task has required raw content."""
         return isinstance(task, dict) and 'raw_content' in task
@@ -329,6 +371,39 @@ Return ONLY the bullet points, one per line, starting with "- ".
                 "parse_failed": True
             }
         }
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for ContentParserAgent."""
+        workflow = StateGraph(ContentParserAgentState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: ContentParserAgentState) -> ContentParserAgentState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
 
 
 if __name__ == "__main__":
@@ -372,3 +447,24 @@ if __name__ == "__main__":
     
     asyncio.run(test_content_parser())
 
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        
+        config = AgentConfig(
+            agent_id='content_parser_agent',
+            name='ContentParserAgent',
+            description='ContentParserAgent agent',
+            model_name='gemini-2.5-flash'
+        )
+        _default_instance = ContentParserAgent()
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

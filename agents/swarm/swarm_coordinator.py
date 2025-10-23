@@ -28,6 +28,17 @@ from dataclasses import dataclass, field
 from enum import Enum
 import json
 
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -118,6 +129,26 @@ class SwarmWorkflow:
     created_at: datetime = field(default_factory=datetime.now)
 
 
+
+
+class SwarmCoordinatorState(BaseModel):
+    """State for SwarmCoordinator LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
+
 class SwarmCoordinator(EnhancedBaseAgent, MCPAgentMixin if BASE_AGENT_AVAILABLE else object):
     """
     MCP-powered swarm coordinator agent.
@@ -158,6 +189,16 @@ class SwarmCoordinator(EnhancedBaseAgent, MCPAgentMixin if BASE_AGENT_AVAILABLE 
         self.coordination_events = []
         
         logger.info(f"🐝 Swarm Coordinator '{config.agent_id}' initialized")
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            logger.info("⚠️ LangGraph not available - using legacy mode")
     
     async def initialize_swarm(self, agent_roles: List[AgentRole] = None) -> bool:
         """
@@ -235,7 +276,7 @@ class SwarmCoordinator(EnhancedBaseAgent, MCPAgentMixin if BASE_AGENT_AVAILABLE 
                     logger.warning(f"Failed to track agent registration: {e}")
             
             logger.info(f"🤖 Initialized {role.value}: {agent_id}")
-    
+
     def _get_agent_capabilities(self, role: AgentRole) -> List[str]:
         """Get capabilities for specific agent role."""
         capabilities_map = {
@@ -644,6 +685,39 @@ class SwarmCoordinator(EnhancedBaseAgent, MCPAgentMixin if BASE_AGENT_AVAILABLE 
         self.active_workflows.clear()
         
         logger.info("✅ Agent swarm shutdown complete")
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for SwarmCoordinator."""
+        workflow = StateGraph(SwarmCoordinatorState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: SwarmCoordinatorState) -> SwarmCoordinatorState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
 
 
 # Factory function for easy coordinator creation
@@ -722,3 +796,27 @@ if __name__ == "__main__":
     
     # Run test
     asyncio.run(main())
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        from utils.llm.gemini_client_factory import get_gemini_client
+        
+        config = AgentConfig(
+            agent_id='swarm_coordinator',
+            name='SwarmCoordinator',
+            description='SwarmCoordinator agent',
+            model_name='gemini-2.5-flash'
+        )
+        client = get_gemini_client(agent_name='swarm_coordinator')
+        _default_instance = SwarmCoordinator(config, gemini_client=client)
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

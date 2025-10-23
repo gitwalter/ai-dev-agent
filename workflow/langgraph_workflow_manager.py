@@ -741,11 +741,15 @@ class LangGraphWorkflowManager:
     def _setup_llm(self) -> ChatGoogleGenerativeAI:
         """Setup the LLM for the workflow."""
         try:
+            # Use environment variable directly (like working project)
+            import os
             return ChatGoogleGenerativeAI(
-                model=self.llm_config.get("model_name", "gemini-2.5-flash-lite"),
-                temperature=self.llm_config.get("temperature", 0.1),
-                max_output_tokens=self.llm_config.get("max_tokens", 8192),
-                google_api_key=self.llm_config.get("api_key")
+                model=self.llm_config.get("model_name", "gemini-2.5-flash"),
+                google_api_key=os.environ.get("GEMINI_API_KEY"),  # Direct env access
+                temperature=self.llm_config.get("temperature", 0),
+                convert_system_message_to_human=True,  # Required for Gemini
+                max_retries=5,  # Retry on API errors
+                timeout=120  # 2 minute timeout
             )
         except Exception as e:
             self.logger.error(f"Failed to setup LLM: {e}")
@@ -783,8 +787,8 @@ class LangGraphWorkflowManager:
         workflow.add_edge("error_handler", END)
         workflow.add_edge("workflow_complete", END)
         
-        # Compile the workflow
-        return workflow.compile(checkpointer=MemorySaver())
+        # Compile the workflow (Studio handles persistence)
+        return workflow.compile()
     
     def _error_handler_node(self, state: AgentState) -> AgentState:
         """Error handling node."""
@@ -861,6 +865,33 @@ class LangGraphWorkflowManager:
                 "errors": [f"Workflow execution failed: {str(e)}"],
                 "current_step": "failed"
             }
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None:
+        # LLM will read GEMINI_API_KEY directly from OS environment
+        llm_config = {
+            "model_name": "gemini-2.5-flash",
+            "temperature": 0,
+            "max_tokens": 8192
+        }
+        
+        try:
+            _default_instance = LangGraphWorkflowManager(llm_config)
+            logging.getLogger(__name__).info("✅ Alternative workflow graph compiled for Studio")
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Failed to create workflow graph: {e}")
+            return None
+    
+    return _default_instance.workflow if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()
 
 
 # Example usage and testing

@@ -45,12 +45,13 @@ try:
     from pydantic import BaseModel, Field
     LANGCHAIN_AVAILABLE = True
 except ImportError as e:
-    print(f"⚠️ LangChain not available: {e}")
+    print(f"[WARNING] LangChain not available: {e}")
     # Create minimal fallback classes
     class BaseTool:
         def __init__(self, **kwargs): pass
     class ToolException(Exception): pass
     class BaseModel: pass
+    class CallbackManagerForToolRun: pass
     def Field(**kwargs): return None
     LANGCHAIN_AVAILABLE = False
 
@@ -60,7 +61,7 @@ try:
     from .server import ToolDefinition, ToolExecutionResult, AccessLevel, ToolCategory
     MCP_AVAILABLE = True
 except ImportError as e:
-    print(f"⚠️ MCP components not available: {e}")
+    print(f"[WARNING] MCP components not available: {e}")
     MCP_AVAILABLE = False
 
 # Universal Agent Tracker integration
@@ -486,7 +487,7 @@ if __name__ == "__main__":
         print(f"Compatibility: {compatibility}")
         
         if not compatibility["integration_ready"]:
-            print("❌ Integration not ready - missing components")
+            print("[ERROR] Integration not ready - missing components")
             return
         
         # Create toolkit
@@ -496,13 +497,13 @@ if __name__ == "__main__":
             # Initialize toolkit
             success = await toolkit.initialize()
             if success:
-                print(f"✅ Toolkit initialized with {len(toolkit.tools)} tools")
+                print(f"[OK] Toolkit initialized with {len(toolkit.tools)} tools")
                 
                 # Show metrics
                 metrics = toolkit.get_toolkit_metrics()
                 print(f"📊 Toolkit metrics: {metrics}")
             else:
-                print("❌ Toolkit initialization failed")
+                print("[ERROR] Toolkit initialization failed")
         
         finally:
             # Cleanup

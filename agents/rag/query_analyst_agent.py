@@ -8,6 +8,17 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
 from agents.core.enhanced_base_agent import EnhancedBaseAgent
 from models.config import AgentConfig
 
@@ -21,6 +32,26 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+
+
+
+class QueryAnalystAgentState(BaseModel):
+    """State for QueryAnalystAgent LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
 
 class QueryAnalystAgent(EnhancedBaseAgent):
     """
@@ -55,6 +86,16 @@ class QueryAnalystAgent(EnhancedBaseAgent):
             'avg_variants_generated': 0,
             'avg_concepts_extracted': 0
         }
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            logger.info("⚠️ LangGraph not available - using legacy mode")
         
         logger.info(f"✅ {self.name} initialized")
     
@@ -202,7 +243,7 @@ Provide comprehensive query analysis in JSON format."""
         }
         
         return analysis
-    
+
     def _fallback_analysis(self, query: str) -> Dict[str, Any]:
         """Fallback analysis when LLM is not available."""
         
@@ -302,3 +343,59 @@ Provide comprehensive query analysis in JSON format."""
             'timestamp': datetime.now().isoformat()
         }
 
+
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for QueryAnalystAgent."""
+        workflow = StateGraph(QueryAnalystAgentState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: QueryAnalystAgentState) -> QueryAnalystAgentState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        from models.config import AgentConfig
+        
+        config = AgentConfig(
+            agent_id='query_analyst_agent',
+            name='QueryAnalystAgent',
+            description='QueryAnalystAgent agent',
+            model_name='gemini-2.5-flash'
+        )
+        _default_instance = QueryAnalystAgent(config)
+    return _default_instance.app if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()

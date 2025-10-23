@@ -12,7 +12,6 @@ from datetime import datetime
 
 try:
     from langgraph.graph import StateGraph, END
-    from langgraph.checkpoint.memory import MemorySaver
     from langchain_core.output_parsers import JsonOutputParser
     from langchain_core.prompts import PromptTemplate
     from langchain_core.runnables import RunnablePassthrough
@@ -96,16 +95,20 @@ class LangGraphWorkflowManager:
             raise ImportError("LangGraph or ChatGoogleGenerativeAI not available")
         
         try:
+            # Use environment variable directly (like working project)
+            import os
             llm = ChatGoogleGenerativeAI(
-                model=self.llm_config.get("model_name", "gemini-2.5-flash-lite"),
-                google_api_key=self.llm_config.get("api_key"),
-                temperature=self.llm_config.get("temperature", 0.1),
-                max_tokens=self.llm_config.get("max_tokens", 8192)
+                model=self.llm_config.get("model_name", "gemini-2.5-flash"),
+                google_api_key=os.environ.get("GEMINI_API_KEY"),  # Direct env access
+                temperature=self.llm_config.get("temperature", 0),
+                convert_system_message_to_human=True,  # Required for Gemini
+                max_retries=5,  # Retry on API errors
+                timeout=120  # 2 minute timeout
             )
-            self.logger.info(f"LLM setup successful: {llm is not None}")
+            self.logger.info(f"✅ LLM setup successful with model: {self.llm_config.get('model_name', 'gemini-2.5-flash')}")
             return llm
         except Exception as e:
-            self.logger.error(f"LLM setup failed: {e}")
+            self.logger.error(f"❌ LLM setup failed: {e}")
             raise
     
     def _create_workflow(self) -> StateGraph:
@@ -159,8 +162,8 @@ class LangGraphWorkflowManager:
         workflow.add_edge("security_analyst", "workflow_controller")
         workflow.add_edge("documentation_generator", "workflow_controller")
         
-        # Compile workflow with memory saver
-        return workflow.compile(checkpointer=MemorySaver())
+        # Compile workflow (LangGraph Studio handles persistence automatically)
+        return workflow.compile()
     
     def _project_analyzer_node(self, state: AgentState) -> AgentState:
         """Analyze project requirements and determine complexity."""
@@ -306,6 +309,11 @@ class LangGraphWorkflowManager:
             required_agents = state.get("required_agents", [])
             completed_agents = state.get("completed_agents", [])
             
+            # DEBUG: Log workflow controller state
+            self.logger.info(f"🎯 WORKFLOW CONTROLLER:")
+            self.logger.info(f"   Required agents: {required_agents}")
+            self.logger.info(f"   Completed agents: {completed_agents}")
+            
             # Find next agent to execute
             next_agent = None
             for agent in required_agents:
@@ -315,6 +323,9 @@ class LangGraphWorkflowManager:
             
             # Check if workflow is complete
             workflow_complete = next_agent is None
+            
+            self.logger.info(f"   Next agent: {next_agent}")
+            self.logger.info(f"   Workflow complete: {workflow_complete}")
             
             return {
                 **state,
@@ -357,9 +368,16 @@ class LangGraphWorkflowManager:
         next_agent = state.get("next_agent")
         workflow_complete = state.get("workflow_complete", False)
         
+        # DEBUG: Log routing decision
+        self.logger.info(f"🔀 ROUTING DECISION:")
+        self.logger.info(f"   next_agent: {next_agent}")
+        self.logger.info(f"   workflow_complete: {workflow_complete}")
+        
         if workflow_complete or next_agent is None:
+            self.logger.info(f"   ✅ Routing to: END")
             return "complete"
         
+        self.logger.info(f"   → Routing to: {next_agent}")
         return next_agent
     
     def _requirements_analyst_node(self, state: AgentState) -> AgentState:
@@ -428,6 +446,10 @@ Return your response as a valid JSON object with the following structure:
             # Update completed agents
             completed_agents = state.get("completed_agents", [])
             completed_agents.append("requirements_analyst")
+            
+            # DEBUG: Log agent completion
+            self.logger.info(f"✅ REQUIREMENTS ANALYST COMPLETED")
+            self.logger.info(f"   Completed agents now: {completed_agents}")
             
             # Update state following LangGraph patterns
             return {
@@ -1356,6 +1378,34 @@ Return your response as a valid JSON object with the following structure:
         except Exception as e:
             self.logger.error(f"Workflow execution failed: {e}")
             raise
+
+
+# Export for LangGraph Studio
+_default_instance = None
+
+def get_graph():
+    """Get the compiled graph for LangGraph Studio."""
+    global _default_instance
+    if _default_instance is None and LANGGRAPH_AVAILABLE:
+        # LLM will read GEMINI_API_KEY directly from OS environment (like working project)
+        # No need to pass API key through config
+        llm_config = {
+            "model_name": "gemini-2.5-flash",
+            "temperature": 0,
+            "max_tokens": 8192
+        }
+        
+        try:
+            _default_instance = LangGraphWorkflowManager(llm_config)
+            logger.info("✅ Development workflow graph compiled for Studio")
+        except Exception as e:
+            logger.error(f"Failed to create workflow graph: {e}")
+            return None
+    
+    return _default_instance.workflow if _default_instance else None
+
+# Studio expects 'graph' variable
+graph = get_graph()
 
 
 # Example usage

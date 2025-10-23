@@ -8,6 +8,17 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
+
+# LangGraph integration check
+try:
+    from langgraph.graph import StateGraph, END
+    from langgraph.checkpoint.memory import MemorySaver
+    from pydantic import BaseModel, Field
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    LANGGRAPH_AVAILABLE = False
+    logging.warning("LangGraph not available - agent will work in legacy mode only")
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
 
@@ -19,6 +30,26 @@ class SupervisorConfig(BaseModel):
     escalation_threshold: float = 0.7
     enable_parallel_execution: bool = True
 
+
+
+
+class BaseSupervisorState(BaseModel):
+    """State for BaseSupervisor LangGraph workflow using Pydantic BaseModel."""
+    
+    # Input fields
+    input_data: Dict[str, Any] = Field(default_factory=dict, description="Input data")
+    
+    # Output fields
+    output_data: Dict[str, Any] = Field(default_factory=dict, description="Output data")
+    
+    # Control fields
+    errors: List[str] = Field(default_factory=list, description="Error messages")
+    status: str = Field(default="initialized", description="Current status")
+    metrics: Dict[str, float] = Field(default_factory=dict, description="Execution metrics")
+    
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
 
 class BaseSupervisor(ABC):
     """Base class for all supervisor agents."""
@@ -34,6 +65,17 @@ class BaseSupervisor(ABC):
         """Make a supervisory decision based on context."""
         pass
     
+        
+        # Build LangGraph workflow if available
+        if LANGGRAPH_AVAILABLE:
+            self.workflow = self._build_langgraph_workflow()
+            self.app = self.workflow.compile()
+            self.logger.info("✅ LangGraph workflow compiled and ready")
+        else:
+            self.workflow = None
+            self.app = None
+            self.logger.info("⚠️ LangGraph not available - using legacy mode")
+
     def log_decision(self, decision: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         """Log a supervisory decision."""
         decision_record = {
@@ -199,3 +241,43 @@ class BaseSupervisor(ABC):
             "escalations_handled": len(escalations),
             "last_decision": self.decision_history[-1]["timestamp"] if self.decision_history else None
         }
+
+    
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build LangGraph workflow for BaseSupervisor."""
+        workflow = StateGraph(BaseSupervisorState)
+        
+        # Simple workflow: just execute the agent
+        workflow.add_node("execute", self._langgraph_execute_node)
+        workflow.set_entry_point("execute")
+        workflow.add_edge("execute", END)
+        
+        return workflow
+    
+    async def _langgraph_execute_node(self, state: BaseSupervisorState) -> BaseSupervisorState:
+        """Execute agent in LangGraph workflow."""
+        import time
+        start = time.time()
+        
+        try:
+            # Call the agent's execute method
+            result = await self.execute(state.input_data)
+            
+            # Update state with results
+            state.output_data = result
+            state.status = "completed"
+            state.metrics["execution_time"] = time.time() - start
+            
+        except Exception as e:
+            self.logger.error(f"LangGraph execution failed: {e}")
+            state.errors.append(str(e))
+            state.status = "failed"
+            state.metrics["execution_time"] = time.time() - start
+        
+        return state
+
+
+# Export for LangGraph Studio
+# Note: BaseSupervisor is an abstract class and cannot be instantiated directly
+# Concrete implementations should provide their own graph exports
+graph = None
