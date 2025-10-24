@@ -755,10 +755,37 @@ class LangGraphWorkflowManager:
             self.logger.error(f"Failed to setup LLM: {e}")
             raise
     
+    def _initialize_state_node(self, state: dict) -> AgentState:
+        """Initialize state with default values for all required fields."""
+        import uuid
+        
+        self.logger.info(f"📝 Initializing state with project_context: {state.get('project_context', 'NOT_PROVIDED')}")
+        
+        return {
+            "project_context": state.get("project_context", ""),
+            "project_name": state.get("project_name", "unnamed_project"),
+            "session_id": state.get("session_id", str(uuid.uuid4())),
+            "requirements": state.get("requirements", []),
+            "architecture": state.get("architecture", {}),
+            "code_files": state.get("code_files", {}),
+            "tests": state.get("tests", {}),
+            "documentation": state.get("documentation", {}),
+            "diagrams": state.get("diagrams", {}),
+            "agent_outputs": state.get("agent_outputs", {}),
+            "errors": state.get("errors", []),
+            "warnings": state.get("warnings", []),
+            "approval_requests": state.get("approval_requests", []),
+            "current_step": state.get("current_step", "initialization"),
+            "execution_history": state.get("execution_history", [])
+        }
+    
     def _create_workflow(self) -> StateGraph:
         """Create the LangGraph workflow."""
         # Create the state graph
         workflow = StateGraph(AgentState)
+        
+        # Add initialization node to ensure all state fields have default values
+        workflow.add_node("initialize", self._initialize_state_node)
         
         # Add agent nodes
         workflow.add_node("requirements_analysis", self.node_factory.create_requirements_node())
@@ -773,8 +800,9 @@ class LangGraphWorkflowManager:
         workflow.add_node("error_handler", self._error_handler_node)
         workflow.add_node("workflow_complete", self._workflow_complete_node)
         
-        # Define the main workflow edges
-        workflow.add_edge(START, "requirements_analysis")
+        # Define the main workflow edges - START with initialization
+        workflow.add_edge(START, "initialize")
+        workflow.add_edge("initialize", "requirements_analysis")
         workflow.add_edge("requirements_analysis", "architecture_design")
         workflow.add_edge("architecture_design", "code_generation")
         workflow.add_edge("code_generation", "test_generation")

@@ -1,0 +1,8 @@
+{
+  "name": "complexity_analyzer_v1",
+  "description": "Analyze project complexity and determine project type",
+  "variables": [
+    "project_context"
+  ],
+  "template_length": 3638
+}

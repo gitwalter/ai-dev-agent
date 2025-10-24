@@ -1,0 +1,10 @@
+{
+  "name": "agent_selector_v1",
+  "description": "Select which specialist agents are needed based on project analysis",
+  "variables": [
+    "project_context",
+    "project_type",
+    "project_complexity"
+  ],
+  "template_length": 4088
+}

@@ -21,8 +21,8 @@ from models.config import ContextConfig
 try:
     from qdrant_client import QdrantClient
     from qdrant_client.models import Distance, VectorParams, SparseVectorParams
-    from langchain.schema import Document
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain_core.documents import Document
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
     
     # Try new QdrantVectorStore (langchain-qdrant >= 0.1.0)
     QDRANT_NEW_API = False

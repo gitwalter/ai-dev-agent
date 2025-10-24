@@ -1,0 +1,12 @@
+{
+  "name": "task_router_supervisor_v1",
+  "description": "Intelligently route tasks to appropriate agents",
+  "variables": [
+    "task_description",
+    "task_type",
+    "available_agents",
+    "agent_capabilities",
+    "current_workload"
+  ],
+  "template_length": 5197
+}

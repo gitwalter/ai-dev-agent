@@ -52,14 +52,15 @@ class AIDevelopmentAgent:
         self.file_manager = FileManager(config.storage)
         self.agents = self._initialize_agents()
         
-        # Initialize LangGraph workflow manager with agents and logging
+        # Initialize LangGraph workflow manager
         llm_config = {
-            "api_key": self.config.gemini.api_key,
             "model_name": self.config.gemini.model_name,
             "temperature": self.config.gemini.temperature,
             "max_tokens": self.config.gemini.max_tokens
         }
-        self.workflow_manager = LangGraphWorkflowManager(llm_config, self.agents, self.logging_manager)
+        # Set GEMINI_API_KEY in environment for ChatGoogleGenerativeAI
+        os.environ["GEMINI_API_KEY"] = self.config.gemini.api_key
+        self.workflow_manager = LangGraphWorkflowManager(llm_config)
         
         self.logger.info("AI Development Agent system initialized successfully")
     

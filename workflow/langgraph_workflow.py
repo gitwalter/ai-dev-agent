@@ -1,1430 +1,657 @@
-#!/usr/bin/env python3
 """
-LangGraph-based Workflow System for AI Development Agent.
-Uses standard LangChain/LangGraph patterns for agent implementation.
-Implements adaptive agent selection based on project requirements.
+LangGraph Agent Swarm - Following Framework Standards
+======================================================
+
+Simple implementation following LangGraph/LangChain patterns:
+- Use StateGraph for workflow
+- Use create_react_agent for agents  
+- Let framework handle event loops and state
+- Add complexity only when use case requires it
 """
 
-import asyncio
+from __future__ import annotations
+
 import logging
-from typing import Dict, Any, List, TypedDict, Optional, Annotated
-from datetime import datetime
-
-try:
-    from langgraph.graph import StateGraph, END
-    from langchain_core.output_parsers import JsonOutputParser
-    from langchain_core.prompts import PromptTemplate
-    from langchain_core.runnables import RunnablePassthrough
-    from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-    from pydantic import BaseModel, Field
-    LANGGRAPH_AVAILABLE = True
-except ImportError as e:
-    LANGGRAPH_AVAILABLE = False
-    ChatGoogleGenerativeAI = None
-    logging.warning(f"LangGraph not available: {e}")
-
-from utils.core.structured_outputs import (
-    RequirementsAnalysisOutput, ArchitectureDesignOutput, CodeGenerationOutput,
-    TestGenerationOutput, CodeReviewOutput, SecurityAnalysisOutput, DocumentationGenerationOutput
-)
+import os
+from typing import Dict, Any, List, Annotated, TypedDict
+import operator
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import create_react_agent
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 logger = logging.getLogger(__name__)
 
+# ============================================================================
+# PROMPT LOADING - Simple helper
+# ============================================================================
 
-class AgentState(TypedDict):
-    """
-    State management for LangGraph workflow using TypedDict.
-    Follows standard LangGraph patterns from Cursor documentation.
-    """
-    messages: Annotated[List[Any], "Chat messages"]
-    current_step: Annotated[str, "Current workflow step"]
-    project_context: Annotated[str, "Project context and requirements"]
-    project_type: Annotated[str, "Type of project (web_app, api, library, etc.)"]
-    project_complexity: Annotated[str, "Project complexity (simple, medium, complex)"]
+def load_prompt_from_langsmith(prompt_name: str, fallback: str = None) -> str:
+    """Load prompt from LangSmith with local caching.
     
-    # Agent outputs (optional based on project needs)
-    requirements: Annotated[Dict[str, Any], "Requirements analysis results"]
-    architecture: Annotated[Dict[str, Any], "Architecture design results"]
-    code_files: Annotated[Dict[str, Any], "Generated code files"]
-    test_files: Annotated[Dict[str, Any], "Generated test files"]
-    review_results: Annotated[Dict[str, Any], "Code review results"]
-    security_analysis: Annotated[Dict[str, Any], "Security analysis results"]
-    documentation: Annotated[Dict[str, Any], "Documentation results"]
+    Caching strategy:
+    1. Check local cache (prompts/langsmith_cache/{prompt_name}.txt)
+    2. If not cached, pull from LangSmith Hub
+    3. Save to cache for future use
+    4. If LangSmith fails, use cached version if available
+    5. If no cache and LangSmith fails, use fallback
     
-    # Workflow control
-    agent_outputs: Annotated[Dict[str, Any], "All agent outputs"]
-    errors: Annotated[List[str], "Error messages"]
-    execution_history: Annotated[List[Dict[str, Any]], "Execution history"]
-    memory: Annotated[Dict[str, Any], "Persistent memory storage"]
-    recall_memories: Annotated[List[str], "Retrieved long-term memories"]
-    
-    # Adaptive workflow control
-    required_agents: Annotated[List[str], "List of agents required for this project"]
-    completed_agents: Annotated[List[str], "List of completed agents"]
-    next_agent: Annotated[Optional[str], "Next agent to execute"]
-    workflow_complete: Annotated[bool, "Whether workflow is complete"]
-
-
-class LangGraphWorkflowManager:
+    IMPORTANT: Uses exact same naming as LangSmith Hub (e.g., test_generator_v1)
     """
-    LangGraph-based workflow manager for AI Development Agent.
-    Uses standard LangChain/LangGraph patterns from Cursor documentation.
-    Implements adaptive agent selection based on project requirements.
-    """
+    from pathlib import Path
     
-    def __init__(self, llm_config: Dict[str, Any], agents: Dict[str, Any] = None, logging_manager = None):
-        """
-        Initialize the LangGraph workflow manager.
-        
-        Args:
-            llm_config: Configuration for the LLM
-            agents: Dictionary of agent instances to use (optional)
-            logging_manager: LangChain logging manager for observability
-        """
-        self.llm_config = llm_config
-        self.agents = agents or {}
-        self.logging_manager = logging_manager
-        self.logger = logging.getLogger(__name__)
-        self.llm = self._setup_llm()
-        self.workflow = self._create_workflow()
-        
-    def _setup_llm(self) -> Any:
-        """Setup LLM using LangChain patterns."""
-        if not LANGGRAPH_AVAILABLE or ChatGoogleGenerativeAI is None:
-            raise ImportError("LangGraph or ChatGoogleGenerativeAI not available")
-        
+    # Cache directory and file (use exact LangSmith name)
+    cache_dir = Path("prompts/langsmith_cache")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"{prompt_name}.txt"
+    
+    try:
+        # Try Streamlit secrets first
         try:
-            # Use environment variable directly (like working project)
-            import os
-            llm = ChatGoogleGenerativeAI(
-                model=self.llm_config.get("model_name", "gemini-2.5-flash"),
-                google_api_key=os.environ.get("GEMINI_API_KEY"),  # Direct env access
-                temperature=self.llm_config.get("temperature", 0),
-                convert_system_message_to_human=True,  # Required for Gemini
-                max_retries=5,  # Retry on API errors
-                timeout=120  # 2 minute timeout
-            )
-            self.logger.info(f"✅ LLM setup successful with model: {self.llm_config.get('model_name', 'gemini-2.5-flash')}")
-            return llm
-        except Exception as e:
-            self.logger.error(f"❌ LLM setup failed: {e}")
-            raise
+            import streamlit as st
+            api_key = st.secrets.get('LANGSMITH_API_KEY') or st.secrets.get('LANGCHAIN_API_KEY')
+        except:
+            api_key = os.environ.get("LANGSMITH_API_KEY") or os.environ.get("LANGCHAIN_API_KEY")
+        
+        if api_key:
+            from langsmith import Client
+            client = Client(api_key=api_key)
+            prompt = client.pull_prompt(prompt_name, include_model=True)
+            
+            # Extract template
+            prompt_text = None
+            if hasattr(prompt, 'template'):
+                prompt_text = prompt.template
+            elif hasattr(prompt, 'messages') and prompt.messages:
+                prompt_text = str(prompt.messages[0].prompt.template)
+            else:
+                prompt_text = str(prompt)
+            
+            # Cache the prompt (using exact LangSmith name)
+            try:
+                cache_file.write_text(prompt_text, encoding='utf-8')
+                logger.info(f"Cached prompt: {prompt_name}")
+            except Exception as cache_err:
+                logger.warning(f"Failed to cache {prompt_name}: {cache_err}")
+            
+            return prompt_text
+        else:
+            # No API key - try cache
+            if cache_file.exists():
+                logger.info(f"Using cached prompt (no API key): {prompt_name}")
+                return cache_file.read_text(encoding='utf-8')
+            else:
+                logger.info(f"No API key, no cache - using fallback for {prompt_name}")
+                return fallback or f"You are {prompt_name}. Complete the task."
+            
+    except Exception as e:
+        # LangSmith failed - try cache
+        if cache_file.exists():
+            logger.warning(f"LangSmith failed for {prompt_name}, using cache: {e}")
+            return cache_file.read_text(encoding='utf-8')
+        else:
+            logger.warning(f"LangSmith failed, no cache - using fallback for {prompt_name}: {e}")
+            return fallback or f"You are {prompt_name}. Complete the task."
+
+
+# ============================================================================
+# STATE - Simple TypedDict with Annotated reducers
+# ============================================================================
+
+class SwarmState(TypedDict):
+    """Agent swarm state - following LangGraph patterns."""
+    # Input
+    project_context: str
     
-    def _create_workflow(self) -> StateGraph:
-        """Create LangGraph workflow using standard patterns with adaptive routing."""
-        # Create workflow graph
-        workflow = StateGraph(AgentState)
+    # Routing decisions
+    project_complexity: str  # simple, medium, complex
+    required_agents: List[str]  # Which agents to run
+    next_agent: str  # Which agent runs next
+    
+    # Messages - accumulated (operator.add)
+    messages: Annotated[List, operator.add]
+    
+    # Agent outputs - each agent has its own field(s)
+    requirements: Dict[str, Any]        # requirements_analyst output
+    architecture: Dict[str, Any]        # architecture_designer output
+    code_files: Dict[str, Any]          # code_generator output
+    test_files: Dict[str, Any]          # test_generator output
+    code_review: Dict[str, Any]         # code_reviewer output
+    documentation: Dict[str, Any]       # documentation_generator output
+    
+    # Tracking
+    completed_agents: Annotated[List[str], operator.add]
+    current_step: str
+    errors: Annotated[List[str], operator.add]
+
+
+# ============================================================================
+# AGENT SWARM - Simple and Clean
+# ============================================================================
+
+class AgentSwarm:
+    """Simple agent swarm following LangGraph patterns."""
+    
+    def __init__(self, llm_config: Dict[str, Any]):
+        """Initialize swarm."""
+        self.llm_config = llm_config
+        self.logger = logging.getLogger(__name__)
         
-        # Add supervisor nodes
-        workflow.add_node("project_analyzer", self._project_analyzer_node)
-        workflow.add_node("agent_selector", self._agent_selector_node)
-        workflow.add_node("workflow_controller", self._workflow_controller_node)
+        # Build workflow immediately - simple and straightforward
+        self.workflow = self._build_workflow()
         
-        # Add agent nodes (all optional)
-        workflow.add_node("requirements_analyst", self._requirements_analyst_node)
-        workflow.add_node("architecture_designer", self._architecture_designer_node)
-        workflow.add_node("code_generator", self._code_generator_node)
-        workflow.add_node("test_generator", self._test_generator_node)
-        workflow.add_node("code_reviewer", self._code_reviewer_node)
-        workflow.add_node("security_analyst", self._security_analyst_node)
-        workflow.add_node("documentation_generator", self._documentation_generator_node)
+        self.logger.info("✅ Agent Swarm initialized")
+    
+    def _create_llm(self):
+        """Create LLM - simple helper."""
+        return ChatGoogleGenerativeAI(
+            model=self.llm_config.get('model_name', 'gemini-2.5-flash'),
+            google_api_key=os.environ.get("GEMINI_API_KEY"),
+            temperature=self.llm_config.get('temperature', 0.0)  # Deterministic for software development
+        )
+    
+    def _build_workflow(self):
+        """Build workflow with supervisor pattern - following LangGraph standards."""
         
-        # Define adaptive workflow edges
-        workflow.add_edge("project_analyzer", "agent_selector")
-        workflow.add_edge("agent_selector", "workflow_controller")
+        # Create single LLM for all agents (simple and efficient)
+        llm = self._create_llm()
         
-        # Add START edge to project_analyzer
-        workflow.set_entry_point("project_analyzer")
+        # Load prompts from LangSmith (simple with fallbacks)
+        self.logger.info("📥 Loading prompts from LangSmith...")
+        prompts = {
+            # Supervisor/Coordination Agent Prompts
+            "complexity_analyzer": load_prompt_from_langsmith(
+                "complexity_analyzer_v1",
+                "You are a Complexity Analyzer. Analyze project complexity and classify as simple, medium, or complex."
+            ),
+            "agent_selector": load_prompt_from_langsmith(
+                "agent_selector_v1",
+                "You are an Agent Selector. Select which specialist agents are needed based on project requirements."
+            ),
+            "router": load_prompt_from_langsmith(
+                "router_v1",
+                "You are a Router. Route to the next agent in the workflow based on completion status."
+            ),
+            # Specialist Agent Prompts
+            "requirements_analyst": load_prompt_from_langsmith(
+                "requirements_analyst_v1",
+                "You are an expert Requirements Analyst. Analyze project requirements thoroughly."
+            ),
+            "architecture_designer": load_prompt_from_langsmith(
+                "architecture_designer_v1",
+                "You are an expert Architecture Designer. Design scalable, maintainable systems."
+            ),
+            "code_generator": load_prompt_from_langsmith(
+            "code_generator_v1",
+                "You are an expert Code Generator. Write clean, production-ready code."
+            ),
+            "test_generator": load_prompt_from_langsmith(
+                "test_generator_v1",
+                "You are an expert Test Generator. Create comprehensive test suites."
+            ),
+            "code_reviewer": load_prompt_from_langsmith(
+                "code_reviewer_v1",
+                "You are an expert Code Reviewer. Review code quality and suggest improvements."
+            ),
+            "documentation_generator": load_prompt_from_langsmith(
+                "documentation_generator_v1",
+                "You are an expert Documentation Generator. Create clear, comprehensive docs."
+            ),
+        }
         
-        # Add conditional edges for dynamic agent routing
+        # Store prompts for use in agent nodes
+        self.prompts = prompts
+        self.logger.info(f"✅ Loaded {len(prompts)} prompts")
+        
+        # Create specialist agents using create_react_agent (standard LangGraph way)
+        # Note: Prompts are applied in the node wrappers, not here
+        self.agents = {
+            "requirements_analyst": create_react_agent(llm, name="requirements_analyst", tools=[]),
+            "architecture_designer": create_react_agent(llm, name="architecture_designer", tools=[]),
+            "code_generator": create_react_agent(llm, name="code_generator", tools=[]),
+            "test_generator": create_react_agent(llm, name="test_generator", tools=[]),
+            "code_reviewer": create_react_agent(llm, name="code_reviewer", tools=[]),
+            "documentation_generator": create_react_agent(llm, name="documentation_generator", tools=[]),
+        }
+        
+        # Build workflow graph
+        workflow = StateGraph(SwarmState)
+        
+        # Add supervisor nodes (simple decision makers)
+        workflow.add_node("complexity_analyzer", self._analyze_complexity)
+        workflow.add_node("agent_selector", self._select_agents)
+        workflow.add_node("router", self._route_to_next)
+        
+        # Add specialist agent nodes
+        workflow.add_node("requirements_analyst", self._requirements_node)
+        workflow.add_node("architecture_designer", self._architecture_node)
+        workflow.add_node("code_generator", self._code_node)
+        workflow.add_node("test_generator", self._test_node)
+        workflow.add_node("code_reviewer", self._review_node)
+        workflow.add_node("documentation_generator", self._doc_node)
+        
+        # Flow: complexity → selector → router → agents → router → ... → END
+        workflow.set_entry_point("complexity_analyzer")
+        workflow.add_edge("complexity_analyzer", "agent_selector")
+        workflow.add_edge("agent_selector", "router")
+        
+        # Router uses conditional edge to decide next agent or END
+        # Use named method instead of lambda to avoid "Unnamed" nodes in LangSmith traces
         workflow.add_conditional_edges(
-            "workflow_controller",
-            self._route_to_next_agent,
+            "router",
+            self._router_decision,
             {
                 "requirements_analyst": "requirements_analyst",
-                "architecture_designer": "architecture_designer", 
+                "architecture_designer": "architecture_designer",
                 "code_generator": "code_generator",
                 "test_generator": "test_generator",
                 "code_reviewer": "code_reviewer",
-                "security_analyst": "security_analyst",
                 "documentation_generator": "documentation_generator",
-                "complete": END
+                "END": END
             }
         )
         
-        # Add edges back to workflow controller after each agent
-        workflow.add_edge("requirements_analyst", "workflow_controller")
-        workflow.add_edge("architecture_designer", "workflow_controller")
-        workflow.add_edge("code_generator", "workflow_controller")
-        workflow.add_edge("test_generator", "workflow_controller")
-        workflow.add_edge("code_reviewer", "workflow_controller")
-        workflow.add_edge("security_analyst", "workflow_controller")
-        workflow.add_edge("documentation_generator", "workflow_controller")
+        # All agents return to router
+        for agent_name in self.agents.keys():
+            workflow.add_edge(agent_name, "router")
         
-        # Compile workflow (LangGraph Studio handles persistence automatically)
+        # Compile (no checkpointer for Studio compatibility)
         return workflow.compile()
     
-    def _project_analyzer_node(self, state: AgentState) -> AgentState:
-        """Analyze project requirements and determine complexity."""
-        try:
-            # Simple project analysis based on context
-            project_context = state.get("project_context", "").lower()
-            
-            # Determine project type
-            if any(word in project_context for word in ["web", "app", "website", "frontend"]):
-                project_type = "web_app"
-            elif any(word in project_context for word in ["api", "service", "backend"]):
-                project_type = "api"
-            elif any(word in project_context for word in ["library", "package", "module"]):
-                project_type = "library"
-            elif any(word in project_context for word in ["script", "utility", "tool"]):
-                project_type = "utility"
-            else:
-                project_type = "general"
-            
-            # Determine complexity
-            if len(project_context.split()) < 50:
-                complexity = "simple"
-            elif len(project_context.split()) < 200:
-                complexity = "medium"
-            else:
-                complexity = "complex"
-            
-            return {
-                **state,
-                "project_type": project_type,
-                "project_complexity": complexity,
-                "current_step": "project_analysis",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "project_analysis",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed",
-                        "project_type": project_type,
-                        "complexity": complexity
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Project analysis failed: {e}")
-            return {
-                **state,
-                "project_type": "general",
-                "project_complexity": "medium",
-                "errors": [*state.get("errors", []), f"Project analysis failed: {str(e)}"],
-                "current_step": "project_analysis",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "project_analysis",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
+    # ========================================================================
+    # SUPERVISOR NODES - LLM-based intelligent decision makers
+    # ========================================================================
     
-    def _agent_selector_node(self, state: AgentState) -> AgentState:
-        """Select which agents are required for this project."""
-        try:
-            project_type = state.get("project_type", "general")
-            complexity = state.get("project_complexity", "medium")
-            
-            # Define agent requirements based on project type and complexity
-            agent_requirements = {
-                "web_app": {
-                    "simple": ["requirements_analyst", "code_generator", "documentation_generator"],
-                    "medium": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "documentation_generator"],
-                    "complex": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "code_reviewer", "security_analyst", "documentation_generator"]
-                },
-                "api": {
-                    "simple": ["requirements_analyst", "code_generator", "test_generator"],
-                    "medium": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "security_analyst"],
-                    "complex": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "code_reviewer", "security_analyst", "documentation_generator"]
-                },
-                "library": {
-                    "simple": ["requirements_analyst", "code_generator", "test_generator"],
-                    "medium": ["requirements_analyst", "code_generator", "test_generator", "code_reviewer"],
-                    "complex": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "code_reviewer", "security_analyst", "documentation_generator"]
-                },
-                "utility": {
-                    "simple": ["requirements_analyst", "code_generator"],
-                    "medium": ["requirements_analyst", "code_generator", "test_generator"],
-                    "complex": ["requirements_analyst", "code_generator", "test_generator", "code_reviewer"]
-                },
-                "general": {
-                    "simple": ["requirements_analyst", "code_generator"],
-                    "medium": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator"],
-                    "complex": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "code_reviewer", "security_analyst", "documentation_generator"]
-                }
-            }
-            
-            required_agents = agent_requirements.get(project_type, {}).get(complexity, ["requirements_analyst", "code_generator"])
-            
-            return {
-                **state,
-                "required_agents": required_agents,
-                "completed_agents": [],
-                "next_agent": required_agents[0] if required_agents else None,
-                "workflow_complete": False,
-                "current_step": "agent_selection",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "agent_selection",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed",
-                        "required_agents": required_agents
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Agent selection failed: {e}")
-            return {
-                **state,
-                "required_agents": ["requirements_analyst", "code_generator"],
-                "completed_agents": [],
-                "next_agent": "requirements_analyst",
-                "workflow_complete": False,
-                "errors": [*state.get("errors", []), f"Agent selection failed: {str(e)}"],
-                "current_step": "agent_selection",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "agent_selection",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
+    def _analyze_complexity(self, state: SwarmState) -> Dict[str, Any]:
+        """Analyze project complexity using LLM with LangSmith prompt."""
+        self.logger.info("📊 Analyzing complexity with LLM...")
+        
+        llm = self._create_llm()
+        system_prompt = self.prompts.get("complexity_analyzer", "You are a complexity analyzer")
+        
+        task = f"""Analyze the complexity of this software project.
+
+Project: {state['project_context']}
+
+Classify as: simple, medium, or complex
+Respond with ONLY one word."""
+        
+        messages = [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=task)
+        ]
+        
+        result = llm.invoke(messages)
+        complexity = result.content.strip().lower()
+        
+        # Validate response
+        if complexity not in ["simple", "medium", "complex"]:
+            complexity = "medium"  # Default
+        
+        self.logger.info(f"📊 Complexity: {complexity}")
+        return {"project_complexity": complexity, "current_step": "complexity_analyzed"}
     
-    def _workflow_controller_node(self, state: AgentState) -> AgentState:
-        """Control workflow execution and determine next steps."""
-        try:
-            required_agents = state.get("required_agents", [])
-            completed_agents = state.get("completed_agents", [])
-            
-            # DEBUG: Log workflow controller state
-            self.logger.info(f"🎯 WORKFLOW CONTROLLER:")
-            self.logger.info(f"   Required agents: {required_agents}")
-            self.logger.info(f"   Completed agents: {completed_agents}")
-            
-            # Find next agent to execute
-            next_agent = None
-            for agent in required_agents:
-                if agent not in completed_agents:
+    def _select_agents(self, state: SwarmState) -> Dict[str, Any]:
+        """Select which agents to run using LLM with LangSmith prompt."""
+        self.logger.info("🎯 Selecting agents with LLM...")
+        
+        llm = self._create_llm()
+        system_prompt = self.prompts.get("agent_selector", "You are an agent selector")
+        
+        task = f"""Select which specialist agents are needed for this project.
+
+Project: {state['project_context']}
+Complexity: {state.get('project_complexity', 'medium')}
+
+Available agents:
+- requirements_analyst: Analyzes requirements
+- architecture_designer: Designs system architecture  
+- code_generator: Writes code
+- test_generator: Creates tests
+- code_reviewer: Reviews code quality
+- documentation_generator: Creates documentation
+
+Standard order: requirements_analyst, architecture_designer, code_generator, test_generator, code_reviewer, documentation_generator
+
+Respond with a comma-separated list of agent names in execution order."""
+        
+        messages = [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=task)
+        ]
+        
+        result = llm.invoke(messages)
+        agent_list = result.content.strip()
+        
+        # Parse agent names
+        required = [name.strip() for name in agent_list.split(",")]
+        
+        # Validate agent names
+        valid_agents = list(self.agents.keys())
+        required = [agent for agent in required if agent in valid_agents]
+        
+        # Ensure we have at least some agents
+        if not required:
+            required = list(self.agents.keys())
+        
+        self.logger.info(f"🎯 Selected {len(required)} agents: {required}")
+        return {"required_agents": required, "current_step": "agents_selected"}
+    
+    def _route_to_next(self, state: SwarmState) -> Dict[str, Any]:
+        """Route to next agent - simple sequential logic."""
+        required = state.get("required_agents", [])
+        completed = state.get("completed_agents", [])
+        
+        # Find next agent not yet completed
+        next_agent = "END"
+        for agent in required:
+            if agent not in completed:
                     next_agent = agent
                     break
             
-            # Check if workflow is complete
-            workflow_complete = next_agent is None
-            
-            self.logger.info(f"   Next agent: {next_agent}")
-            self.logger.info(f"   Workflow complete: {workflow_complete}")
-            
-            return {
-                **state,
-                "next_agent": next_agent,
-                "workflow_complete": workflow_complete,
-                "current_step": "workflow_control",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "workflow_control",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed",
-                        "next_agent": next_agent,
-                        "workflow_complete": workflow_complete
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Workflow control failed: {e}")
-            return {
-                **state,
-                "next_agent": None,
-                "workflow_complete": True,
-                "errors": [*state.get("errors", []), f"Workflow control failed: {str(e)}"],
-                "current_step": "workflow_control",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "workflow_control",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
+        self.logger.info(f"🔀 Next: {next_agent}")
+        return {"next_agent": next_agent, "current_step": "routing"}
     
-    def _route_to_next_agent(self, state: AgentState) -> str:
-        """Route to the next agent or complete workflow."""
-        next_agent = state.get("next_agent")
-        workflow_complete = state.get("workflow_complete", False)
+    def _router_decision(self, state: SwarmState) -> str:
+        """Router decision for conditional edge - returns next agent name or END.
         
-        # DEBUG: Log routing decision
-        self.logger.info(f"🔀 ROUTING DECISION:")
-        self.logger.info(f"   next_agent: {next_agent}")
-        self.logger.info(f"   workflow_complete: {workflow_complete}")
+        This is a named method (not lambda) to ensure proper tracing in LangSmith.
+        """
+        return state.get("next_agent", "END")
+    
+    # ========================================================================
+    # SPECIALIST AGENT NODES - Simple wrappers
+    # ========================================================================
+    
+    def _requirements_node(self, state: SwarmState) -> Dict[str, Any]:
+        """Requirements analyst node."""
+        return self._run_agent(self.agents["requirements_analyst"], state, "requirements_analyst", "requirements")
+    
+    def _architecture_node(self, state: SwarmState) -> Dict[str, Any]:
+        """Architecture designer node."""
+        return self._run_agent(self.agents["architecture_designer"], state, "architecture_designer", "architecture")
+    
+    def _code_node(self, state: SwarmState) -> Dict[str, Any]:
+        """Code generator node."""
+        agent = self.agents["code_generator"]
+        system_prompt = self.prompts.get("code_generator", "You are a code generator")
         
-        if workflow_complete or next_agent is None:
-            self.logger.info(f"   ✅ Routing to: END")
-            return "complete"
+        task = f"""Project: {state['project_context']}
+
+Requirements: {state.get('requirements', {})}
+Architecture: {state.get('architecture', {})}
+
+Generate complete, production-ready source code for this project."""
         
-        self.logger.info(f"   → Routing to: {next_agent}")
-        return next_agent
-    
-    def _requirements_analyst_node(self, state: AgentState) -> AgentState:
-        """Requirements analysis node using standard LangChain patterns."""
         try:
-            # Debug: Check if LLM is available
-            if self.llm is None:
-                self.logger.error("LLM is None in requirements analyst node")
-                raise ValueError("LLM is not initialized")
+            self.logger.info(f"🤖 Running code_generator...")
             
-            # Use JsonOutputParser for structured output
-            parser = JsonOutputParser()
-            
-            # Create prompt template using LangChain patterns
-            prompt = PromptTemplate(
-                template="""You are an expert Requirements Analyst. Analyze the project context and extract comprehensive requirements.
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-TASK:
-Analyze the project context above and generate a comprehensive requirements analysis.
-
-Return your response as a valid JSON object with the following structure:
-{{
-    "functional_requirements": [
-        {{
-            "id": "REQ-001",
-            "title": "Requirement Title",
-            "description": "Detailed description of the requirement",
-            "priority": "high|medium|low",
-            "category": "functional|non-functional|technical"
-        }}
-    ],
-    "non_functional_requirements": [
-        {{
-            "id": "NFR-001", 
-            "title": "Non-functional requirement title",
-            "description": "Description of non-functional requirement",
-            "category": "performance|security|usability|reliability"
-        }}
-    ],
-    "technical_constraints": [
-        "List of technical constraints and limitations"
-    ],
-    "assumptions": [
-        "List of assumptions made during analysis"
-    ]
-}}""",
-                input_variables=["project_context", "project_type", "project_complexity"]
-            )
-            
-            # Create the chain using LangChain patterns
-            chain = prompt | self.llm | parser
-            
-            # Execute the chain
-            result = chain.invoke({
-                "project_context": state.get("project_context", ""),
-                "project_type": state.get("project_type", "general"),
-                "project_complexity": state.get("project_complexity", "medium")
-            })
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("requirements_analyst")
-            
-            # DEBUG: Log agent completion
-            self.logger.info(f"✅ REQUIREMENTS ANALYST COMPLETED")
-            self.logger.info(f"   Completed agents now: {completed_agents}")
-            
-            # Update state following LangGraph patterns
-            return {
-                **state,
-                "requirements": result,
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "requirements_analyst": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "requirements_analysis",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "requirements_analysis",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Requirements analysis failed: {e}")
-            return {
-                **state,
-                "errors": [*state.get("errors", []), f"Requirements analysis failed: {str(e)}"],
-                "current_step": "requirements_analysis",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "requirements_analysis",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
-    
-    def _architecture_designer_node(self, state: AgentState) -> AgentState:
-        """Architecture design node using standard LangChain patterns."""
-        try:
-            parser = JsonOutputParser()
-            
-            prompt = PromptTemplate(
-                template="""You are an expert Software Architect. Design the system architecture based on the requirements.
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-REQUIREMENTS:
-{requirements}
-
-TASK:
-Design a comprehensive system architecture that meets the requirements.
-
-Return your response as a valid JSON object with the following structure:
-{{
-    "architecture_design": {{
-        "system_overview": "High-level system description",
-        "components": [
-            {{
-                "name": "Component Name",
-                "description": "Component description",
-                "responsibilities": ["List of responsibilities"],
-                "dependencies": ["List of dependencies"]
-            }}
-        ],
-        "technology_stack": {{
-            "frontend": ["List of frontend technologies"],
-            "backend": ["List of backend technologies"],
-            "database": ["List of database technologies"],
-            "infrastructure": ["List of infrastructure technologies"]
-        }},
-        "data_flow": "Description of data flow between components",
-        "security_considerations": ["List of security considerations"]
-    }}
-}}""",
-                input_variables=["project_context", "project_type", "project_complexity", "requirements"]
-            )
-            
-            chain = prompt | self.llm | parser
-            
-            result = chain.invoke({
-                "project_context": state.get("project_context", ""),
-                "project_type": state.get("project_type", "general"),
-                "project_complexity": state.get("project_complexity", "medium"),
-                "requirements": str(state.get("requirements", {}))
-            })
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("architecture_designer")
-            
-            return {
-                **state,
-                "architecture": result.get("architecture_design", {}),
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "architecture_designer": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "architecture_design",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "architecture_design",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Architecture design failed: {e}")
-            return {
-                **state,
-                "errors": [*state.get("errors", []), f"Architecture design failed: {str(e)}"],
-                "current_step": "architecture_design",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "architecture_design",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
-    
-    def _code_generator_node(self, state: AgentState) -> AgentState:
-        """Code generation node using standard LangChain patterns."""
-        try:
-            parser = JsonOutputParser()
-            
-            prompt = PromptTemplate(
-                template="""You are an expert Software Developer. Generate production-ready code based on the architecture.
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-REQUIREMENTS:
-{requirements}
-
-ARCHITECTURE:
-{architecture}
-
-TASK:
-Generate production-ready code that implements the architecture and meets the requirements.
-
-Return your response as a valid JSON object with the following structure:
-{{
-    "generated_code": {{
-        "main_files": [
-            {{
-                "filename": "main.py",
-                "content": "Complete file content with imports and main logic",
-                "description": "Description of what this file does"
-            }}
-        ],
-        "module_files": [
-            {{
-                "filename": "module_name.py",
-                "content": "Complete module content",
-                "description": "Description of the module"
-            }}
-        ],
-        "configuration_files": [
-            {{
-                "filename": "config.py",
-                "content": "Configuration file content",
-                "description": "Description of configuration"
-            }}
-        ],
-        "test_files": [
-            {{
-                "filename": "test_module.py",
-                "content": "Test file content",
-                "description": "Description of tests"
-            }}
-        ],
-        "documentation": [
-            {{
-                "filename": "README.md",
-                "content": "Documentation content",
-                "description": "Description of documentation"
-            }}
-        ],
-        "dependencies": [
-            "List of required dependencies and versions"
-        ],
-        "setup_instructions": "Step-by-step setup and installation instructions"
-    }}
-}}""",
-                input_variables=["project_context", "project_type", "project_complexity", "requirements", "architecture"]
-            )
-            
-            chain = prompt | self.llm | parser
-            
-            try:
-                result = chain.invoke({
-                    "project_context": state.get("project_context", ""),
-                    "project_type": state.get("project_type", "general"),
-                    "project_complexity": state.get("project_complexity", "medium"),
-                    "requirements": str(state.get("requirements", {})),
-                    "architecture": str(state.get("architecture", {}))
-                })
-                
-                # Validate result
-                if result is None:
-                    raise ValueError("LLM returned None result")
-                    
-                self.logger.info(f"Code generator LLM result type: {type(result)}")
-                self.logger.info(f"Code generator LLM result keys: {list(result.keys()) if isinstance(result, dict) else 'Not a dict'}")
-                
-            except Exception as e:
-                self.logger.error(f"Code generator LLM call failed: {e}")
-                raise
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("code_generator")
-            
-            # Extract generated code and organize into proper file structure
-            generated_code = result.get("generated_code", {})
-            
-            # Extract different file types
-            code_files = {}
-            test_files = {}
-            documentation_files = {}
-            configuration_files = {}
-            
-            # Process main files
-            for file_data in generated_code.get("main_files", []):
-                filename = file_data.get("filename", "main.py")
-                content = file_data.get("content", "")
-                code_files[filename] = content
-            
-            # Process module files
-            for file_data in generated_code.get("module_files", []):
-                filename = file_data.get("filename", "module.py")
-                content = file_data.get("content", "")
-                code_files[filename] = content
-            
-            # Process test files
-            test_files_raw = generated_code.get("test_files", [])
-            print(f"DEBUG: Found {len(test_files_raw)} test files in generated code")
-            for file_data in test_files_raw:
-                filename = file_data.get("filename", "test.py")
-                content = file_data.get("content", "")
-                test_files[filename] = content
-                print(f"DEBUG: Extracted test file: {filename} with {len(content)} characters")
-            
-            # Process documentation files
-            for file_data in generated_code.get("documentation", []):
-                filename = file_data.get("filename", "README.md")
-                content = file_data.get("content", "")
-                documentation_files[filename] = content
-            
-            # Process configuration files
-            for file_data in generated_code.get("configuration_files", []):
-                filename = file_data.get("filename", "config.py")
-                content = file_data.get("content", "")
-                configuration_files[filename] = content
-            
-            # Debug logging
-            print(f"DEBUG: Code generator extraction results:")
-            print(f"DEBUG:   Code files: {len(code_files)}")
-            print(f"DEBUG:   Test files: {len(test_files)}")
-            print(f"DEBUG:   Documentation files: {len(documentation_files)}")
-            print(f"DEBUG:   Configuration files: {len(configuration_files)}")
-            
-            return {
-                **state,
-                "code_files": code_files,
-                "tests": test_files,
-                "documentation": documentation_files,
-                "configuration_files": configuration_files,
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "code_generator": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "code_generation",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "code_generation",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Code generation failed: {e}")
-            return {
-                **state,
-                "errors": [*state.get("errors", []), f"Code generation failed: {str(e)}"],
-                "current_step": "code_generation",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "code_generation",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
-    
-    def _test_generator_node(self, state: AgentState) -> AgentState:
-        """Test generation node using standard LangChain patterns."""
-        try:
-            parser = JsonOutputParser()
-            
-            prompt = PromptTemplate(
-                template="""You are an expert Test Engineer. Generate comprehensive tests for the generated code.
-
-CRITICAL OUTPUT FORMAT REQUIREMENTS:
-Return ONLY a JSON object with this EXACT structure:
-{{
-    "test_files": {{
-        "test_filename.py": "complete test file content as string",
-        "test_another.py": "complete test file content as string"
-    }}
-}}
-
-CONSTRAINTS:
-- NO nested objects, arrays, or complex structures
-- NO metadata, descriptions, or test_cases arrays
-- NO test_type or other fields
-- Each value must be a complete, runnable Python test file as a string
-- Use descriptive filenames based on the code being tested
-- Include proper imports, test functions, and assertions
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-REQUIREMENTS:
-{requirements}
-
-CODE FILES:
-{code_files}
-
-TASK:
-Generate comprehensive tests that cover all functionality and edge cases.
-
-Return the exact JSON structure above with no additional fields or nested structures. Each test file should be a complete, runnable Python test file with proper imports, test functions, and assertions.""",
-                input_variables=["project_context", "project_type", "project_complexity", "requirements", "code_files"]
-            )
-            
-            chain = prompt | self.llm | parser
-            
-            result = chain.invoke({
-                "project_context": state.get("project_context", ""),
-                "project_type": state.get("project_type", "general"),
-                "project_complexity": state.get("project_complexity", "medium"),
-                "requirements": str(state.get("requirements", {})),
-                "code_files": str(state.get("code_files", {}))
-            })
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("test_generator")
-            
-            # Get test files directly from the result (now flattened)
-            test_files = result.get("test_files", {})
-            
-            # Debug: Print the test files result
-            print(f"DEBUG: Test generator result keys: {list(result.keys())}")
-            print(f"DEBUG: Test files type: {type(test_files)}")
-            print(f"DEBUG: Test files count: {len(test_files)}")
-            print(f"DEBUG: Test files keys: {list(test_files.keys())}")
-            
-            # Debug: Check state before and after update
-            print(f"DEBUG: State test_files before update: {len(state.get('test_files', {}))}")
-            updated_state = {
-                **state,
-                "test_files": test_files,
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "test_generator": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "test_generation",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "test_generation",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
-                    }
-                ]
-            }
-            print(f"DEBUG: State test_files after update: {len(updated_state.get('test_files', {}))}")
-            
-            return updated_state
-            
-        except Exception as e:
-            self.logger.error(f"Test generation failed: {e}")
-            return {
-                **state,
-                "errors": [*state.get("errors", []), f"Test generation failed: {str(e)}"],
-                "current_step": "test_generation",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "test_generation",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
-    
-    def _code_reviewer_node(self, state: AgentState) -> AgentState:
-        """Code review node using standard LangChain patterns."""
-        try:
-            parser = JsonOutputParser()
-            
-            prompt = PromptTemplate(
-                template="""You are an expert Code Reviewer. Review the generated code for quality, best practices, and potential issues.
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-CODE FILES:
-{code_files}
-
-TEST FILES:
-{test_files}
-
-TASK:
-Review the code and tests for quality, best practices, and potential issues.
-
-Return your response as a valid JSON object with the following structure:
-{{
-    "code_review": {{
-        "overall_assessment": {{
-            "quality_score": "Score from 1-10",
-            "readiness": "production_ready|needs_improvement|not_ready",
-            "summary": "Overall assessment summary"
-        }},
-        "code_quality": [
-            {{
-                "file": "filename.py",
-                "issues": [
-                    {{
-                        "type": "bug|warning|suggestion|best_practice",
-                        "severity": "high|medium|low",
-                        "description": "Description of the issue",
-                        "line": "Line number or section",
-                        "suggestion": "How to fix or improve"
-                    }}
-                ],
-                "strengths": [
-                    "List of positive aspects of the code"
-                ]
-            }}
-        ],
-        "test_quality": [
-            {{
-                "file": "test_filename.py",
-                "coverage": "Coverage assessment",
-                "issues": [
-                    {{
-                        "type": "coverage|quality|best_practice",
-                        "description": "Description of test issue",
-                        "suggestion": "How to improve tests"
-                    }}
-                ],
-                "strengths": [
-                    "List of positive aspects of the tests"
-                ]
-            }}
-        ],
-        "security_analysis": [
-            {{
-                "issue": "Security concern description",
-                "severity": "critical|high|medium|low",
-                "impact": "Potential impact description",
-                "recommendation": "How to address the security issue"
-            }}
-        ],
-        "performance_analysis": [
-            {{
-                "concern": "Performance concern description",
-                "impact": "Performance impact assessment",
-                "recommendation": "How to optimize performance"
-            }}
-        ],
-        "recommendations": [
-            "List of specific recommendations for improvement"
-        ],
-        "approval_status": "approved|approved_with_changes|needs_revision|rejected"
-    }}
-}}""",
-                input_variables=["project_context", "project_type", "project_complexity", "code_files", "test_files"]
-            )
-            
-            chain = prompt | self.llm | parser
-            
-            result = chain.invoke({
-                "project_context": state.get("project_context", ""),
-                "project_type": state.get("project_type", "general"),
-                "project_complexity": state.get("project_complexity", "medium"),
-                "code_files": str(state.get("code_files", {})),
-                "test_files": str(state.get("test_files", {}))
-            })
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("code_reviewer")
-            
-            return {
-                **state,
-                "review_results": result.get("review_results", {}),
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "code_reviewer": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "code_review",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "code_review",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Code review failed: {e}")
-            return {
-                **state,
-                "errors": [*state.get("errors", []), f"Code review failed: {str(e)}"],
-                "current_step": "code_review",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "code_review",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
-    
-    def _security_analyst_node(self, state: AgentState) -> AgentState:
-        """Security analysis node using standard LangChain patterns."""
-        try:
-            parser = JsonOutputParser()
-            
-            prompt = PromptTemplate(
-                template="""You are an expert Security Analyst. Analyze the code for security vulnerabilities and best practices.
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-CODE FILES:
-{code_files}
-
-REVIEW RESULTS:
-{review_results}
-
-TASK:
-Analyze the code for security vulnerabilities and provide security recommendations.
-
-Return your response as a valid JSON object with the following structure:
-{{
-    "security_analysis": {{
-        "overall_security_score": "Score from 1-10",
-        "security_status": "secure|needs_improvement|vulnerable|critical",
-        "summary": "Overall security assessment summary",
-        "vulnerabilities": [
-            {{
-                "type": "authentication|authorization|input_validation|data_exposure|injection|other",
-                "severity": "critical|high|medium|low",
-                "description": "Detailed description of the vulnerability",
-                "file": "filename.py",
-                "line": "Line number or section",
-                "impact": "Potential impact of the vulnerability",
-                "recommendation": "How to fix the vulnerability",
-                "cwe_id": "Common Weakness Enumeration ID if applicable"
-            }}
-        ],
-        "security_strengths": [
-            "List of security best practices already implemented"
-        ],
-        "authentication_analysis": [
-            {{
-                "aspect": "Authentication method or mechanism",
-                "assessment": "secure|weak|missing",
-                "description": "Description of authentication analysis",
-                "recommendation": "How to improve authentication"
-            }}
-        ],
-        "authorization_analysis": [
-            {{
-                "aspect": "Authorization mechanism or check",
-                "assessment": "secure|weak|missing",
-                "description": "Description of authorization analysis",
-                "recommendation": "How to improve authorization"
-            }}
-        ],
-        "data_protection_analysis": [
-            {{
-                "aspect": "Data protection mechanism",
-                "assessment": "secure|weak|missing",
-                "description": "Description of data protection analysis",
-                "recommendation": "How to improve data protection"
-            }}
-        ],
-        "input_validation_analysis": [
-            {{
-                "aspect": "Input validation mechanism",
-                "assessment": "secure|weak|missing",
-                "description": "Description of input validation analysis",
-                "recommendation": "How to improve input validation"
-            }}
-        ],
-        "security_recommendations": [
-            "List of specific security recommendations for improvement"
-        ],
-        "compliance_assessment": [
-            {{
-                "standard": "Security standard or framework",
-                "compliance": "compliant|partially_compliant|non_compliant",
-                "gaps": ["List of compliance gaps"],
-                "recommendations": ["How to achieve compliance"]
-            }}
-        ],
-        "security_testing_recommendations": [
-            "List of security testing approaches and tools to use"
-        ]
-    }}
-}}""",
-                input_variables=["project_context", "project_type", "project_complexity", "code_files", "review_results"]
-            )
-            
-            chain = prompt | self.llm | parser
-            
-            result = chain.invoke({
-                "project_context": state.get("project_context", ""),
-                "project_type": state.get("project_type", "general"),
-                "project_complexity": state.get("project_complexity", "medium"),
-                "code_files": str(state.get("code_files", {})),
-                "review_results": str(state.get("review_results", {}))
-            })
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("security_analyst")
-            
-            return {
-                **state,
-                "security_analysis": result.get("security_analysis", {}),
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "security_analyst": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "security_analysis",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "security_analysis",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
-                    }
-                ]
-            }
-            
-        except Exception as e:
-            self.logger.error(f"Security analysis failed: {e}")
-            return {
-                **state,
-                "errors": [*state.get("errors", []), f"Security analysis failed: {str(e)}"],
-                "current_step": "security_analysis",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "security_analysis",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
-            }
-    
-    def _documentation_generator_node(self, state: AgentState) -> AgentState:
-        """Documentation generation node using standard LangChain patterns."""
-        try:
-            parser = JsonOutputParser()
-            
-            prompt = PromptTemplate(
-                template="""You are an expert Technical Writer. Generate comprehensive documentation for the project.
-
-PROJECT CONTEXT:
-{project_context}
-
-PROJECT TYPE: {project_type}
-PROJECT COMPLEXITY: {project_complexity}
-
-REQUIREMENTS:
-{requirements}
-
-ARCHITECTURE:
-{architecture}
-
-CODE FILES:
-{code_files}
-
-TEST FILES:
-{test_files}
-
-REVIEW RESULTS:
-{review_results}
-
-SECURITY ANALYSIS:
-{security_analysis}
-
-TASK:
-Generate comprehensive documentation including user guides, API documentation, and technical specifications.
-
-Return your response as a valid JSON object with the following structure:
-{{
-    "documentation": {{
-        "project_overview": {{
-            "filename": "README.md",
-            "content": "Complete project overview and introduction",
-            "sections": ["Installation", "Usage", "Features", "Contributing"]
-        }},
-        "user_guides": [
-            {{
-                "filename": "USER_GUIDE.md",
-                "content": "Complete user guide content",
-                "description": "Description of the user guide",
-                "sections": ["Getting Started", "Basic Usage", "Advanced Features", "Troubleshooting"]
-            }}
-        ],
-        "api_documentation": [
-            {{
-                "filename": "API_DOCS.md",
-                "content": "Complete API documentation content",
-                "description": "Description of the API documentation",
-                "endpoints": [
-                    {{
-                        "name": "Endpoint name",
-                        "method": "GET|POST|PUT|DELETE",
-                        "description": "Endpoint description",
-                        "parameters": ["List of parameters"],
-                        "response": "Response format description"
-                    }}
-                ]
-            }}
-        ],
-        "technical_specifications": [
-            {{
-                "filename": "TECHNICAL_SPEC.md",
-                "content": "Complete technical specification content",
-                "description": "Description of technical specifications",
-                "sections": ["Architecture", "Data Models", "Security", "Performance"]
-            }}
-        ],
-        "installation_guide": {{
-            "filename": "INSTALLATION.md",
-            "content": "Complete installation guide content",
-            "description": "Step-by-step installation instructions",
-            "prerequisites": ["List of prerequisites"],
-            "steps": ["List of installation steps"]
-        }},
-        "deployment_guide": {{
-            "filename": "DEPLOYMENT.md",
-            "content": "Complete deployment guide content",
-            "description": "Deployment instructions and configuration",
-            "environments": ["Development", "Staging", "Production"],
-            "configuration": "Configuration details"
-        }},
-        "troubleshooting_guide": {{
-            "filename": "TROUBLESHOOTING.md",
-            "content": "Complete troubleshooting guide content",
-            "description": "Common issues and solutions",
-            "common_issues": [
-                {{
-                    "issue": "Common issue description",
-                    "symptoms": "How to identify the issue",
-                    "solution": "How to resolve the issue",
-                    "prevention": "How to prevent the issue"
-                }}
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=task)
             ]
-        }},
-        "developer_documentation": {{
-            "filename": "DEVELOPER_GUIDE.md",
-            "content": "Complete developer guide content",
-            "description": "Documentation for developers",
-            "sections": ["Setup", "Architecture", "Contributing", "Testing"]
-        }}
-    }}
-}}""",
-                input_variables=["project_context", "project_type", "project_complexity", "requirements", "architecture", "code_files", "test_files", "review_results", "security_analysis"]
-            )
             
-            chain = prompt | self.llm | parser
+            result = agent.invoke({"messages": messages})
+            last_msg = result["messages"][-1]
+            output = last_msg.content if hasattr(last_msg, 'content') else str(last_msg)
             
-            result = chain.invoke({
-                "project_context": state.get("project_context", ""),
-                "project_type": state.get("project_type", "general"),
-                "project_complexity": state.get("project_complexity", "medium"),
-                "requirements": str(state.get("requirements", {})),
-                "architecture": str(state.get("architecture", {})),
-                "code_files": str(state.get("code_files", {})),
-                "test_files": str(state.get("test_files", {})),
-                "review_results": str(state.get("review_results", {})),
-                "security_analysis": str(state.get("security_analysis", {}))
-            })
-            
-            # Update completed agents
-            completed_agents = state.get("completed_agents", [])
-            completed_agents.append("documentation_generator")
-            
-            return {
-                **state,
-                "documentation": result.get("documentation", {}),
-                "agent_outputs": {
-                    **state.get("agent_outputs", {}),
-                    "documentation_generator": result
-                },
-                "completed_agents": completed_agents,
-                "current_step": "documentation_generation",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "documentation_generation",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "completed"
+            # Parse the structured JSON output from LangSmith prompt
+            try:
+                import json
+                import re
+                
+                # Extract JSON from markdown code block if present
+                json_match = re.search(r'```json\s*(\{.*\})\s*```', output, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(1)
+                else:
+                    json_str = output
+                
+                parsed = json.loads(json_str)
+                
+                # Extract code files from structured format
+                if "files" in parsed and isinstance(parsed["files"], list):
+                    code_files = {}
+                    for file_obj in parsed["files"]:
+                        if "path" in file_obj and "content" in file_obj:
+                            code_files[file_obj["path"]] = file_obj["content"]
+                    
+                    self.logger.info(f"✅ code_generator completed - generated {len(code_files)} files")
+                    
+                    # Return structured output with all metadata
+                    return {
+                        "code_files": {
+                            "files": code_files,
+                            "file_tree": parsed.get("file_tree", ""),
+                            "plan": parsed.get("plan", []),
+                            "assumptions": parsed.get("assumptions", []),
+                            "tests": parsed.get("tests", {}),
+                            "runbook": parsed.get("runbook", {}),
+                            "config_notes": parsed.get("config_notes", ""),
+                            "api_contracts": parsed.get("api_contracts", []),
+                            "security_review": parsed.get("security_review", []),
+                            "performance_notes": parsed.get("performance_notes", []),
+                            "limitations": parsed.get("limitations", [])
+                        },
+                        "completed_agents": ["code_generator"],
+                        "current_step": "code_generator",
+                        "messages": [AIMessage(content=f"code_generator: Generated {len(code_files)} files")]
                     }
-                ]
+                else:
+                    raise ValueError("No files found in output")
+                    
+            except Exception as parse_error:
+                self.logger.warning(f"Failed to parse structured output: {parse_error}")
+                # Fallback: use raw output
+            return {
+                    "code_files": {"raw_output": output},
+                    "completed_agents": ["code_generator"],
+                    "current_step": "code_generator",
+                    "messages": [AIMessage(content=f"code_generator: Generated code (unparsed)")]
             }
             
         except Exception as e:
-            self.logger.error(f"Documentation generation failed: {e}")
+            self.logger.error(f"❌ code_generator failed: {e}")
             return {
-                **state,
-                "errors": [*state.get("errors", []), f"Documentation generation failed: {str(e)}"],
-                "current_step": "documentation_generation",
-                "execution_history": [
-                    *state.get("execution_history", []),
-                    {
-                        "step": "documentation_generation",
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "failed",
-                        "error": str(e)
-                    }
-                ]
+                "errors": [f"code_generator: {str(e)}"],
+                "completed_agents": ["code_generator"],
+                "current_step": "code_generator_failed"
             }
     
-    async def execute_workflow(self, project_context: str, session_id: str = None) -> Dict[str, Any]:
-        """
-        Execute the complete workflow using standard LangGraph patterns.
+    def _test_node(self, state: SwarmState) -> Dict[str, Any]:
+        """Test generator node - generates actual test code files."""
+        agent = self.agents["test_generator"]
+        system_prompt = self.prompts.get("test_generator", "You are a test generator")
         
-        Args:
-            project_context: The project context and requirements
-            session_id: Optional session ID for persistence
-            
-        Returns:
-            Final workflow state
-        """
+        # Simple task - the LangSmith prompt handles all instructions
+        task = f"""Project: {state['project_context']}
+
+Requirements: {state.get('requirements', {})}
+Code Files: {state.get('code_files', {})}
+
+Generate comprehensive test files with actual, executable test code."""
+        
         try:
-            # Initialize state following LangGraph patterns
-            initial_state = AgentState(
-                messages=[],
-                current_step="start",
-                project_context=project_context,
-                project_type="general",
-                project_complexity="medium",
-                requirements={},
-                architecture={},
-                code_files={},
-                test_files={},
-                review_results={},
-                security_analysis={},
-                documentation={},
-                agent_outputs={},
-                errors=[],
-                execution_history=[],
-                memory={},
-                recall_memories=[],
-                required_agents=[],
-                completed_agents=[],
-                next_agent=None,
-                workflow_complete=False
-            )
+            self.logger.info(f"🤖 Running test_generator...")
             
-            # Execute workflow using LangGraph patterns
-            config = {}
-            if session_id:
-                config = {
-                    "configurable": {
-                        "thread_id": session_id,
-                        "checkpoint_id": session_id
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=task)
+            ]
+            
+            result = agent.invoke({"messages": messages})
+            last_msg = result["messages"][-1]
+            output = last_msg.content if hasattr(last_msg, 'content') else str(last_msg)
+            
+            # Parse the structured JSON output
+            try:
+                import json
+                import re
+                
+                # Extract JSON from markdown code block if present
+                json_match = re.search(r'```json\s*(\{.*\})\s*```', output, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(1)
+                else:
+                    json_str = output
+                
+                parsed = json.loads(json_str)
+                
+                # Extract test files from structured format
+                test_files = {}
+                if "test_files" in parsed and isinstance(parsed["test_files"], list):
+                    for file_obj in parsed["test_files"]:
+                        if "path" in file_obj and "content" in file_obj:
+                            test_files[file_obj["path"]] = file_obj["content"]
+                    
+                    self.logger.info(f"✅ test_generator completed - generated {len(test_files)} test files")
+                    
+                    # Return structured output with all metadata
+                    return {
+                        "test_files": {
+                            "files": test_files,
+                            "test_strategy": parsed.get("test_strategy", {}),
+                            "coverage_analysis": parsed.get("coverage_analysis", {}),
+                            "test_suites": parsed.get("test_suites", []),
+                            "performance_tests": parsed.get("performance_tests", {}),
+                            "quality_gate_passed": parsed.get("quality_gate_passed", True)
+                        },
+                        "completed_agents": ["test_generator"],
+                        "current_step": "test_generator",
+                        "messages": [AIMessage(content=f"test_generator: Generated {len(test_files)} test files")]
                     }
+                else:
+                    # Fallback: use raw output
+                    self.logger.warning("No test_files array found in output, using raw output")
+                    return {
+                        "test_files": {"test_strategy": parsed},
+                        "completed_agents": ["test_generator"],
+                        "current_step": "test_generator",
+                        "messages": [AIMessage(content="test_generator: Generated test strategy")]
+                    }
+                    
+            except Exception as parse_error:
+                self.logger.warning(f"Failed to parse test generator output: {parse_error}")
+                # Fallback: use raw output
+                return {
+                    "test_files": {"raw_output": output},
+                    "completed_agents": ["test_generator"],
+                    "current_step": "test_generator",
+                    "messages": [AIMessage(content="test_generator: Generated tests (unparsed)")]
                 }
             
-            result_state = await self.workflow.ainvoke(initial_state, config=config)
+        except Exception as e:
+            self.logger.error(f"❌ test_generator failed: {e}")
+            return {
+                "errors": [f"test_generator: {str(e)}"],
+                "completed_agents": ["test_generator"],
+                "current_step": "test_generator_failed"
+            }
+    
+    def _review_node(self, state: SwarmState) -> Dict[str, Any]:
+        """Code reviewer node."""
+        return self._run_agent(self.agents["code_reviewer"], state, "code_reviewer", "code_review")
+    
+    def _doc_node(self, state: SwarmState) -> Dict[str, Any]:
+        """Documentation generator node."""
+        return self._run_agent(self.agents["documentation_generator"], state, "documentation_generator", "documentation")
+    
+    def _run_agent(self, agent, state: SwarmState, agent_name: str, output_key: str) -> Dict[str, Any]:
+        """Run agent - simple wrapper following LangGraph patterns."""
+        try:
+            self.logger.info(f"🤖 Running {agent_name}...")
             
-            return result_state
+            # Get agent's system prompt from LangSmith
+            system_prompt = self.prompts.get(agent_name, f"You are {agent_name}")
+            
+            # Create task-specific message
+            task = f"Project: {state['project_context']}\n\n"
+            if agent_name == "requirements_analyst":
+                task += "Analyze the project requirements and provide detailed specifications."
+            elif agent_name == "architecture_designer":
+                task += f"Design the system architecture.\nRequirements: {state.get('requirements', {})}"
+            elif agent_name == "code_generator":
+                task += f"Generate code.\nArchitecture: {state.get('architecture', {})}\nRequirements: {state.get('requirements', {})}"
+            elif agent_name == "test_generator":
+                task += f"Create comprehensive tests.\nCode: {state.get('code_files', {})}"
+            elif agent_name == "code_reviewer":
+                task += f"Review the code quality.\nCode: {state.get('code_files', {})}"
+            elif agent_name == "documentation_generator":
+                task += "Create comprehensive documentation for the project."
+            
+            # Invoke agent with system prompt + task (LangGraph patterns)
+            # System message sets behavior, Human message provides task
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=task)
+            ]
+            result = agent.invoke({"messages": messages})
+            
+            # Extract output
+            output = "No output"
+            if result and "messages" in result and len(result["messages"]) > 0:
+                last_msg = result["messages"][-1]
+                output = last_msg.content if hasattr(last_msg, 'content') else str(last_msg)
+            
+            self.logger.info(f"✅ {agent_name} completed")
+            
+            # Return state update (framework merges automatically)
+            return {
+                output_key: {"output": output},
+                "completed_agents": [agent_name],
+                "current_step": agent_name,
+                "messages": [AIMessage(content=f"{agent_name}: {output[:100]}...")]
+            }
             
         except Exception as e:
-            self.logger.error(f"Workflow execution failed: {e}")
-            raise
-
-
-# Export for LangGraph Studio
-_default_instance = None
-
-def get_graph():
-    """Get the compiled graph for LangGraph Studio."""
-    global _default_instance
-    if _default_instance is None and LANGGRAPH_AVAILABLE:
-        # LLM will read GEMINI_API_KEY directly from OS environment (like working project)
-        # No need to pass API key through config
-        llm_config = {
-            "model_name": "gemini-2.5-flash",
-            "temperature": 0,
-            "max_tokens": 8192
+            self.logger.error(f"❌ {agent_name} failed: {e}")
+            return {
+                "errors": [f"{agent_name}: {str(e)}"],
+                "completed_agents": [agent_name],
+                "current_step": f"{agent_name}_failed"
+            }
+    
+    async def execute_swarm(self, project_context: str, session_id: str = None) -> Dict[str, Any]:
+        """Execute swarm - simple and clean."""
+        
+        # Initial state
+        initial_state: SwarmState = {
+            "project_context": project_context,
+            "project_complexity": "medium",
+            "required_agents": [],
+            "next_agent": "",
+            "messages": [],
+            "requirements": {},
+            "architecture": {},
+            "code_files": {},
+            "test_files": {},
+            "code_review": {},
+            "documentation": {},
+            "completed_agents": [],
+            "current_step": "start",
+            "errors": []
         }
         
-        try:
-            _default_instance = LangGraphWorkflowManager(llm_config)
-            logger.info("✅ Development workflow graph compiled for Studio")
-        except Exception as e:
-            logger.error(f"Failed to create workflow graph: {e}")
-            return None
-    
-    return _default_instance.workflow if _default_instance else None
+        # Execute workflow - LangGraph handles the rest!
+        result = await self.workflow.ainvoke(initial_state)
+        
+        return result
 
-# Studio expects 'graph' variable
+
+# ============================================================================
+# STUDIO EXPORT - Simple and Clean
+# ============================================================================
+
+def get_graph():
+    """Export for LangGraph Studio."""
+    llm_config = {"model_name": "gemini-2.5-flash", "temperature": 0.0}  # Deterministic
+    swarm = AgentSwarm(llm_config)
+    return swarm.workflow
+
+
+# Export for Studio
 graph = get_graph()
 
-
-# Example usage
-if __name__ == "__main__":
-    # Example configuration
-    llm_config = {
-        "api_key": "your-gemini-api-key",
-        "model_name": "gemini-2.5-flash-lite",
-        "temperature": 0.1,
-        "max_tokens": 8192
-    }
-    
-    # Create workflow manager
-    workflow_manager = LangGraphWorkflowManager(llm_config)
-    
-    # Example project contexts
-    simple_project = "Create a simple calculator script"
-    complex_project = "Build a full-stack web application with user authentication, database, and API endpoints"
-    
-    # Execute workflow
-    result = asyncio.run(workflow_manager.execute_workflow(simple_project))
-    print("Workflow completed:", result)
+# Backward compatibility
+LangGraphWorkflowManager = AgentSwarm

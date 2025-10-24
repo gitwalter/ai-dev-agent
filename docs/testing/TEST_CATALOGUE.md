@@ -1,6 +1,6 @@
 # Test Catalogue - Comprehensive Test Documentation
 
-**Generated**: 2025-10-10 11:56:33  
+**Generated**: 2025-10-23 18:08:10  
 **Generator**: Test Catalogue Generator v1.0  
 **Purpose**: Complete inventory and documentation of all test cases
 
@@ -8,11 +8,11 @@
 
 | Metric | Value |
 |--------|--------|
-| **Total Test Files** | 61 |
+| **Total Test Files** | 62 |
 | **Total Test Classes** | 164 |
 | **Total Test Functions** | 545 |
 | **Total Tests** | 709 |
-| **Total Size** | 946.5 KB |
+| **Total Size** | 949.0 KB |
 | **Coverage Categories** | 10 |
 
 ## 🎯 **Test Categories**
@@ -25,7 +25,7 @@
 - **Root Tests**: 20 files, 208 tests
 - **Security Tests**: 1 files, 14 tests
 - **Supervisor Tests**: 2 files, 21 tests
-- **System Tests**: 1 files, 0 tests
+- **System Tests**: 2 files, 0 tests
 - **Unit Tests**: 16 files, 263 tests
 
 
@@ -2297,6 +2297,19 @@ and always serve love, harmony, and protection for all living beings.
 
 ## 📁 **System Tests**
 
+### `system\test_all_graphs.py` (0 tests)
+
+**Description**: Test all graphs in langgraph.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 2.5 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 0 |
+| **Total Tests** | 0 |
+
+---
+
 ### `system\test_complete_workflow.py` (0 tests)
 
 **Description**: Test script to verify the complete workflow with real LLM usage.
@@ -3448,7 +3461,7 @@ Tests the distinction between checking rule applicability and selective applicat
 - `scripts/` - 1 files, 0 tests
 - `security/` - 1 files, 14 tests
 - `supervisor/` - 2 files, 21 tests
-- `system/` - 1 files, 0 tests
+- `system/` - 2 files, 0 tests
 - `test_utils\automated_testing/` - 1 files, 1 tests
 - `unit/` - 7 files, 125 tests
 - `unit\agents/` - 3 files, 37 tests
@@ -3476,7 +3489,7 @@ Tests the distinction between checking rule applicability and selective applicat
 ### Improvement Opportunities
 
 1. 📝 **Add documentation** to 3 test files without docstrings
-2. 🧹 **Remove or implement** 7 empty test files
+2. 🧹 **Remove or implement** 8 empty test files
 3. ⚖️ **Increase unit test coverage** - Currently 37.1%, recommended >60%
 
 ### Best Practices Checklist

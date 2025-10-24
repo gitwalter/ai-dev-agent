@@ -110,6 +110,187 @@ elif existing_system_type == "utility_system":
     add_utility_function(existing_util_path, new_function)
 ```
 
+## 0.5. Documentation-First API Integration (CRITICAL FOUNDATION)
+
+### **READ DOCUMENTATION BEFORE IMPLEMENTATION - MANDATORY**
+
+```python
+# FORBIDDEN: Implementing API integration without reading documentation
+from langchain import some_module  # WRONG - guessing at API usage
+result = some_module.do_something()  # WRONG - assuming how it works
+
+# REQUIRED: Documentation-first approach
+# Step 1: Read official API documentation
+# Step 2: Understand correct usage patterns
+# Step 3: Implement using documented methods
+from langsmith import Client
+
+# Correct usage based on official documentation
+client = Client(api_key=api_key)
+prompt = client.pull_prompt("prompt_name", include_model=True)  # Documented method
+```
+
+### **Mandatory Documentation Review Process**
+
+Before implementing ANY integration with special libraries:
+
+1. **MANDATORY: Read Official Documentation**
+   - LangChain: https://python.langchain.com/docs/
+   - LangGraph: https://langchain-ai.github.io/langgraph/
+   - LangSmith: https://docs.smith.langchain.com/
+   - Any other special library: Find and read official docs
+
+2. **MANDATORY: Understand API Contracts**
+   - Read method signatures
+   - Understand parameters and return types
+   - Review code examples
+   - Check version compatibility
+
+3. **MANDATORY: Use Documented Patterns**
+   - Follow official examples
+   - Use documented method names
+   - Respect parameter conventions
+   - Handle errors as documented
+
+4. **FORBIDDEN: Guessing or Assuming**
+   - Don't guess at method names
+   - Don't assume API behavior
+   - Don't use deprecated patterns
+   - Don't ignore version differences
+
+### **Special Library Integration Standards**
+
+```python
+# REQUIRED: Documentation-first integration pattern
+
+class DocumentedAPIIntegration:
+    """Integration following official documentation."""
+    
+    def __init__(self):
+        # Step 1: Read docs for initialization
+        # Documentation: https://docs.library.com/client
+        self.client = ProperClientClass(
+            param1="value",  # As documented
+            param2="value"   # As documented
+        )
+    
+    def use_api_method(self):
+        """Use API method exactly as documented."""
+        # Step 2: Read docs for method usage
+        # Documentation: https://docs.library.com/methods
+        
+        try:
+            # Use documented method with documented parameters
+            result = self.client.documented_method(
+                required_param="value",
+                optional_param="value"
+            )
+            
+            # Handle result as documented
+            return self._process_documented_result(result)
+            
+        except DocumentedException as e:
+            # Handle errors as documented
+            self._handle_documented_error(e)
+
+# FORBIDDEN: Undocumented usage
+class UndocumentedIntegration:
+    def __init__(self):
+        # WRONG - guessing at initialization
+        self.client = GuessedClass()  # Not in docs
+    
+    def use_api_method(self):
+        # WRONG - guessing at method names
+        result = self.client.maybe_this_works()  # Not documented
+        return result  # Hope it works!
+```
+
+### **Documentation Sources Priority**
+
+**Priority Order** (check in this order):
+
+1. **Official Documentation** (highest priority)
+   - Main docs site
+   - API reference
+   - Official examples
+
+2. **Release Notes / Changelog**
+   - Breaking changes
+   - Deprecated methods
+   - New features
+
+3. **Official GitHub Repository**
+   - Source code (if needed)
+   - Issue tracker
+   - Official examples directory
+
+4. **Community Resources** (lowest priority, verify against official docs)
+   - Stack Overflow
+   - Blog posts
+   - Third-party tutorials
+
+### **Version Compatibility Checks**
+
+```python
+# REQUIRED: Check and document version compatibility
+
+# Document versions at top of file
+"""
+Integration with LangChain/LangSmith
+
+Dependencies:
+- langchain==0.1.0 (or compatible)
+- langsmith==0.1.0 (or compatible)
+- langgraph==0.1.0 (or compatible)
+
+Documentation references:
+- https://docs.smith.langchain.com/reference/python-client
+- https://python.langchain.com/docs/get_started/introduction
+"""
+
+import importlib.metadata
+
+def check_version_compatibility():
+    """Verify library versions match documentation."""
+    required_versions = {
+        'langchain': '>=0.1.0',
+        'langsmith': '>=0.1.0',
+        'langgraph': '>=0.1.0'
+    }
+    
+    for package, version_req in required_versions.items():
+        try:
+            installed = importlib.metadata.version(package)
+            logger.info(f"{package} version: {installed}")
+        except importlib.metadata.PackageNotFoundError:
+            logger.error(f"{package} not installed!")
+```
+
+### **Integration Testing with Documentation**
+
+```python
+# REQUIRED: Test against documented behavior
+
+def test_langsmith_integration():
+    """Test LangSmith integration using documented API."""
+    
+    # Based on: https://docs.smith.langchain.com/reference/python-client
+    from langsmith import Client
+    
+    # Test documented initialization
+    client = Client(api_key="test-key")
+    assert client is not None
+    
+    # Test documented method
+    # Documentation states: client.pull_prompt(prompt_name, include_model=True)
+    try:
+        prompt = client.pull_prompt("test_prompt", include_model=True)
+        # Success - API used correctly
+    except Exception as e:
+        # Handle as documented
+        logger.error(f"Failed as documented: {e}")
+```
+
 ## 1. Data Integrity and Authenticity
 
 ### **NO FAKE VALUES - CRITICAL PRINCIPLE**

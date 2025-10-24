@@ -39,10 +39,11 @@
 
 | ID | User Story | Points | Status | Assignee | Sprint Week |
 |----|------------|--------|--------|----------|-------------|
+| **US-SWARM-002** | Build LangGraph Agent Swarm with Coordinated Specialist Agents | 13 | 🔄 In Progress | Agent Team | Week 1-2 |
 | **US-SWARM-UI-001** | Agent Swarm Management UI | 5 | 📋 Planned | UI Team | Week 2-3 |
 | **US-SEMANTIC-001** | Advanced Semantic Search Features | 3 | 📋 Backlog | RAG Team | Week 3 |
 
-**Medium Priority Total**: 8 points
+**Medium Priority Total**: 21 points
 
 ### Lower Priority (Nice to Have)
 

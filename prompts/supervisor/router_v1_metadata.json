@@ -1,0 +1,11 @@
+{
+  "name": "router_v1",
+  "description": "Route to next agent based on workflow state",
+  "variables": [
+    "project_context",
+    "completed_agents",
+    "required_agents",
+    "current_outputs"
+  ],
+  "template_length": 2963
+}

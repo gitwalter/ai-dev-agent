@@ -1,0 +1,11 @@
+{
+  "name": "project_manager_supervisor_v1",
+  "description": "High-level project orchestration and oversight",
+  "variables": [
+    "project_context",
+    "workflow_state",
+    "agent_outputs",
+    "quality_metrics"
+  ],
+  "template_length": 4331
+}

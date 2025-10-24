@@ -1,0 +1,11 @@
+{
+  "name": "quality_control_supervisor_v1",
+  "description": "Validate all outputs meet quality standards",
+  "variables": [
+    "output_type",
+    "output_content",
+    "quality_criteria",
+    "project_context"
+  ],
+  "template_length": 4812
+}
