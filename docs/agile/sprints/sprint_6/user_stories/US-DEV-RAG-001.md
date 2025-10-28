@@ -16,12 +16,16 @@
 
 ## Business Value
 
-Transform the development workflow from generic code generation to **context-aware, standards-compliant development** with:
+Transform the development workflow from generic code generation to **context-aware, standards-compliant collaborative development** with:
 - **Guideline-Driven Development**: Agents follow project-specific coding standards
 - **Architecture-Aware Code**: Generated code aligns with architectural patterns
+- **Agile-Integrated Development**: Agents access user stories, sprint plans, and agile artifacts
+- **Framework-Informed Code**: Access to framework documentation (LangChain, LangGraph, etc.)
+- **Rich Knowledge Base**: Architecture docs, coding guidelines, agile docs, framework docs, websites
 - **Dynamic Knowledge Integration**: Add documents/websites on-the-fly during conversations
 - **Iterative Development**: Save and resume development sessions with full context
-- **Human-in-the-Loop Control**: Specify which guidelines/docs to use per task
+- **Human-Agent Collaboration**: Multiple sync points where human and agents decide together
+- **Interactive UI**: Rich feedback interface for each agent role and decision point
 
 ## Current State vs. Desired State
 
