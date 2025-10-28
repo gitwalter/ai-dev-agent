@@ -23,12 +23,13 @@ Transform the AI-Dev-Agent from a conversational system into a **comprehensive i
 
 ## 📊 Sprint Backlog
 
-### Epic 1: RAG System Enhancement (26 points)
+### Epic 1: RAG System Enhancement (39 points)
 | ID | Title | Points | Status | Assignee |
 |----|-------|--------|--------|----------|
 | US-RAG-001 | Comprehensive RAG System with Management UI | 34 | 🟢 Phase 4 Complete | RAG Team |
 | US-RAG-002 | RAG Document Database Integration | 8 | 📋 Backlog | RAG Team |
 | US-RAG-003 | Adaptive RAG Chunk Retrieval | 5 | 🟡 Planning | RAG Team |
+| US-RAG-004 | Agentic RAG System with Tool Integration | 13 | ✅ **COMPLETED** | RAG Team |
 | US-SEMANTIC-001 | Advanced Semantic Search Features | 3 | 📋 Backlog | RAG Team |
 
 ### Epic 2: MCP Integration (18 points)
@@ -42,8 +43,9 @@ Transform the AI-Dev-Agent from a conversational system into a **comprehensive i
 | US-SWARM-UI-001 | Agent Swarm Management UI | 5 | 📋 Planned | UI Team |
 | US-MONITOR-001 | Enhanced Rule Monitoring | 3 | ✅ Complete | Platform Team |
 
-**Total Sprint 6 Capacity**: 52 story points  
-**Committed Points**: 52 points  
+**Total Sprint 6 Capacity**: 65 story points  
+**Committed Points**: 65 points  
+**Completed Points**: 55 points (85%)  
 **Velocity Target**: 17-20 points/week
 
 ## 🎯 Success Metrics
