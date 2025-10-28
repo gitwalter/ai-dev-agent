@@ -179,25 +179,10 @@ class QueryAnalystAgent(EnhancedBaseAgent):
             convert_system_message_to_human=True
         )
         
-        # Create analysis prompt
-        system_prompt = """You are a Query Analysis Expert for a RAG (Retrieval Augmented Generation) system.
-
-Your task is to analyze user queries and provide:
-1. Intent classification (factual, conceptual, procedural, multi-hop, exploratory)
-2. 3-5 rewritten query variants optimized for semantic search
-3. Key concepts/terms that should be searched
-4. Recommended search strategy (focused, broad, multi-stage)
-5. Complexity score (0.0-1.0)
-
-Respond in this exact JSON format:
-{
-    "intent": "factual|conceptual|procedural|multi-hop|exploratory",
-    "rewritten_queries": ["variant1", "variant2", "variant3"],
-    "key_concepts": ["concept1", "concept2", "concept3"],
-    "search_strategy": "focused|broad|multi-stage",
-    "complexity": 0.5,
-    "reasoning": "Brief explanation"
-}"""
+        # Load prompt from LangSmith (following langgraph_workflow pattern)
+        from prompts.agent_prompt_loader import get_agent_prompt_loader
+        prompt_loader = get_agent_prompt_loader("query_analyst")
+        system_prompt = prompt_loader.get_system_prompt()
         
         user_prompt = f"""Analyze this query:
 

@@ -48,6 +48,7 @@ langchain-community==0.3.29  # Includes HuggingFace embeddings
 langchain-huggingface==0.3.1  # Updated HuggingFace embeddings (no deprecation warnings)
 langchain-google-genai==2.1.9
 langchain-text-splitters==0.3.9
+langchain-mcp-adapters>=0.1.11  # Official MCP adapter for LangChain (Model Context Protocol)
 
 # LangGraph and Studio (Updated for LangGraph Studio integration)
 langgraph>=0.2.50  # Latest stable version for Studio support
@@ -73,9 +74,18 @@ docx2txt==0.8  # DOCX support
 beautifulsoup4==4.12.3  # HTML parsing for web scraping
 lxml==5.3.0  # XML/HTML parser
 
+# Web search tools (for US-RAG-004 agentic RAG)
+tavily-python==0.3.3  # Web search for agentic RAG
+wikipedia==1.4.0  # Wikipedia search for agentic RAG
+
 # AI capabilities - free local only
 google-generativeai==0.7.2
 # openai>=2.1.0  # REMOVED: Not needed for free local embeddings
+
+# Google Cloud APIs (for Google Drive MCP tools)
+google-api-python-client==2.108.0  # Google Drive API
+google-auth-httplib2==0.2.0  # HTTP authentication
+google-auth-oauthlib==1.2.0  # OAuth2 authentication
 
 # Database and persistence
 sqlalchemy==2.0.23

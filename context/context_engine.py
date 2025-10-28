@@ -34,14 +34,21 @@ try:
         from langchain_qdrant import Qdrant
         QDRANT_NEW_API = False
     
-    # Try OpenAI embeddings first (NumPy 2.0 compatible)
+    # Try Google Gemini embeddings first (free, no API costs, consistent with our LLM)
+    try:
+        from langchain_google_genai import GoogleGenerativeAIEmbeddings
+        GEMINI_EMBEDDINGS_AVAILABLE = True
+    except ImportError:
+        GEMINI_EMBEDDINGS_AVAILABLE = False
+    
+    # Try OpenAI embeddings as fallback (requires API key)
     try:
         from langchain_openai import OpenAIEmbeddings
         OPENAI_EMBEDDINGS_AVAILABLE = True
     except ImportError:
         OPENAI_EMBEDDINGS_AVAILABLE = False
     
-    # Use HuggingFace embeddings - try multiple import paths
+    # Use HuggingFace embeddings as last resort (has dependency issues)
     HUGGINGFACE_EMBEDDINGS_AVAILABLE = False
     HuggingFaceEmbeddings = None
     
@@ -116,22 +123,56 @@ class ContextEngine:
             self.logger.warning("Semantic search not available - using keyword-based search only")
     
     def _initialize_semantic_search(self) -> None:
-        """Initialize semantic search components with free, local embeddings."""
+        """Initialize semantic search components with free embeddings."""
         try:
-            # Use HuggingFace embeddings (free, local, no API key required)
-            if HUGGINGFACE_EMBEDDINGS_AVAILABLE:
+            # Priority 1: Use Google Gemini embeddings (free, consistent with our LLM, no dependency issues)
+            if GEMINI_EMBEDDINGS_AVAILABLE:
                 try:
+                    import os
+                    gemini_api_key = os.environ.get("GEMINI_API_KEY")
+                    
+                    if gemini_api_key:
+                        self.logger.info("🔧 Initializing Google Gemini embeddings (gemini-embedding-001)...")
+                        from google.genai import types as genai_types
+                        self.embeddings = GoogleGenerativeAIEmbeddings(
+                            model="models/gemini-embedding-001",
+                            google_api_key=gemini_api_key,
+                            task_type="retrieval_document",  # Optimized for RAG use case
+                            # Use 768 dimensions (recommended by Google for RAG)
+                            # https://ai.google.dev/gemini-api/docs/embeddings
+                            embedding_kwargs={"output_dimensionality": 768}
+                        )
+                        self.logger.info("✅ Semantic search initialized with Google Gemini embeddings (FREE, 768 dimensions)")
+                        self.logger.info("   Using same API as our LLM - consistent and reliable!")
+                    else:
+                        self.logger.warning("⚠️ GEMINI_API_KEY not found in environment")
+                        self.embeddings = None
+                except Exception as e:
+                    self.logger.error(f"❌ Gemini embeddings failed: {e}")
+                    self.logger.warning("⚠️ Falling back to alternative embeddings...")
+                    self.embeddings = None
+            
+            # Priority 2: Fallback to HuggingFace (local, but has dependency issues)
+            if not self.embeddings and HUGGINGFACE_EMBEDDINGS_AVAILABLE:
+                try:
+                    self.logger.info("🔧 Initializing HuggingFace embeddings (fallback option)...")
                     self.embeddings = HuggingFaceEmbeddings(
                         model_name="all-MiniLM-L6-v2",  # Fast, lightweight, free model
                         model_kwargs={'device': 'cpu'},
                         encode_kwargs={'normalize_embeddings': True}
                     )
-                    self.logger.info("✅ Semantic search initialized with free HuggingFace embeddings (all-MiniLM-L6-v2)")
+                    self.logger.info("✅ Semantic search initialized with HuggingFace embeddings (all-MiniLM-L6-v2)")
                 except Exception as e:
                     self.logger.error(f"❌ HuggingFace embeddings failed: {e}")
+                    self.logger.warning("⚠️  Known issue: sentence-transformers has boto3/urllib3 dependency conflicts")
                     self.embeddings = None
-            else:
-                self.logger.warning("⚠️ HuggingFace embeddings not available")
+            
+            # No embeddings available
+            if not self.embeddings:
+                self.logger.warning("⚠️ No embedding provider available - semantic search disabled")
+                self.logger.info("💡 To enable semantic search:")
+                self.logger.info("   1. Set GEMINI_API_KEY environment variable (RECOMMENDED)")
+                self.logger.info("   2. Or fix sentence-transformers dependencies")
                 self.embeddings = None
             
             # Initialize Qdrant client (local, embedded - no API key needed)

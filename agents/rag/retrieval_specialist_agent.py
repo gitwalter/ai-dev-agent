@@ -98,6 +98,10 @@ class RetrievalSpecialistAgent(EnhancedBaseAgent):
             'last_retrieval_quality': 0.7  # Track quality for adaptive decisions
         }
         
+        # Load prompt from LangSmith (following langgraph_workflow pattern)
+        from prompts.agent_prompt_loader import get_agent_prompt_loader
+        self.prompt_loader = get_agent_prompt_loader("retrieval_specialist")
+        
         # Build LangGraph workflow if available
         if LANGGRAPH_AVAILABLE:
             self.workflow = self._build_langgraph_workflow()

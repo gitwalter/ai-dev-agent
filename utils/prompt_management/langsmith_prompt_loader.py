@@ -5,8 +5,13 @@ LangSmith Prompt Loader
 Hybrid prompt management system that integrates LangSmith Prompt Hub
 with local fallback for offline development and resilience.
 
+Features:
+- Automatic sync with LangSmith Hub (hub = source of truth)
+- Smart caching with conflict detection
+- Local fallback for offline development
+
 Author: AI-Dev-Agent System
-Version: 1.0
+Version: 2.0 - Enhanced with Smart Sync
 """
 
 import os
@@ -24,6 +29,14 @@ except ImportError:
     LANGSMITH_HUB_AVAILABLE = False
     logger.debug("LangSmith hub not available, will use local fallback")
 
+# Import sync manager
+try:
+    from utils.prompt_management.prompt_sync_manager import PromptSyncManager
+    SYNC_MANAGER_AVAILABLE = True
+except ImportError:
+    SYNC_MANAGER_AVAILABLE = False
+    logger.debug("Sync manager not available")
+
 
 class LangSmithPromptLoader:
     """
@@ -36,16 +49,24 @@ class LangSmithPromptLoader:
     4. Hardcoded fallback
     """
     
-    def __init__(self, organization: str = "ai-dev-agent"):
+    def __init__(self, organization: str = "ai-dev-agent", auto_sync: bool = True):
         """
         Initialize the LangSmith prompt loader.
         
         Args:
             organization: LangSmith organization/namespace
+            auto_sync: Enable automatic sync with hub (recommended)
         """
         self.organization = organization
         self.cache = {}  # In-memory cache for loaded prompts
+        self.auto_sync = auto_sync
         self._load_api_key()
+        
+        # Initialize sync manager if available
+        if SYNC_MANAGER_AVAILABLE and auto_sync:
+            self.sync_manager = PromptSyncManager()
+        else:
+            self.sync_manager = None
     
     def _load_api_key(self) -> Optional[str]:
         """Load LangSmith API key from environment or secrets.toml"""
@@ -81,7 +102,12 @@ class LangSmithPromptLoader:
     def load_from_langsmith(self, agent_name: str, version: str = "latest", 
                            use_cache: bool = True) -> Optional[str]:
         """
-        Load prompt from LangSmith Prompt Hub using official API.
+        Load prompt from LangSmith Prompt Hub with automatic sync.
+        
+        Enhanced with smart sync:
+        - Auto-syncs with hub (hub = source of truth)
+        - Detects local modifications and handles conflicts
+        - Falls back to local cache if hub unavailable
         
         Based on: https://docs.langchain.com/langsmith/manage-prompts-programmatically
         
@@ -93,19 +119,41 @@ class LangSmithPromptLoader:
         Returns:
             Prompt text or None if not available
         """
+        # Step 1: Try smart sync if available
+        if self.sync_manager and self.auto_sync:
+            try:
+                logger.debug(f"[SYNC] Auto-syncing {agent_name}...")
+                sync_result = self.sync_manager.sync_prompt(agent_name, auto_push=False, dry_run=False)
+                
+                if sync_result['success']:
+                    # Load from local cache after sync
+                    local_path = self.sync_manager.get_local_path(agent_name)
+                    if local_path.exists():
+                        prompt_text = local_path.read_text(encoding='utf-8')
+                        
+                        # Cache in memory
+                        cache_key = f"{agent_name}:{version}"
+                        self.cache[cache_key] = prompt_text
+                        
+                        logger.debug(f"[SYNC] Loaded {agent_name} after sync ({len(prompt_text)} chars)")
+                        return prompt_text
+                
+            except Exception as e:
+                logger.debug(f"[SYNC] Sync failed for {agent_name}, falling back: {e}")
+        
+        # Step 2: Fall back to direct hub pull (original behavior)
         if not LANGSMITH_HUB_AVAILABLE:
             logger.debug(f"[INFO] LangSmith hub not available for {agent_name}")
             return None
         
-        # Check cache first
+        # Check in-memory cache first
         cache_key = f"{agent_name}:{version}"
         if use_cache and cache_key in self.cache:
-            logger.debug(f"[CACHE] Using cached prompt for {agent_name}")
+            logger.debug(f"[CACHE] Using in-memory cached prompt for {agent_name}")
             return self.cache[cache_key]
         
         try:
-            # Construct prompt identifier (just the name, workspace is implicit)
-            # Format: "prompt_name" or "prompt_name:commit_hash" or "prompt_name:tag"
+            # Construct prompt identifier
             prompt_name = f"{agent_name}_v1"
             if version and version != "latest":
                 prompt_id = f"{prompt_name}:{version}"
@@ -115,7 +163,6 @@ class LangSmithPromptLoader:
             logger.debug(f"[INFO] Loading prompt from LangSmith: {prompt_id}")
             
             # Load from LangSmith Hub using hub.pull()
-            # API: hub.pull("prompt-name") or hub.pull("prompt-name:commit-hash")
             prompt = hub.pull(prompt_id)
             
             # Extract template text from the PromptTemplate object
@@ -127,7 +174,7 @@ class LangSmithPromptLoader:
             else:
                 prompt_text = str(prompt)
             
-            # Cache the result
+            # Cache the result in memory
             self.cache[cache_key] = prompt_text
             logger.info(f"[OK] Loaded prompt for {agent_name} from LangSmith ({len(prompt_text)} chars)")
             

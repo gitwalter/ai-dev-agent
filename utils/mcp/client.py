@@ -273,18 +273,35 @@ class MCPClient:
         self._processor_task = None
         self._running = False
     
-    async def start(self):
-        """Start the MCP client."""
-        self._running = True
+    async def start(self) -> bool:
+        """
+        Start the MCP client.
         
-        # Auto-discover servers if enabled
-        if self.config.auto_discover:
-            await self._discover_servers()
-        
-        # Start request processor
-        self._processor_task = asyncio.create_task(self._process_requests())
-        
-        logger.info(f"🚀 MCP Client started for agent: {self.config.agent_id}")
+        Returns:
+            True if client started successfully, False otherwise
+        """
+        try:
+            self._running = True
+            
+            # Auto-discover servers if enabled
+            if self.config.auto_discover:
+                await self._discover_servers()
+            
+            # Start request processor
+            self._processor_task = asyncio.create_task(self._process_requests())
+            
+            # Check if we have at least one active connection
+            if not self.connections:
+                logger.error("❌ No MCP server connections established")
+                return False
+            
+            logger.info(f"🚀 MCP Client started for agent: {self.config.agent_id}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to start MCP client: {e}")
+            self._running = False
+            return False
     
     async def stop(self):
         """Stop the MCP client."""
@@ -317,7 +334,9 @@ class MCPClient:
             categories={}
         )
         
-        await self.connect_to_server(local_server)
+        success = await self.connect_to_server(local_server)
+        if not success:
+            logger.warning(f"⚠️  Failed to connect to local MCP server")
     
     async def connect_to_server(self, server_info: MCPServerInfo) -> bool:
         """

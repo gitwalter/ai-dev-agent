@@ -1,7 +1,10 @@
 {
   "prompt_name": "documentation_generator_v1",
-  "last_synced": "2025-10-24T14:19:19.424561",
-  "source": "langsmith",
-  "content_hash": -7783085859017642565,
-  "version": "1"
+  "last_fetched_from_hub": null,
+  "locally_modified": false,
+  "local_edit_timestamp": null,
+  "hub_content_hash": "84ea77538bb5246bee00eb06a0810c0def7467a349cf2631609f0ef2a151da84",
+  "local_content_hash": "84ea77538bb5246bee00eb06a0810c0def7467a349cf2631609f0ef2a151da84",
+  "last_sync_timestamp": "2025-10-28T10:25:39.813413",
+  "sync_direction": null
 }

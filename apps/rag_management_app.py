@@ -17,34 +17,49 @@ Created: 2025-01-02
 Purpose: US-RAG-001 - RAG Management UI
 """
 
-import streamlit as st
-import asyncio
-from pathlib import Path
-import sys
+#!/usr/bin/env python3
 import os
-from datetime import datetime
-from typing import List, Dict, Any
+import sys
+from pathlib import Path
+
+# CRITICAL: Set environment variables BEFORE any LangChain imports
+# This ensures LangSmith tracing is active from the start
 
 # Set USER_AGENT to suppress warning
 os.environ.setdefault('USER_AGENT', 'ai-dev-agent-rag-app/1.0')
 
-# Enable LangSmith tracing if configured
-# Map existing LANGSMITH_* secrets to LANGCHAIN_* environment variables
+# Enable LangSmith tracing - MUST happen before any LangChain imports
 try:
-    import streamlit as st_temp
-    if hasattr(st_temp, 'secrets'):
-        # Use existing LANGSMITH_* variables from secrets.toml
-        if 'LANGSMITH_TRACING' in st_temp.secrets:
-            os.environ['LANGCHAIN_TRACING_V2'] = str(st_temp.secrets.get('LANGSMITH_TRACING', 'false'))
-        if 'LANGSMITH_API_KEY' in st_temp.secrets:
-            os.environ['LANGCHAIN_API_KEY'] = st_temp.secrets['LANGSMITH_API_KEY']
-        if 'LANGSMITH_ENDPOINT' in st_temp.secrets:
-            os.environ['LANGCHAIN_ENDPOINT'] = st_temp.secrets['LANGSMITH_ENDPOINT']
-        if 'LANGSMITH_PROJECT' in st_temp.secrets:
-            os.environ['LANGCHAIN_PROJECT'] = st_temp.secrets.get('LANGSMITH_PROJECT', 'ai-dev-agent')
-except Exception:
-    # Fallback to environment variables if secrets not available
-    pass
+    # Try to load from secrets.toml
+    secrets_path = Path(__file__).parent.parent / ".streamlit" / "secrets.toml"
+    if secrets_path.exists():
+        import toml
+        secrets = toml.load(secrets_path)
+        
+        # Enable tracing if configured
+        if secrets.get('LANGSMITH_TRACING', 'false').lower() == 'true':
+            os.environ['LANGCHAIN_TRACING_V2'] = 'true'
+            os.environ['LANGCHAIN_API_KEY'] = secrets.get('LANGSMITH_API_KEY', '')
+            os.environ['LANGCHAIN_ENDPOINT'] = secrets.get('LANGSMITH_ENDPOINT', 'https://api.smith.langchain.com')
+            os.environ['LANGCHAIN_PROJECT'] = secrets.get('LANGSMITH_PROJECT', 'ai-dev-agent')
+            print("✅ LangSmith tracing ENABLED")
+            print(f"   Project: {os.environ['LANGCHAIN_PROJECT']}")
+        else:
+            print("⚠️  LangSmith tracing DISABLED in secrets.toml")
+except Exception as e:
+    print(f"⚠️  Could not load LangSmith config: {e}")
+    # Try environment variables as fallback
+    if os.getenv('LANGSMITH_API_KEY') or os.getenv('LANGCHAIN_API_KEY'):
+        os.environ.setdefault('LANGCHAIN_TRACING_V2', 'true')
+        os.environ.setdefault('LANGCHAIN_API_KEY', os.getenv('LANGSMITH_API_KEY', os.getenv('LANGCHAIN_API_KEY', '')))
+        os.environ.setdefault('LANGCHAIN_ENDPOINT', 'https://api.smith.langchain.com')
+        os.environ.setdefault('LANGCHAIN_PROJECT', 'ai-dev-agent')
+
+# NOW import streamlit and other modules
+import streamlit as st
+import asyncio
+from datetime import datetime
+from typing import List, Dict, Any
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -244,6 +259,13 @@ def main():
     # Header
     st.markdown('<div class="main-header">🔍 RAG Management System</div>', unsafe_allow_html=True)
     st.markdown("**Comprehensive document loading, semantic search, and knowledge management**")
+    
+    # LangSmith tracing indicator
+    tracing_enabled = os.environ.get('LANGCHAIN_TRACING_V2', 'false').lower() == 'true'
+    if tracing_enabled:
+        st.success(f"✅ LangSmith Tracing Active - Project: `{os.environ.get('LANGCHAIN_PROJECT', 'ai-dev-agent')}`")
+    else:
+        st.warning("⚠️ LangSmith Tracing Disabled")
     
     # Sidebar navigation
     st.sidebar.title("Navigation")
@@ -1463,55 +1485,61 @@ def agent_chat_page():
                         
                         if use_swarm:
                             # Use RAG Agent Swarm with intelligent document selection
-                            from agents.rag import RAGSwarmCoordinator
+                            try:
+                                from agents.rag import RAGSwarmCoordinator
                             
-                            # Initialize swarm coordinator
-                            swarm = RAGSwarmCoordinator(st.session_state.rag_engine)
-                            
-                            # Build document scope parameter (if any documents selected)
-                            document_scope = None
-                            if st.session_state.selected_documents_for_rag:
-                                document_scope = {
-                                    'source': st.session_state.selected_documents_for_rag
-                                }
-                            
-                            # Execute pipeline with adaptive retrieval settings
-                            # NOTE: max_results is now determined by adaptive system, set to max allowed
-                            result = asyncio.run(
-                                swarm.execute({
-                                    'query': user_input,
-                                    'max_results': 50,  # Max allowed, adaptive system determines actual count
-                                    'quality_threshold': quality_threshold,
-                                    'min_quality_score': min_quality_score,
-                                    'max_re_retrieval_attempts': max_re_retrieval,
-                                    'enable_re_retrieval': max_re_retrieval > 0,
-                                    'document_filters': document_scope,
-                                    # NEW: Adaptive retrieval parameters (US-RAG-003)
-                                    'retrieval_mode': st.session_state.retrieval_mode,
-                                    'manual_chunk_count': st.session_state.manual_chunk_count if st.session_state.retrieval_mode == 'manual' else None,
-                                    'available_doc_count': len(available_docs) if available_docs else 100
-                                })
-                            )
-                            
-                            # Extract response
-                            response_text = result.get('response', 'No response generated')
-                            
-                            # Build context stats from pipeline
-                            pipeline_state = result.get('pipeline_state', {})
-                            context_stats = {
-                                'retrieval_time': pipeline_state.get('metrics', {}).get('total_time', 0),
-                                'results_count': len(pipeline_state.get('ranked_results', [])),
-                                'search_type': 'agent_swarm',
-                                'quality_score': pipeline_state.get('quality_report', {}).get('quality_score', 0),
-                                'confidence': result.get('confidence', 0),
-                                'sources_cited': result.get('sources_cited', []),
-                                'pipeline_metrics': pipeline_state.get('metrics', {}),
-                                'stages_completed': pipeline_state.get('stages_completed', []),
-                                # NEW: Include adaptive decision info (US-RAG-003)
-                                'adaptive_decision': pipeline_state.get('adaptive_decision')
-                            }
-                            
-                        else:
+                                # Initialize swarm coordinator (agentic RAG)
+                                swarm = RAGSwarmCoordinator(st.session_state.rag_engine)
+                                
+                                # Execute agentic RAG
+                                with st.spinner("🤖 Agentic RAG in progress..."):
+                                    result = asyncio.run(swarm.execute(user_input))
+                                
+                                # Check if interrupted for human review
+                                if result.get('status') == 'interrupted':
+                                    st.info("⏸️ **Human Review Required**")
+                                    st.write(result.get('message', ''))
+                                    
+                                    # Show context preview
+                                    with st.expander("📄 Retrieved Context Preview"):
+                                        st.text(result.get('context_preview', 'No context available'))
+                                    
+                                    # Human input for review
+                                    human_feedback = st.text_input(
+                                        "Review the context above. Type 'approve' to continue or 'rewrite' to try again:",
+                                        key=f"human_review_{len(st.session_state.conversation_history)}"
+                                    )
+                                    
+                                    if st.button("Submit Review"):
+                                        if human_feedback:
+                                            # Resume with human feedback
+                                            thread_id = result.get('thread_id')
+                                            resume_result = swarm.resume(thread_id, human_feedback)
+                                            result = resume_result
+                                        else:
+                                            st.warning("Please provide feedback to continue")
+                                
+                                # Extract response
+                                if result.get('status') == 'success':
+                                    response_text = result.get('response', 'No response generated')
+                                    
+                                    context_stats = {
+                                        'retrieval_time': 0,  # TODO: Add timing
+                                        'results_count': len(result.get('messages', [])),
+                                        'search_type': 'agentic_rag',
+                                        'thread_id': result.get('thread_id')
+                                    }
+                                else:
+                                    st.error(f"❌ Agentic RAG failed: {result.get('response', 'Unknown error')}")
+                                    use_swarm = False
+                                    
+                            except Exception as e:
+                                st.error(f"❌ RAG Swarm error: {e}")
+                                import traceback
+                                st.code(traceback.format_exc())
+                                use_swarm = False
+                        
+                        if not use_swarm:
                             # Use single ContextAwareAgent
                             from agents.core.context_aware_agent import ContextAwareAgent
                             from models.config import AgentConfig
@@ -2279,6 +2307,10 @@ def run_transparent_test(
     try:
         if use_swarm:
             # Use Agent Swarm
+            # TODO: RAGSwarmCoordinator not yet implemented
+            st.warning("⚠️ RAG Swarm coordinator not available. Use basic context-aware agent in Agent Chat.")
+            return
+            
             from agents.rag import RAGSwarmCoordinator
             
             swarm = RAGSwarmCoordinator(st.session_state.rag_engine)

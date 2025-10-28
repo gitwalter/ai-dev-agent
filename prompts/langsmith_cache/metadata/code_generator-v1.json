@@ -1,7 +1,10 @@
 {
   "prompt_name": "code_generator_v1",
-  "last_synced": "2025-10-24T14:19:19.468293",
-  "source": "langsmith",
-  "content_hash": 2640807491635078928,
-  "version": "1"
+  "last_fetched_from_hub": null,
+  "locally_modified": false,
+  "local_edit_timestamp": null,
+  "hub_content_hash": "acb1a2e5034d9980b84ee09247f56f751327ee9c0a71d000fce75a207eb27b2d",
+  "local_content_hash": "acb1a2e5034d9980b84ee09247f56f751327ee9c0a71d000fce75a207eb27b2d",
+  "last_sync_timestamp": "2025-10-28T10:25:39.267362",
+  "sync_direction": null
 }

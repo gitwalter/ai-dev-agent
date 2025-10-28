@@ -525,25 +525,39 @@ class UserStoryStatusAutomation:
     def update_us_000_status(self, content: str, status_data: Dict[str, Any]) -> str:
         """Update US-000 with current test status."""
         
-        test_results = status_data["test_results"]
-        
-        # Update status line
-        content = re.sub(
-            r'\*\*Status\*\*:\s*.*',
-            f'**Status**: In Progress - {test_results["success_rate"]}% Tests Passing',
-            content
-        )
+        test_results = status_data.get("test_results", {})
         
         # Update test status section
-        test_summary = f"""### **Current Test Status** (Updated {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')})
+        success_rate = test_results.get("success_rate", "N/A")
+        total = test_results.get("total", 0)
+        passed = test_results.get("passed", 0)
+        failed = test_results.get("failed", 0)
+        
+        # Update status line (only if test results available)
+        if success_rate != "N/A":
+            content = re.sub(
+                r'\*\*Status\*\*:\s*.*',
+                f'**Status**: In Progress - {success_rate}% Tests Passing',
+                content
+            )
+        
+        # Update test status section
+        if success_rate != "N/A":
+            status_emoji = '🟢 Excellent' if success_rate >= 95 else '🟡 Good' if success_rate >= 85 else '🔴 Needs Work'
+            test_summary = f"""### **Current Test Status** (Updated {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')})
 
 | Category | Total Tests | Passing | Failing | Success Rate | Status |
 |----------|-------------|---------|---------|--------------|--------|
-| **Overall** | {test_results["total"]} | {test_results["passed"]} | {test_results["failed"]} | {test_results["success_rate"]}% | {'🟢 Excellent' if test_results["success_rate"] >= 95 else '🟡 Good' if test_results["success_rate"] >= 85 else '🔴 Needs Work'} |
+| **Overall** | {total} | {passed} | {failed} | {success_rate}% | {status_emoji} |
 
-**Recent Progress**: Significant improvement from previous 84% to current {test_results["success_rate"]}% success rate.
+**Recent Progress**: Significant improvement from previous 84% to current {success_rate}% success rate.
 
-**Remaining Issues**: {test_results["failed"]} test failure(s) - primarily in automated testing pipeline performance validation.
+**Remaining Issues**: {failed} test failure(s) - primarily in automated testing pipeline performance validation.
+"""
+        else:
+            test_summary = f"""### **Current Test Status** (Updated {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')})
+
+**Note**: No automated tests available for this story or tests were skipped in fast mode.
 """
         
         # Replace the test status section
@@ -759,12 +773,20 @@ class UserStoryStatusAutomation:
     def update_story_catalog(self, content: str, status_data: Dict[str, Any]) -> str:
         """Update the user story catalog with current status."""
         
-        test_results = status_data["test_results"]
-        health_completion = status_data["health_monitoring"].get("completion", {})
+        test_results = status_data.get("test_results", {})
+        health_completion = status_data.get("health_monitoring", {}).get("completion", {})
         
-        # Update US-000 row
+        # Safely extract test data with defaults (not all stories have tests)
+        success_rate = test_results.get("success_rate", "N/A")
+        passed = test_results.get("passed", 0)
+        total = test_results.get("total", 0)
+        
+        # Update US-000 row (only if pattern exists)
         us000_pattern = r'\|\s*US-000\s*\|.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|.*?\|'
-        us000_replacement = f'| US-000 | **CRITICAL: Fix All Test Failures** | Foundation | In Progress | 15 | AI Team | {test_results["success_rate"]}% ({test_results["passed"]}/{test_results["total"]} tests) | Priority 1 |'
+        if success_rate != "N/A":
+            us000_replacement = f'| US-000 | **CRITICAL: Fix All Test Failures** | Foundation | In Progress | 15 | AI Team | {success_rate}% ({passed}/{total} tests) | Priority 1 |'
+        else:
+            us000_replacement = f'| US-000 | **CRITICAL: Fix All Test Failures** | Foundation | In Progress | 15 | AI Team | Tests pending | Priority 1 |'
         content = re.sub(us000_pattern, us000_replacement, content)
         
         # Update US-001 row  
@@ -847,7 +869,7 @@ class UserStoryStatusAutomation:
             },
             "updates": {
                 "us_000": {
-                    "status": f"{test_results['success_rate']}% tests passing",
+                    "status": f"{test_results.get('success_rate', 'N/A')}% tests passing" if test_results.get('success_rate') else "Tests pending",
                     "improvement": "Significant improvement from documented 84% to current status"
                 },
                 "us_001": {
@@ -865,7 +887,8 @@ class UserStoryStatusAutomation:
         
         # Log report
         self.logger.info("[REPORT] Status Update Report:")
-        self.logger.info(f"   • Test Success Rate: {test_results.get('success_rate', 0)}%")
+        success_rate = test_results.get('success_rate', 'N/A')
+        self.logger.info(f"   • Test Success Rate: {success_rate}{'%' if success_rate != 'N/A' else ''}")
         self.logger.info(f"   • Health Monitoring: {health_data.get('completion', {}).get('percentage', 0)}% complete")
         self.logger.info(f"   • Stories Updated: {len(self.monitored_stories)}")
         self.logger.info(f"   • Artifacts Updated: {len(self.agile_artifacts)}")

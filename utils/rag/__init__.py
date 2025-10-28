@@ -13,15 +13,28 @@ Utilities for RAG (Retrieval-Augmented Generation) system including:
 All built on LangChain for maximum compatibility and robustness.
 """
 
-from .document_loader import (
-    DocumentLoader,
-    load_document,
-    load_documents,
-    load_website,
-    load_directory
-)
+# Import core components (always available)
 from .query_analyzer import QueryAnalyzer, QueryAnalysis
 from .adaptive_retrieval_strategy import AdaptiveRetrievalStrategy, RetrievalContext
+
+# Import document loader conditionally (requires langchain-community)
+try:
+    from .document_loader import (
+        DocumentLoader,
+        load_document,
+        load_documents,
+        load_website,
+        load_directory
+    )
+    DOCUMENT_LOADER_AVAILABLE = True
+except ImportError:
+    # Document loader not available - provide graceful fallback
+    DocumentLoader = None
+    load_document = None
+    load_documents = None
+    load_website = None
+    load_directory = None
+    DOCUMENT_LOADER_AVAILABLE = False
 
 __all__ = [
     'DocumentLoader',
@@ -32,5 +45,6 @@ __all__ = [
     'QueryAnalyzer',
     'QueryAnalysis',
     'AdaptiveRetrievalStrategy',
-    'RetrievalContext'
+    'RetrievalContext',
+    'DOCUMENT_LOADER_AVAILABLE'
 ]

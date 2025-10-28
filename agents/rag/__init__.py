@@ -10,6 +10,7 @@ from agents.rag.retrieval_specialist_agent import RetrievalSpecialistAgent
 from agents.rag.re_ranker_agent import ReRankerAgent
 from agents.rag.quality_assurance_agent import QualityAssuranceAgent
 from agents.rag.writer_agent import WriterAgent
+from agents.rag.rag_swarm_coordinator import RAGSwarmCoordinator
 
 __all__ = [
     'QueryAnalystAgent',
@@ -17,5 +18,6 @@ __all__ = [
     'ReRankerAgent',
     'QualityAssuranceAgent',
     'WriterAgent',
+    'RAGSwarmCoordinator',
 ]
 

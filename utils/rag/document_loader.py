@@ -38,19 +38,22 @@ try:
         WebBaseLoader,
         DirectoryLoader,
     )
-    from langchain.schema import Document
-    from langchain.text_splitter import (
+    # Use modern import paths (LangChain 0.3.x)
+    from langchain_core.documents import Document
+    from langchain_text_splitters import (
         RecursiveCharacterTextSplitter,
         HTMLHeaderTextSplitter,
         MarkdownHeaderTextSplitter,
     )
     LANGCHAIN_LOADERS_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     LANGCHAIN_LOADERS_AVAILABLE = False
     Document = None
     RecursiveCharacterTextSplitter = None
     HTMLHeaderTextSplitter = None
     MarkdownHeaderTextSplitter = None
+    import logging
+    logging.warning(f"LangChain document loaders not available: {e}")
 
 logger = logging.getLogger(__name__)
 

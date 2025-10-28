@@ -1,7 +1,10 @@
 {
   "prompt_name": "test_generator_v1",
-  "last_synced": "2025-10-24T14:19:19.485928",
-  "source": "langsmith",
-  "content_hash": -8727819314484276404,
-  "version": "1"
+  "last_fetched_from_hub": "2025-10-28T09:58:36.420359",
+  "locally_modified": false,
+  "local_edit_timestamp": null,
+  "hub_content_hash": "ac4efa5d993e55416c39b3604fa797a6d7122bd0d83bb5b48669ff973b00b54e",
+  "local_content_hash": "ac4efa5d993e55416c39b3604fa797a6d7122bd0d83bb5b48669ff973b00b54e",
+  "last_sync_timestamp": "2025-10-28T10:25:40.544523",
+  "sync_direction": "pull"
 }

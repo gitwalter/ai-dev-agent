@@ -1,0 +1,10 @@
+{
+  "prompt_name": "re_ranker_v1",
+  "last_fetched_from_hub": "2025-10-28T10:26:39.645390",
+  "locally_modified": true,
+  "local_edit_timestamp": "2025-10-28T09:59:45.173410",
+  "hub_content_hash": "a62c9f8e3a22dc20d61738ccbccd54197c2fa8a47fc31a81be1d93f2cb869b06",
+  "local_content_hash": "a62c9f8e3a22dc20d61738ccbccd54197c2fa8a47fc31a81be1d93f2cb869b06",
+  "last_sync_timestamp": "2025-10-28T10:26:39.645390",
+  "sync_direction": "pull"
+}

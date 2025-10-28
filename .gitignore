@@ -150,6 +150,7 @@ chroma.sqlite3
 .env.temp
 secrets.json
 secrets.toml
+.google_cloud/
 
 # Build artifacts
 dist/

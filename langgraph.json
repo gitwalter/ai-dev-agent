@@ -18,6 +18,7 @@
     "retrieval_specialist_agent": "agents/rag/retrieval_specialist_agent.py:graph",
     "web_scraping_specialist_agent": "agents/rag/web_scraping_specialist_agent.py:graph",
     "writer_agent": "agents/rag/writer_agent.py:graph",
+    "rag_swarm_coordinator": "agents/rag/rag_swarm_coordinator.py:graph",
     "comprehensive_research_agent": "agents/research/comprehensive_research_agent.py:graph",
     "content_parser_agent": "agents/research/content_parser_agent.py:graph",
     "query_planner_agent": "agents/research/query_planner_agent.py:graph",
@@ -27,7 +28,8 @@
     "web_research_swarm": "agents/research/web_research_swarm.py:graph",
     "self_optimizing_validation_agent": "agents/management/self_optimizing_validation_agent.py:graph",
     "mcp_enhanced_agent": "agents/mcp/mcp_enhanced_agent.py:graph",
-    "swarm_coordinator": "agents/swarm/swarm_coordinator.py:graph"
+    "swarm_coordinator": "agents/swarm/swarm_coordinator.py:graph",
+    "file_organizer_agent": "agents/workflow/file_organizer_agent.py:graph"
   },
   "env": {
     "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",

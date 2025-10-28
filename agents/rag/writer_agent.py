@@ -88,6 +88,10 @@ class WriterAgent(EnhancedBaseAgent):
             'avg_confidence': 0
         }
         
+        # Load prompt from LangSmith Hub (following langgraph_workflow pattern)
+        from prompts.agent_prompt_loader import get_agent_prompt_loader
+        self.prompt_loader = get_agent_prompt_loader("writer")
+        
         # Build LangGraph workflow if available
         if LANGGRAPH_AVAILABLE:
             self.workflow = self._build_langgraph_workflow()
@@ -264,25 +268,18 @@ class WriterAgent(EnhancedBaseAgent):
     def _build_system_prompt(self, intent: str) -> str:
         """Build system prompt based on query intent."""
         
-        base_prompt = """You are an expert technical writer and knowledge synthesizer.
-
-Your task is to generate comprehensive, accurate answers based on provided context.
-
-Guidelines:
-1. **Accuracy**: Only use information from the provided context. Never hallucinate or make up facts.
-2. **Citations**: Reference sources when making specific claims (e.g., "According to file.py...")
-3. **Clarity**: Write clearly and structure your response logically
-4. **Completeness**: Address all aspects of the question if context allows
-5. **Honesty**: If context doesn't fully answer the question, acknowledge limitations"""
+        # Load base prompt from LangSmith Hub
+        base_prompt = self.prompt_loader.get_system_prompt()
         
+        # Add style adaptation based on intent (appending to hub prompt)
         if intent == 'conceptual':
-            base_prompt += "\n6. **Style**: Provide clear explanations with examples where helpful"
+            base_prompt += "\n\nFor this conceptual query: Provide clear explanations with examples where helpful."
         elif intent == 'procedural':
-            base_prompt += "\n6. **Style**: Provide step-by-step instructions or workflow descriptions"
+            base_prompt += "\n\nFor this procedural query: Provide step-by-step instructions or workflow descriptions."
         elif intent == 'multi-hop':
-            base_prompt += "\n6. **Style**: Connect multiple concepts and show relationships"
+            base_prompt += "\n\nFor this multi-hop query: Connect multiple concepts and show relationships."
         else:
-            base_prompt += "\n6. **Style**: Be concise and direct for factual queries"
+            base_prompt += "\n\nFor this factual query: Be concise and direct."
         
         return base_prompt
     
