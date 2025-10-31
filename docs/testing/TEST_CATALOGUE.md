@@ -1,6 +1,6 @@
 # Test Catalogue - Comprehensive Test Documentation
 
-**Generated**: 2025-10-23 18:08:10  
+**Generated**: 2025-10-28 11:28:46  
 **Generator**: Test Catalogue Generator v1.0  
 **Purpose**: Complete inventory and documentation of all test cases
 
@@ -8,11 +8,11 @@
 
 | Metric | Value |
 |--------|--------|
-| **Total Test Files** | 62 |
-| **Total Test Classes** | 164 |
-| **Total Test Functions** | 545 |
-| **Total Tests** | 709 |
-| **Total Size** | 949.0 KB |
+| **Total Test Files** | 67 |
+| **Total Test Classes** | 168 |
+| **Total Test Functions** | 555 |
+| **Total Tests** | 723 |
+| **Total Size** | 981.2 KB |
 | **Coverage Categories** | 10 |
 
 ## 🎯 **Test Categories**
@@ -22,7 +22,7 @@
 - **Integration Tests**: 13 files, 112 tests
 - **Isolated Tests**: 1 files, 1 tests
 - **LangGraph Tests**: 4 files, 24 tests
-- **Root Tests**: 20 files, 208 tests
+- **Root Tests**: 25 files, 222 tests
 - **Security Tests**: 1 files, 14 tests
 - **Supervisor Tests**: 2 files, 21 tests
 - **System Tests**: 2 files, 0 tests
@@ -1377,6 +1377,19 @@ Created: 2025-01-02 (US-MCP-001 Phase 1).
 
 ---
 
+### `mcp\test_mcp_file_read.py` (0 tests)
+
+**Description**: Quick test of MCP file.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 2.7 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 0 |
+| **Total Tests** | 0 |
+
+---
+
 ### `mcp\test_mcp_integration.py` (8 tests)
 
 **Description**: MCP Integration Tests
@@ -1505,6 +1518,22 @@ Created: 2025-01-02 (US-MCP-001 Phase 1).
 - **`test_server_info`** (Line 273)
   - *Test server information retrieval*
   - Category: General
+
+---
+
+### `mcp\test_mcp_status.py` (0 tests)
+
+**Description**: Quick MCP Server Status Check
+==============================
+
+Tests if MCP server and tools are working properly.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 3.2 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 0 |
+| **Total Tests** | 0 |
 
 ---
 
@@ -1835,6 +1864,103 @@ for US-002: Fully Automated Testing Pipeline.
 - **`test_recovery_strategies_initialization`** (Line 663)
   - *Test that recovery strategies are properly initialized*
   - Category: General
+
+---
+
+### `workflow\test_file_organizer_agent.py` (0 tests)
+
+**Description**: Test File Organizer Agent
+==========================
+
+Demonstrates:
+1.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 4.6 KB |
+| **Test Classes** | 0 |
+| **Test Functions** | 0 |
+| **Total Tests** | 0 |
+
+---
+
+### `workflow\test_langgraph_workflow.py` (8 tests)
+
+**Description**: Tests for LangGraph Agent Swarm Workflow.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 7.7 KB |
+| **Test Classes** | 3 |
+| **Test Functions** | 5 |
+| **Total Tests** | 8 |
+
+#### Test Classes
+
+- **`TestAgentSwarm`** (Line 11)
+  - *Test suite for AgentSwarm implementation*
+  - Category: General
+- **`TestPromptLoader`** (Line 143)
+  - *Test suite for PromptLoader*
+  - Category: Performance
+- **`TestSwarmState`** (Line 182)
+  - *Test suite for SwarmState TypedDict*
+  - Category: General
+
+#### Test Functions
+
+- **`test_graph_export_for_studio`** (Line 217)
+  - *Test that graph is properly exported for LangGraph Studio*
+  - Category: General
+- **`test_agent_swarm_initialization`** (Line 24)
+  - *Test that AgentSwarm initializes correctly*
+  - Category: General
+- **`test_backward_compatibility_alias`** (Line 34)
+  - *Test that LangGraphWorkflowManager is an alias for AgentSwarm*
+  - Category: General
+- **`test_workflow_has_required_nodes`** (Line 41)
+  - *Test that workflow graph contains all required nodes*
+  - Category: System
+- **`test_swarm_state_structure`** (Line 185)
+  - *Test that SwarmState has correct structure*
+  - Category: General
+
+---
+
+### `workflow\test_langgraph_workflow_tdd.py` (6 tests)
+
+**Description**: TDD Test Suite for LangGraph Agent Swarm Workflow.
+
+| Metric | Value |
+|--------|--------|
+| **File Size** | 14.0 KB |
+| **Test Classes** | 1 |
+| **Test Functions** | 5 |
+| **Total Tests** | 6 |
+
+#### Test Classes
+
+- **`TestWorkflowStepByStep`** (Line 20)
+  - *Step-by-step validation of the workflow with immediate failure stops*
+  - Category: System
+
+#### Test Functions
+
+- **`test_step_1_prompt_loader_initialization`** (Line 31)
+  - *STEP 1: Verify PromptLoader initializes correctly*
+  - Category: Performance
+- **`test_step_4_agent_swarm_initialization`** (Line 97)
+  - *STEP 4: Verify AgentSwarm initializes without errors*
+  - Category: General
+- **`test_step_5_workflow_graph_structure`** (Line 135)
+  - *STEP 5: Verify workflow graph has correct structure*
+  - Category: System
+- **`test_step_6_state_definition`** (Line 172)
+  - *STEP 6: Verify SwarmState has correct structure*
+  - Category: General
+- **`test_step_8_prompt_loader_in_swarm`** (Line 235)
+  - *STEP 8: Verify PromptLoader works within AgentSwarm*
+  - Category: Performance
 
 ---
 
@@ -3456,7 +3582,7 @@ Tests the distinction between checking rule applicability and selective applicat
 - `langgraph/` - 4 files, 24 tests
 - `langgraph\integration/` - 1 files, 2 tests
 - `langgraph\unit/` - 2 files, 19 tests
-- `mcp/` - 9 files, 89 tests
+- `mcp/` - 11 files, 89 tests
 - `optimization/` - 2 files, 1 tests
 - `scripts/` - 1 files, 0 tests
 - `security/` - 1 files, 14 tests
@@ -3466,20 +3592,20 @@ Tests the distinction between checking rule applicability and selective applicat
 - `unit/` - 7 files, 125 tests
 - `unit\agents/` - 3 files, 37 tests
 - `unit\prompts/` - 4 files, 82 tests
-- `workflow/` - 4 files, 94 tests
+- `workflow/` - 7 files, 108 tests
 
 ### Test Distribution by Category
 
 | Category | Test Count | Percentage |
 |----------|------------|------------|
-| Unit Tests | 263 | 37.1% |
-| Root Tests | 208 | 29.3% |
-| Integration Tests | 112 | 15.8% |
-| Infrastructure Tests | 52 | 7.3% |
-| LangGraph Tests | 24 | 3.4% |
-| Supervisor Tests | 21 | 3.0% |
-| Agile Tests | 14 | 2.0% |
-| Security Tests | 14 | 2.0% |
+| Unit Tests | 263 | 36.4% |
+| Root Tests | 222 | 30.7% |
+| Integration Tests | 112 | 15.5% |
+| Infrastructure Tests | 52 | 7.2% |
+| LangGraph Tests | 24 | 3.3% |
+| Supervisor Tests | 21 | 2.9% |
+| Agile Tests | 14 | 1.9% |
+| Security Tests | 14 | 1.9% |
 | Isolated Tests | 1 | 0.1% |
 | System Tests | 0 | 0.0% |
 
@@ -3489,8 +3615,8 @@ Tests the distinction between checking rule applicability and selective applicat
 ### Improvement Opportunities
 
 1. 📝 **Add documentation** to 3 test files without docstrings
-2. 🧹 **Remove or implement** 8 empty test files
-3. ⚖️ **Increase unit test coverage** - Currently 37.1%, recommended >60%
+2. 🧹 **Remove or implement** 11 empty test files
+3. ⚖️ **Increase unit test coverage** - Currently 36.4%, recommended >60%
 
 ### Best Practices Checklist
 

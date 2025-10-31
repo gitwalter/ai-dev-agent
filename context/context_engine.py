@@ -133,16 +133,14 @@ class ContextEngine:
                     
                     if gemini_api_key:
                         self.logger.info("🔧 Initializing Google Gemini embeddings (gemini-embedding-001)...")
-                        from google.genai import types as genai_types
+                        # No need to import google.genai - GoogleGenerativeAIEmbeddings handles it internally
                         self.embeddings = GoogleGenerativeAIEmbeddings(
                             model="models/gemini-embedding-001",
                             google_api_key=gemini_api_key,
-                            task_type="retrieval_document",  # Optimized for RAG use case
-                            # Use 768 dimensions (recommended by Google for RAG)
-                            # https://ai.google.dev/gemini-api/docs/embeddings
-                            embedding_kwargs={"output_dimensionality": 768}
+                            task_type="retrieval_document"  # Optimized for RAG use case
+                            # Gemini natively uses 3072 dimensions - don't force dimension reduction
                         )
-                        self.logger.info("✅ Semantic search initialized with Google Gemini embeddings (FREE, 768 dimensions)")
+                        self.logger.info("✅ Semantic search initialized with Google Gemini embeddings (FREE, 3072 dimensions native)")
                         self.logger.info("   Using same API as our LLM - consistent and reliable!")
                     else:
                         self.logger.warning("⚠️ GEMINI_API_KEY not found in environment")
@@ -291,20 +289,22 @@ class ContextEngine:
                         # Create collection
                         if QDRANT_NEW_API and self.sparse_embeddings:
                             # New API with hybrid search support
+                            # Use 3072 dimensions (Gemini native)
                             vectors_config = {
-                                "dense": VectorParams(size=384, distance=Distance.COSINE)
+                                "dense": VectorParams(size=3072, distance=Distance.COSINE)
                             }
                             self.qdrant_client.create_collection(
                                 collection_name=self.collection_name,
                                 vectors_config=vectors_config,
                                 sparse_vectors_config={"sparse": SparseVectorParams()}
                             )
-                            self.logger.info(f"✅ Collection created with HYBRID search support")
+                            self.logger.info(f"✅ Collection created with HYBRID search support (3072-dim Gemini)")
                         else:
                             # Legacy API or dense-only
+                            # Use 3072 dimensions (Gemini native)
                             self.qdrant_client.create_collection(
                                 collection_name=self.collection_name,
-                                vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+                                vectors_config=VectorParams(size=3072, distance=Distance.COSINE)
                             )
                             self.logger.info(f"✅ Collection created (dense-only)")
                     
@@ -821,9 +821,38 @@ class ContextEngine:
             # Perform filtered search
             if QDRANT_NEW_API:
                 # New API: QdrantVectorStore with filter parameter
-                docs_with_scores = self.vector_store.similarity_search_with_score(
-                    query, k=limit * 2, filter=qdrant_filter  # Get extra for compression
-                )
+                self.logger.info(f"🔍 Calling similarity_search_with_score with filter type: {type(qdrant_filter).__name__}")
+                self.logger.info(f"🔍 Filter object: {qdrant_filter}")
+                
+                try:
+                    # WORKAROUND: Use dense-only search for filtered queries to avoid Prefetch/hybrid search issues
+                    # Hybrid search (Prefetch) has issues with Filter objects in current langchain-qdrant version
+                    if hasattr(self.vector_store, 'retrieval_mode'):
+                        original_mode = self.vector_store.retrieval_mode
+                        # Temporarily switch to dense-only for this search
+                        from langchain_qdrant import RetrievalMode
+                        self.vector_store.retrieval_mode = RetrievalMode.DENSE
+                        self.logger.info("🔧 Temporarily using DENSE mode for filtered search (hybrid has filter issues)")
+                    
+                    docs_with_scores = self.vector_store.similarity_search_with_score(
+                        query, k=limit * 2, filter=qdrant_filter  # Get extra for compression
+                    )
+                    
+                    # Restore original mode
+                    if hasattr(self.vector_store, 'retrieval_mode') and 'original_mode' in locals():
+                        self.vector_store.retrieval_mode = original_mode
+                        self.logger.info(f"🔧 Restored retrieval mode to {original_mode}")
+                        
+                except Exception as e:
+                    # Restore mode on error too
+                    if hasattr(self.vector_store, 'retrieval_mode') and 'original_mode' in locals():
+                        self.vector_store.retrieval_mode = original_mode
+                    
+                    self.logger.error(f"❌ similarity_search_with_score failed: {e}")
+                    self.logger.error(f"❌ Query: {query}")
+                    self.logger.error(f"❌ Filter type: {type(qdrant_filter)}")
+                    self.logger.error(f"❌ Filter value: {qdrant_filter}")
+                    raise
             else:
                 # Legacy API fallback
                 docs_with_scores = self.vector_store.similarity_search_with_score(

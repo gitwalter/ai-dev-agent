@@ -56,6 +56,8 @@ langgraph-cli[inmem]>=0.1.55  # CLI with in-memory support for local Studio serv
 langgraph-checkpoint>=2.0.0  # Checkpointing support for human-in-the-loop
 trustcall>=0.0.39  # Structured LLM calling with validation
 langsmith>=0.1.147  # LangSmith SDK for prompt management and tracing
+deepagents>=0.1.0
+nest-asyncio>=1.5.0  # Deep Agents: Planning, HITL, filesystem, and subagent middleware (US-RAG-006)
 
 # RAG and Embeddings (for US-RAG-001) - NumPy 2.0 compatible versions
 torch>=2.5.1  # PyTorch with NumPy 2.0 support

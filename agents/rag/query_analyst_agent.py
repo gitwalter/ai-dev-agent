@@ -175,8 +175,9 @@ class QueryAnalystAgent(EnhancedBaseAgent):
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",  # Latest Gemini model
             google_api_key=api_key,
-            temperature=0.7,
-            convert_system_message_to_human=True
+            temperature=0,
+            convert_system_message_to_human=True,
+            transport="rest"  # Use REST to avoid grpc event loop issues
         )
         
         # Load prompt from LangSmith (following langgraph_workflow pattern)

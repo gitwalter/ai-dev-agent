@@ -334,6 +334,340 @@ return {
 - **Fail Fast**: If measurement is impossible, fail rather than fake
 - **User Trust**: Never present estimates as absolute facts
 
+## 1.5. LLM Model Configuration Standards (CRITICAL)
+
+### **MANDATORY Model Configuration - Gemini 2.5 Flash + Temperature 0**
+
+**CRITICAL PRINCIPLE**: All LLM instantiations in this project MUST follow these exact standards.
+
+```python
+# REQUIRED: Standard LLM configuration for this project
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+def create_llm_instance(api_key: str) -> ChatGoogleGenerativeAI:
+    """
+    Create LLM instance with project standards.
+    
+    MANDATORY SETTINGS:
+    - Model: gemini-2.5-flash (or gemini-2.5-flash-lite)
+    - Temperature: 0 (ALWAYS 0 for deterministic responses)
+    - convert_system_message_to_human: True (for Gemini compatibility)
+    """
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",  # REQUIRED: Use Gemini 2.5 Flash
+        google_api_key=api_key,
+        temperature=0,  # REQUIRED: ALWAYS 0 for consistency
+        convert_system_message_to_human=True
+    )
+    return llm
+
+# FORBIDDEN: Any other model
+llm = ChatAnthropic(...)  # WRONG - We use Gemini, not Anthropic
+llm = ChatOpenAI(...)     # WRONG - We use Gemini, not OpenAI
+
+# FORBIDDEN: Temperature > 0
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.7  # WRONG - Must be 0
+)
+
+# FORBIDDEN: Wrong Gemini model version
+llm = ChatGoogleGenerativeAI(
+    model="gemini-pro",  # WRONG - Must be gemini-2.5-flash
+    temperature=0
+)
+```
+
+### **Why These Settings?**
+
+**Model: Gemini 2.5 Flash**
+- Latest and most capable Gemini model
+- Excellent balance of speed and quality
+- Alternative: `gemini-2.5-flash-lite` for faster responses
+- Cost-effective compared to other providers
+
+**Temperature: 0 (MANDATORY)**
+- **Deterministic responses**: Same input → same output
+- **Reproducible results**: Essential for testing and debugging
+- **Consistent behavior**: No random variations
+- **Reliable for production**: Predictable system behavior
+
+### **API Key Management**
+```python
+# REQUIRED: Get API key from environment
+import os
+
+api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
+if not api_key:
+    raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY environment variable not set")
+```
+
+### **Where This Applies**
+This standard applies to ALL LLM instantiations including:
+- Agent implementations (QueryAnalystAgent, WriterAgent, etc.)
+- Workflow coordinators (RAGSwarmCoordinator)
+- Deep Agents configuration
+- LangGraph nodes using LLMs
+- Any custom LLM usage
+
+### **Enforcement**
+- **Code Review**: Check all LLM instantiations
+- **Linting**: Add checks for temperature != 0
+- **Testing**: Verify deterministic behavior
+- **Documentation**: Document model choice in docstrings
+
+## 1.6. LangSmith Prompt Management (CRITICAL)
+
+### **MANDATORY Prompt Update Workflow**
+
+**CRITICAL PRINCIPLE**: All LangSmith prompts must be updated following this exact workflow to ensure consistency, proper versioning, and tag management.
+
+```python
+# PROJECT STRUCTURE
+prompts/
+├── langsmith_cache/           # Local cached prompts
+│   ├── agent_selector_v1.txt  # Cached prompt content
+│   ├── code_generator_v1.txt
+│   └── metadata/              # Sync metadata
+│       ├── agent_selector-v1.json
+│       └── code_generator-v1.json
+└── agent_prompt_loader.py     # Prompt loading utilities
+
+# SYNC SCRIPT
+scripts/sync_prompts.py         # Main synchronization tool
+```
+
+### **Standard Prompt Update Procedure**
+
+**Step 1: Identify the Prompt**
+```python
+# Find prompt name in code
+# Example from langgraph_workflow.py:
+"agent_selector": load_prompt_from_langsmith(
+    "agent_selector_v1",  # ← This is the prompt name
+    "You are an Agent Selector..."
+)
+
+# Prompt file location
+# prompts/langsmith_cache/{prompt_name}.txt
+```
+
+**Step 2: Update Local Cache**
+```bash
+# Edit the cached prompt file directly
+# File: prompts/langsmith_cache/agent_selector_v1.txt
+
+# CRITICAL: Make substantive improvements
+# - Fix bugs or inconsistencies
+# - Add clarity and specificity
+# - Align with code behavior
+# - Strengthen execution order instructions
+```
+
+**Step 3: Mark as Locally Edited**
+```bash
+# MANDATORY: Mark prompt as edited before syncing
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --mark-edited agent_selector_v1
+
+# This updates metadata to track local changes
+```
+
+**Step 4: Sync with Auto-Push**
+```bash
+# Upload updated prompt to LangSmith Hub
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --prompt agent_selector_v1 --auto-push
+
+# This will:
+# 1. Push prompt to LangSmith Hub
+# 2. Automatically infer and apply tags
+# 3. Update local metadata
+# 4. Verify successful upload
+```
+
+**Step 5: Verify Tags (If Needed)**
+```python
+# Tags are automatically inferred by _infer_tags_from_name()
+# From utils/prompt_management/prompt_sync_manager.py:
+
+# Automatic tag inference:
+- 'agent_selector_v1' → ['v1', 'agent', 'selection', 'coordination']
+- 'code_generator_v1' → ['v1', 'code-generation']
+- 'test_generator_v1' → ['v1', 'testing', 'code-generation']
+- 'requirements_analyst_v1' → ['v1', 'analysis', 'requirements']
+
+# Tags are applied automatically during push
+```
+
+### **Complete Example: Agent Selector Update**
+
+```bash
+# Example: Fixing agent execution order bug
+
+# 1. Identify prompt
+# Code uses: "agent_selector_v1"
+# File: prompts/langsmith_cache/agent_selector_v1.txt
+
+# 2. Update local cache
+# Edit file to:
+# - Remove non-existent 'security_analyst' 
+# - Add stronger execution order emphasis
+# - Clarify output format (comma-separated, not JSON)
+# - Document that code enforces order, not LLM
+
+# 3. Mark as edited
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --mark-edited agent_selector_v1
+
+# Output:
+# 📝 Marking agent_selector_v1 as locally edited...
+# ✅ Done! Now you can safely edit prompts/langsmith_cache/agent_selector_v1.txt
+
+# 4. Sync with auto-push
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --prompt agent_selector_v1 --auto-push
+
+# Output:
+# 🔄 Syncing agent_selector_v1...
+# ⚠️  Auto-push enabled - local changes will be pushed if different
+# ⬆️ agent_selector_v1: Pushed to hub (tags: ['v1', 'agent', 'selection', 'coordination'])
+
+# 5. Verify in LangSmith Hub
+# Check https://smith.langchain.com/hub
+# Confirm prompt updated with correct tags
+```
+
+### **Tag Management**
+
+**Automatic Tag Inference** (from prompt name):
+```python
+# From _infer_tags_from_name() in prompt_sync_manager.py
+
+NAME PATTERN → TAGS
+'_v1' → ['v1']
+'rag' → ['rag']
+'simple_rag' → ['simple-rag']
+'agentic_rag' → ['agentic-rag']
+'system' → ['system-prompt']
+'query' → ['query-processing']
+'document' → ['document-processing']
+'writer' → ['content-generation']
+'architect' → ['architecture']
+'code_generator' → ['code-generation']
+'test' → ['testing']
+'security' → ['security']
+'analyst' → ['analysis']
+'selector' → ['selection', 'coordination']
+```
+
+**Manual Tag Override** (if needed):
+```bash
+# If automatic tags are insufficient, edit code:
+# utils/prompt_management/prompt_sync_manager.py
+
+# Add custom tag logic to _infer_tags_from_name():
+if 'your_pattern' in name_lower:
+    tags.append('your-custom-tag')
+```
+
+### **Prompt Design Principles**
+
+**Defense in Depth**: Combine LLM guidance with code enforcement
+```python
+# GOOD: Code enforces, prompt guides
+STANDARD_AGENT_ORDER = [  # ← Code enforces (deterministic)
+    "requirements_analyst",
+    "architecture_designer",
+    # ...
+]
+
+# Prompt content:
+"""
+CRITICAL: STANDARD EXECUTION ORDER (NEVER DEVIATE)
+The system ENFORCES this order in code - you select WHICH agents, 
+system enforces HOW (order):
+
+1. requirements_analyst (ALWAYS FIRST)
+2. architecture_designer (after requirements)
+...
+"""
+
+# FORBIDDEN: Relying only on prompt instructions
+"""
+Please return agents in this order: requirements_analyst, ...
+"""
+# ❌ LLM might ignore order without code enforcement
+```
+
+**Separation of Concerns**:
+- **LLM Responsibility**: Intelligence (WHICH agents are needed)
+- **Code Responsibility**: Determinism (HOW they execute - order, validation)
+
+### **Quality Gates**
+
+Before completing any prompt update:
+
+- [ ] **Local cache updated**: File in `prompts/langsmith_cache/` modified
+- [ ] **Marked as edited**: `--mark-edited` command executed
+- [ ] **Synced with auto-push**: `--auto-push` command executed successfully
+- [ ] **Tags verified**: Automatic tags are appropriate
+- [ ] **Hub verified**: Prompt visible in LangSmith Hub
+- [ ] **Code tested**: Prompt changes verified in actual execution
+- [ ] **Documentation updated**: Changes documented in commit message
+
+### **Common Operations**
+
+**Check sync status**:
+```bash
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --status
+```
+
+**Sync all prompts** (pull updates from hub):
+```bash
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --all
+```
+
+**Dry run** (see what would happen):
+```bash
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --prompt agent_selector_v1 --auto-push --dry-run
+```
+
+**Force re-download from hub**:
+```bash
+# Just delete local cache file, then sync
+rm prompts/langsmith_cache/agent_selector_v1.txt
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --prompt agent_selector_v1
+```
+
+### **Troubleshooting**
+
+**Issue**: Tags not applied correctly
+```bash
+# Solution: Check _infer_tags_from_name() logic
+# Add custom pattern matching if needed
+```
+
+**Issue**: Prompt not updating in hub
+```bash
+# Check API key is set
+echo $env:LANGSMITH_API_KEY
+
+# Verify sync manager can access hub
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --status
+```
+
+**Issue**: Local changes overwritten by hub
+```bash
+# Always mark as edited BEFORE syncing
+C:\App\Anaconda\python.exe scripts/sync_prompts.py --mark-edited {prompt_name}
+```
+
+### **Remember**
+
+**"Trust LLMs for Intelligence, Not for Determinism"**
+
+- Use prompts to guide LLM intelligence and decision-making
+- Use code to enforce deterministic behavior and ordering
+- Always combine prompt instructions with code validation
+- Test prompt changes with real executions, not just theory
+
 ## 2. Code Quality Standards
 
 ### **Clean Code Principles**
@@ -440,6 +774,161 @@ def unsafe_processing(data):
     except:
         return None  # DANGEROUS - loses error information
 ```
+
+### **Cross-Platform Compatibility**
+```python
+# REQUIRED: Cross-platform compatible code
+import sys
+import os
+from pathlib import Path
+
+# FORBIDDEN: Using emojis in production code (causes Windows encoding issues)
+def print_status_bad():
+    print("✅ Success!")  # WRONG - UnicodeEncodeError on Windows
+    print("❌ Failed!")   # WRONG - 'charmap' codec can't encode
+    print("🚨 Alert!")    # WRONG - encoding issues
+
+# REQUIRED: Use ASCII-safe alternatives
+def print_status_good():
+    print("[OK] Success!")     # GOOD - ASCII-safe
+    print("[X] Failed!")       # GOOD - works everywhere
+    print("[ALERT] Warning!")  # GOOD - no encoding issues
+    
+# REQUIRED: Fix encoding for unavoidable Unicode output
+def print_unicode_safe(message: str):
+    """Safely print Unicode content with fallback."""
+    try:
+        print(message)
+    except UnicodeEncodeError:
+        # Fallback to ASCII-safe representation
+        print(message.encode('ascii', errors='replace').decode('ascii'))
+
+# REQUIRED: Set UTF-8 encoding for scripts that need Unicode
+# Add at top of script if Unicode is essential (documentation, UI, etc.)
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8')
+
+# FORBIDDEN: Platform-specific path separators
+bad_path = "data\\files\\document.txt"  # WRONG - Windows only
+
+# REQUIRED: Use pathlib for cross-platform paths
+good_path = Path("data") / "files" / "document.txt"  # GOOD - works everywhere
+
+# REQUIRED: Platform detection when necessary
+def get_platform_specific_setting():
+    if sys.platform == "win32":
+        return "Windows setting"
+    elif sys.platform == "darwin":
+        return "macOS setting"
+    else:  # linux, unix
+        return "Linux/Unix setting"
+```
+
+### **Emoji Usage Guidelines**
+```python
+# CRITICAL PRINCIPLE: Avoid emojis in production code to prevent encoding errors
+
+# FORBIDDEN: Emojis in code logic, print statements, or error messages
+print("🔍 Searching...")           # BAD - Windows encoding error
+logger.info("✅ Task complete")     # BAD - log file encoding issues
+raise ValueError("❌ Invalid")      # BAD - error message encoding
+
+# REQUIRED: ASCII-safe alternatives for production code
+print("[SEARCH] Searching...")     # GOOD
+logger.info("[OK] Task complete")  # GOOD
+raise ValueError("[ERROR] Invalid") # GOOD
+
+# ALLOWED: Emojis in user-facing UI (with proper encoding handling)
+# Only in:
+# 1. Streamlit apps (handles encoding automatically)
+# 2. Web interfaces (UTF-8 by default)
+# 3. Documentation markdown files
+# 4. User-facing messages in controlled environments
+
+# Example: Streamlit UI (allowed with encoding handling)
+import streamlit as st
+st.success("✅ Document uploaded!")  # OK - Streamlit handles encoding
+
+# Example: Documentation (allowed)
+# README.md:
+# ## Features
+# - ✅ Fast processing
+# - 🔍 Smart search
+# This is OK in .md files
+
+# REQUIRED: Status indicators without emojis
+STATUS_SYMBOLS = {
+    'success': '[OK]',
+    'error': '[X]',
+    'warning': '[!]',
+    'info': '[i]',
+    'progress': '[...]',
+    'complete': '[DONE]',
+    'failed': '[FAIL]'
+}
+
+def print_status(status_type: str, message: str):
+    """Print status with ASCII-safe indicators."""
+    symbol = STATUS_SYMBOLS.get(status_type, '[*]')
+    print(f"{symbol} {message}")
+```
+
+### **Platform-Safe Console Output**
+```python
+# REQUIRED: Handle console encoding properly
+import sys
+
+def setup_console_encoding():
+    """Configure console for safe output across platforms."""
+    if sys.platform == "win32":
+        # Windows console may not support UTF-8 by default
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except AttributeError:
+            # Python < 3.7
+            import codecs
+            sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+
+# REQUIRED: Safe string formatting for cross-platform
+def format_message_safe(message: str) -> str:
+    """Format message safely for any console."""
+    # Remove or replace problematic Unicode characters
+    replacements = {
+        '✅': '[OK]',
+        '❌': '[X]',
+        '⚠️': '[!]',
+        '🔍': '[SEARCH]',
+        '📁': '[FOLDER]',
+        '📄': '[FILE]',
+        '💾': '[SAVE]',
+        '🚀': '[START]',
+        '⏸️': '[PAUSE]',
+    }
+    
+    result = message
+    for emoji, replacement in replacements.items():
+        result = result.replace(emoji, replacement)
+    
+    return result
+
+# REQUIRED: Use logging with safe encoding
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    level=logging.INFO,
+    encoding='utf-8',  # Python 3.9+
+    errors='replace'   # Replace problematic characters
+)
+```
+
+### **Why No Emojis in Production Code**
+1. **Windows Encoding Issues**: Windows console uses `cp1252` by default, which doesn't support emojis
+2. **Log File Corruption**: Emojis in logs can cause encoding errors when reading files
+3. **CI/CD Pipeline Failures**: Automated systems may not handle Unicode properly
+4. **SSH/Remote Terminals**: Remote connections may not support Unicode
+5. **Maintainability**: ASCII is universally supported and more professional
+6. **Debugging**: Error messages with emojis are harder to grep/search
 
 ## 2. Testing Excellence
 
@@ -816,6 +1305,7 @@ Before any code is considered complete:
 - [ ] **Clean Code**: Self-documenting, well-structured
 - [ ] **Type Safety**: Full type annotations and validation
 - [ ] **Error Handling**: Comprehensive exception management
+- [ ] **Cross-Platform**: No emojis in production code, uses pathlib, handles encoding
 - [ ] **Test Coverage**: ≥95% branch coverage with meaningful tests
 - [ ] **Documentation**: Complete API documentation with examples
 - [ ] **SOLID Principles**: Adherence to all SOLID principles
@@ -831,9 +1321,10 @@ Every piece of code must pass:
 3. **Readability**: Can others understand it easily?
 4. **Maintainability**: Can it be easily modified?
 5. **Testability**: Is it thoroughly tested?
-6. **Performance**: Does it meet performance requirements?
-7. **Security**: Are security concerns addressed?
-8. **Documentation**: Is it properly documented?
+6. **Cross-Platform**: Does it work on Windows, macOS, and Linux? No encoding issues?
+7. **Performance**: Does it meet performance requirements?
+8. **Security**: Are security concerns addressed?
+9. **Documentation**: Is it properly documented?
 
 ## Remember
 

@@ -29,6 +29,9 @@ from utils.prompts.rag_processor import get_rag_processor
 from typing import Tuple
 import time
 
+# Import enhanced display components for agent swarm results
+from enhanced_streamlit_display import display_agent_swarm_results
+
 # Page configuration
 st.set_page_config(
     page_title="AI Development Agent",
@@ -575,7 +578,7 @@ def display_sidebar():
     st.sidebar.subheader("📱 Navigation")
     page = st.sidebar.selectbox(
         "Choose a page:",
-        ["🚀 Main App", "🌈 Vibe Coding", "🔧 Prompt Manager", "📚 RAG Documents", "⚙️ System Prompts", "🎵 Vibe Dashboard"]
+        ["🚀 Main App", "🌈 Vibe Coding", "🔧 Prompt Manager", "📚 RAG Documents", "⚙️ System Prompts", "🎵 Vibe Dashboard", "🤖 RAG Dev Agent"]
     )
     
     # Configure API key
@@ -1012,12 +1015,19 @@ def display_workflow_execution(agent, project_context, config):
 
 
 def display_results():
-    """Display the workflow results."""
+    """Display the workflow results with enhanced UI."""
     if st.session_state.workflow_result is None:
         return
     
     result = st.session_state.workflow_result
     
+    # Check if we have raw state from agent swarm
+    if hasattr(result, 'raw_state') and result.raw_state:
+        # Use enhanced display for agent swarm results
+        display_agent_swarm_results(result.raw_state)
+        return
+    
+    # Fallback to original display for other result types
     st.header("📊 Results")
     
     # Summary metrics
@@ -2271,6 +2281,245 @@ def get_vibe_inspiration(vibe: Dict) -> str:
         return base_inspiration
 
 
+def display_rag_dev_agent():
+    """Display RAG-enhanced development agent interface."""
+    st.title("🤖 RAG-Enhanced Development Agent")
+    st.markdown("**Context-aware development with proactive guideline integration**")
+    
+    # LangSmith tracing indicator
+    tracing_enabled = os.environ.get('LANGCHAIN_TRACING_V2', 'false').lower() == 'true'
+    if tracing_enabled:
+        st.success(f"✅ LangSmith Tracing Active - Project: `{os.environ.get('LANGCHAIN_PROJECT', 'ai-dev-agent')}`")
+    else:
+        st.warning("⚠️ LangSmith Tracing Disabled")
+    
+    # Initialize session state for RAG dev agent
+    if 'rag_dev_context_engine' not in st.session_state:
+        st.session_state.rag_dev_context_engine = None
+    if 'rag_dev_graph' not in st.session_state:
+        st.session_state.rag_dev_graph = None
+    if 'rag_dev_messages' not in st.session_state:
+        st.session_state.rag_dev_messages = []
+    if 'active_knowledge_sources' not in st.session_state:
+        st.session_state.active_knowledge_sources = {
+            "architecture": [],
+            "agile": [],
+            "coding_guidelines": [],
+            "framework_docs": [],
+            "custom_files": [],
+            "custom_urls": []
+        }
+    
+    # Initialize ThreadManager for stateful development sessions
+    if 'dev_thread_manager' not in st.session_state:
+        from utils.thread_manager import create_thread_manager
+        st.session_state.dev_thread_manager = create_thread_manager(
+            session_type="development",
+            prefix="dev_session"
+        )
+    
+    # Initialize components
+    if st.session_state.rag_dev_context_engine is None:
+        with st.spinner("Initializing RAG Context Engine..."):
+            try:
+                from context.context_engine import ContextEngine
+                from models.config import ContextConfig
+                
+                config = ContextConfig(
+                    embedding_model="gemini-embedding-001",
+                    vector_db_path="./qdrant_data",
+                    collection_name="dev_rag_collection"
+                )
+                context_engine = ContextEngine(config)
+                asyncio.run(context_engine.initialize())
+                st.session_state.rag_dev_context_engine = context_engine
+                st.success("✅ Context Engine initialized")
+            except Exception as e:
+                st.error(f"❌ Failed to initialize Context Engine: {e}")
+                return
+    
+    if st.session_state.rag_dev_graph is None:
+        with st.spinner("Compiling LangGraph workflow..."):
+            try:
+                from agents.rag.development_context_agent import create_development_context_graph
+                
+                # Pass context_engine to enable checkpointer for Streamlit
+                graph = create_development_context_graph(context_engine=st.session_state.rag_dev_context_engine)
+                st.session_state.rag_dev_graph = graph
+                st.success("✅ LangGraph workflow compiled with checkpointer for Streamlit")
+            except Exception as e:
+                st.error(f"❌ Failed to compile workflow: {e}")
+                return
+    
+    # Thread ID Management Section (main area, before chat)
+    st.subheader("🔗 Development Session")
+    
+    thread_col1, thread_col2, thread_col3, thread_col4 = st.columns([3, 1, 1, 1])
+    
+    with thread_col1:
+        current_thread = st.session_state.dev_thread_manager.get_current_thread_id()
+        st.info(f"**Session**: `{current_thread}`")
+    
+    with thread_col2:
+        if st.button("🆕 New", key="new_dev_session", help="Start a new development session"):
+            st.session_state.dev_thread_manager.create_new_session()
+            st.session_state.rag_dev_messages = []
+            st.success("New development session started!")
+            st.rerun()
+    
+    with thread_col3:
+        stats = st.session_state.dev_thread_manager.get_stats()
+        st.metric("Sessions", stats["total_sessions"])
+    
+    with thread_col4:
+        if st.button("📜", key="dev_history", help="View development session history"):
+            st.session_state.show_dev_thread_history = not st.session_state.get('show_dev_thread_history', False)
+    
+    # Show development session history if toggled
+    if st.session_state.get('show_dev_thread_history', False):
+        with st.expander("📜 Development Session History", expanded=True):
+            sessions = st.session_state.dev_thread_manager.get_session_history()
+            for session in sessions:
+                is_current = session.thread_id == current_thread
+                col_a, col_b, col_c = st.columns([4, 2, 1])
+                with col_a:
+                    if is_current:
+                        st.success(f"✅ `{session.thread_id}`")
+                    else:
+                        st.write(f"`{session.thread_id}`")
+                with col_b:
+                    st.caption(f"{session.message_count} interactions • {session.last_active.strftime('%H:%M')}")
+                with col_c:
+                    if not is_current:
+                        if st.button("Load", key=f"load_dev_{session.thread_id}"):
+                            st.session_state.dev_thread_manager.load_session(session.thread_id)
+                            st.success(f"Loaded: `{session.thread_id}`")
+                            st.rerun()
+    
+    st.markdown("---")
+    
+    # Sidebar: Knowledge Source Management
+    st.sidebar.header("📚 Knowledge Sources")
+    
+    with st.sidebar.expander("Add Document Source", expanded=False):
+        doc_category = st.selectbox(
+            "Category",
+            ["architecture", "agile", "coding_guidelines", "framework_docs", "custom_files"],
+            key="doc_category"
+        )
+        doc_path = st.text_input(
+            "Local File Path",
+            placeholder="docs/architecture/my_design.md",
+            key="doc_path"
+        )
+        if st.button("Add Document", key="add_doc"):
+            if doc_path:
+                with st.spinner(f"Adding {doc_path}..."):
+                    try:
+                        from workflow.knowledge_source_manager import KnowledgeSourceManager
+                        
+                        manager = KnowledgeSourceManager(st.session_state.rag_dev_context_engine)
+                        success = asyncio.run(manager.add_document_source(doc_category, doc_path))
+                        
+                        if success:
+                            st.session_state.active_knowledge_sources[doc_category].append(doc_path)
+                            st.success(f"✅ Added {doc_path}")
+                        else:
+                            st.error(f"❌ Failed to add {doc_path}")
+                    except Exception as e:
+                        st.error(f"❌ Error: {e}")
+            else:
+                st.warning("⚠️ Please enter a file path")
+    
+    with st.sidebar.expander("Add Website Source", expanded=False):
+        url = st.text_input(
+            "Website URL",
+            placeholder="https://langchain-ai.github.io/langgraph/",
+            key="web_url"
+        )
+        if st.button("Add Website", key="add_web"):
+            if url:
+                with st.spinner(f"Scraping {url}..."):
+                    try:
+                        from workflow.knowledge_source_manager import KnowledgeSourceManager
+                        
+                        manager = KnowledgeSourceManager(st.session_state.rag_dev_context_engine)
+                        success = asyncio.run(manager.add_website_source(url))
+                        
+                        if success:
+                            st.session_state.active_knowledge_sources["custom_urls"].append(url)
+                            st.success(f"✅ Added {url}")
+                        else:
+                            st.error(f"❌ Failed to add {url}")
+                    except Exception as e:
+                        st.error(f"❌ Error: {e}")
+            else:
+                st.warning("⚠️ Please enter a URL")
+    
+    st.sidebar.subheader("Active Sources")
+    total_sources = sum(len(sources) for sources in st.session_state.active_knowledge_sources.values())
+    st.sidebar.metric("Total Sources", total_sources)
+    
+    for category, sources in st.session_state.active_knowledge_sources.items():
+        if sources:
+            with st.sidebar.expander(f"{category.replace('_', ' ').title()} ({len(sources)})", expanded=False):
+                for source in sources:
+                    st.write(f"- {source}")
+    
+    # Main chat interface
+    st.header("💬 Development Conversation")
+    
+    # Display chat history
+    for message in st.session_state.rag_dev_messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    
+    # Chat input
+    user_input = st.chat_input("Describe your development task...")
+    
+    if user_input:
+        # Add user message
+        st.session_state.rag_dev_messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.markdown(user_input)
+        
+        # Execute workflow
+        with st.chat_message("assistant"):
+            with st.spinner("Agent thinking..."):
+                try:
+                    # Invoke the graph
+                    result = asyncio.run(
+                        st.session_state.rag_dev_graph.ainvoke(
+                            {
+                                "task": user_input,
+                                "agent_role": "development_agent",
+                                "query": user_input,
+                                "user_guidelines": "use defaults",  # Simplified for now
+                                "messages": []
+                            },
+                            config=st.session_state.dev_thread_manager.get_current_config()
+                        )
+                    )
+                    
+                    # Extract response
+                    if result.get("enriched_context"):
+                        response = f"**Context Retrieved:**\n\n{result['enriched_context']}\n\n"
+                        response += f"\n**Sources Used:** {', '.join(result.get('sources_used', []))}"
+                    else:
+                        response = "Processing your request..."
+                    
+                    st.markdown(response)
+                    st.session_state.rag_dev_messages.append({"role": "assistant", "content": response})
+                    
+                    # Update thread activity
+                    st.session_state.dev_thread_manager.update_activity(message_count_delta=1)
+                    
+                except Exception as e:
+                    error_msg = f"❌ Error: {e}"
+                    st.error(error_msg)
+                    st.session_state.rag_dev_messages.append({"role": "assistant", "content": error_msg})
+
+
 def display_vibe_dashboard():
     """🎵 Display comprehensive vibe dashboard with metrics and insights."""
     
@@ -2395,6 +2644,9 @@ def main():
         
     elif config['page'] == "🎵 Vibe Dashboard":
         display_vibe_dashboard()
+        
+    elif config['page'] == "🤖 RAG Dev Agent":
+        display_rag_dev_agent()
     
     # Log viewer (if activated from sidebar)
     if st.session_state.show_log_viewer:

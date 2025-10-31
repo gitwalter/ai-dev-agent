@@ -28,9 +28,8 @@ logger = logging.getLogger(__name__)
 
 # Try to import LangSmith
 try:
-    from langchain import hub
     from langsmith import Client
-    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
     LANGSMITH_AVAILABLE = True
 except ImportError:
     LANGSMITH_AVAILABLE = False
@@ -162,11 +161,19 @@ class PromptSyncManager:
             return None
         
         try:
+            api_key = self._load_api_key()
+            if not api_key:
+                logger.debug("No API key available")
+                return None
+            
+            # Create client
+            client = Client(api_key=api_key)
+            
             prompt_id = f"{prompt_name}_v1" if not prompt_name.endswith('_v1') else prompt_name
             logger.debug(f"Fetching {prompt_id} from LangSmith Hub...")
             
-            # Pull from hub
-            prompt = hub.pull(prompt_id)
+            # Pull from hub using client
+            prompt = client.pull_prompt(prompt_id)
             
             # Extract text
             if hasattr(prompt, 'template'):
@@ -183,7 +190,7 @@ class PromptSyncManager:
             logger.debug(f"Could not fetch {prompt_name} from hub: {e}")
             return None
     
-    def push_to_hub(self, prompt_name: str, content: str, dry_run: bool = False) -> bool:
+    def push_to_hub(self, prompt_name: str, content: str, dry_run: bool = False, tags: Optional[List[str]] = None) -> bool:
         """
         Push prompt to LangSmith Hub.
         
@@ -191,6 +198,7 @@ class PromptSyncManager:
             prompt_name: Name of the prompt
             content: Prompt content
             dry_run: If True, don't actually push
+            tags: Optional list of tags for the prompt
             
         Returns:
             True if successful
@@ -217,16 +225,69 @@ class PromptSyncManager:
                 ("system", content)
             ])
             
-            # Push to hub
-            prompt_id = f"{prompt_name}_v1" if not prompt_name.endswith('_v1') else prompt_name
-            url = client.push_prompt(prompt_id, object=prompt_template)
+            # Infer tags from prompt name if not provided
+            if tags is None:
+                tags = self._infer_tags_from_name(prompt_name)
             
-            logger.info(f"✅ Pushed {prompt_id} to LangSmith Hub: {url}")
+            # Push to hub with tags
+            prompt_id = f"{prompt_name}_v1" if not prompt_name.endswith('_v1') else prompt_name
+            url = client.push_prompt(prompt_id, object=prompt_template, tags=tags)
+            
+            logger.info(f"✅ Pushed {prompt_id} to LangSmith Hub: {url} (tags: {tags})")
             return True
             
         except Exception as e:
             logger.error(f"Failed to push {prompt_name}: {e}")
             return False
+    
+    def _infer_tags_from_name(self, prompt_name: str) -> List[str]:
+        """Infer appropriate tags from prompt name."""
+        tags = []
+        
+        # Add version tag
+        if '_v1' in prompt_name or prompt_name.endswith('_v1'):
+            tags.append('v1')
+        
+        # Add category tags based on name
+        name_lower = prompt_name.lower()
+        
+        if 'rag' in name_lower:
+            tags.append('rag')
+        if 'simple_rag' in name_lower:
+            tags.append('simple-rag')
+        if 'agentic_rag' in name_lower:
+            tags.append('agentic-rag')
+        if 'system' in name_lower:
+            tags.append('system-prompt')
+        if 'query' in name_lower:
+            tags.append('query-processing')
+        if 'document' in name_lower:
+            tags.append('document-processing')
+        if 'writer' in name_lower:
+            tags.append('content-generation')
+        if 'architect' in name_lower:
+            tags.append('architecture')
+        if 'code_generator' in name_lower or 'generator' in name_lower:
+            tags.append('code-generation')
+        if 'test' in name_lower:
+            tags.append('testing')
+        if 'security' in name_lower:
+            tags.append('security')
+        if 'analyst' in name_lower:
+            tags.append('analysis')
+        if 'selector' in name_lower:
+            tags.append('selection')
+            tags.append('coordination')
+        if 'agent' in name_lower and 'agentic' not in name_lower:
+            tags.append('agent')
+        if 'router' in name_lower:
+            tags.append('routing')
+            tags.append('coordination')
+        if 'complexity' in name_lower:
+            tags.append('analysis')
+            tags.append('complexity')
+        
+        return tags if tags else ['prompt', 'v1']
     
     def sync_prompt(self, prompt_name: str, auto_push: bool = False, 
                     dry_run: bool = False) -> Dict[str, Any]:

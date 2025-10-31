@@ -505,18 +505,37 @@ The following conditions will BLOCK task completion:
 
 ### **Documentation Discipline**
 
-**CRITICAL**: Minimize unnecessary documentation overhead:
+**CRITICAL**: Documentation is necessary - but track progress in agile artifacts, not status reports.
+
+**Core Philosophy**:
+1. **Working Code First** - Implementation over meta-documentation
+2. **Agile Artifacts for Progress** - Track work progress in user stories, acceptance criteria, and tasks
+3. **Feature Documentation When Needed** - Document features/concepts in proper locations when they provide value
+4. **No Status Reports** - Don't create "what I did" reports
 
 ```python
-# FORBIDDEN: Unsolicited status reports, summaries, or documentation
+# FORBIDDEN: Unsolicited status reports about actions taken
 def complete_feature():
     implement_feature()
-    # ❌ DON'T create summary documents unless user asks
+    update_user_story_status()  # ✅ Track progress in agile artifacts
+    # ❌ DON'T create "what I did" reports
     # create_status_report()  # FORBIDDEN
     # create_summary_document()  # FORBIDDEN
-    # create_analysis_document()  # FORBIDDEN
+    # create_bugfix_explanation()  # FORBIDDEN
+    # create_action_report()  # FORBIDDEN
 
-# REQUIRED: Only create documentation when explicitly requested
+# REQUIRED: Create feature/concept documentation when needed
+def implement_new_rag_system():
+    implement_rag_system()
+    update_user_story()  # ✅ Progress in agile artifacts
+    
+    # ✅ Document the feature/concept in proper location
+    create_documentation(
+        path="docs/architecture/rag_system_design.md",
+        content="RAG system architecture and design decisions"
+    )
+
+# REQUIRED: Only create status reports when explicitly requested
 def handle_user_request(request):
     if "create summary" in request or "document this" in request:
         create_documentation()  # ✅ User asked for it
@@ -525,17 +544,41 @@ def handle_user_request(request):
 ```
 
 **Rules**:
-- **No Status Reports**: Don't create status/summary documents unless explicitly requested
-- **No Analysis Documents**: Don't create analysis files unless user asks
-- **No Progress Reports**: Don't create progress documentation unless requested
-- **Just Code**: Focus on implementation, not meta-documentation
-- **User-Driven**: Only create documentation when user explicitly asks
+- **Progress in Agile Artifacts**: Track working progress in user stories/tasks, not separate documents
+- **No Status Reports**: Don't create "what I did today" reports unless explicitly requested
+- **Feature Documentation**: Create docs for features/concepts when they provide value
+- **Right Place, Right Directory**: Put documentation in proper directory structure (docs/architecture/, docs/guides/, etc.)
+- **No Action Summaries**: Don't document every step taken
+- **Value-Driven**: Only create documentation that provides real value
 
-**Exceptions**:
-- **User Stories/Tasks**: Update acceptance criteria and task status as required
-- **Code Documentation**: Always document code (docstrings, comments)
-- **Technical Docs**: Update architecture/design docs when they become stale
-- **Bug Fixes**: Document in commit messages, not separate files
+**What to Always Maintain**:
+- ✅ **Agile Artifacts**: Update user stories, tasks, acceptance criteria (progress tracking lives here)
+- ✅ **Code Documentation**: Always document code (docstrings, comments, type hints)
+- ✅ **Architecture Docs**: Document significant design decisions in `docs/architecture/`
+- ✅ **API Documentation**: Keep API references current in `docs/reference/`
+- ✅ **User Guides**: Create guides for features in `docs/guides/`
+
+**What NOT to Create (Unless Requested)**:
+- ❌ **Bug Fix Reports**: Document in commit messages and code comments, NOT in `docs/fixes/`
+- ❌ **Progress Summaries**: Track progress in agile artifacts, not summary documents
+- ❌ **Implementation Notes**: Don't create "how I fixed it" documents
+- ❌ **Status Reports**: Don't document "what I did" unless user asks
+- ❌ **Action Logs**: Don't create logs of actions taken
+
+**When to Create Documentation**:
+- ✅ User explicitly requests it
+- ✅ New feature/concept needs explanation for team
+- ✅ Architecture changes require design documentation
+- ✅ API changes need reference updates
+- ✅ Complex system needs user guide
+
+**Where to Put Documentation**:
+- `docs/architecture/` - System design, patterns, architectural decisions
+- `docs/guides/` - User guides, how-tos, tutorials
+- `docs/reference/` - API references, technical specifications
+- `docs/development/` - Development practices, setup guides
+- `docs/agile/` - Agile artifacts (user stories, sprints, backlog)
+- **NOT** `docs/fixes/`, `docs/status/`, `docs/reports/`
 
 ### **TODO List Discipline**
 

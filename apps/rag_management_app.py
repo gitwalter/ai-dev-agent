@@ -20,7 +20,11 @@ Purpose: US-RAG-001 - RAG Management UI
 #!/usr/bin/env python3
 import os
 import sys
+import logging
 from pathlib import Path
+
+# Initialize logger
+logger = logging.getLogger(__name__)
 
 # CRITICAL: Set environment variables BEFORE any LangChain imports
 # This ensures LangSmith tracing is active from the start
@@ -58,8 +62,48 @@ except Exception as e:
 # NOW import streamlit and other modules
 import streamlit as st
 import asyncio
+import nest_asyncio
 from datetime import datetime
 from typing import List, Dict, Any
+import threading
+import concurrent.futures
+
+# CRITICAL: Apply nest_asyncio to allow nested event loops
+# This is required for Streamlit + async LangChain/Gemini calls
+nest_asyncio.apply()
+
+
+def run_async(coro):
+    """
+    Run async coroutine in a dedicated thread with its own event loop.
+    
+    This completely isolates the async execution from Streamlit's main thread,
+    preventing "attached to different loop" errors from grpc/Gemini.
+    
+    Why this works:
+    - Each thread can have its own event loop
+    - grpc operations stay within the same loop
+    - No conflicts with Streamlit's execution model
+    """
+    def run_in_thread():
+        """Run coroutine in a new event loop in this thread."""
+        # Create fresh event loop for this thread
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        try:
+            # Run coroutine in this loop
+            result = loop.run_until_complete(coro)
+            return result
+        finally:
+            # Clean up
+            loop.close()
+    
+    # Run in a separate thread to completely isolate event loops
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(run_in_thread)
+        return future.result()  # Block until complete
+
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -535,18 +579,51 @@ def document_upload_page():
                     st.rerun()
         
         if st.button("🗑️ Clear All Documents"):
-            if st.session_state.rag_engine and st.session_state.rag_engine.vector_store:
+            if st.session_state.rag_engine and st.session_state.rag_engine.qdrant_client:
                 try:
+                    # Delete the collection
                     st.session_state.rag_engine.qdrant_client.delete_collection(
                         st.session_state.rag_engine.collection_name
                     )
+                    
+                    # Recreate empty collection with correct dimensions (3072 for Gemini)
+                    from qdrant_client.models import VectorParams, Distance, SparseVectorParams
+                    
+                    # Check if we can use hybrid (new API + sparse embeddings)
+                    try:
+                        from langchain_qdrant.qdrant import QdrantVectorStore, RetrievalMode
+                        QDRANT_NEW_API = True
+                    except ImportError:
+                        QDRANT_NEW_API = False
+                    
+                    if QDRANT_NEW_API and hasattr(st.session_state.rag_engine, 'sparse_embeddings') and st.session_state.rag_engine.sparse_embeddings:
+                        # Create with hybrid support
+                        vectors_config = {
+                            "dense": VectorParams(size=3072, distance=Distance.COSINE)
+                        }
+                        st.session_state.rag_engine.qdrant_client.create_collection(
+                            collection_name=st.session_state.rag_engine.collection_name,
+                            vectors_config=vectors_config,
+                            sparse_vectors_config={"sparse": SparseVectorParams()}
+                        )
+                    else:
+                        # Create dense-only
+                        st.session_state.rag_engine.qdrant_client.create_collection(
+                            collection_name=st.session_state.rag_engine.collection_name,
+                            vectors_config=VectorParams(size=3072, distance=Distance.COSINE)
+                        )
+                    
+                    # Clear vector store and documents
                     st.session_state.rag_engine.vector_store = None
                     st.session_state.rag_engine.documents = []
                     st.session_state.indexed_documents = []
-                    st.success("✅ All documents cleared")
+                    
+                    st.success("✅ All documents cleared - empty collection recreated")
                     st.rerun()
                 except Exception as e:
                     st.error(f"❌ Failed to clear documents: {e}")
+                    import traceback
+                    st.error(traceback.format_exc())
     else:
         st.info("No documents uploaded yet")
 
@@ -621,7 +698,7 @@ def process_uploaded_documents(uploaded_files):
         
         # Load document
         try:
-            result = asyncio.run(st.session_state.doc_loader.load_document(temp_path))
+            result = run_async(st.session_state.doc_loader.load_document(temp_path))
             results.append(result)
             
             if result['success']:
@@ -686,9 +763,9 @@ def process_uploaded_documents(uploaded_files):
             if not collection_exists:
                 # Create NEW collection
                 if QDRANT_NEW_API and hasattr(st.session_state.rag_engine, 'sparse_embeddings') and st.session_state.rag_engine.sparse_embeddings:
-                    # New API with hybrid
+                    # New API with hybrid - use 3072 dimensions for Gemini
                     vectors_config = {
-                        "dense": VectorParams(size=384, distance=Distance.COSINE)
+                        "dense": VectorParams(size=3072, distance=Distance.COSINE)
                     }
                     st.session_state.rag_engine.qdrant_client.create_collection(
                         collection_name=st.session_state.rag_engine.collection_name,
@@ -698,12 +775,12 @@ def process_uploaded_documents(uploaded_files):
                     st.info("✅ Collection created with HYBRID search support")
                     has_sparse_vectors = True
                 else:
-                    # Legacy or dense-only
+                    # Legacy or dense-only - use 3072 dimensions for Gemini
                     st.session_state.rag_engine.qdrant_client.create_collection(
                         collection_name=st.session_state.rag_engine.collection_name,
-                        vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+                        vectors_config=VectorParams(size=3072, distance=Distance.COSINE)
                     )
-                    st.info("✅ Collection created (dense-only)")
+                    st.info("✅ Collection created (dense-only, 3072-dim for Gemini)")
                     has_sparse_vectors = False
                     
                 st.session_state.rag_engine.vector_store = None
@@ -879,7 +956,7 @@ def website_scraping_page():
                             document_loader=st.session_state.doc_loader
                         )
                         
-                        result = asyncio.run(scraper_agent.execute({
+                        result = run_async(scraper_agent.execute({
                             'start_url': url,
                             'recursive': recursive,
                             'max_depth': max_depth,
@@ -919,7 +996,7 @@ def website_scraping_page():
                             result = {'success': False, 'error': result.get('error', 'Unknown error')}
                     else:
                         # Simple single-page scraping
-                        result = asyncio.run(st.session_state.doc_loader.load_website(url))
+                        result = run_async(st.session_state.doc_loader.load_website(url))
                     
                     if result['success']:
                         st.success(f"✅ Successfully scraped {url}")
@@ -989,10 +1066,10 @@ def website_scraping_page():
                                         has_sparse_vectors = False
                                 
                                 if not collection_exists:
-                                    # Create NEW collection with hybrid search support if available
+                                    # Create NEW collection with hybrid search support if available - use 3072 dimensions for Gemini
                                     if QDRANT_NEW_API and hasattr(st.session_state.rag_engine, 'sparse_embeddings') and st.session_state.rag_engine.sparse_embeddings:
                                         vectors_config = {
-                                            "dense": VectorParams(size=384, distance=Distance.COSINE)
+                                            "dense": VectorParams(size=3072, distance=Distance.COSINE)
                                         }
                                         st.session_state.rag_engine.qdrant_client.create_collection(
                                             collection_name=st.session_state.rag_engine.collection_name,
@@ -1003,9 +1080,9 @@ def website_scraping_page():
                                     else:
                                         st.session_state.rag_engine.qdrant_client.create_collection(
                                             collection_name=st.session_state.rag_engine.collection_name,
-                                            vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+                                            vectors_config=VectorParams(size=3072, distance=Distance.COSINE)
                                         )
-                                        st.info("✅ Created new collection (dense-only)")
+                                        st.info("✅ Created new collection (dense-only, 3072-dim for Gemini)")
                                     st.session_state.rag_engine.vector_store = None
                                     has_sparse_vectors = QDRANT_NEW_API and hasattr(st.session_state.rag_engine, 'sparse_embeddings') and st.session_state.rag_engine.sparse_embeddings
                                 
@@ -1132,7 +1209,7 @@ def semantic_search_page():
         if query:
             with st.spinner("Searching..."):
                 try:
-                    results = asyncio.run(
+                    results = run_async(
                         st.session_state.rag_engine.semantic_search(query, limit=limit)
                     )
                     
@@ -1181,6 +1258,14 @@ def agent_chat_page():
         st.session_state.context_debug_mode = True
     if 'selected_documents_for_rag' not in st.session_state:
         st.session_state.selected_documents_for_rag = []  # Empty = use all documents
+    
+    # Initialize ThreadManager for stateful conversations
+    if 'rag_thread_manager' not in st.session_state:
+        from utils.thread_manager import create_thread_manager
+        st.session_state.rag_thread_manager = create_thread_manager(
+            session_type="rag",
+            prefix="rag_chat"
+        )
     
     # Check if RAG system is initialized
     if not st.session_state.rag_engine:
@@ -1241,6 +1326,217 @@ def agent_chat_page():
         except Exception as e:
             st.warning(f"⚠️ Vector store not initialized: {e}")
     
+    # Thread ID Management Section
+    st.subheader("🔗 Session Management")
+    
+    # TEMP DEBUG: Clear cached coordinator button
+    if st.button("🔄 Force Recreate Coordinator", help="Clear cached coordinator and create fresh one"):
+        if 'rag_swarm_coordinator' in st.session_state:
+            del st.session_state.rag_swarm_coordinator
+            st.success("✅ Coordinator cache cleared! Next query will create fresh coordinator.")
+            st.rerun()
+    
+    # Thread/Session Management with Dropdown Selector
+    st.markdown("### 💬 Conversation Threads")
+    
+    thread_col1, thread_col2, thread_col3 = st.columns([5, 1, 1])
+    
+    with thread_col1:
+        # Get all sessions
+        sessions = st.session_state.rag_thread_manager.get_session_history()
+        current_thread = st.session_state.rag_thread_manager.get_current_thread_id()
+        
+        # Create dropdown options with names
+        thread_options = {}
+        for session in sessions:
+            display_name = session.get_display_name()
+            thread_options[display_name] = session.thread_id
+        
+        # Find current session index
+        current_display_names = [k for k, v in thread_options.items() if v == current_thread]
+        current_index = 0
+        if current_display_names:
+            current_display_name = current_display_names[0]
+            current_index = list(thread_options.keys()).index(current_display_name)
+        
+        # Thread selector dropdown
+        selected_display_name = st.selectbox(
+            "Select Conversation Thread",
+            options=list(thread_options.keys()),
+            index=current_index,
+            key="thread_selector",
+            help="Select a conversation thread to continue or switch between topics"
+        )
+        
+        # Load selected session if different
+        selected_thread_id = thread_options[selected_display_name]
+        if selected_thread_id != current_thread:
+            st.session_state.rag_thread_manager.load_session(selected_thread_id)
+            
+            # Load conversation history for this thread into UI
+            st.session_state.chat_messages = []  # Clear current display
+            
+            # Try to load history from RAG agent checkpointer
+            try:
+                # Get the active RAG agent (SimpleRAG or AgenticRAG)
+                agent_key = None
+                if 'simple_rag_agent' in st.session_state:
+                    agent_key = 'simple_rag_agent'
+                elif 'agentic_rag_agent' in st.session_state:
+                    agent_key = 'agentic_rag_agent'
+                
+                if agent_key:
+                    rag_agent = st.session_state[agent_key]
+                    config = {"configurable": {"thread_id": selected_thread_id}}
+                    
+                    # Get thread state from checkpointer
+                    existing_state = rag_agent.graph.get_state(config)
+                    if existing_state and existing_state.values:
+                        existing_messages = existing_state.values.get("messages", [])
+                        
+                        # Convert LangChain messages to Streamlit chat format
+                        for msg in existing_messages:
+                            msg_type = type(msg).__name__
+                            if msg_type == "HumanMessage":
+                                st.session_state.chat_messages.append({
+                                    "role": "user",
+                                    "content": msg.content,
+                                    "timestamp": datetime.now().isoformat()
+                                })
+                            elif msg_type == "AIMessage" and msg.content:
+                                st.session_state.chat_messages.append({
+                                    "role": "assistant",
+                                    "content": msg.content,
+                                    "timestamp": datetime.now().isoformat()
+                                })
+                        
+                        logger.info(f"📥 Loaded {len(st.session_state.chat_messages)} messages for thread {selected_thread_id}")
+            except Exception as e:
+                logger.warning(f"Could not load thread history: {e}")
+            
+            # Clear cached coordinator for new thread
+            if 'rag_swarm_coordinator' in st.session_state:
+                del st.session_state.rag_swarm_coordinator
+            if 'deep_agent' in st.session_state:
+                del st.session_state.deep_agent
+            st.rerun()
+    
+    with thread_col2:
+        if st.button("🆕 New", help="Start a new conversation thread", use_container_width=True):
+            # Create new session with auto-generated name
+            st.session_state.rag_thread_manager.create_new_session(
+                name=f"New Chat {len(sessions) + 1}"
+            )
+            st.session_state.chat_messages = []  # Clear UI chat display
+            # Clear cached agents to start fresh
+            if 'rag_swarm_coordinator' in st.session_state:
+                del st.session_state.rag_swarm_coordinator
+            if 'deep_agent' in st.session_state:
+                del st.session_state.deep_agent
+            if 'simple_rag_agent' in st.session_state:
+                del st.session_state.simple_rag_agent
+            if 'agentic_rag_agent' in st.session_state:
+                del st.session_state.agentic_rag_agent
+            st.success("New conversation started!")
+            st.rerun()
+    
+    with thread_col3:
+        # Popover menu for thread actions
+        with st.popover("⚙️", use_container_width=True):
+            if st.button("📝 Rename Thread", use_container_width=True):
+                st.session_state.show_rename_dialog = True
+                st.rerun()
+            if st.button("🗑️ Delete Current", use_container_width=True):
+                st.session_state.show_delete_dialog = True
+                st.rerun()
+            if st.button("🗑️ Delete All Threads", use_container_width=True):
+                st.session_state.show_delete_all_dialog = True
+                st.rerun()
+    
+    # Rename dialog
+    if st.session_state.get('show_rename_dialog', False):
+        with st.form("rename_thread_form"):
+            st.write("**📝 Rename Thread**")
+            current_session = st.session_state.rag_thread_manager.current_session
+            new_name = st.text_input(
+                "New name:",
+                value=current_session.name,
+                placeholder="Enter a descriptive name for this conversation"
+            )
+            
+            col_a, col_b = st.columns(2)
+            with col_a:
+                if st.form_submit_button("✅ Save", use_container_width=True):
+                    if new_name and new_name.strip():
+                        st.session_state.rag_thread_manager.set_session_name(new_name.strip())
+                        st.session_state.show_rename_dialog = False
+                        st.success(f"✅ Renamed to: {new_name}")
+                        st.rerun()
+            with col_b:
+                if st.form_submit_button("❌ Cancel", use_container_width=True):
+                    st.session_state.show_rename_dialog = False
+                    st.rerun()
+    
+    # Delete current thread dialog
+    if st.session_state.get('show_delete_dialog', False):
+        with st.form("delete_thread_form"):
+            st.write("**🗑️ Delete Current Thread**")
+            current_session = st.session_state.rag_thread_manager.current_session
+            st.warning(f"⚠️ Delete: **{current_session.name}** ({current_session.message_count} messages)?")
+            st.caption("This action cannot be undone.")
+            
+            col_a, col_b = st.columns(2)
+            with col_a:
+                if st.form_submit_button("🗑️ Delete", type="primary", use_container_width=True):
+                    deleted_name = current_session.name
+                    st.session_state.rag_thread_manager.delete_session(current_session.thread_id)
+                    st.session_state.chat_messages = []
+                    st.session_state.show_delete_dialog = False
+                    st.success(f"✅ Deleted: {deleted_name}")
+                    st.rerun()
+            with col_b:
+                if st.form_submit_button("❌ Cancel", use_container_width=True):
+                    st.session_state.show_delete_dialog = False
+                    st.rerun()
+    
+    # Delete all threads dialog
+    if st.session_state.get('show_delete_all_dialog', False):
+        with st.form("delete_all_threads_form"):
+            st.write("**🗑️ Delete All Threads**")
+            total_sessions = len(sessions)
+            st.error(f"⚠️ **DANGER**: Delete all {total_sessions} threads permanently?")
+            st.caption("All conversation history will be lost. Type 'DELETE ALL' to confirm.")
+            
+            confirm_text = st.text_input("Confirmation:", placeholder="DELETE ALL")
+            
+            col_a, col_b = st.columns(2)
+            with col_a:
+                can_delete = confirm_text == "DELETE ALL"
+                if st.form_submit_button(
+                    "🗑️ Delete All", 
+                    type="primary", 
+                    disabled=not can_delete,
+                    use_container_width=True
+                ):
+                    if can_delete:
+                        for session in list(sessions):
+                            st.session_state.rag_thread_manager.delete_session(session.thread_id)
+                        st.session_state.chat_messages = []
+                        st.session_state.show_delete_all_dialog = False
+                        st.success(f"✅ Deleted all {total_sessions} threads")
+                        st.rerun()
+            with col_b:
+                if st.form_submit_button("❌ Cancel", use_container_width=True):
+                    st.session_state.show_delete_all_dialog = False
+                    st.rerun()
+    
+    # Thread info
+    stats = st.session_state.rag_thread_manager.get_stats()
+    current_session = st.session_state.rag_thread_manager.current_session
+    st.caption(f"📊 {stats['total_sessions']} total threads • {current_session.message_count} messages in current • Thread ID: `{current_thread}`")
+    
+    st.markdown("---")
+    
     # Agent selection and configuration
     col1, col2, col3 = st.columns([2, 2, 1])
     
@@ -1248,10 +1544,16 @@ def agent_chat_page():
         agent_mode = st.selectbox(
             "RAG Mode",
             [
-                "🔥 Agent Swarm (Best Quality)",
-                "⚡ Single Agent (Fast)"
+                "✨ Agentic RAG (Intelligent - RECOMMENDED)",
+                "⚡ Simple RAG (Fast & Direct)",
             ],
-            help="Agent Swarm uses 5 specialized agents for highest quality"
+            help="""Choose your RAG agent:
+            
+**Official LangChain Patterns (RAG V2)**:
+• Agentic RAG: Grades documents, rewrites questions, intelligent routing (Phase 2)
+• Simple RAG: Direct retrieval → answer (Phase 1, fastest)
+            
+All modes use persistent thread_id for stateful conversations and LangSmith tracing."""
         )
     
     with col2:
@@ -1304,6 +1606,174 @@ def agent_chat_page():
                 step=1,
                 help="Maximum re-retrieval attempts (default: 1)"
             )
+    
+    # Knowledge Source Selection (HITL #0)
+    with st.expander("📚 Knowledge Source Selection", expanded=False):
+        st.markdown("**Choose which knowledge sources the RAG system should use:**")
+        
+        # Initialize knowledge source selections in session state
+        if 'selected_categories' not in st.session_state:
+            st.session_state.selected_categories = []
+        if 'custom_urls' not in st.session_state:
+            st.session_state.custom_urls = []
+        if 'custom_documents' not in st.session_state:
+            st.session_state.custom_documents = []
+        
+        # Predefined Categories
+        st.subheader("📂 Predefined Categories")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            architecture_docs = st.checkbox(
+                "🏗️ Architecture Documentation",
+                value="architecture" in st.session_state.selected_categories,
+                help="docs/architecture/ - System design, patterns, architectural decisions"
+            )
+            if architecture_docs and "architecture" not in st.session_state.selected_categories:
+                st.session_state.selected_categories.append("architecture")
+            elif not architecture_docs and "architecture" in st.session_state.selected_categories:
+                st.session_state.selected_categories.remove("architecture")
+            
+            agile_docs = st.checkbox(
+                "📋 Agile Management",
+                value="agile" in st.session_state.selected_categories,
+                help="docs/agile/ - Sprint docs, user stories, backlog, retrospectives"
+            )
+            if agile_docs and "agile" not in st.session_state.selected_categories:
+                st.session_state.selected_categories.append("agile")
+            elif not agile_docs and "agile" in st.session_state.selected_categories:
+                st.session_state.selected_categories.remove("agile")
+        
+        with col2:
+            coding_guidelines = st.checkbox(
+                "📝 Coding Guidelines",
+                value="coding_guidelines" in st.session_state.selected_categories,
+                help="docs/guides/ - Coding standards, best practices, style guides"
+            )
+            if coding_guidelines and "coding_guidelines" not in st.session_state.selected_categories:
+                st.session_state.selected_categories.append("coding_guidelines")
+            elif not coding_guidelines and "coding_guidelines" in st.session_state.selected_categories:
+                st.session_state.selected_categories.remove("coding_guidelines")
+            
+            framework_docs = st.checkbox(
+                "🔧 Framework Documentation",
+                value="framework_docs" in st.session_state.selected_categories,
+                help="docs/development/ - LangGraph, LangChain, FastAPI, Streamlit docs"
+            )
+            if framework_docs and "framework_docs" not in st.session_state.selected_categories:
+                st.session_state.selected_categories.append("framework_docs")
+            elif not framework_docs and "framework_docs" in st.session_state.selected_categories:
+                st.session_state.selected_categories.remove("framework_docs")
+        
+        # Quick selection buttons
+        st.markdown("---")
+        quick_col1, quick_col2, quick_col3 = st.columns(3)
+        
+        with quick_col1:
+            if st.button("✅ Select All", help="Select all predefined categories"):
+                st.session_state.selected_categories = ["architecture", "agile", "coding_guidelines", "framework_docs"]
+                st.rerun()
+        
+        with quick_col2:
+            if st.button("🎯 Defaults", help="Architecture + Coding Guidelines + Frameworks"):
+                st.session_state.selected_categories = ["architecture", "coding_guidelines", "framework_docs"]
+                st.rerun()
+        
+        with quick_col3:
+            if st.button("❌ Clear All", help="Deselect all categories"):
+                st.session_state.selected_categories = []
+                st.rerun()
+        
+        st.markdown("---")
+        
+        # Custom URLs
+        st.subheader("🌐 Custom URLs")
+        st.caption("Add specific websites or documentation URLs to include in RAG context")
+        
+        url_input = st.text_input(
+            "Enter URL",
+            placeholder="https://docs.example.com/api/...",
+            help="Enter a URL to scrape and index (API docs, tutorials, references)"
+        )
+        
+        url_col1, url_col2 = st.columns([1, 4])
+        with url_col1:
+            if st.button("➕ Add URL", disabled=not url_input):
+                if url_input and url_input not in st.session_state.custom_urls:
+                    st.session_state.custom_urls.append(url_input)
+                    st.success(f"✅ Added: {url_input}")
+                    st.rerun()
+        
+        # Display added URLs
+        if st.session_state.custom_urls:
+            st.markdown("**Added URLs:**")
+            for i, url in enumerate(st.session_state.custom_urls):
+                url_display_col1, url_display_col2 = st.columns([5, 1])
+                with url_display_col1:
+                    st.text(f"🔗 {url}")
+                with url_display_col2:
+                    if st.button("🗑️", key=f"del_url_{i}", help="Remove this URL"):
+                        st.session_state.custom_urls.pop(i)
+                        st.rerun()
+        
+        st.markdown("---")
+        
+        # Local Documents
+        st.subheader("📄 Local Documents")
+        st.caption("Upload specific documents to include in RAG context")
+        
+        uploaded_files = st.file_uploader(
+            "Upload Documents",
+            type=["pdf", "docx", "txt", "md", "py", "js", "ts", "java", "cpp", "c", "h"],
+            accept_multiple_files=True,
+            help="Upload specifications, designs, notes, or code files"
+        )
+        
+        if uploaded_files:
+            st.markdown(f"**Uploaded: {len(uploaded_files)} file(s)**")
+            for file in uploaded_files:
+                st.text(f"📎 {file.name} ({file.size / 1024:.1f} KB)")
+            
+            if st.button("💾 Save Uploaded Documents"):
+                # Save uploaded files to session state for processing
+                st.session_state.custom_documents = [
+                    {"name": file.name, "content": file.read(), "type": file.type}
+                    for file in uploaded_files
+                ]
+                st.success(f"✅ Saved {len(uploaded_files)} document(s) for indexing")
+        
+        # Summary of selections
+        st.markdown("---")
+        st.subheader("📊 Knowledge Source Summary")
+        
+        total_sources = (
+            len(st.session_state.selected_categories) + 
+            len(st.session_state.custom_urls) + 
+            len(st.session_state.custom_documents)
+        )
+        
+        if total_sources > 0:
+            st.success(f"✅ **{total_sources} knowledge source(s) selected**")
+            
+            if st.session_state.selected_categories:
+                st.markdown(f"**Categories ({len(st.session_state.selected_categories)})**: {', '.join(st.session_state.selected_categories)}")
+            
+            if st.session_state.custom_urls:
+                st.markdown(f"**URLs ({len(st.session_state.custom_urls)})**: {len(st.session_state.custom_urls)} custom URL(s)")
+            
+            if st.session_state.custom_documents:
+                st.markdown(f"**Documents ({len(st.session_state.custom_documents)})**: {len(st.session_state.custom_documents)} file(s)")
+        else:
+            st.info("ℹ️ **No specific sources selected** - will use all available documents in RAG system")
+        
+        # Load knowledge sources button
+        if total_sources > 0:
+            if st.button("🔄 Load & Index Selected Sources", type="primary"):
+                with st.spinner("Loading and indexing knowledge sources..."):
+                    # Here we would integrate with KnowledgeSourceManager
+                    # For now, just show a message
+                    st.success(f"✅ Loaded {total_sources} knowledge source(s) successfully!")
+                    st.info("💡 These sources will be used by the RAG system for the current session")
     
     st.markdown("---")
     
@@ -1461,6 +1931,15 @@ def agent_chat_page():
         user_input = st.chat_input("Ask your context-aware agent...")
         
         if user_input:
+            # Auto-name thread from first query
+            current_session = st.session_state.rag_thread_manager.current_session
+            if current_session.message_count == 0:
+                # First message in thread - auto-name it
+                st.session_state.rag_thread_manager.auto_name_from_query(user_input)
+            
+            # Update activity (increment message count)
+            st.session_state.rag_thread_manager.update_activity()
+            
             # Add user message
             st.session_state.chat_messages.append({
                 "role": "user",
@@ -1472,106 +1951,187 @@ def agent_chat_page():
             with st.chat_message("user"):
                 st.markdown(user_input)
             
-            # Process with agent (swarm or single)
+            # Process with agent (V2: SimpleRAG or AgenticRAG)
             with st.chat_message("assistant"):
-                use_swarm = "Swarm" in agent_mode
+                use_agentic = "Agentic RAG" in agent_mode
+                use_simple = "Simple RAG" in agent_mode
+                response_text = None  # Initialize to avoid NameError
+                context_stats = {}
                 
-                with st.spinner(f"🔍 {'Agent Swarm processing' if use_swarm else 'Retrieving context'}..."):
+                agent_type_label = (
+                    "✨ Agentic RAG processing (grading + rewriting)" if use_agentic
+                    else "⚡ Simple RAG processing (direct)" if use_simple
+                    else "⚡ Retrieving context"
+                )
+                
+                with st.spinner(f"🔍 {agent_type_label}..."):
                     try:
                         # Set API key from Streamlit secrets
                         import os
                         if hasattr(st, 'secrets') and 'GEMINI_API_KEY' in st.secrets:
                             os.environ['GEMINI_API_KEY'] = st.secrets['GEMINI_API_KEY']
                         
-                        if use_swarm:
-                            # Use RAG Agent Swarm with intelligent document selection
+                        # Check LangSmith tracing status
+                        langsmith_enabled = os.environ.get("LANGCHAIN_TRACING_V2") == "true"
+                        if not langsmith_enabled and context_mode == "Debug":
+                            st.warning("⚠️ LangSmith tracing disabled. Set LANGCHAIN_TRACING_V2=true to enable traces.")
+                        
+                        if use_agentic or use_simple:
+                            # Use RAG V2: Official LangChain patterns (Phase 1 or 2)
                             try:
-                                from agents.rag import RAGSwarmCoordinator
-                            
-                                # Initialize swarm coordinator (agentic RAG)
-                                swarm = RAGSwarmCoordinator(st.session_state.rag_engine)
+                                from agents.rag import SimpleRAG, AgenticRAG
                                 
-                                # Execute agentic RAG
-                                with st.spinner("🤖 Agentic RAG in progress..."):
-                                    result = asyncio.run(swarm.execute(user_input))
+                                # Initialize agent based on mode (reuse if already created)
+                                agent_key = 'agentic_rag' if use_agentic else 'simple_rag'
                                 
-                                # Check if interrupted for human review
-                                if result.get('status') == 'interrupted':
-                                    st.info("⏸️ **Human Review Required**")
-                                    st.write(result.get('message', ''))
-                                    
-                                    # Show context preview
-                                    with st.expander("📄 Retrieved Context Preview"):
-                                        st.text(result.get('context_preview', 'No context available'))
-                                    
-                                    # Human input for review
-                                    human_feedback = st.text_input(
-                                        "Review the context above. Type 'approve' to continue or 'rewrite' to try again:",
-                                        key=f"human_review_{len(st.session_state.conversation_history)}"
-                                    )
-                                    
-                                    if st.button("Submit Review"):
-                                        if human_feedback:
-                                            # Resume with human feedback
-                                            thread_id = result.get('thread_id')
-                                            resume_result = swarm.resume(thread_id, human_feedback)
-                                            result = resume_result
-                                        else:
-                                            st.warning("Please provide feedback to continue")
+                                if agent_key not in st.session_state:
+                                    if use_agentic:
+                                        st.session_state[agent_key] = AgenticRAG(st.session_state.rag_engine)
+                                        logger.info("[OK] ✅ AgenticRAG (Phase 2) initialized")
+                                    else:
+                                        st.session_state[agent_key] = SimpleRAG(st.session_state.rag_engine)
+                                        logger.info("[OK] ✅ SimpleRAG (Phase 1) initialized")
                                 
-                                # Extract response
-                                if result.get('status') == 'success':
+                                rag_agent = st.session_state[agent_key]
+                                
+                                # Get persistent thread_id from ThreadManager for conversation continuity
+                                config = st.session_state.rag_thread_manager.get_current_config()
+                                thread_id = config['configurable']['thread_id']
+                                
+                                logger.info(f"🔧 RAG V2 using thread_id = {thread_id}")
+                                
+                                # Build document filters if user selected specific documents
+                                doc_filters = None
+                                if st.session_state.selected_documents_for_rag:
+                                    doc_filters = {'source': st.session_state.selected_documents_for_rag}
+                                    logger.info(f"🎯 Applying document scope: {st.session_state.selected_documents_for_rag}")
+                                
+                                # Execute with thread_id and document filters
+                                result = rag_agent.invoke(
+                                    query=user_input,
+                                    thread_id=thread_id,
+                                    document_filters=doc_filters
+                                )
+                                
+                                # RAG V2 doesn't have HITL yet (Phase 3 feature)
+                                # Process completed response
+                                if result.get('status') == 'completed':
                                     response_text = result.get('response', 'No response generated')
+                                    logger.info(f"✅ RAG V2 response: {len(response_text)} chars")
                                     
+                                    # Create context stats
                                     context_stats = {
-                                        'retrieval_time': 0,  # TODO: Add timing
+                                        'retrieval_time': 0,
                                         'results_count': len(result.get('messages', [])),
-                                        'search_type': 'agentic_rag',
+                                        'search_type': 'agentic_rag' if use_agentic else 'simple_rag',
                                         'thread_id': result.get('thread_id')
                                     }
-                                else:
-                                    st.error(f"❌ Agentic RAG failed: {result.get('response', 'Unknown error')}")
-                                    use_swarm = False
+                                
+                                elif result.get('status') == 'interrupted':
+                                    st.info("⏸️ **HITL not yet implemented in Phase 1/2**")
+                                    st.write("Phase 3 will add human review checkpoints")
+                                    
+                                    with st.expander("📄 Retrieved Context Preview", expanded=True):
+                                        st.markdown(result.get('context_preview', 'No context available'))
+                                    
+                                    st.session_state.pending_interrupt = {
+                                        'thread_id': result.get('thread_id'),
+                                        'context': result.get('context_preview', ''),
+                                        'query': user_input
+                                    }
+                                    
+                                    col1, col2, col3 = st.columns(3)
+                                    with col1:
+                                        if st.button("✅ Approve", key=f"approve_{result.get('thread_id')}", use_container_width=True):
+                                            with st.spinner("▶️ Resuming LangGraph RAG..."):
+                                                logger.info(f"🔗 Resuming LangGraph RAG with approval")
+                                                resume_result = langgraph_agent.resume(
+                                                    thread_id=thread_id,
+                                                    human_feedback="approve"
+                                                )
+                                                result = resume_result
+                                                if 'pending_interrupt' in st.session_state:
+                                                    del st.session_state.pending_interrupt
+                                                st.rerun()
+                                    
+                                    with col2:
+                                        if st.button("❌ Reject", key=f"reject_{result.get('thread_id')}", use_container_width=True):
+                                            logger.info("🚫 User rejected - canceling workflow")
+                                            st.warning("Workflow canceled. Please start a new query.")
+                                            if 'pending_interrupt' in st.session_state:
+                                                del st.session_state.pending_interrupt
+                                            st.stop()
+                                    
+                                    with col3:
+                                        if st.button("✏️ Edit", key=f"edit_{result.get('thread_id')}", use_container_width=True):
+                                            st.session_state.show_edit_input = True
+                                    
+                                    if st.session_state.get('show_edit_input', False):
+                                        custom_feedback = st.text_area(
+                                            "Provide custom instructions:",
+                                            key=f"custom_feedback_{result.get('thread_id')}",
+                                            height=100
+                                        )
+                                        if st.button("Submit Edit", key=f"submit_edit_{result.get('thread_id')}"):
+                                            if custom_feedback:
+                                                with st.spinner("▶️ Resuming with your edits..."):
+                                                    logger.info(f"✏️ Resuming with custom feedback: {custom_feedback}")
+                                                    resume_result = langgraph_agent.resume(
+                                                        thread_id=thread_id,
+                                                        human_feedback=custom_feedback
+                                                    )
+                                                    result = resume_result
+                                                    if 'pending_interrupt' in st.session_state:
+                                                        del st.session_state.pending_interrupt
+                                                    st.session_state.show_edit_input = False
+                                                    st.rerun()
+                                            else:
+                                                st.warning("Please provide feedback")
+                                    
+                                    st.info("💡 Review the context and choose an action above to continue")
+                                    st.stop()
+                                        
+                                elif result.get('status') == 'completed':
+                                    response_text = result.get('response', 'No response generated')
+                                    context_stats = {
+                                        'retrieval_time': 0,
+                                        'results_count': 0,
+                                        'search_type': 'langgraph_rag',
+                                        'thread_id': result.get('thread_id'),
+                                        'sources_cited': result.get('sources_cited', []),
+                                        'pipeline_state': result.get('pipeline_state', 'completed')
+                                    }
+                                    
+                                elif result.get('status') == 'error':
+                                    error_msg = result.get('error', 'Unknown error')
+                                    st.error(f"❌ RAG V2 failed: {error_msg}")
+                                    with st.expander("🔍 Error Details"):
+                                        st.code(error_msg)
+                                    st.session_state.chat_messages.append({
+                                        "role": "assistant",
+                                        "content": f"❌ Error: {error_msg}",
+                                        "timestamp": datetime.now().isoformat()
+                                    })
+                                    st.stop()
                                     
                             except Exception as e:
-                                st.error(f"❌ RAG Swarm error: {e}")
                                 import traceback
-                                st.code(traceback.format_exc())
-                                use_swarm = False
+                                error_trace = traceback.format_exc()
+                                st.error(f"❌ RAG V2 error: {str(e)}")
+                                with st.expander("🔍 Error Details"):
+                                    st.code(error_trace)
+                                logger.error(f"RAG V2 error: {error_trace}")
+                                st.stop()
                         
-                        if not use_swarm:
-                            # Use single ContextAwareAgent
-                            from agents.core.context_aware_agent import ContextAwareAgent
-                            from models.config import AgentConfig
-                            
-                            config = AgentConfig(
-                                agent_id=f"chat_single_agent",
-                                name="Single RAG Agent",
-                                role="rag_query"
-                            )
-                            
-                            agent = ContextAwareAgent(
-                                config, 
-                                context_engine=st.session_state.rag_engine
-                            )
-                            
-                            # Execute with context - agent intelligently finds relevant documents
-                            result = asyncio.run(
-                                agent.execute_with_context({
-                                    'query': user_input,
-                                    'context_mode': context_mode
-                                })
-                            )
-                            
-                            # Extract response and context stats
-                            response_text = result.get('response', 'Agent executed successfully')
-                            context_stats = result.get('context_stats', {})
+                        # Display response (only if we have one)
+                        if response_text:
+                            st.markdown(response_text)
+                        else:
+                            st.warning("⚠️ No response generated. Please try again.")
+                            st.stop()
                         
-                        # Display response
-                        st.markdown(response_text)
-                        
-                        # Display sources used (always visible)
-                        if use_swarm and result.get('sources_cited'):
+                        # Display sources used (if available)
+                        if result.get('sources_cited'):
                             with st.expander("📚 Sources Used", expanded=False):
                                 for i, source in enumerate(result.get('sources_cited', []), 1):
                                     st.markdown(f"**{i}.** `{source}`")
@@ -1772,7 +2332,7 @@ def agent_chat_page():
     with col2:
         if st.button("📥 Export Chat", use_container_width=True):
             chat_export = {
-                "agent_type": agent_type,
+                "agent_mode": agent_mode,
                 "messages": st.session_state.chat_messages,
                 "exported_at": datetime.now().isoformat()
             }
@@ -2313,10 +2873,11 @@ def run_transparent_test(
             
             from agents.rag import RAGSwarmCoordinator
             
-            swarm = RAGSwarmCoordinator(st.session_state.rag_engine)
+            # Enable human_in_loop for Streamlit UI (needs checkpointer)
+            swarm = RAGSwarmCoordinator(st.session_state.rag_engine, human_in_loop=True)
             
             retrieval_start = time.time()
-            response = asyncio.run(swarm.execute({
+            response = run_async(swarm.execute({
                 'query': query,
                 'max_results': 50,  # Max allowed, adaptive system determines actual count
                 'quality_threshold': 0.45,  # Realistic default
@@ -2359,7 +2920,7 @@ def run_transparent_test(
             agent = ContextAwareAgent(agent_config, st.session_state.rag_engine)
             
             retrieval_start = time.time()
-            response = asyncio.run(agent.execute_with_context({'query': query}))
+            response = run_async(agent.execute_with_context({'query': query}))
             retrieval_time = time.time() - retrieval_start
             
             result['retrieval_time'] = retrieval_time

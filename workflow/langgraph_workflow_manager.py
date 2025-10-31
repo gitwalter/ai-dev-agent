@@ -6,7 +6,11 @@ Test-driven implementation using established libraries.
 
 import asyncio
 import logging
-from typing import Dict, Any, List, TypedDict, Optional, Callable
+from typing import Dict, Any, List, Optional, Callable
+try:
+    from typing_extensions import TypedDict  # Python < 3.12 compatibility
+except ImportError:
+    from typing import TypedDict  # Python >= 3.12
 from datetime import datetime
 import re
 
@@ -316,13 +320,13 @@ Return ONLY the markdown with code blocks, no additional text.""",
                 
                 return {
                     **state,
-                    "code_generation": {
-                        "source_files": source_files,
-                        "raw_markdown": result
-                    },
+                    "code_files": source_files,  # FIXED: Store files directly in code_files
                     "agent_outputs": {
                         **state["agent_outputs"],
-                        "code_generator": {"source_files": source_files}
+                        "code_generator": {
+                            "source_files": source_files,
+                            "raw_markdown": result
+                        }
                     },
                     "current_step": "code_generation",
                     "execution_history": [

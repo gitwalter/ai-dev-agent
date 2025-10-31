@@ -13,7 +13,11 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Dict, Any, List, Annotated, TypedDict
+from typing import Dict, Any, List, Annotated
+try:
+    from typing_extensions import TypedDict  # Python < 3.12 compatibility
+except ImportError:
+    from typing import TypedDict  # Python >= 3.12
 import operator
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import create_react_agent
@@ -104,8 +108,11 @@ class SwarmState(TypedDict):
     # Input
     project_context: str
     
-    # Routing decisions
+    # Routing decisions - Context Detection (Phase 1: US-CONTEXT-001)
     project_complexity: str  # simple, medium, complex
+    project_domain: str  # ai, web, api, data, mobile, etc.
+    project_intent: str  # new_feature, bug_fix, refactor, migration, etc.
+    detected_entities: List[str]  # Technology names, frameworks, services, etc.
     required_agents: List[str]  # Which agents to run
     next_agent: str  # Which agent runs next
     
@@ -115,7 +122,8 @@ class SwarmState(TypedDict):
     # Agent outputs - each agent has its own field(s)
     requirements: Dict[str, Any]        # requirements_analyst output
     architecture: Dict[str, Any]        # architecture_designer output
-    code_files: Dict[str, Any]          # code_generator output
+    code_files: Dict[str, str]          # code_generator output: {filename: content}
+    code_metadata: Dict[str, Any]       # code_generator metadata: plan, assumptions, etc.
     test_files: Dict[str, Any]          # test_generator output
     code_review: Dict[str, Any]         # code_reviewer output
     documentation: Dict[str, Any]       # documentation_generator output
@@ -132,6 +140,16 @@ class SwarmState(TypedDict):
 
 class AgentSwarm:
     """Simple agent swarm following LangGraph patterns."""
+    
+    # Define standard agent execution order (CRITICAL: enforced in code, not LLM)
+    STANDARD_AGENT_ORDER = [
+        "requirements_analyst",
+        "architecture_designer",
+        "code_generator",
+        "test_generator",
+        "code_reviewer",
+        "documentation_generator"
+    ]
     
     def __init__(self, llm_config: Dict[str, Any]):
         """Initialize swarm."""
@@ -264,18 +282,46 @@ class AgentSwarm:
     # ========================================================================
     
     def _analyze_complexity(self, state: SwarmState) -> Dict[str, Any]:
-        """Analyze project complexity using LLM with LangSmith prompt."""
-        self.logger.info("📊 Analyzing complexity with LLM...")
+        """
+        Analyze project complexity, domain, intent, and entities using LLM.
+        
+        Phase 1 (US-CONTEXT-001): Enhanced context detection that classifies:
+        - Complexity: simple, medium, complex
+        - Domain: ai, web, api, data, mobile, etc.
+        - Intent: new_feature, bug_fix, refactor, migration, etc.
+        - Entities: Technology names, frameworks, services extracted from context
+        """
+        self.logger.info("📊 Analyzing complexity and context with LLM...")
         
         llm = self._create_llm()
         system_prompt = self.prompts.get("complexity_analyzer", "You are a complexity analyzer")
         
-        task = f"""Analyze the complexity of this software project.
+        # Enhanced task prompt for context detection
+        task = f"""Analyze this software project and classify:
 
 Project: {state['project_context']}
 
-Classify as: simple, medium, or complex
-Respond with ONLY one word."""
+Classify the following:
+1. COMPLEXITY: simple, medium, or complex
+2. DOMAIN: ai, web, api, data, mobile, library, utility, or general
+3. INTENT: new_feature, bug_fix, refactor, migration, enhancement, or general
+4. ENTITIES: List key technologies, frameworks, services mentioned (comma-separated)
+
+Respond with ONLY valid JSON (no markdown, no extra text):
+{{
+    "project_complexity": "simple|medium|complex",
+    "project_domain": "ai|web|api|data|mobile|library|utility|general",
+    "project_intent": "new_feature|bug_fix|refactor|migration|enhancement|general",
+    "detected_entities": ["entity1", "entity2", "entity3"]
+}}
+
+Example:
+{{
+    "project_complexity": "complex",
+    "project_domain": "ai",
+    "project_intent": "new_feature",
+    "detected_entities": ["rag", "document", "search", "vector", "embeddings"]
+}}"""
         
         messages = [
             SystemMessage(content=system_prompt),
@@ -283,26 +329,106 @@ Respond with ONLY one word."""
         ]
         
         result = llm.invoke(messages)
-        complexity = result.content.strip().lower()
+        output = result.content.strip()
         
-        # Validate response
-        if complexity not in ["simple", "medium", "complex"]:
-            complexity = "medium"  # Default
-        
-        self.logger.info(f"📊 Complexity: {complexity}")
-        return {"project_complexity": complexity, "current_step": "complexity_analyzed"}
+        # Parse JSON response
+        try:
+            import json
+            import re
+            
+            # Extract JSON from markdown code block if present
+            json_match = re.search(r'```json\s*(\{.*\})\s*```', output, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1)
+            else:
+                # Try to find JSON object boundaries
+                first_brace = output.find('{')
+                if first_brace != -1:
+                    brace_count = 0
+                    json_start = first_brace
+                    for i, char in enumerate(output[first_brace:], start=first_brace):
+                        if char == '{':
+                            brace_count += 1
+                        elif char == '}':
+                            brace_count -= 1
+                            if brace_count == 0:
+                                json_str = output[json_start:i+1]
+                                break
+                    else:
+                        json_str = output[first_brace:]
+                else:
+                    json_str = output
+            
+            # Clean trailing commas
+            json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+            
+            parsed = json.loads(json_str)
+            
+            # Validate and extract values with defaults
+            complexity = parsed.get("project_complexity", "medium").lower()
+            if complexity not in ["simple", "medium", "complex"]:
+                complexity = "medium"
+            
+            domain = parsed.get("project_domain", "general").lower()
+            if domain not in ["ai", "web", "api", "data", "mobile", "library", "utility", "general"]:
+                domain = "general"
+            
+            intent = parsed.get("project_intent", "new_feature").lower()
+            if intent not in ["new_feature", "bug_fix", "refactor", "migration", "enhancement", "general"]:
+                intent = "new_feature"
+            
+            entities = parsed.get("detected_entities", [])
+            if not isinstance(entities, list):
+                entities = []
+            
+            self.logger.info(
+                f"📊 Context detected: complexity={complexity}, domain={domain}, "
+                f"intent={intent}, entities={len(entities)}"
+            )
+            
+            return {
+                "project_complexity": complexity,
+                "project_domain": domain,
+                "project_intent": intent,
+                "detected_entities": entities,
+                "current_step": "complexity_analyzed"
+            }
+            
+        except Exception as e:
+            self.logger.warning(f"Failed to parse context detection JSON: {e}. Using defaults.")
+            # Fallback to defaults
+            return {
+                "project_complexity": "medium",
+                "project_domain": "general",
+                "project_intent": "new_feature",
+                "detected_entities": [],
+                "current_step": "complexity_analyzed"
+            }
     
     def _select_agents(self, state: SwarmState) -> Dict[str, Any]:
-        """Select which agents to run using LLM with LangSmith prompt."""
+        """Select which agents to run using LLM with LangSmith prompt.
+        
+        Phase 2 (US-CONTEXT-001): Enhanced agent selection that uses detected context:
+        - Domain, intent, and entities inform agent selection
+        - Better agent selection accuracy with context-aware routing
+        
+        CRITICAL: LLM selects WHICH agents, but code enforces STANDARD ORDER.
+        """
         self.logger.info("🎯 Selecting agents with LLM...")
         
         llm = self._create_llm()
         system_prompt = self.prompts.get("agent_selector", "You are an agent selector")
         
+        # Enhanced task prompt with context information
         task = f"""Select which specialist agents are needed for this project.
 
 Project: {state['project_context']}
-Complexity: {state.get('project_complexity', 'medium')}
+
+Detected Context:
+- Domain: {state.get('project_domain', 'general')}
+- Intent: {state.get('project_intent', 'new_feature')}
+- Complexity: {state.get('project_complexity', 'medium')}
+- Entities: {', '.join(state.get('detected_entities', [])[:10])}  # Limit to first 10
 
 Available agents:
 - requirements_analyst: Analyzes requirements
@@ -312,9 +438,13 @@ Available agents:
 - code_reviewer: Reviews code quality
 - documentation_generator: Creates documentation
 
-Standard order: requirements_analyst, architecture_designer, code_generator, test_generator, code_reviewer, documentation_generator
+Use the detected context to make informed agent selection decisions.
+For example:
+- Domain: ai → May need all agents for complex AI systems
+- Intent: bug_fix → May need code_generator, test_generator, code_reviewer
+- Intent: new_feature → Usually needs all agents
 
-Respond with a comma-separated list of agent names in execution order."""
+Respond with a comma-separated list of agent names that are needed (order doesn't matter)."""
         
         messages = [
             SystemMessage(content=system_prompt),
@@ -325,17 +455,21 @@ Respond with a comma-separated list of agent names in execution order."""
         agent_list = result.content.strip()
         
         # Parse agent names
-        required = [name.strip() for name in agent_list.split(",")]
+        selected = [name.strip() for name in agent_list.split(",")]
         
         # Validate agent names
-        valid_agents = list(self.agents.keys())
-        required = [agent for agent in required if agent in valid_agents]
+        valid_agents = set(self.agents.keys())
+        selected_set = set(agent for agent in selected if agent in valid_agents)
         
         # Ensure we have at least some agents
-        if not required:
-            required = list(self.agents.keys())
+        if not selected_set:
+            selected_set = valid_agents
         
-        self.logger.info(f"🎯 Selected {len(required)} agents: {required}")
+        # CRITICAL FIX: Enforce standard execution order
+        # Sort selected agents according to STANDARD_AGENT_ORDER
+        required = [agent for agent in self.STANDARD_AGENT_ORDER if agent in selected_set]
+        
+        self.logger.info(f"🎯 Selected {len(required)} agents in standard order: {required}")
         return {"required_agents": required, "current_step": "agents_selected"}
     
     def _route_to_next(self, state: SwarmState) -> Dict[str, Any]:
@@ -347,8 +481,8 @@ Respond with a comma-separated list of agent names in execution order."""
         next_agent = "END"
         for agent in required:
             if agent not in completed:
-                    next_agent = agent
-                    break
+                next_agent = agent
+                break
             
         self.logger.info(f"🔀 Next: {next_agent}")
         return {"next_agent": next_agent, "current_step": "routing"}
@@ -419,10 +553,11 @@ Generate complete, production-ready source code for this project."""
                     
                     self.logger.info(f"✅ code_generator completed - generated {len(code_files)} files")
                     
-                    # Return structured output with all metadata
+                    # Return structured output - store files directly in code_files
+                    # and metadata separately
                     return {
-                        "code_files": {
-                            "files": code_files,
+                        "code_files": code_files,  # FIXED: Store files directly, not nested
+                        "code_metadata": {
                             "file_tree": parsed.get("file_tree", ""),
                             "plan": parsed.get("plan", []),
                             "assumptions": parsed.get("assumptions", []),
@@ -484,27 +619,82 @@ Generate comprehensive test files with actual, executable test code."""
             last_msg = result["messages"][-1]
             output = last_msg.content if hasattr(last_msg, 'content') else str(last_msg)
             
-            # Parse the structured JSON output
+            # Parse the structured JSON output with robust error handling
             try:
                 import json
                 import re
                 
-                # Extract JSON from markdown code block if present
+                # Step 1: Extract JSON from markdown code block if present
+                # Method 1: Look for markdown code block with json
                 json_match = re.search(r'```json\s*(\{.*\})\s*```', output, re.DOTALL)
                 if json_match:
                     json_str = json_match.group(1)
                 else:
-                    json_str = output
+                    # Method 2: Find JSON object boundaries using balanced brace counting
+                    # This handles nested braces correctly
+                    first_brace = output.find('{')
+                    if first_brace != -1:
+                        brace_count = 0
+                        json_start = first_brace
+                        for i, char in enumerate(output[first_brace:], start=first_brace):
+                            if char == '{':
+                                brace_count += 1
+                            elif char == '}':
+                                brace_count -= 1
+                                if brace_count == 0:
+                                    json_str = output[json_start:i+1]
+                                    break
+                        else:
+                            # Unclosed braces - use what we have
+                            json_str = output[first_brace:]
+                    else:
+                        json_str = output
                 
-                parsed = json.loads(json_str)
+                # Step 2: Clean and validate JSON string
+                # Remove any trailing commas before closing braces/brackets
+                json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+                
+                # Step 3: Try to parse JSON with detailed error reporting
+                try:
+                    parsed = json.loads(json_str)
+                except json.JSONDecodeError as json_err:
+                    # Log detailed error information
+                    self.logger.warning(
+                        f"JSON parse error at line {json_err.lineno}, column {json_err.colno}: {json_err.msg}\n"
+                        f"Context (first 500 chars): {json_str[:500]}\n"
+                        f"Context around error (last 500 chars): {json_str[max(0, json_err.pos-250):json_err.pos+250]}"
+                    )
+                    raise
                 
                 # Extract test files from structured format
+                # Handle multiple possible formats
                 test_files = {}
-                if "test_files" in parsed and isinstance(parsed["test_files"], list):
-                    for file_obj in parsed["test_files"]:
-                        if "path" in file_obj and "content" in file_obj:
-                            test_files[file_obj["path"]] = file_obj["content"]
+                
+                if "test_files" in parsed:
+                    test_files_data = parsed["test_files"]
                     
+                    # Format 1: List of file objects with path/content
+                    if isinstance(test_files_data, list):
+                        for file_obj in test_files_data:
+                            if isinstance(file_obj, dict):
+                                # Try path/content format
+                                if "path" in file_obj and "content" in file_obj:
+                                    test_files[file_obj["path"]] = file_obj["content"]
+                                # Try filename/content format
+                                elif "filename" in file_obj and "content" in file_obj:
+                                    test_files[file_obj["filename"]] = file_obj["content"]
+                    
+                    # Format 2: Dict mapping filename to content (direct)
+                    elif isinstance(test_files_data, dict):
+                        for filename, content in test_files_data.items():
+                            # Handle nested structure (filename -> {content: "...", ...})
+                            if isinstance(content, dict) and "content" in content:
+                                test_files[filename] = content["content"]
+                            # Handle direct string content
+                            elif isinstance(content, str):
+                                test_files[filename] = content
+                
+                if test_files:
                     self.logger.info(f"✅ test_generator completed - generated {len(test_files)} test files")
                     
                     # Return structured output with all metadata
@@ -522,23 +712,37 @@ Generate comprehensive test files with actual, executable test code."""
                         "messages": [AIMessage(content=f"test_generator: Generated {len(test_files)} test files")]
                     }
                 else:
-                    # Fallback: use raw output
-                    self.logger.warning("No test_files array found in output, using raw output")
+                    # Fallback: use raw output with parsed JSON structure
+                    self.logger.warning("No test_files found in parsed output, using parsed structure as-is")
                     return {
-                        "test_files": {"test_strategy": parsed},
+                        "test_files": {
+                            "raw_output": output,
+                            "parsed_structure": parsed,
+                            "test_strategy": parsed.get("test_strategy", {}),
+                            "coverage_analysis": parsed.get("coverage_analysis", {}),
+                            "test_suites": parsed.get("test_suites", []),
+                            "performance_tests": parsed.get("performance_tests", {}),
+                            "quality_gate_passed": parsed.get("quality_gate_passed", True)
+                        },
                         "completed_agents": ["test_generator"],
                         "current_step": "test_generator",
-                        "messages": [AIMessage(content="test_generator: Generated test strategy")]
+                        "messages": [AIMessage(content="test_generator: Generated test strategy (parsed)")]
                     }
                     
             except Exception as parse_error:
-                self.logger.warning(f"Failed to parse test generator output: {parse_error}")
-                # Fallback: use raw output
+                # Log detailed error information for debugging
+                self.logger.warning(
+                    f"Failed to parse test generator output: {parse_error}\n"
+                    f"Output length: {len(output)} characters\n"
+                    f"Output preview (first 1000 chars): {output[:1000]}\n"
+                    f"Output preview (last 500 chars): {output[-500:] if len(output) > 500 else output}"
+                )
+                # Fallback: use raw output so workflow can continue
                 return {
                     "test_files": {"raw_output": output},
                     "completed_agents": ["test_generator"],
                     "current_step": "test_generator",
-                    "messages": [AIMessage(content="test_generator: Generated tests (unparsed)")]
+                    "messages": [AIMessage(content="test_generator: Generated tests (unparsed - check logs)")]
                 }
             
         except Exception as e:
@@ -619,12 +823,16 @@ Generate comprehensive test files with actual, executable test code."""
         initial_state: SwarmState = {
             "project_context": project_context,
             "project_complexity": "medium",
+            "project_domain": "general",  # Default, will be detected by complexity analyzer
+            "project_intent": "new_feature",  # Default, will be detected by complexity analyzer
+            "detected_entities": [],  # Will be detected by complexity analyzer
             "required_agents": [],
             "next_agent": "",
             "messages": [],
             "requirements": {},
             "architecture": {},
             "code_files": {},
+            "code_metadata": {},
             "test_files": {},
             "code_review": {},
             "documentation": {},

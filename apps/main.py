@@ -6,6 +6,7 @@ Orchestrates the entire development workflow using LangGraph and Gemini API.
 import asyncio
 import logging
 import os
+import re
 import sys
 import uuid
 from datetime import datetime
@@ -396,52 +397,45 @@ Your goal is to create professional, comprehensive documentation that includes c
             output_path = Path(output_dir)
             output_path.mkdir(parents=True, exist_ok=True)
             
-            # Save generated files
-            code_files = state.get("code_files", {})
-            test_files = state.get("test_files", {})  # Changed from "tests" to "test_files"
-            doc_files = state.get("documentation", {})
-            config_files = state.get("configuration_files", {})
+            # Import extraction utilities
+            from utils.workflow_file_extractor import (
+                extract_code_files,
+                extract_test_files,
+                extract_documentation_files
+            )
             
-            # Process files to extract content
+            # Get raw data from state
+            code_files_raw = state.get("code_files", {})
+            test_files_raw = state.get("test_files", {})
+            doc_files_raw = state.get("documentation", {})
+            config_files_raw = state.get("configuration_files", {})
+            
+            # Extract actual files using proper extraction logic
+            code_files = extract_code_files(code_files_raw)
+            test_files = extract_test_files(test_files_raw)
+            doc_files = extract_documentation_files(doc_files_raw)
+            
+            # Process configuration files (usually simple dict)
+            config_files = {}
+            if isinstance(config_files_raw, dict):
+                for key, value in config_files_raw.items():
+                    if key not in ["output", "raw_output", "metadata"]:
+                        if isinstance(value, str):
+                            # Skip JSON in markdown blocks
+                            if not re.match(r'^\s*```json\s*\{', value, re.DOTALL):
+                                config_files[key] = value
+            
+            # Combine all extracted files
             all_files = {}
+            all_files.update(code_files)
+            all_files.update(test_files)
+            all_files.update(doc_files)
+            all_files.update(config_files)
             
-            # Process code files
-            for file_path, file_data in code_files.items():
-                self.logger.debug(f"Processing code file: {file_path[:100]}...")
-                if isinstance(file_data, dict) and "content" in file_data:
-                    all_files[file_path] = file_data["content"]
-                elif isinstance(file_data, str):
-                    all_files[file_path] = file_data
-                else:
-                    all_files[file_path] = str(file_data)
-            
-            # Process test files
-            for file_path, file_data in test_files.items():
-                self.logger.debug(f"Processing test file: {file_path[:100]}...")
-                if isinstance(file_data, dict) and "content" in file_data:
-                    all_files[file_path] = file_data["content"]
-                elif isinstance(file_data, str):
-                    all_files[file_path] = file_data
-                else:
-                    all_files[file_path] = str(file_data)
-            
-            # Process documentation files
-            for file_path, file_data in doc_files.items():
-                if isinstance(file_data, dict) and "content" in file_data:
-                    all_files[file_path] = file_data["content"]
-                elif isinstance(file_data, str):
-                    all_files[file_path] = file_data
-                else:
-                    all_files[file_path] = str(file_data)
-            
-            # Process configuration files
-            for file_path, file_data in config_files.items():
-                if isinstance(file_data, dict) and "content" in file_data:
-                    all_files[file_path] = file_data["content"]
-                elif isinstance(file_data, str):
-                    all_files[file_path] = file_data
-                else:
-                    all_files[file_path] = str(file_data)
+            self.logger.info(
+                f"Extracted files: {len(code_files)} code, {len(test_files)} test, "
+                f"{len(doc_files)} docs, {len(config_files)} config"
+            )
             
             for file_path, content in all_files.items():
                 # Sanitize the file path to ensure it's a valid filename
@@ -870,6 +864,7 @@ See USER_STORIES.md for detailed breakdown of this epic into actionable user sto
             code_files=processed_code_files,
             test_files=processed_test_files,
             documentation_files=processed_documentation_files,
+            raw_state=state,  # Include raw state for enhanced display
             configuration_files=processed_configuration_files,
             diagram_files=processed_diagram_files,
             total_execution_time=execution_time,

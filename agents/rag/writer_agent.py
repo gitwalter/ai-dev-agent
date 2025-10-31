@@ -220,8 +220,9 @@ class WriterAgent(EnhancedBaseAgent):
         llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",  # Latest Gemini model with excellent synthesis
             google_api_key=api_key,
-            temperature=0.7,
-            convert_system_message_to_human=True
+            temperature=0,
+            convert_system_message_to_human=True,
+            transport="rest"  # Use REST to avoid grpc event loop issues
         )
         
         # Build prompt
@@ -272,7 +273,17 @@ class WriterAgent(EnhancedBaseAgent):
         base_prompt = self.prompt_loader.get_system_prompt()
         
         # Add style adaptation based on intent (appending to hub prompt)
-        if intent == 'conceptual':
+        if intent == "comprehensive":
+            # COMPREHENSIVE MODE: Explicit instruction for thorough synthesis
+            base_prompt += "\n\n**CRITICAL: COMPREHENSIVE SYNTHESIS MODE**\n"
+            base_prompt += "- Synthesize information from ALL provided context documents\n"
+            base_prompt += "- Provide a DETAILED, COMPREHENSIVE answer that covers all relevant aspects\n"
+            base_prompt += "- Include details, examples, explanations, and nuances from multiple sources\n"
+            base_prompt += "- Don't summarize too briefly - use the full depth of information available\n"
+            base_prompt += "- If the context contains extensive information, reflect that depth in your answer\n"
+            base_prompt += "- Ensure completeness - don't leave out important details\n"
+            base_prompt += "- Cite sources appropriately when making specific claims"
+        elif intent == 'conceptual':
             base_prompt += "\n\nFor this conceptual query: Provide clear explanations with examples where helpful."
         elif intent == 'procedural':
             base_prompt += "\n\nFor this procedural query: Provide step-by-step instructions or workflow descriptions."
@@ -295,8 +306,13 @@ class WriterAgent(EnhancedBaseAgent):
         
         prompt += "**Retrieved Context:**\n\n"
         
-        for idx, result in enumerate(context_results[:10], 1):  # Top 10
+        # COMPREHENSIVE MODE: Use ALL context results with FULL content (no truncation)
+        # Check if comprehensive_mode flag is set to encourage thorough synthesis
+        comprehensive_mode = context_results and len(context_results) > 0
+        
+        for idx, result in enumerate(context_results, 1):  # ALL results, not limited
             content = result.get('content', '')
+            # Use FULL content - NO truncation for comprehensive synthesis
             # Try multiple possible source locations
             metadata = result.get('metadata', {})
             source = (
@@ -311,13 +327,22 @@ class WriterAgent(EnhancedBaseAgent):
             chunk_idx = result.get('chunk_index', metadata.get('chunk_index', '?'))
             
             prompt += f"[Context {idx}] (Source: {source}, Chunk: {chunk_idx}, Relevance: {score:.2f})\n"
-            prompt += f"{content[:500]}...\n\n"  # First 500 chars
+            prompt += f"{content}\n\n"  # FULL content - no truncation for comprehensive answers
+        
+        # Add comprehensive synthesis instruction
+        if comprehensive_mode:
+            prompt += "\n**CRITICAL INSTRUCTIONS**:\n"
+            prompt += "- Synthesize information from ALL provided context documents\n"
+            prompt += "- Provide a COMPREHENSIVE answer that covers all relevant aspects\n"
+            prompt += "- Include details, examples, and explanations from multiple sources\n"
+            prompt += "- Don't summarize too briefly - use the full depth of information available\n"
+            prompt += "- Cite sources when making specific claims\n"
         
         # Add quality context
         if quality_report.get('issues'):
             prompt += f"\n**Note**: Retrieved context has some limitations: {', '.join(quality_report['issues'][:2])}\n"
         
-        prompt += "\n**Instructions**: Based on the context above, provide a comprehensive answer to the user's query. Cite sources when making specific claims."
+        prompt += "\n**Instructions**: Based on the context above, provide a comprehensive, detailed answer to the user's query. Use information from all relevant documents. Cite sources when making specific claims."
         
         return prompt
     

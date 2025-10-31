@@ -16,11 +16,11 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Dict, Any, List, Annotated, TypedDict, Literal
+from typing import Dict, Any, List, Annotated, Literal
 try:
-    from typing import NotRequired  # Python 3.11+
+    from typing_extensions import TypedDict, NotRequired  # Python < 3.12 compatibility
 except ImportError:
-    from typing_extensions import NotRequired  # Python 3.8-3.10
+    from typing import TypedDict, NotRequired  # Python >= 3.12
 import operator
 from pathlib import Path
 
@@ -91,6 +91,7 @@ class FileOrganizerAgent:
         """Async initialization to load MCP tools using official adapter."""
         try:
             from langchain_mcp_adapters.client import MultiServerMCPClient
+            import asyncio
             
             self.logger.info("📥 Loading MCP tools via langchain-mcp-adapters...")
             
@@ -103,21 +104,60 @@ class FileOrganizerAgent:
                 }
             })
             
-            # Get tools from MCP server
-            self.mcp_tools = await client.get_tools()
-            self.logger.info(f"✅ Loaded {len(self.mcp_tools)} MCP tools")
-            
+            # Get tools from MCP server with timeout and proper error handling
+            try:
+                # Set timeout for connection attempt (5 seconds)
+                self.mcp_tools = await asyncio.wait_for(
+                    client.get_tools(),
+                    timeout=5.0
+                )
+                self.logger.info(f"✅ Loaded {len(self.mcp_tools)} MCP tools")
+            except asyncio.TimeoutError:
+                self.logger.warning("⏱️ MCP server connection timeout (5s) - server may not be running")
+                self.logger.info("🔧 Proceeding without MCP tools (demo mode)...")
+                self.mcp_tools = []
+            except ExceptionGroup as eg:
+                # Handle ExceptionGroup (Python 3.11+ - multiple exceptions)
+                self.logger.error(f"❌ MCP connection failed with ExceptionGroup: {len(eg.exceptions)} exceptions")
+                for i, exc in enumerate(eg.exceptions):
+                    exc_type = type(exc).__name__
+                    exc_msg = str(exc)[:200]  # Limit message length
+                    self.logger.error(f"  Exception {i+1}: {exc_type}: {exc_msg}")
+                
+                # Check if it's a connection error
+                if any("ConnectError" in str(type(e).__name__) for e in eg.exceptions):
+                    self.logger.warning("🔌 MCP server not reachable at http://localhost:8000")
+                    self.logger.info("💡 To enable MCP tools, start the server: python scripts/file_tools_mcp_server.py")
+                
+                self.logger.info("🔧 Proceeding without MCP tools (demo mode)...")
+                self.mcp_tools = []
+            except Exception as e:
+                # Handle other specific connection errors
+                error_type = type(e).__name__
+                if "ConnectError" in error_type or "ConnectionError" in error_type:
+                    self.logger.warning(f"🔌 MCP server connection error: {error_type}")
+                    self.logger.info("💡 To enable MCP tools, start the server: python scripts/file_tools_mcp_server.py")
+                else:
+                    self.logger.error(f"❌ MCP tools connection failed: {error_type}: {e}")
+                
+                self.logger.info("🔧 Proceeding without MCP tools (demo mode)...")
+                self.mcp_tools = []
+                
+        except ImportError as e:
+            self.logger.warning(f"⚠️ MCP adapters not available: {e}")
+            self.logger.info("🔧 Building workflow without MCP tools (demo mode)...")
+            self.mcp_tools = []
         except Exception as e:
+            # Catch any other unexpected errors
             import traceback
-            self.logger.error(f"❌ MCP tools connection failed: {e}")
-            self.logger.error(f"📋 Error type: {type(e).__name__}")
-            self.logger.error(f"📋 Full traceback:\n{traceback.format_exc()}")
+            self.logger.error(f"❌ Unexpected error initializing MCP: {type(e).__name__}: {e}")
+            self.logger.debug(f"📋 Traceback:\n{traceback.format_exc()}")
             self.logger.info("🔧 Building workflow without MCP tools (demo mode)...")
             self.mcp_tools = []
         
-        # Build workflow
+        # Build workflow (works with or without MCP tools)
         self.workflow = await self._build_workflow()
-        self.logger.info("✅ Workflow built")
+        self.logger.info("✅ Workflow built successfully")
     
     def _create_llm(self):
         """Create LLM instance."""

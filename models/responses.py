@@ -70,6 +70,7 @@ class WorkflowResult(BaseModel):
     human_approvals: List[str] = Field(default_factory=list, description="Human approval requests")
     errors: List[str] = Field(default_factory=list, description="Error messages")
     warnings: List[str] = Field(default_factory=list, description="Warning messages")
+    raw_state: Optional[Dict[str, Any]] = Field(None, description="Raw workflow state for enhanced display")
 
 
 class AgentResponse(BaseModel):

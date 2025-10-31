@@ -2,9 +2,9 @@
   "prompt_name": "agent_selector_v1",
   "last_fetched_from_hub": null,
   "locally_modified": false,
-  "local_edit_timestamp": null,
-  "hub_content_hash": "d068166684d74b3873db8cbea9cf7c193d2180e39b408b8f276c9dbe880de2f3",
-  "local_content_hash": "d068166684d74b3873db8cbea9cf7c193d2180e39b408b8f276c9dbe880de2f3",
-  "last_sync_timestamp": "2025-10-28T10:25:38.907022",
-  "sync_direction": null
+  "local_edit_timestamp": "2025-10-30T09:18:35.811604",
+  "hub_content_hash": "d415405cdce9d2fd9ca82cd316e43ab19a687102987f14166275bdcb2e208e71",
+  "local_content_hash": "069319ad245489f1573c805d5d7e9d9a6382715ca26fa9632797e429216a6a48",
+  "last_sync_timestamp": "2025-10-30T09:21:44.833738",
+  "sync_direction": "push"
 }

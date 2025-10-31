@@ -20,7 +20,11 @@ Architecture: Matches RAG Swarm pattern
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Optional, TypedDict, Annotated
+from typing import Dict, List, Any, Optional, Annotated
+try:
+    from typing_extensions import TypedDict  # Python < 3.12 compatibility
+except ImportError:
+    from typing import TypedDict  # Python >= 3.12
 from datetime import datetime
 
 # LangGraph imports

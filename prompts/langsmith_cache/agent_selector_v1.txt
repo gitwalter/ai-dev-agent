@@ -9,49 +9,49 @@ INPUTS PROVIDED
 - Project Type: {project_type}
 - Project Complexity: {project_complexity}
 
-AVAILABLE SPECIALIST AGENTS
+AVAILABLE SPECIALIST AGENTS (6 TOTAL)
 
 1. requirements_analyst
    - Analyzes project requirements
    - Creates user stories and acceptance criteria
    - Identifies constraints and dependencies
    - ALWAYS REQUIRED for all projects
+   - EXECUTION ORDER: 1st (always runs first)
 
 2. architecture_designer
    - Designs system architecture
    - Selects technology stack
    - Creates component breakdown
    - Required for: medium+, all web_app, api, data_processing
+   - EXECUTION ORDER: 2nd (after requirements)
 
 3. code_generator
    - Generates production-ready code
    - Implements features and logic
    - Follows best practices
    - ALWAYS REQUIRED for all projects
+   - EXECUTION ORDER: 3rd (after architecture)
 
 4. test_generator
    - Creates comprehensive test suites
    - Ensures code quality
    - Validates functionality
    - Required for: medium+, critical functionality
+   - EXECUTION ORDER: 4th (after code generation)
 
 5. code_reviewer
    - Reviews code quality
    - Identifies issues and improvements
    - Ensures best practices
    - Required for: medium+, production code
+   - EXECUTION ORDER: 5th (after tests)
 
-6. security_analyst
-   - Analyzes security vulnerabilities
-   - Provides security recommendations
-   - Ensures secure implementation
-   - Required for: web_app (with auth), api (with auth), data_processing (sensitive data)
-
-7. documentation_generator
+6. documentation_generator
    - Creates technical documentation
    - Writes user guides and API docs
    - Documents architecture decisions
    - ALWAYS REQUIRED for all projects
+   - EXECUTION ORDER: 6th (final step - last)
 
 AGENT SELECTION RULES
 
@@ -62,55 +62,63 @@ FOR SIMPLE PROJECTS:
 FOR MEDIUM PROJECTS:
 - Required: requirements_analyst, architecture_designer, code_generator, test_generator, documentation_generator
 - Add code_reviewer for production code
-- Add security_analyst if authentication/sensitive data
 
 FOR COMPLEX PROJECTS:
-- Required: ALL agents
+- Required: ALL agents (all 6)
 - requirements_analyst
 - architecture_designer
 - code_generator
 - test_generator
 - code_reviewer
-- security_analyst (especially for web_app, api with auth)
 - documentation_generator
 
 PROJECT TYPE CONSIDERATIONS:
-- web_app: Consider security_analyst if has authentication
-- api: Always include architecture_designer, consider security_analyst
+- web_app: Always include architecture_designer and test_generator
+- api: Always include architecture_designer, test_generator, code_reviewer
 - library: Always include test_generator, code_reviewer
-- data_processing: Consider security_analyst if sensitive data
-- utility: Can skip architecture_designer for simple
+- data_processing: Include architecture_designer if processing pipelines
+- utility: Can skip architecture_designer for very simple utilities
+
+CRITICAL: STANDARD EXECUTION ORDER (NEVER DEVIATE)
+The system ENFORCES this order in code - you select WHICH agents, system enforces HOW (order):
+
+STANDARD ORDER (MANDATORY):
+1. requirements_analyst (ALWAYS FIRST - foundation for everything)
+2. architecture_designer (builds on requirements)
+3. code_generator (implements architecture)
+4. test_generator (validates code)
+5. code_reviewer (reviews code and tests)
+6. documentation_generator (ALWAYS LAST - documents everything)
+
+IMPORTANT: Do NOT specify execution order in your output. The system will automatically execute selected agents in the standard order above. You only decide WHICH agents are needed.
 
 INSTRUCTIONS
 1. Review project context, type, and complexity
 2. Start with minimum required agents
 3. Add agents based on complexity level
 4. Consider project type specific needs
-5. Ensure logical ordering for workflow
-
-AGENT EXECUTION ORDER
-Always follow this sequence:
-1. requirements_analyst (first)
-2. architecture_designer (if needed)
-3. code_generator
-4. test_generator (if needed)
-5. code_reviewer (if needed)
-6. security_analyst (if needed)
-7. documentation_generator (last)
+5. Return ONLY the agent names needed (system handles execution order)
 
 OUTPUT FORMAT
-Return ONLY valid JSON with NO additional text:
-{{
-    "required_agents": ["agent1", "agent2", "agent3"],
-    "agent_sequence": ["agent1", "agent2", "agent3"],
-    "reasoning": "Brief explanation of why these agents were selected",
-    "estimated_duration": "1-2 days|1-2 weeks|2+ weeks"
-}}
+Return a simple comma-separated list of agent names. NO JSON. NO additional text.
 
-EXAMPLE OUTPUT:
-{{
-    "required_agents": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "code_reviewer", "documentation_generator"],
-    "agent_sequence": ["requirements_analyst", "architecture_designer", "code_generator", "test_generator", "code_reviewer", "documentation_generator"],
-    "reasoning": "Medium complexity API requires full development lifecycle: requirements analysis, architecture design, code implementation, testing, code review, and documentation. Security analyst not needed as no authentication required.",
-    "estimated_duration": "1-2 weeks"
-}}
+EXAMPLES:
+
+For simple project:
+requirements_analyst, code_generator, documentation_generator
+
+For medium project:
+requirements_analyst, architecture_designer, code_generator, test_generator, code_reviewer, documentation_generator
+
+For complex project:
+requirements_analyst, architecture_designer, code_generator, test_generator, code_reviewer, documentation_generator
+
+IMPORTANT NOTES:
+- Return ONLY comma-separated agent names
+- Do NOT include execution order numbers
+- Do NOT return JSON
+- System will execute agents in standard order automatically
+- Your job: decide WHICH agents (system decides HOW/ORDER)
+
+---
+Version: 1.1 - Defense in Depth: LLM selects agents (intelligence), code enforces order (determinism)
