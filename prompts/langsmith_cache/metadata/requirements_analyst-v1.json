@@ -1,10 +1,10 @@
 {
   "prompt_name": "requirements_analyst_v1",
-  "last_fetched_from_hub": null,
+  "last_fetched_from_hub": "2025-11-25T14:47:35.546014",
   "locally_modified": false,
-  "local_edit_timestamp": null,
-  "hub_content_hash": "f2ce0cc58d42a1b3c422d782a94e973fc41be7e0a10d705e897fc7d81daa3fb1",
-  "local_content_hash": "f2ce0cc58d42a1b3c422d782a94e973fc41be7e0a10d705e897fc7d81daa3fb1",
-  "last_sync_timestamp": "2025-10-28T10:25:40.010718",
-  "sync_direction": null
+  "local_edit_timestamp": "2025-11-25T13:53:00.998037",
+  "hub_content_hash": "8056428ea6e118bc03534213e9d720b33fbab7ca8fb785bce4e49c41a508e383",
+  "local_content_hash": "8056428ea6e118bc03534213e9d720b33fbab7ca8fb785bce4e49c41a508e383",
+  "last_sync_timestamp": "2025-11-25T16:19:22.673250",
+  "sync_direction": "pull"
 }

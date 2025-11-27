@@ -63,8 +63,21 @@ class AgentPromptLoader:
                     use_cache=not force_refresh
                 )
                 if langsmith_prompt:
-                    logger.debug(f"[LANGSMITH] Using prompt from LangSmith for {self.agent_name}")
-                    return langsmith_prompt
+                    # Ensure we return a string, not a PromptTemplate object
+                    if isinstance(langsmith_prompt, str):
+                        logger.debug(f"[LANGSMITH] Using prompt from LangSmith for {self.agent_name}")
+                        return langsmith_prompt
+                    else:
+                        # Extract template string from PromptTemplate object
+                        if hasattr(langsmith_prompt, 'template'):
+                            prompt_text = langsmith_prompt.template
+                        elif hasattr(langsmith_prompt, 'messages') and len(langsmith_prompt.messages) > 0:
+                            # For ChatPromptTemplate
+                            prompt_text = langsmith_prompt.messages[0].prompt.template if hasattr(langsmith_prompt.messages[0], 'prompt') else str(langsmith_prompt.messages[0])
+                        else:
+                            prompt_text = str(langsmith_prompt)
+                        logger.debug(f"[LANGSMITH] Extracted prompt string from PromptTemplate for {self.agent_name}")
+                        return prompt_text
             except Exception as e:
                 logger.debug(f"LangSmith load failed for {self.agent_name}: {e}")
         

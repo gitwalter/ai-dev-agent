@@ -2,9 +2,9 @@
   "prompt_name": "code_generator_v1",
   "last_fetched_from_hub": null,
   "locally_modified": false,
-  "local_edit_timestamp": null,
-  "hub_content_hash": "acb1a2e5034d9980b84ee09247f56f751327ee9c0a71d000fce75a207eb27b2d",
-  "local_content_hash": "acb1a2e5034d9980b84ee09247f56f751327ee9c0a71d000fce75a207eb27b2d",
-  "last_sync_timestamp": "2025-10-28T10:25:39.267362",
-  "sync_direction": null
+  "local_edit_timestamp": "2025-11-26T09:50:56.397226",
+  "hub_content_hash": "1a9f071060c59bc0a720eb55bc98460443bc3aa846e091f68906182494752d27",
+  "local_content_hash": "1a9f071060c59bc0a720eb55bc98460443bc3aa846e091f68906182494752d27",
+  "last_sync_timestamp": "2025-11-26T09:51:50.389992",
+  "sync_direction": "push"
 }

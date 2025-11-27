@@ -1,0 +1,197 @@
+{
+  "test_name": "US-RAG-005 Workflow Test Example",
+  "description": "Pure JSON test example for sophisticated 5-agent RAG workflow",
+  "workflow": "query_analyst → retrieval_specialist → re_ranker → quality_assurance → writer",
+  
+  "input": {
+    "query": "What is LangGraph and how does it handle state management?",
+    "config": {
+      "configurable": {
+        "thread_id": "test-us-rag-005-001"
+      },
+      "run_name": "US-RAG-005-Test",
+      "tags": ["us-rag-005", "test", "5-agent-workflow"],
+      "metadata": {
+        "test_id": "test-001",
+        "workflow_mode": "automated",
+        "expected_agents": ["query_analyst", "retrieval_specialist", "re_ranker", "quality_assurance", "writer"]
+      }
+    },
+    "stream": false,
+    "document_filters": null
+  },
+  
+  "expected_output_structure": {
+    "status": "success",
+    "response": {
+      "text": "LangGraph is a framework for building stateful, multi-actor applications with LLMs...",
+      "sources": [
+        {
+          "source": "langgraph_docs.md",
+          "chunk_id": "chunk_123",
+          "relevance_score": 0.95,
+          "content": "..."
+        }
+      ],
+      "citations": [
+        {
+          "text": "LangGraph provides state management",
+          "source": "langgraph_docs.md",
+          "position": 1
+        }
+      ]
+    },
+    "workflow_stages": {
+      "query_analyst": {
+        "status": "completed",
+        "output": {
+          "intent": "technical_explanation",
+          "key_concepts": ["LangGraph", "state management", "multi-actor"],
+          "query_variations": [
+            "How does LangGraph manage state?",
+            "LangGraph state management architecture"
+          ]
+        },
+        "timestamp": "2025-01-15T10:00:00Z"
+      },
+      "retrieval_specialist": {
+        "status": "completed",
+        "output": {
+          "documents_retrieved": 10,
+          "sources": ["langgraph_docs.md", "state_management.md"],
+          "retrieval_strategy": "semantic_search"
+        },
+        "timestamp": "2025-01-15T10:00:05Z"
+      },
+      "re_ranker": {
+        "status": "completed",
+        "output": {
+          "documents_ranked": 10,
+          "top_documents": 5,
+          "relevance_scores": [0.95, 0.92, 0.88, 0.85, 0.82]
+        },
+        "timestamp": "2025-01-15T10:00:10Z"
+      },
+      "quality_assurance": {
+        "status": "completed",
+        "output": {
+          "quality_check": "passed",
+          "context_sufficiency": true,
+          "relevance_score": 0.91,
+          "coverage_score": 0.88
+        },
+        "timestamp": "2025-01-15T10:00:15Z"
+      },
+      "writer": {
+        "status": "completed",
+        "output": {
+          "answer_generated": true,
+          "answer_length": 1250,
+          "citations_count": 3
+        },
+        "timestamp": "2025-01-15T10:00:20Z"
+      }
+    },
+    "metrics": {
+      "total_time_seconds": 20.5,
+      "agents_executed": 5,
+      "rewrite_loops": 0,
+      "quality_checks_passed": 1
+    },
+    "langsmith_trace_url": "https://smith.langchain.com/public/run-id-123"
+  },
+  
+  "test_scenarios": [
+    {
+      "scenario": "normal_flow",
+      "description": "All 5 agents execute successfully in order",
+      "input": {
+        "query": "What is LangGraph?",
+        "config": {
+          "configurable": {"thread_id": "test-normal-001"},
+          "tags": ["normal-flow"]
+        }
+      },
+      "expected_agent_order": [
+        "query_analyst",
+        "retrieval_specialist",
+        "re_ranker",
+        "quality_assurance",
+        "writer"
+      ],
+      "expected_rewrite_loops": 0
+    },
+    {
+      "scenario": "rewrite_loop_triggered",
+      "description": "Quality check fails, triggers rewrite loop back to query_analyst",
+      "input": {
+        "query": "asdfghjkl random gibberish",
+        "config": {
+          "configurable": {"thread_id": "test-rewrite-001"},
+          "tags": ["rewrite-test"]
+        }
+      },
+      "expected_agent_order": [
+        "query_analyst",
+        "retrieval_specialist",
+        "re_ranker",
+        "quality_assurance",
+        "rewrite_question",
+        "query_analyst"
+      ],
+      "expected_rewrite_loops": 1
+    },
+    {
+      "scenario": "poor_context_rewrite",
+      "description": "Re-ranker finds poor context, triggers rewrite before QA",
+      "input": {
+        "query": "Explain quantum computing in detail",
+        "config": {
+          "configurable": {"thread_id": "test-poor-context-001"},
+          "tags": ["poor-context-test"]
+        }
+      },
+      "expected_agent_order": [
+        "query_analyst",
+        "retrieval_specialist",
+        "re_ranker",
+        "rewrite_question",
+        "query_analyst"
+      ],
+      "expected_rewrite_loops": 1
+    }
+  ],
+  
+  "validation_criteria": {
+    "agent_order": {
+      "required": true,
+      "description": "Agents must execute in correct order: query_analyst → retrieval_specialist → re_ranker → quality_assurance → writer"
+    },
+    "all_agents_visible": {
+      "required": true,
+      "description": "All 5 agents must be visible in LangSmith trace"
+    },
+    "rewrite_loop_functionality": {
+      "required": true,
+      "description": "Rewrite loop must route back to query_analyst when quality is insufficient"
+    },
+    "quality_assurance_before_writer": {
+      "required": true,
+      "description": "Quality assurance must execute BEFORE writer (not after)"
+    }
+  },
+  
+  "usage_example": {
+    "python_code": "import asyncio\nfrom context.context_engine import ContextEngine\nfrom agents.rag.rag_swarm_coordinator import RAGSwarmCoordinator\n\nasync def test_workflow():\n    # Initialize\n    engine = ContextEngine(collection_name='project_docs')\n    coordinator = RAGSwarmCoordinator(\n        context_engine=engine,\n        human_in_loop=False,\n        retrieval_only=False\n    )\n    \n    # Execute with config from JSON\n    result = await coordinator.execute(\n        query='What is LangGraph?',\n        config={\n            'configurable': {'thread_id': 'test-001'},\n            'tags': ['us-rag-005', 'test']\n        }\n    )\n    \n    return result\n\nresult = asyncio.run(test_workflow())\nprint(result)",
+    "json_config": {
+      "query": "What is LangGraph?",
+      "config": {
+        "configurable": {
+          "thread_id": "test-001"
+        },
+        "tags": ["us-rag-005", "test"]
+      }
+    }
+  }
+}
+

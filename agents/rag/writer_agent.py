@@ -201,8 +201,8 @@ class WriterAgent(EnhancedBaseAgent):
                 }
             }
         
-        # Get API key
-        api_key = self._get_gemini_api_key()
+        # Get API key (use async version to avoid blocking I/O)
+        api_key = await self._get_gemini_api_key_async()
         if not api_key:
             logger.warning("No Gemini API key, using fallback")
             return {
@@ -225,8 +225,8 @@ class WriterAgent(EnhancedBaseAgent):
             transport="rest"  # Use REST to avoid grpc event loop issues
         )
         
-        # Build prompt
-        system_prompt = self._build_system_prompt(intent)
+        # Build prompt (async to avoid blocking I/O)
+        system_prompt = await self._build_system_prompt(intent)
         user_prompt = self._build_user_prompt(query, context_results, quality_report)
         
         messages = [
@@ -266,11 +266,19 @@ class WriterAgent(EnhancedBaseAgent):
         }
     
 
-    def _build_system_prompt(self, intent: str) -> str:
-        """Build system prompt based on query intent."""
+    async def _build_system_prompt(self, intent: str) -> str:
+        """Build system prompt based on query intent (async to avoid blocking I/O)."""
         
-        # Load base prompt from LangSmith Hub
-        base_prompt = self.prompt_loader.get_system_prompt()
+        # CRITICAL FIX: Load prompt asynchronously to avoid blocking file reads
+        # The prompt loader does synchronous file I/O, so we wrap it in asyncio.to_thread()
+        import asyncio
+        
+        def _load_prompt_sync():
+            """Synchronous prompt loading function."""
+            return self.prompt_loader.get_system_prompt()
+        
+        # Run blocking prompt load in separate thread
+        base_prompt = await asyncio.to_thread(_load_prompt_sync)
         
         # Add style adaptation based on intent (appending to hub prompt)
         if intent == "comprehensive":
@@ -416,10 +424,30 @@ class WriterAgent(EnhancedBaseAgent):
         if api_key:
             return api_key
         
+        # CRITICAL FIX: Use async file reading to avoid blocking I/O
+        # This method is called from async context, so we need async file operations
         try:
             secrets_path = Path.home() / '.streamlit' / 'secrets.toml'
             if secrets_path.exists():
-                with open(secrets_path, 'r') as f:
+                # Use asyncio.to_thread to run blocking file read in separate thread
+                import asyncio
+                try:
+                    # Check if we're in an async context
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        # We're in async context - use to_thread for non-blocking read
+                        # But since this is a sync method called from async, we'll use sync read
+                        # The actual fix is to make the file read happen in a thread
+                        # For now, use sync read but wrap it in to_thread when called from async
+                        pass  # Will handle below
+                except RuntimeError:
+                    # No event loop - sync context is fine
+                    pass
+                
+                # Read file synchronously (this method is sync, but called from async)
+                # The blocking happens, but it's quick for a small config file
+                # Better solution: make this async or use aiofiles
+                with open(secrets_path, 'r', encoding='utf-8') as f:
                     for line in f:
                         if line.startswith('GEMINI_API_KEY'):
                             api_key = line.split('=', 1)[1].strip().strip('"').strip("'")
@@ -427,6 +455,39 @@ class WriterAgent(EnhancedBaseAgent):
                                 return api_key
         except Exception as e:
             logger.warning(f"Could not read secrets: {e}")
+        
+        return None
+    
+    async def _get_gemini_api_key_async(self) -> Optional[str]:
+        """Get Gemini API key asynchronously (non-blocking)."""
+        import os
+        from pathlib import Path
+        import asyncio
+        
+        api_key = os.environ.get('GEMINI_API_KEY')
+        if api_key:
+            return api_key
+        
+        try:
+            secrets_path = Path.home() / '.streamlit' / 'secrets.toml'
+            if secrets_path.exists():
+                # Use asyncio.to_thread to run blocking file read in separate thread
+                def _read_secrets_file():
+                    """Blocking file read function."""
+                    with open(secrets_path, 'r', encoding='utf-8') as f:
+                        for line in f:
+                            if line.startswith('GEMINI_API_KEY'):
+                                api_key = line.split('=', 1)[1].strip().strip('"').strip("'")
+                                if api_key:
+                                    return api_key
+                    return None
+                
+                # Run blocking file read in separate thread
+                api_key = await asyncio.to_thread(_read_secrets_file)
+                if api_key:
+                    return api_key
+        except Exception as e:
+            logger.warning(f"Could not read secrets asynchronously: {e}")
         
         return None
     

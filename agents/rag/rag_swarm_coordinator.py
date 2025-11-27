@@ -562,35 +562,34 @@ Answer:"""
             )
             
         else:
-            # === Automated flow (no HITL) - ENHANCED WITH NEW AGENTS ===
+            # === Automated flow (no HITL) - US-RAG-005: Simple 5-Agent Flow ===
+            # Flow: query_analyst → retrieval_specialist → re_ranker → quality_assurance → writer → END
+            
             workflow.add_edge("query_analyst", "retrieval_specialist")
-            workflow.add_edge("retrieval_specialist", "document_grader")  # NEW: Grade BEFORE re-ranking
+            workflow.add_edge("retrieval_specialist", "re_ranker")
             
-            # Document grader routes based on relevance
+            # Re-ranker routes based on context quality
             workflow.add_conditional_edges(
-                "document_grader",
-                self._route_after_grading,
+                "re_ranker",
+                self._route_after_reranking,
                 {
-                    "re_ranker": "re_ranker",  # Relevant documents → re-rank
-                    "rewrite_question": "rewrite_question"  # Not relevant → rewrite query
+                    "quality_assurance": "quality_assurance",  # Good context → quality check
+                    "rewrite_question": "rewrite_question"  # Poor context → rewrite query
                 }
             )
             
-            workflow.add_edge("re_ranker", "context_enrichment")  # NEW: Enrich after ranking
-            workflow.add_edge("context_enrichment", "writer")
-            
-            # Automatic quality-based routing after writing
+            # Quality assurance routes based on quality check
             workflow.add_conditional_edges(
-                "writer",
-                self._route_after_writing,
+                "quality_assurance",
+                self._route_after_quality_assurance,
                 {
-                    "citation_verification": "citation_verification",  # NEW: Verify citations
-                    "rewrite_question": "rewrite_question"
+                    "writer": "writer",  # Quality sufficient → write answer
+                    "rewrite_question": "rewrite_question"  # Quality insufficient → rewrite query
                 }
             )
             
-            workflow.add_edge("citation_verification", "quality_assurance")  # NEW: Verify before QA
-            workflow.add_edge("quality_assurance", END)
+            # Writer completes the flow
+            workflow.add_edge("writer", END)
         
         # Rewrite question → back to query analyst (always loops back)
         workflow.add_edge("rewrite_question", "query_analyst")
@@ -630,6 +629,52 @@ Answer:"""
             # Fallback: compile without checkpointer
             return workflow.compile()
     
+    def _extract_query_from_state(self, state: MessagesState) -> Optional[str]:
+        """
+        Helper function to extract query from MessagesState.
+        
+        Args:
+            state: MessagesState containing messages
+            
+        Returns:
+            Query string or None if not found
+        """
+        # CRITICAL: Access messages correctly - state is a dict-like object
+        # MessagesState is a TypedDict, so we access it like a dict
+        if not isinstance(state, dict):
+            logger.error(f"⚠️ State is not a dict! Type: {type(state)}")
+            return None
+            
+        messages = state.get("messages", [])
+        
+        # Debug logging
+        logger.info(f"🔍 Extracting query from {len(messages)} messages")
+        logger.debug(f"   State type: {type(state)}")
+        logger.debug(f"   State keys: {list(state.keys())}")
+        logger.debug(f"   Message types: {[type(msg).__name__ for msg in messages]}")
+        
+        # Log all messages for debugging
+        for i, msg in enumerate(messages):
+            msg_type = type(msg).__name__
+            if isinstance(msg, HumanMessage):
+                content_preview = str(msg.content)[:60] if hasattr(msg, 'content') else str(msg)[:60]
+                logger.info(f"   Message {i}: {msg_type} - '{content_preview}...'")
+            else:
+                logger.debug(f"   Message {i}: {msg_type}")
+        
+        # Look for HumanMessage (most recent first)
+        for msg in reversed(messages):
+            if isinstance(msg, HumanMessage):
+                query = msg.content if hasattr(msg, 'content') else str(msg)
+                logger.info(f"✅ Found query: '{query[:60]}...'")
+                return query
+        
+        logger.warning(f"⚠️ No HumanMessage found in {len(messages)} messages")
+        if messages:
+            logger.warning(f"   First message type: {type(messages[0]).__name__}")
+            logger.warning(f"   First message: {str(messages[0])[:100]}")
+        return None
+    
     def _query_analyst_node(self, state: MessagesState):
         """
         Query Analysis Node - Sophisticated query understanding.
@@ -640,17 +685,35 @@ Answer:"""
         - Expand query with synonyms and related terms
         - Determine optimal retrieval strategy
         """
-        messages = state["messages"]
+        # CRITICAL: Ensure state is accessed correctly
+        # MessagesState is a TypedDict - access like a dict
+        if not isinstance(state, dict):
+            logger.error(f"❌ QueryAnalystNode: State is not a dict! Type: {type(state)}")
+            return {"messages": [SystemMessage(content=f"State type error: {type(state)}")]}
         
-        # Get the last user message
-        query = None
-        for msg in reversed(messages):
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-                break
+        # Debug: Log state structure
+        logger.info(f"🔍 QueryAnalystNode received state with keys: {list(state.keys())}")
+        logger.info(f"   State has 'messages' key: {'messages' in state}")
+        if "messages" in state:
+            msg_count = len(state['messages'])
+            logger.info(f"   Messages count: {msg_count}")
+            logger.debug(f"   Message types: {[type(m).__name__ for m in state['messages']]}")
+            # Log first few messages for debugging
+            for i, msg in enumerate(state['messages'][:3]):
+                logger.debug(f"   Message {i}: {type(msg).__name__} - {str(msg)[:80]}")
+        else:
+            logger.error(f"❌ State missing 'messages' key! Available keys: {list(state.keys())}")
+            return {"messages": [SystemMessage(content="State missing messages key")]}
+        
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
         
         if not query:
-            logger.warning("⚠️ No query found for analysis")
+            logger.error(f"⚠️ No query found for analysis. State keys: {list(state.keys())}")
+            if "messages" in state:
+                logger.error(f"   Messages in state: {len(state['messages'])}")
+                for i, msg in enumerate(state['messages']):
+                    logger.error(f"   Message {i}: type={type(msg).__name__}, content={str(msg)[:100]}")
             return {"messages": [SystemMessage(content="No query to analyze")]}
         
         logger.info(f"🔍 QueryAnalystAgent analyzing: '{query[:60]}...'")
@@ -683,14 +746,8 @@ Answer:"""
         - Aggregate and deduplicate results
         - Enrich with metadata and source information
         """
-        messages = state["messages"]
-        
-        # Get original query
-        query = None
-        for msg in messages:
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-                break
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
         
         if not query:
             return {"messages": [SystemMessage(content="No query for retrieval")]}
@@ -786,14 +843,8 @@ Answer:"""
         
         Returns filtered list of relevant documents for re-ranking.
         """
-        messages = state["messages"]
-        
-        # Get original query
-        query = None
-        for msg in messages:
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-                break
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
         
         # Get retrieval results (tool messages)
         tool_results = []
@@ -878,12 +929,8 @@ Be lenient - if the document contains ANY relevant information, mark it as 'yes'
         """
         messages = state["messages"]
         
-        # Get original query
-        query = None
-        for msg in messages:
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-                break
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
         
         # Get retrieval results (tool messages)
         tool_results = []
@@ -940,14 +987,8 @@ Be lenient - if the document contains ANY relevant information, mark it as 'yes'
         This happens AFTER re-ranking but BEFORE writing to ensure
         the writer has complete, enriched context.
         """
-        messages = state["messages"]
-        
-        # Get original query
-        query = None
-        for msg in messages:
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-                break
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
         
         # Get re-ranked context (tool messages from grader/re-ranker)
         context_parts = []
@@ -1025,14 +1066,13 @@ Provide an enriched context summary that includes:
         """
         messages = state["messages"]
         
-        # Get original query and retrieved context
-        query = None
-        context_parts = []
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
         
+        # Get retrieved context
+        context_parts = []
         for msg in messages:
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-            elif isinstance(msg, ToolMessage):
+            if isinstance(msg, ToolMessage):
                 context_parts.append(msg.content)
         
         context = "\n\n".join(context_parts)
@@ -1066,7 +1106,7 @@ Provide an enriched context summary that includes:
         logger.info(f"✅ QA complete: completeness={completeness:.0%}, ready={ready}")
         return {"messages": [qa_msg]}
     
-    def _writer_node(self, state: MessagesState):
+    async def _writer_node(self, state: MessagesState):
         """
         Writer Node - Sophisticated answer synthesis.
         
@@ -1075,18 +1115,20 @@ Provide an enriched context summary that includes:
         - Structure answer with proper formatting
         - Add citations and source references
         - Ensure clarity, completeness, and correctness
+        
+        CRITICAL: This node is async to avoid blocking I/O operations.
         """
         messages = state["messages"]
         
-        # Get original query and ALL context (including enrichment analysis)
-        query = None
+        # Extract query using helper function
+        query = self._extract_query_from_state(state)
+        
+        # Get ALL context (including enrichment analysis)
         context_parts = []
         enrichment_analysis = None
         
         for msg in messages:
-            if hasattr(msg, 'type') and msg.type == 'human':
-                query = msg.content
-            elif isinstance(msg, ToolMessage):
+            if isinstance(msg, ToolMessage):
                 context_parts.append(msg.content)  # FULL content, no truncation
             elif isinstance(msg, SystemMessage) and "Context Enrichment Analysis" in msg.content:
                 enrichment_analysis = msg.content  # Include enrichment insights
@@ -1112,15 +1154,15 @@ Provide an enriched context summary that includes:
         
         logger.info(f"✍️ WriterAgent generating comprehensive answer from {len(ranked_results)} sources ({sum(len(r.get('content', '')) for r in ranked_results)} chars)...")
         
-        # Call WriterAgent with FULL context
-        import asyncio
+        # CRITICAL FIX: Use await instead of asyncio.run() to avoid blocking
+        # asyncio.run() creates a new event loop which blocks the current async context
         task = {
             "query": query,
             "ranked_results": ranked_results,  # Pass full context as list of dicts
             "query_analysis": {"original_query": query, "intent": "comprehensive"},  # Encourage comprehensive synthesis
             "quality_report": {}
         }
-        writer_result = asyncio.run(self.writer.execute(task))
+        writer_result = await self.writer.execute(task)
         
         # Extract generated answer
         answer = writer_result.get("output_data", {}).get("response", writer_result.get("response", "Failed to generate answer"))
@@ -1868,12 +1910,12 @@ Provide verification results:
         else:
             return END
     
-    def _route_after_reranking(self, state: MessagesState) -> Literal["writer", "rewrite_question"]:
+    def _route_after_reranking(self, state: MessagesState) -> Literal["quality_assurance", "rewrite_question"]:
         """
         Route after re-ranking in AUTOMATED mode (no HITL).
         
         Checks if re-ranked context is sufficient:
-        - Good context → writer
+        - Good context → quality_assurance (US-RAG-005: QA comes before writer)
         - Poor context → rewrite_question
         """
         messages = state["messages"]
@@ -1890,10 +1932,47 @@ Provide verification results:
                 break
         
         if quality_good:
-            logger.info("✅ Re-ranked context sufficient → writer")
-            return "writer"
+            logger.info("✅ Re-ranked context sufficient → quality_assurance")
+            return "quality_assurance"
         else:
             logger.info("🔄 Re-ranked context insufficient → rewrite_question")
+            return "rewrite_question"
+    
+    def _route_after_quality_assurance(self, state: MessagesState) -> Literal["writer", "rewrite_question"]:
+        """
+        Route after quality assurance check in AUTOMATED mode (no HITL).
+        
+        Checks if quality assurance passed:
+        - Quality sufficient → writer (proceed to answer generation)
+        - Quality insufficient → rewrite_question (improve query and retry)
+        
+        Args:
+            state: Current MessagesState
+            
+        Returns:
+            Next node name: "writer" or "rewrite_question"
+        """
+        messages = state["messages"]
+        
+        # Check last system message for quality assurance results
+        quality_sufficient = True  # Default assumption
+        
+        for msg in reversed(messages):
+            if hasattr(msg, 'type') and msg.type == 'system':
+                content_lower = msg.content.lower()
+                # Look for quality assurance failure indicators
+                if any(word in content_lower for word in [
+                    "quality insufficient", "quality check failed", "quality low",
+                    "insufficient quality", "quality not met", "does not meet quality"
+                ]):
+                    quality_sufficient = False
+                break
+        
+        if quality_sufficient:
+            logger.info("✅ Quality assurance passed → writer")
+            return "writer"
+        else:
+            logger.info("🔄 Quality assurance failed → rewrite_question")
             return "rewrite_question"
     
     def _route_after_tools(self, state: MessagesState) -> Literal["generate_answer", "rewrite_question", "human_review"]:
@@ -2182,11 +2261,37 @@ Provide verification results:
             thread_id = config["configurable"]["thread_id"]
             logger.info(f"📋 Thread ID: {thread_id}")
             
-            # Stream through graph
-            final_response = None
+            # CRITICAL FIX: Load existing state from checkpointer and merge with new query
+            # This matches the pattern used in simple_rag.py and agentic_rag.py
+            # LangGraph's invoke() doesn't automatically merge initial_state with existing checkpointer state
+            # We must manually load and merge before invoking
+            try:
+                existing_state = self.graph.get_state(config)
+                existing_messages = existing_state.values.get("messages", []) if existing_state.values else []
+                logger.info(f"📸 Loaded {len(existing_messages)} existing message(s) from thread")
+            except (ValueError, AttributeError) as e:
+                # No existing state - this is fine, starting fresh
+                logger.info(f"📝 No existing state found (new thread): {e}")
+                existing_messages = []
             
             # Create proper HumanMessage object for LangGraph
-            initial_state = {"messages": [HumanMessage(content=query)]}
+            human_msg = HumanMessage(content=query)
+            
+            # Merge existing messages with new query
+            if existing_messages:
+                input_messages = existing_messages + [human_msg]
+                logger.info(f"📝 Merged new query with {len(existing_messages)} existing messages")
+            else:
+                input_messages = [human_msg]
+                logger.info(f"📝 Starting fresh conversation with query: '{query[:60]}...'")
+            
+            # Debug: Verify messages are correct
+            logger.debug(f"   Total messages to pass: {len(input_messages)}")
+            logger.debug(f"   Last message type: {type(input_messages[-1]).__name__}")
+            logger.debug(f"   Last message content: {input_messages[-1].content[:100] if hasattr(input_messages[-1], 'content') else str(input_messages[-1])[:100]}")
+            
+            # Build initial state with merged messages
+            initial_state = {"messages": input_messages}
             
             # Add document filters to state if provided
             if document_filters:
@@ -2195,13 +2300,36 @@ Provide verification results:
             
             logger.info(f"🚀 Starting graph execution with thread_id: {thread_id}")
             
-            for event in self.graph.stream(
+            # CRITICAL: Verify state before invoking
+            logger.info(f"🔍 Pre-invoke state verification:")
+            logger.info(f"   Initial state keys: {list(initial_state.keys())}")
+            logger.info(f"   Messages in initial_state: {len(initial_state['messages'])}")
+            for i, msg in enumerate(initial_state['messages']):
+                msg_type = type(msg).__name__
+                if isinstance(msg, HumanMessage):
+                    content_preview = msg.content[:60] if hasattr(msg, 'content') else str(msg)[:60]
+                    logger.info(f"   Message {i}: {msg_type} - '{content_preview}...'")
+                else:
+                    logger.debug(f"   Message {i}: {msg_type}")
+            
+            # Invoke graph with properly merged state
+            # This ensures all nodes receive the complete message history including the new query
+            logger.info(f"🚀 Invoking graph with {len(initial_state['messages'])} messages...")
+            final_response = self.graph.invoke(
                 initial_state,
-                config=config,
-                stream_mode="values"
-            ):
-                final_response = event
-                logger.info(f"📊 Stream event: {list(event.keys()) if isinstance(event, dict) else type(event)}")
+                config=config
+            )
+            
+            logger.info(f"✅ Graph execution completed")
+            logger.debug(f"   Final response keys: {list(final_response.keys()) if isinstance(final_response, dict) else 'not a dict'}")
+            if isinstance(final_response, dict) and "messages" in final_response:
+                logger.debug(f"   Final messages count: {len(final_response['messages'])}")
+                
+                # Verify final state has messages
+                final_state_check = self.graph.get_state(config)
+                if final_state_check and final_state_check.values:
+                    final_msg_count = len(final_state_check.values.get("messages", []))
+                    logger.info(f"   Final state message count: {final_msg_count}")
             
             # Check if execution was interrupted (graph has pending nodes)
             # Note: retrieval_only mode doesn't use checkpointer, so skip state check
@@ -2466,6 +2594,7 @@ def _create_default_graph():
         workflow.add_node("rewrite_question", coordinator._rewrite_question)
         
         # Build automated sophisticated flow (no HITL for Studio)
+        # US-RAG-005: query_analyst → retrieval_specialist → re_ranker → quality_assurance → writer → END
         workflow.add_edge(START, "query_analyst")
         workflow.add_edge("query_analyst", "retrieval_specialist")
         workflow.add_edge("retrieval_specialist", "re_ranker")
@@ -2475,20 +2604,29 @@ def _create_default_graph():
             "re_ranker",
             coordinator._route_after_reranking,
             {
-                "writer": "writer",
-                "rewrite_question": "rewrite_question"
+                "quality_assurance": "quality_assurance",  # Good context → quality check
+                "rewrite_question": "rewrite_question"  # Poor context → rewrite query
             }
         )
         
-        workflow.add_edge("writer", "quality_assurance")
-        workflow.add_edge("quality_assurance", END)
+        # Quality assurance routes based on quality check
+        workflow.add_conditional_edges(
+            "quality_assurance",
+            coordinator._route_after_quality_assurance,
+            {
+                "writer": "writer",  # Quality sufficient → write answer
+                "rewrite_question": "rewrite_question"  # Quality insufficient → rewrite query
+            }
+        )
+        
+        workflow.add_edge("writer", END)
         
         # Rewrite loops back to query analyst
         workflow.add_edge("rewrite_question", "query_analyst")
         
         # Compile WITHOUT checkpointer (Studio provides its own)
         logger.info("✅ Sophisticated 5-agent graph for LangGraph Studio compiled!")
-        logger.info("   Agents: QueryAnalyst → RetrievalSpecialist → ReRanker → Writer → QualityAssurance")
+        logger.info("   Agents: QueryAnalyst → RetrievalSpecialist → ReRanker → QualityAssurance → Writer")
         return workflow.compile()
         
     except Exception as e:

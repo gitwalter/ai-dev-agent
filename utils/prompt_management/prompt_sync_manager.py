@@ -179,7 +179,7 @@ class PromptSyncManager:
             if hasattr(prompt, 'template'):
                 prompt_text = prompt.template
             elif hasattr(prompt, 'messages') and len(prompt.messages) > 0:
-                prompt_text = prompt.messages[0].content if hasattr(prompt.messages[0], 'content') else str(prompt.messages[0])
+                prompt_text = prompt.messages[0].prompt.template
             else:
                 prompt_text = str(prompt)
             

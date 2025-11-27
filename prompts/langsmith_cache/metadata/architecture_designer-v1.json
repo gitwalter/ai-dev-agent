@@ -2,9 +2,9 @@
   "prompt_name": "architecture_designer_v1",
   "last_fetched_from_hub": null,
   "locally_modified": false,
-  "local_edit_timestamp": null,
-  "hub_content_hash": "3416c408c058f0c8e5ed12e3acfb80584bce029d5ff3c118a83ce3bf548731b5",
-  "local_content_hash": "3416c408c058f0c8e5ed12e3acfb80584bce029d5ff3c118a83ce3bf548731b5",
-  "last_sync_timestamp": "2025-10-28T10:25:39.085686",
-  "sync_direction": null
+  "local_edit_timestamp": "2025-11-25T13:53:12.599377",
+  "hub_content_hash": "2694d91bc4267c4cc2d387d932801025682e9a82e8ccf87a5f5813ee66aa48df",
+  "local_content_hash": "2694d91bc4267c4cc2d387d932801025682e9a82e8ccf87a5f5813ee66aa48df",
+  "last_sync_timestamp": "2025-11-25T16:19:36.798171",
+  "sync_direction": "push"
 }

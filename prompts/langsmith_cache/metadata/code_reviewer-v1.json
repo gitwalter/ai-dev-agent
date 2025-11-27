@@ -2,9 +2,9 @@
   "prompt_name": "code_reviewer_v1",
   "last_fetched_from_hub": null,
   "locally_modified": false,
-  "local_edit_timestamp": null,
-  "hub_content_hash": "f45bd57dc1485ffb4364267157ea34b6fa046c575924eabae6e1f0e2956fdb99",
-  "local_content_hash": "f45bd57dc1485ffb4364267157ea34b6fa046c575924eabae6e1f0e2956fdb99",
-  "last_sync_timestamp": "2025-10-28T10:25:39.453576",
-  "sync_direction": null
+  "local_edit_timestamp": "2025-11-25T15:55:00.958593",
+  "hub_content_hash": "4095c1016020a4a4b1dcf6a2b4d5de30845838afa95db55139600049b76238f7",
+  "local_content_hash": "4095c1016020a4a4b1dcf6a2b4d5de30845838afa95db55139600049b76238f7",
+  "last_sync_timestamp": "2025-11-25T16:21:35.913558",
+  "sync_direction": "push"
 }

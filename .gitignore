@@ -170,6 +170,7 @@ test_results/
 
 # Generated project directories
 generated_projects/
+agile_factory_workspace/
 generated/
 output/
 temp/

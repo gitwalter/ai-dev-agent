@@ -2,9 +2,9 @@
   "prompt_name": "documentation_generator_v1",
   "last_fetched_from_hub": null,
   "locally_modified": false,
-  "local_edit_timestamp": null,
-  "hub_content_hash": "84ea77538bb5246bee00eb06a0810c0def7467a349cf2631609f0ef2a151da84",
-  "local_content_hash": "84ea77538bb5246bee00eb06a0810c0def7467a349cf2631609f0ef2a151da84",
-  "last_sync_timestamp": "2025-10-28T10:25:39.813413",
-  "sync_direction": null
+  "local_edit_timestamp": "2025-11-26T09:51:12.009253",
+  "hub_content_hash": "7d3a6112ef2195fc31dd8a6ff06c7c9492968d9807b9485a8f661f0b07ee6846",
+  "local_content_hash": "7d3a6112ef2195fc31dd8a6ff06c7c9492968d9807b9485a8f661f0b07ee6846",
+  "last_sync_timestamp": "2025-11-26T09:52:16.455773",
+  "sync_direction": "push"
 }

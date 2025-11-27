@@ -166,13 +166,31 @@ class LangSmithPromptLoader:
             prompt = hub.pull(prompt_id)
             
             # Extract template text from the PromptTemplate object
-            if hasattr(prompt, 'template'):
+            # Handle different PromptTemplate types
+            prompt_text = None
+            
+            # Case 1: Standard PromptTemplate with .template attribute
+            if hasattr(prompt, 'template') and isinstance(prompt.template, str):
                 prompt_text = prompt.template
+            # Case 2: ChatPromptTemplate with messages
             elif hasattr(prompt, 'messages') and len(prompt.messages) > 0:
-                # For ChatPromptTemplate, get the first message content
-                prompt_text = prompt.messages[0].content if hasattr(prompt.messages[0], 'content') else str(prompt.messages[0])
+                first_msg = prompt.messages[0]
+                # Check if message has a prompt attribute with template
+                if hasattr(first_msg, 'prompt') and hasattr(first_msg.prompt, 'template'):
+                    prompt_text = first_msg.prompt.template
+                # Check if message has content directly
+                elif hasattr(first_msg, 'content'):
+                    prompt_text = first_msg.content
+                else:
+                    prompt_text = str(first_msg)
+            # Case 3: Fallback to string conversion
             else:
                 prompt_text = str(prompt)
+            
+            # Ensure we have a string
+            if not isinstance(prompt_text, str):
+                logger.warning(f"Prompt extraction returned non-string type: {type(prompt_text)}, converting to string")
+                prompt_text = str(prompt_text)
             
             # Cache the result in memory
             self.cache[cache_key] = prompt_text
