@@ -4,7 +4,8 @@
   ],
   "graphs": {
     "agile_factory": "agents/agile_factory/workflow.py:graph",
-    "code_generator_test": "agents/agile_factory/test_code_generator_studio.py:graph"
+    "rag_agent": "agents/rag/rag_swarm_coordinator.py:graph",
+    "research_assistant": "agents/research_assistant/research_assistant.py:graph"
   },
   "env": {
     "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
@@ -13,7 +14,7 @@
     "LANGCHAIN_TRACING_V2": "true",
     "LANGCHAIN_PROJECT": "ai-dev-agent",
     "PYTHONPATH": ".",
-    "DATABASE_URI": "sqlite://:memory:",
+    "DATABASE_URI": "sqlite:///:memory:",
     "REDIS_URI": "redis://localhost:6379"
   },
   "python_version": "3.11",

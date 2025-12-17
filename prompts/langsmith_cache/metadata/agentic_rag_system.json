@@ -1,10 +1,10 @@
 {
   "prompt_name": "agentic_rag_system",
-  "last_fetched_from_hub": "2025-10-30T11:09:46.833038",
+  "last_fetched_from_hub": "2025-11-28T10:40:39.069337",
   "locally_modified": false,
   "local_edit_timestamp": null,
-  "hub_content_hash": "5d547ddc97b883268fef15e9f934e1f80ea6c8f2feeb9fa31416cf4e16359846",
-  "local_content_hash": "5d547ddc97b883268fef15e9f934e1f80ea6c8f2feeb9fa31416cf4e16359846",
-  "last_sync_timestamp": "2025-10-30T11:09:46.833038",
+  "hub_content_hash": "b3dd52d2039829c4318ec897e5c2f436b0ea253194a3582d951ff0d0f2805ca3",
+  "local_content_hash": "b3dd52d2039829c4318ec897e5c2f436b0ea253194a3582d951ff0d0f2805ca3",
+  "last_sync_timestamp": "2025-11-28T10:40:39.069337",
   "sync_direction": "pull"
 }

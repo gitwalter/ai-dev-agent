@@ -675,7 +675,7 @@ Answer:"""
             logger.warning(f"   First message: {str(messages[0])[:100]}")
         return None
     
-    def _query_analyst_node(self, state: MessagesState):
+    async def _query_analyst_node(self, state: MessagesState):
         """
         Query Analysis Node - Sophisticated query understanding.
         
@@ -719,9 +719,8 @@ Answer:"""
         logger.info(f"🔍 QueryAnalystAgent analyzing: '{query[:60]}...'")
         
         # Call QueryAnalystAgent
-        import asyncio
         task = {"query": query}
-        analysis_result = asyncio.run(self.query_analyst.execute(task))
+        analysis_result = await self.query_analyst.execute(task)
         
         # Format analysis as system message
         analysis_text = analysis_result.get("output_data", {})
@@ -736,7 +735,7 @@ Answer:"""
         logger.info(f"✅ Query analysis complete: {analysis_text.get('intent', 'unknown')} intent")
         return {"messages": [analysis_msg]}
     
-    def _retrieval_specialist_node(self, state: MessagesState):
+    async def _retrieval_specialist_node(self, state: MessagesState):
         """
         Retrieval Specialist Node - Multi-source retrieval orchestration.
         
@@ -756,9 +755,8 @@ Answer:"""
         
         # Call QueryAnalystAgent first to get proper query_analysis format
         # (RetrievalSpecialistAgent expects query_analysis dict)
-        import asyncio
         query_task = {"query": query}
-        query_analysis_result = asyncio.run(self.query_analyst.execute(query_task))
+        query_analysis_result = await self.query_analyst.execute(query_task)
         
         # Extract query_analysis from QueryAnalystAgent result
         # QueryAnalystAgent returns: {'status': 'success', 'analysis': {...}, ...}
@@ -800,7 +798,7 @@ Answer:"""
             task["document_filters"] = state["document_filters"]
             logger.info(f"🎯 Applying document filters from state: {state['document_filters']}")
         
-        retrieval_result = asyncio.run(self.retrieval_specialist.execute(task))
+        retrieval_result = await self.retrieval_specialist.execute(task)
         
         # Extract documents from search_results (correct field name)
         retrieved_docs = retrieval_result.get("search_results", [])
@@ -829,7 +827,7 @@ Answer:"""
         logger.info(f"✅ Retrieved {len(tool_msgs)} documents from {len(set(d.name for d in tool_msgs))} sources")
         return {"messages": tool_msgs}
     
-    def _document_grader_node(self, state: MessagesState):
+    async def _document_grader_node(self, state: MessagesState):
         """
         Document Grader Node - Grade documents for relevance BEFORE re-ranking.
         
@@ -848,7 +846,7 @@ Answer:"""
         
         # Get retrieval results (tool messages)
         tool_results = []
-        for msg in messages:
+        for msg in state["messages"]:  # Use state["messages"] as messages var wasn't defined in original code snippet but extracted above
             if isinstance(msg, ToolMessage):
                 tool_results.append({
                     'content': msg.content,
@@ -881,7 +879,7 @@ If the document contains keywords or semantic meaning related to the user questi
 Give a binary score 'yes' or 'no' to indicate whether the document is relevant to the question.
 Be lenient - if the document contains ANY relevant information, mark it as 'yes'."""
                 
-                grade = llm.with_structured_output(GradeDocuments).invoke([
+                grade = await llm.with_structured_output(GradeDocuments).ainvoke([
                     HumanMessage(content=grade_prompt)
                 ])
                 
@@ -917,7 +915,7 @@ Be lenient - if the document contains ANY relevant information, mark it as 'yes'
         logger.info(f"✅ Grading complete: {len(graded_tool_msgs)}/{len(tool_results)} documents relevant")
         return {"messages": [grading_summary] + graded_tool_msgs}
     
-    def _re_ranker_node(self, state: MessagesState):
+    async def _re_ranker_node(self, state: MessagesState):
         """
         Re-Ranker Node - Relevance scoring and filtering.
         
@@ -948,12 +946,11 @@ Be lenient - if the document contains ANY relevant information, mark it as 'yes'
         logger.info(f"🎯 ReRankerAgent re-ranking {len(tool_results)} documents...")
         
         # Call ReRankerAgent
-        import asyncio
         task = {
             "query": query,
             "documents": tool_results
         }
-        rerank_result = asyncio.run(self.re_ranker.execute(task))
+        rerank_result = await self.re_ranker.execute(task)
         
         # Extract re-ranking info
         reranked_data = rerank_result.get("output_data", {})
@@ -972,7 +969,7 @@ Be lenient - if the document contains ANY relevant information, mark it as 'yes'
         logger.info(f"✅ Re-ranking complete: avg={avg_score:.1%}, quality_ok={quality_ok}")
         return {"messages": [rerank_msg]}
     
-    def _context_enrichment_node(self, state: MessagesState):
+    async def _context_enrichment_node(self, state: MessagesState):
         """
         Context Enrichment Node - Enrich context after re-ranking.
         
@@ -992,7 +989,7 @@ Be lenient - if the document contains ANY relevant information, mark it as 'yes'
         
         # Get re-ranked context (tool messages from grader/re-ranker)
         context_parts = []
-        for msg in messages:
+        for msg in state["messages"]:  # Use state["messages"]
             if isinstance(msg, ToolMessage):
                 context_parts.append(msg.content)
         
@@ -1028,7 +1025,7 @@ Provide an enriched context summary that includes:
 - Recommendation: "sufficient" if context is complete, "needs_more" if critical gaps exist"""
         
         try:
-            enrichment_response = llm.invoke([HumanMessage(content=enrichment_prompt)])
+            enrichment_response = await llm.ainvoke([HumanMessage(content=enrichment_prompt)])
             enriched_analysis = enrichment_response.content
             
             # Check if enrichment recommends more retrieval
@@ -1054,7 +1051,7 @@ Provide an enriched context summary that includes:
             logger.error(f"❌ Context enrichment failed: {e}")
             return {"messages": [SystemMessage(content=f"Context enrichment error: {e}")]}
     
-    def _quality_assurance_node(self, state: MessagesState):
+    async def _quality_assurance_node(self, state: MessagesState):
         """
         Quality Assurance Node - Comprehensive quality checks.
         
@@ -1080,12 +1077,11 @@ Provide an enriched context summary that includes:
         logger.info(f"✅ QualityAssuranceAgent checking quality...")
         
         # Call QualityAssuranceAgent
-        import asyncio
         task = {
             "query": query,
             "context": context
         }
-        qa_result = asyncio.run(self.quality_assurance.execute(task))
+        qa_result = await self.quality_assurance.execute(task)
         
         # Extract quality metrics
         qa_data = qa_result.get("output_data", {})
@@ -1170,7 +1166,7 @@ Provide an enriched context summary that includes:
         logger.info(f"✅ Answer generated: {len(answer)} chars")
         return {"messages": [AIMessage(content=answer)]}
     
-    def _citation_verification_node(self, state: MessagesState):
+    async def _citation_verification_node(self, state: MessagesState):
         """
         Citation Verification Node - Verify citations are accurate and relevant.
         
@@ -1231,7 +1227,7 @@ Provide verification results:
 - Recommendations for improvement"""
         
         try:
-            verification_response = llm.invoke([HumanMessage(content=verification_prompt)])
+            verification_response = await llm.ainvoke([HumanMessage(content=verification_prompt)])
             verification_analysis = verification_response.content
             
             # Store verification results as system message
@@ -2055,7 +2051,7 @@ Provide verification results:
                 logger.info("⚠️ FALLBACK: Routing to generate_answer (grading failed + human_in_loop=False)")
                 return "generate_answer"
     
-    def _rewrite_question(self, state: MessagesState):
+    async def _rewrite_question(self, state: MessagesState):
         """
         Rewrite the original question for better retrieval.
         
@@ -2086,7 +2082,7 @@ Provide verification results:
         
         # Format prompt with original question
         prompt = f"{rewrite_prompt_template}\n\nOriginal question: {question}\n\nFormulate an improved question:"
-        response = self.llm.invoke([HumanMessage(content=prompt)])
+        response = await self.llm.ainvoke([HumanMessage(content=prompt)])
         
         logger.info(f"📝 Rewrote question: '{question}' → '{response.content}'")
         

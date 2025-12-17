@@ -2409,7 +2409,7 @@ def system_settings_page():
     if langsmith_enabled:
         st.success("✅ LangSmith Tracing Enabled")
         st.info(f"**Project:** {os.environ.get('LANGCHAIN_PROJECT', 'default')}")
-        st.markdown("🔗 View traces at: [https://smith.langchain.com/](https://smith.langchain.com/)")
+        st.markdown("🔗 View traces at: =[https://smith.langchain.com/](https://smith.langchain.com/)")
     else:
         st.warning("⚠️ LangSmith Tracing Disabled")
         st.info("To enable tracing, add to `.streamlit/secrets.toml`:")

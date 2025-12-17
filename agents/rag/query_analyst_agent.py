@@ -217,6 +217,22 @@ Provide comprehensive query analysis in JSON format."""
             logger.warning("LLM response not valid JSON, using fallback")
             return self._fallback_analysis(query)
         
+        # Safely parse complexity
+        complexity_val = analysis_data.get('complexity', 0.5)
+        try:
+            if isinstance(complexity_val, (int, float)):
+                complexity = float(complexity_val)
+            elif isinstance(complexity_val, str):
+                if complexity_val.lower() == 'low': complexity = 0.3
+                elif complexity_val.lower() == 'medium': complexity = 0.5
+                elif complexity_val.lower() == 'high': complexity = 0.8
+                else:
+                    complexity = float(complexity_val)
+            else:
+                complexity = 0.5
+        except (ValueError, TypeError):
+            complexity = 0.5
+
         # Ensure all fields are present
         analysis = {
             'original_query': query,
@@ -224,7 +240,7 @@ Provide comprehensive query analysis in JSON format."""
             'rewritten_queries': analysis_data.get('rewritten_queries', [query]),
             'key_concepts': analysis_data.get('key_concepts', []),
             'search_strategy': analysis_data.get('search_strategy', 'focused'),
-            'complexity': float(analysis_data.get('complexity', 0.5)),
+            'complexity': complexity,
             'reasoning': analysis_data.get('reasoning', '')
         }
         

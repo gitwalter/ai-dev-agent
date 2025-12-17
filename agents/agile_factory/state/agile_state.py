@@ -9,7 +9,7 @@ This defines the complete state structure for the workflow, including:
 - Control fields (status, errors, thread_id, current_node)
 """
 
-try:d
+try:
     from typing_extensions import TypedDict
 except ImportError:
     from typing import TypedDict  # Python 3.12+

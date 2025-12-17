@@ -175,11 +175,15 @@ class ContextEngine:
             
             # Initialize Qdrant client (local, embedded - no API key needed)
             # Initialize this even if embeddings failed, so we can still manage collections
-            qdrant_path = Path(self.config.vector_db_path) / "qdrant_storage"
-            qdrant_path.mkdir(parents=True, exist_ok=True)
-            
-            self.qdrant_client = QdrantClient(path=str(qdrant_path))
-            self.logger.info(f"✅ Qdrant initialized (local storage: {qdrant_path})")
+            if self.config.vector_db_path == ":memory:":
+                self.qdrant_client = QdrantClient(location=":memory:")
+                self.logger.info("✅ Qdrant initialized (in-memory)")
+            else:
+                qdrant_path = Path(self.config.vector_db_path) / "qdrant_storage"
+                qdrant_path.mkdir(parents=True, exist_ok=True)
+                
+                self.qdrant_client = QdrantClient(path=str(qdrant_path))
+                self.logger.info(f"✅ Qdrant initialized (local storage: {qdrant_path})")
             
             if self.embeddings is None:
                 self.logger.warning("⚠️ No embedding provider available - semantic search disabled")
