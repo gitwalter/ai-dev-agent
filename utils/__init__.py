@@ -23,13 +23,6 @@ except ImportError as e:
     prompt_management = None
 
 try:
-    from . import ethical_integration
-except ImportError as e:
-    import warnings
-    warnings.warn(f"Could not import ethical_integration module: {e}")
-    ethical_integration = None
-
-try:
     from . import rule_system
 except ImportError as e:
     import warnings
