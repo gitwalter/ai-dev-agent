@@ -78,7 +78,7 @@ class UserStoryCatalogManager:
             "cancelled": ["❌ Cancelled", "Cancelled", "🚫 Cancelled"]
         }
         
-        print("📋 User Story Catalog Manager initialized for real-time updates")
+        print("User Story Catalog Manager initialized for real-time updates")
     
     def scan_all_user_stories(self) -> List[UserStory]:
         """Scan all user stories across all sprints and gather complete information."""
@@ -89,7 +89,7 @@ class UserStoryCatalogManager:
         story_pattern = str(self.user_stories_dir / "**" / "US-*.md")
         story_files = glob.glob(story_pattern, recursive=True)
         
-        print(f"📖 Scanning {len(story_files)} user story files...")
+        print(f"Scanning {len(story_files)} user story files...")
         
         for file_path in story_files:
             story = self._parse_user_story_file(file_path)
@@ -99,7 +99,7 @@ class UserStoryCatalogManager:
         # Sort by story ID
         user_stories.sort(key=lambda s: s.story_id)
         
-        print(f"✅ Successfully parsed {len(user_stories)} user stories")
+        print(f"Successfully parsed {len(user_stories)} user stories")
         return user_stories
     
     def _parse_user_story_file(self, file_path: str) -> Optional[UserStory]:
@@ -143,7 +143,7 @@ class UserStoryCatalogManager:
             )
             
         except Exception as e:
-            print(f"⚠️ Error parsing {file_path}: {e}")
+            print(f"Error parsing {file_path}: {e}")
             return None
     
     def _extract_story_id(self, file_path: str, content: str) -> str:
@@ -515,7 +515,7 @@ This catalog is maintained automatically by the User Story Catalog Manager. For 
         """Update the USER_STORY_CATALOG.md with current information."""
         
         try:
-            print("🔄 Updating User Story Catalog...")
+            print("Updating User Story Catalog...")
             
             # Scan all user stories
             user_stories = self.scan_all_user_stories()
@@ -533,21 +533,21 @@ This catalog is maintained automatically by the User Story Catalog Manager. For 
             with open(self.catalog_file, 'w', encoding='utf-8') as f:
                 f.write(catalog_content)
             
-            print(f"✅ User Story Catalog updated successfully!")
-            print(f"   📊 {metrics.total_stories} stories, {metrics.total_points} points")
-            print(f"   ✅ {metrics.completed_stories} completed ({metrics.completion_rate:.1f}%)")
-            print(f"   📁 Catalog saved to: {self.catalog_file}")
+            print("User Story Catalog updated successfully")
+            print(f"- {metrics.total_stories} stories, {metrics.total_points} points")
+            print(f"- {metrics.completed_stories} completed ({metrics.completion_rate:.1f}%)")
+            print(f"- Catalog saved to: {self.catalog_file}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Error updating catalog: {e}")
+            print(f"Error updating catalog: {e}")
             return False
     
     def watch_for_changes(self) -> None:
         """Watch for changes in user story files and auto-update catalog."""
-        print("👁️ Starting user story change monitoring...")
-        print("   (In a real implementation, this would use file system watchers)")
+        print("Starting user story change monitoring...")
+        print("(In a real implementation, this would use file system watchers)")
         
         # This would use file system watchers like watchdog in a real implementation
         # For now, we'll just update the catalog once
@@ -556,9 +556,9 @@ This catalog is maintained automatically by the User Story Catalog Manager. For 
 def main():
     """Demonstrate the User Story Catalog Manager."""
     
-    print("📋 " + "="*60)
-    print("🔄 USER STORY CATALOG MANAGER DEMONSTRATION")
-    print("   Automatic real-time catalog maintenance")
+    print("="*60)
+    print("USER STORY CATALOG MANAGER DEMONSTRATION")
+    print("Automatic real-time catalog maintenance")
     print("="*60)
     
     # Initialize manager
@@ -568,9 +568,9 @@ def main():
     success = manager.update_catalog()
     
     if success:
-        print("\n✅ User Story Catalog Manager ready for automatic updates!")
+        print("\nUser Story Catalog Manager ready for automatic updates")
     else:
-        print("\n❌ Error in catalog management - please check configuration")
+        print("\nError in catalog management - please check configuration")
     
     print("="*60)
 

@@ -109,7 +109,7 @@ class AutomaticStoryDetection:
             }
         }
         
-        print("🤖 Automatic Story Detection System initialized")
+        print("Automatic Story Detection System initialized")
     
     def analyze_development_request(self, user_request: str, 
                                   open_files: List[str] = None,
@@ -697,7 +697,7 @@ def main():
         "Create documentation for the API endpoints"
     ]
     
-    print("🔍 **Testing Automatic Story Detection**\n")
+    print("Testing Automatic Story Detection\n")
     
     for i, request in enumerate(test_requests, 1):
         print(f"**Test {i}**: {request}")
@@ -708,18 +708,18 @@ def main():
             current_directory="/project/src"
         )
         
-        print(f"  📊 **Context**: {result['context'].context} ({result['context'].confidence:.1f})")
-        print(f"  🔢 **Complexity**: {result['complexity'].complexity_score}/10")
-        print(f"  📋 **Story Required**: {result['story_requirement'].required}")
+        print(f"  Context: {result['context'].context} ({result['context'].confidence:.1f})")
+        print(f"  Complexity: {result['complexity'].complexity_score}/10")
+        print(f"  Story Required: {result['story_requirement'].required}")
         
         if result['story_requirement'].required:
-            print(f"  🎯 **Story Type**: {result['story_requirement'].story_type.value}")
-            print(f"  ⚡ **Priority**: {result['story_requirement'].priority.value}")
+            print(f"  Story Type: {result['story_requirement'].story_type.value}")
+            print(f"  Priority: {result['story_requirement'].priority.value}")
             
             if result['created_story']:
-                print(f"  ✅ **Created**: {result['created_story'].story_id}")
+                print(f"  Created: {result['created_story'].story_id}")
         
-        print(f"  💡 **Reasoning**: {result['story_requirement'].reasoning}")
+        print(f"  Reasoning: {result['story_requirement'].reasoning}")
         print()
 
 

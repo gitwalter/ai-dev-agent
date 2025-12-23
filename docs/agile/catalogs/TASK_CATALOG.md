@@ -1,6 +1,6 @@
 # Task Catalog - Detailed Task Tracking
 
-**Last Updated**: Current Session  
+**Last Updated**: 2025-12-23  
 **Maintainer**: AI Development Agent Project Team  
 **Purpose**: Comprehensive tracking of all tasks, sub-tasks, and technical work across sprints
 
@@ -10,7 +10,33 @@ This catalog provides detailed visibility into all tasks across user stories, in
 
 **🤖 AUTOMATED AGILE MANAGEMENT**: This catalog is now managed through the automated agile story system (`utils/agile/agile_story_automation.py`). All story creation, task generation, and artifact updates are automated for consistency and completeness.
 
-## 🎯 **Active Sprint Tasks (Sprint 1)**
+## Active Sprint Tasks (Sprint 8)
+
+### US-MCP-002: FastMCP Tool Server Suite + Client Configuration (8 Points)
+| Task ID | Task Description | Estimate | Status | Owner | Notes |
+|---------|------------------|----------|--------|-------|-------|
+| T-MCP-002-01 | Define canonical local MCP server ports/endpoints and runbook | 2h | To Do | AI Team | Document ports 8000-8003 |
+| T-MCP-002-02 | Add client connectivity check (tool discovery + one tool call per server) | 3h | To Do | AI Team | Keep minimal and reliable |
+| T-MCP-002-03 | Document failure modes (missing env vars, server down, wrong port) | 1h | To Do | AI Team | Focus on actionable errors |
+
+### US-DEEPAGENTS-001: DeepAgents Baseline Agent with MCP Tools + Memory (13 Points)
+| Task ID | Task Description | Estimate | Status | Owner | Notes |
+|---------|------------------|----------|--------|-------|-------|
+| T-DA-001-01 | Implement baseline DeepAgent wrapper that loads MCP tools | 4h | To Do | AI Team | Align with notebook patterns |
+| T-DA-001-02 | Add checkpointer-based thread memory (thread_id continuity) | 2h | To Do | AI Team | Deterministic behavior |
+| T-DA-001-03 | Add example usage entrypoint and smoke validation | 2h | To Do | AI Team | Should work with local MCP servers |
+
+### US-DEEPAGENTS-002: Specialized Subagents + Coordinator Routing (8 Points)
+| Task ID | Task Description | Estimate | Status | Owner | Notes |
+|---------|------------------|----------|--------|-------|-------|
+| T-DA-002-01 | Create 2-3 specialist subagents with MCP tools | 3h | To Do | AI Team | finance/news/weather |
+| T-DA-002-02 | Create coordinator with delegation tools and synthesis | 3h | To Do | AI Team | Must clearly attribute specialists |
+
+### US-DEEPAGENTS-003: HITL + Safety for Sensitive Operations (5 Points)
+| Task ID | Task Description | Estimate | Status | Owner | Notes |
+|---------|------------------|----------|--------|-------|-------|
+| T-DA-003-01 | Document HITL policy (what requires approval) | 1h | To Do | AI Team | Align with project safety rules |
+| T-DA-003-02 | Demonstrate pause/resume workflow with approve/reject | 2h | To Do | AI Team | Example decisions |
 
 ### **US-000: Fix All Test Failures** (Critical - 15 Points)
 | Task ID | Task Description | Estimate | Status | Owner | Notes |
@@ -74,33 +100,29 @@ This catalog provides detailed visibility into all tasks across user stories, in
 | T-022-03 | Test health dashboard functionality | 1h | To Do | AI Team | T-022-02 |
 | T-022-04 | Validate all visualization components | 0.5h | To Do | AI Team | T-022-03 |
 
-## 📊 **Task Statistics (Sprint 1)**
+## 📊 Task Statistics (Sprint 8)
 
-### **Overall Task Progress**
-- **Total Tasks**: 26
-- **Completed Tasks**: 5 (19%)
-- **In Progress Tasks**: 2 (8%)
-- **To Do Tasks**: 19 (73%)
-- **Total Estimated Hours**: 89 hours
-- **Completed Hours**: 19 hours (21%)
+### Overall Task Progress
+- **Total Tasks**: 10
+- **Completed Tasks**: 0 (0%)
+- **In Progress Tasks**: 0 (0%)
+- **To Do Tasks**: 10 (100%)
+- **Total Estimated Hours**: 23 hours
 
-### **Task Completion by User Story**
+### Task Completion by User Story
 | User Story | Total Tasks | Completed | In Progress | To Do | Completion % |
 |------------|-------------|-----------|-------------|-------|--------------|
-| US-000 | 5 | 0 | 2 | 3 | 0% |
-| US-001 | 5 | 0 | 0 | 5 | 0% |
-| US-002 | 5 | 0 | 0 | 5 | 0% |
-| US-003 | 4 | 0 | 0 | 4 | 0% |
-| US-004 | 5 | 0 | 0 | 5 | 0% |
-| US-005 | 6 | 5 | 1 | 0 | 83% |
+| US-MCP-002 | 3 | 0 | 0 | 3 | 0% |
+| US-DEEPAGENTS-001 | 3 | 0 | 0 | 3 | 0% |
+| US-DEEPAGENTS-002 | 2 | 0 | 0 | 2 | 0% |
+| US-DEEPAGENTS-003 | 2 | 0 | 0 | 2 | 0% |
 
-### **Task Velocity**
-- **Average Task Size**: 3.4 hours
-- **Tasks Completed per Day**: 1.0 (based on 5 days)
-- **Hours Completed per Day**: 3.8 hours
-- **Projected Sprint Completion**: Day 23 (9 days over)
+### Task Velocity
+- **Average Task Size**: 2.3 hours
+- **Tasks Completed per Day**: TBD
+- **Hours Completed per Day**: TBD
 
-## 🔄 **Planned Tasks (Future Sprints)**
+## Planned Tasks (Future Sprints)
 
 ### **Sprint 2 Planned Tasks**
 | User Story | High-Level Tasks | Estimated Effort |
@@ -116,7 +138,7 @@ This catalog provides detailed visibility into all tasks across user stories, in
 | US-009 | Code generation engine, template system, quality validation | 28 hours |
 | US-010 | Code review automation, quality metrics, improvement suggestions | 18 hours |
 
-## ⚠️ **Task Blockers & Dependencies**
+## Task Blockers & Dependencies
 
 ### **Current Blockers**
 | Task ID | Task | Blocker | Impact | Resolution Plan |
@@ -159,7 +181,7 @@ Critical Path: T-000-01 → T-000-02 → T-000-05 (Test fixes)
 | T-002-04 | Test reporting system | Medium | 3h | Sprint 1 |
 | T-004-04 | Branch management automation | Low | 2h | Sprint 1 |
 
-## 🔗 **Task Management Integration**
+## Task Management Integration
 
 ### **Related Documentation**
 - [Sprint 1 Progress](../sprints/sprint_1/progress.md) - Real-time sprint progress

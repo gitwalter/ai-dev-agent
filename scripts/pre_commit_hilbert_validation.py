@@ -9,24 +9,15 @@ RESULT: Continuous mathematical beauty and systematic excellence
 
 import sys
 import subprocess
-import os
-from pathlib import Path
-
-# Fix Windows console encoding for emoji support
-if os.name == 'nt':  # Windows
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 from hilbert_consistency_validator import HilbertConsistencyValidator
 
 
 def main():
     """
-    🚀 Pre-commit validation: Build beautiful, useful systems through prevention.
+    Pre-commit validation: Prevent Hilbert consistency violations in staged docs.
     """
-    print("🧮 Pre-Commit Hilbert Consistency Check")
-    print("🌟 Purpose: Building something beautiful and useful")
+    print("[INFO] Pre-Commit Hilbert Consistency Check")
     print("=" * 50)
     
     # Get staged files
@@ -37,7 +28,7 @@ def main():
         )
         staged_files = result.stdout.strip().split('\n') if result.stdout.strip() else []
     except subprocess.CalledProcessError:
-        print("⚠️ Could not get staged files. Proceeding with full validation.")
+        print("[WARN] Could not get staged files. Proceeding with full validation.")
         staged_files = []
     
     # Filter to only .md files in docs/
@@ -47,10 +38,10 @@ def main():
     ]
     
     if not staged_md_files:
-        print("✅ No documentation files staged - validation passed!")
+        print("[OK] No documentation files staged - validation passed")
         return 0
     
-    print(f"🔍 Validating {len(staged_md_files)} staged documentation files...")
+    print(f"[INFO] Validating {len(staged_md_files)} staged documentation files...")
     
     # Run validation
     validator = HilbertConsistencyValidator()
@@ -63,25 +54,22 @@ def main():
             violations_in_staged.append(violation)
     
     if violations_in_staged:
-        print(f"\n🚨 HILBERT CONSISTENCY VIOLATIONS DETECTED!")
-        print(f"📋 {len(violations_in_staged)} violations in staged files:")
+        print("\n[ERROR] HILBERT CONSISTENCY VIOLATIONS DETECTED")
+        print(f"[ERROR] {len(violations_in_staged)} violations in staged files:")
         print()
         
         for violation in violations_in_staged:
-            print(f"❌ {violation.file_path}")
-            print(f"   Expected: {violation.expected_pattern}")
-            print(f"   Actual: {violation.actual_pattern}")
-            print(f"   Fix: {violation.suggested_fix}")
+            print(f"[X] {violation.file_path}")
+            print(f"    Expected: {violation.expected_pattern}")
+            print(f"    Actual:   {violation.actual_pattern}")
+            print(f"    Fix:      {violation.suggested_fix}")
             print()
         
-        print("🛡️ COMMIT BLOCKED - Fix naming violations to maintain beauty!")
-        print("🌟 Our purpose: Build something beautiful and useful")
-        print("🧮 Each fix brings mathematical elegance to our system")
+        print("[ERROR] COMMIT BLOCKED - Fix naming violations to maintain consistency")
         return 1
     
     else:
-        print("✅ All staged files follow Hilbert consistency!")
-        print("🌟 Beautiful, systematic excellence maintained!")
+        print("[OK] All staged files follow Hilbert consistency")
         return 0
 
 

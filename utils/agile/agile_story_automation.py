@@ -220,7 +220,7 @@ class AgileStoryAutomation:
             story: UserStory object to update artifacts with
             action: Action performed ("created", "updated", "completed")
         """
-        print(f"🔄 Updating agile artifacts for {story.story_id}...")
+        print(f"Updating agile artifacts for {story.story_id}...")
         
         # Update User Story Catalog
         self._update_user_story_catalog(story, action)
@@ -238,7 +238,7 @@ class AgileStoryAutomation:
         # Create individual story file
         self._create_story_file(story)
         
-        print(f"✅ All agile artifacts updated for {story.story_id}")
+        print(f"All agile artifacts updated for {story.story_id}")
     
     def create_complete_story_workflow(self,
                                      title: str,
@@ -257,7 +257,7 @@ class AgileStoryAutomation:
         Returns:
             Created UserStory object
         """
-        print(f"🚀 Creating new user story: {title}")
+        print(f"Creating new user story: {title}")
         
         # Create the story
         story = self.create_user_story(
@@ -273,15 +273,15 @@ class AgileStoryAutomation:
         # Set story status to in progress if it's critical
         if story.priority == Priority.CRITICAL:
             story.status = Status.IN_PROGRESS
-            print(f"⚡ {story.story_id} marked as IN PROGRESS due to critical priority")
+            print(f"{story.story_id} marked as IN PROGRESS due to critical priority")
             self.update_all_artifacts(story, "started")
         
-        print(f"✅ Story {story.story_id} created successfully with {len(story.tasks)} tasks")
+        print(f"Story {story.story_id} created successfully with {len(story.tasks)} tasks")
         return story
     
     def mark_story_in_progress(self, story_id: str) -> None:
         """Mark a story as in progress and update all artifacts."""
-        print(f"🔄 Marking {story_id} as IN PROGRESS...")
+        print(f"Marking {story_id} as IN PROGRESS...")
         # Implementation would load story, update status, and refresh artifacts
         # This would be called automatically when work begins on a story
     
@@ -426,25 +426,25 @@ class AgileStoryAutomation:
         if catalog_path.exists():
             # Read existing catalog and add new story
             # Implementation would parse and update the catalog
-            print(f"📝 Updated User Story Catalog with {story.story_id}")
+            print(f"Updated User Story Catalog with {story.story_id}")
     
     def _update_task_catalog(self, story: UserStory, action: str) -> None:
         """Update the task catalog with story tasks."""
         catalog_path = self.catalogs_path / "TASK_CATALOG.md"
         
         if catalog_path.exists():
-            print(f"📝 Updated Task Catalog with {len(story.tasks)} tasks from {story.story_id}")
+            print(f"Updated Task Catalog with {len(story.tasks)} tasks from {story.story_id}")
     
     def _update_sprint_backlog(self, story: UserStory, action: str) -> None:
         """Update sprint backlog if story is assigned to sprint."""
         if story.sprint:
             backlog_path = self.sprint_path / story.sprint / "backlog.md"
-            print(f"📝 Updated {story.sprint} backlog with {story.story_id}")
+            print(f"Updated {story.sprint} backlog with {story.story_id}")
     
     def _update_epic_overview(self, story: UserStory, action: str) -> None:
         """Update epic overview with new story."""
         epic_path = self.catalogs_path / "epic-overview.md"
-        print(f"📝 Updated Epic Overview for {story.epic} epic")
+        print(f"Updated Epic Overview for {story.epic} epic")
     
     def _create_story_file(self, story: UserStory) -> None:
         """Create individual story markdown file."""
@@ -460,7 +460,7 @@ class AgileStoryAutomation:
         with open(story_path, 'w', encoding='utf-8') as f:
             f.write(story_content)
         
-        print(f"📄 Created story file: {story_path}")
+        print(f"Created story file: {story_path}")
     
     def _generate_story_markdown(self, story: UserStory) -> str:
         """Generate complete markdown content for a user story."""

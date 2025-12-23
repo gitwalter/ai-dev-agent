@@ -73,6 +73,36 @@ class CatalogManager:
         if not full_path.exists():
             self.logger.error(f"Script not found: {script_path}")
             return False
+
+    def run_module(self, module_name: str, args: List[str] = None) -> bool:
+        """Run a Python module via `python -m <module>` and return success status."""
+        args = args or []
+
+        try:
+            self.logger.info(f"Running module {module_name}...")
+
+            cmd = [sys.executable, "-m", module_name] + args
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minute timeout
+                cwd=self.project_root,
+            )
+
+            if result.returncode == 0:
+                self.logger.info(f"[OK] Module {module_name} completed successfully")
+                return True
+
+            self.logger.error(f"[ERROR] Module {module_name} failed: {result.stderr}")
+            return False
+
+        except subprocess.TimeoutExpired:
+            self.logger.error(f"[TIMEOUT] Module {module_name} timed out")
+            return False
+        except Exception as e:
+            self.logger.error(f"[ERROR] Failed to run module {module_name}: {e}")
+            return False
         
         try:
             self.logger.info(f"Running {script_path}...")
@@ -103,7 +133,7 @@ class CatalogManager:
     def update_test_catalogue(self, force: bool = False) -> bool:
         """Update the test catalogue."""
         
-        self.logger.info("📝 Updating test catalogue...")
+        self.logger.info("Updating test catalogue...")
         
         # Check if update is needed
         if not force:
@@ -118,18 +148,21 @@ class CatalogManager:
     def update_agile_artifacts(self, force: bool = False) -> bool:
         """Update agile artifacts and user stories."""
         
-        self.logger.info("📋 Updating agile artifacts...")
-        
-        # Run user story status updates
-        args = ['--dry-run'] if not force else []
-        success1 = self.run_script('scripts/automate_user_story_updates.py', args)
-        
-        return success1
+        self.logger.info("Updating agile artifacts...")
+
+        # The story status update script requires a specific --story-id, so it's not
+        # a valid "regenerate agile catalogs" entrypoint. For catalog regeneration,
+        # rely on the User Story Catalog Manager which scans story files and rebuilds
+        # docs/agile/catalogs/USER_STORY_CATALOG.md deterministically.
+        #
+        # Note: Task/Sprint summary catalogs are maintained separately; this method
+        # focuses on the canonical story catalog used by stakeholders.
+        return self.run_module("utils.agile.user_story_catalog_manager")
     
     def validate_all_catalogs(self) -> bool:
         """Validate all catalogs for consistency."""
         
-        self.logger.info("🔍 Validating all catalogs...")
+        self.logger.info("Validating all catalogs...")
         
         validation_results = {}
         
@@ -204,24 +237,24 @@ class CatalogManager:
         
         status = self.get_catalog_status()
         
-        print("📊 Catalog Management Status")
+        print("Catalog Management Status")
         print("=" * 50)
         print(f"Last checked: {status['timestamp']}")
         print()
         
         for catalog_name, catalog_info in status['catalogs'].items():
-            print(f"📁 {catalog_info['description']}")
-            print(f"   Script: {'✅' if catalog_info['script_exists'] else '❌'}")
+            print(f"- {catalog_info['description']}")
+            print(f"  Script: {'OK' if catalog_info['script_exists'] else 'MISSING'}")
             
             if 'exists' in catalog_info:
-                print(f"   Output: {'✅' if catalog_info['exists'] else '❌'}")
+                print(f"  Output: {'OK' if catalog_info['exists'] else 'MISSING'}")
                 
                 if catalog_info['exists']:
-                    print(f"   Size: {catalog_info['size']:,} bytes")
+                    print(f"  Size: {catalog_info['size']:,} bytes")
                     if catalog_info['modified']:
                         modified_dt = datetime.fromisoformat(catalog_info['modified'])
                         age = datetime.now() - modified_dt
-                        print(f"   Age: {age.total_seconds() / 3600:.1f} hours")
+                        print(f"  Age: {age.total_seconds() / 3600:.1f} hours")
             
             print()
     
@@ -261,7 +294,7 @@ class CatalogManager:
     def setup_automation(self) -> bool:
         """Set up automation for all catalogs."""
         
-        self.logger.info("🔧 Setting up catalog automation...")
+        self.logger.info("Setting up catalog automation...")
         
         # Create automation script for integration
         automation_script = self.project_root / "scripts" / "catalog_automation.py"

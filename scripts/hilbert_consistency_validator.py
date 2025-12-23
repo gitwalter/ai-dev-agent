@@ -10,7 +10,7 @@ RESULT: Permanent organizational excellence
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Tuple, Set, Optional
 from dataclasses import dataclass
 from datetime import datetime
 import json
@@ -40,6 +40,7 @@ class HilbertConsistencyValidator:
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root).resolve()
         self.docs_root = self.project_root / "docs"
+        self._scope_paths: Optional[List[Path]] = None
         
         # File organization patterns (Sacred File Organization Rule integration)
         self.file_organization_patterns = {
@@ -150,14 +151,32 @@ class HilbertConsistencyValidator:
         self.validation_results = []
         self.violations = []
         
-    def validate_project_consistency(self) -> Dict[str, any]:
+    def validate_project_consistency(
+        self,
+        cleanup_temp_files: bool = False,
+        validate_file_organization: bool = False,
+        scope_paths: Optional[List[Path]] = None,
+    ) -> Dict[str, any]:
         """
-        🌟 MAIN VALIDATION: Complete Hilbert consistency check across project.
-        
-        Returns beautiful, comprehensive validation report.
+        Run a Hilbert consistency validation across the project.
+
+        Args:
+            cleanup_temp_files (bool): If True, delete matched temporary/demo files based on
+                `self.cleanup_patterns`. This is disabled by default to comply with the
+                Safety First rule (no destructive operations without explicit confirmation).
+            validate_file_organization (bool): If True, run the file organization checker.
+                This is disabled by default because many repositories contain legacy layouts
+                that should be migrated deliberately (not enforced by a validator run).
+            scope_paths (Optional[List[Path]]): If provided, only validate files under these
+                directories/files. Paths may be relative to the project root or absolute.
+
+        Returns:
+            Dict[str, Any]: Summary including counts, per-category rates, organization violations,
+                and temporary-file scan results.
         """
-        print("🧮 Starting Hilbert Consistency Validation...")
-        print("🛡️ Including Sacred File Organization Rule validation...")
+        self._scope_paths = self._normalize_scope_paths(scope_paths)
+
+        print("[INFO] Starting Hilbert Consistency Validation...")
         print("=" * 60)
         
         validation_summary = {
@@ -171,7 +190,7 @@ class HilbertConsistencyValidator:
         
         # Validate each category systematically
         for category, pattern_info in self.hilbert_patterns.items():
-            print(f"\n🔍 Validating {category}...")
+            print(f"\n[CHECK] Validating {category}...")
             category_results = self._validate_category(category, pattern_info)
             
             validation_summary["categories_validated"][category] = {
@@ -188,36 +207,43 @@ class HilbertConsistencyValidator:
         # Calculate overall consistency
         if validation_summary["total_files_checked"] > 0:
             validation_summary["overall_consistency_score"] = (
-                validation_summary["consistent_files"] / validation_summary["total_files_checked"]
+                (validation_summary["consistent_files"] / validation_summary["total_files_checked"]) * 100.0
             )
         
         validation_summary["violations_found"] = validation_summary["total_files_checked"] - validation_summary["consistent_files"]
         
-        # Add file organization validation
-        print("\n🛡️ Validating Sacred File Organization Rule...")
-        org_violations = self._validate_file_organization()
-        validation_summary["file_organization_violations"] = len(org_violations)
-        validation_summary["violations_found"] += len(org_violations)
-        
-        if org_violations:
-            print(f"❌ Found {len(org_violations)} file organization violations")
-            for violation in org_violations:
-                print(f"   • {violation}")
+        # Optional: file organization validation
+        org_violations: List[str] = []
+        if validate_file_organization:
+            print("\n[CHECK] Validating File Organization Rule...")
+            org_violations = self._validate_file_organization()
+            validation_summary["file_organization_violations"] = len(org_violations)
+            validation_summary["violations_found"] += len(org_violations)
+
+            if org_violations:
+                print(f"[X] Found {len(org_violations)} file organization violations")
+                for violation in org_violations:
+                    print(f"   - {violation}")
+            else:
+                print("[OK] All files follow the File Organization Rule")
         else:
-            print("✅ All files follow Sacred File Organization Rule")
+            validation_summary["file_organization_violations"] = None
         
-        # Automatic cleanup of temporary/demo files
-        print("\n🧹 Cleaning up temporary and demo files...")
-        cleanup_results = self._cleanup_temporary_files()
-        validation_summary["files_cleaned_up"] = cleanup_results["deleted_count"]
+        # Temporary/demo file scan (deletion is opt-in)
+        print("\n[CHECK] Scanning for temporary and demo files...")
+        cleanup_results = self._cleanup_temporary_files(perform_delete=cleanup_temp_files)
+        validation_summary["temporary_files_matched"] = cleanup_results["matched_count"]
+        validation_summary["temporary_files_deleted"] = cleanup_results["deleted_count"]
         validation_summary["cleanup_summary"] = cleanup_results["summary"]
-        
-        if cleanup_results["deleted_count"] > 0:
-            print(f"🗑️ Cleaned up {cleanup_results['deleted_count']} temporary files")
-            for deleted_file in cleanup_results["deleted_files"]:
-                print(f"   • Deleted: {deleted_file}")
+
+        if cleanup_results["matched_count"] > 0:
+            print(f"[WARN] Matched {cleanup_results['matched_count']} temporary/demo files")
+            if cleanup_temp_files:
+                print(f"[WARN] Deleted {cleanup_results['deleted_count']} temporary/demo files (explicitly enabled)")
+            else:
+                print("[INFO] No files were deleted (cleanup disabled by default)")
         else:
-            print("✅ No temporary files found to clean up")
+            print("[OK] No temporary/demo files matched cleanup rules")
         
         return validation_summary
     
@@ -237,18 +263,67 @@ class HilbertConsistencyValidator:
             for directory in directories:
                 if directory.exists() and directory.is_dir():
                     for md_file in directory.glob("*.md"):
+                        if self._scope_paths is not None and not self._is_in_scope(md_file):
+                            continue
                         result = self._validate_single_file(
                             md_file, category, pattern, pattern_info["description"]
                         )
                         results.append(result)
         
         return results
+
+    def _normalize_scope_paths(self, scope_paths: Optional[List[Path]]) -> Optional[List[Path]]:
+        """
+        Normalize scope paths to absolute paths.
+
+        Args:
+            scope_paths: Paths that define the validation scope.
+
+        Returns:
+            A list of absolute paths, or None if no scope is provided.
+        """
+        if not scope_paths:
+            return None
+
+        normalized: List[Path] = []
+        for raw in scope_paths:
+            p = Path(raw)
+            if not p.is_absolute():
+                p = self.project_root / p
+            normalized.append(p.resolve())
+        return normalized
+
+    def _is_in_scope(self, file_path: Path) -> bool:
+        """
+        Determine whether the given path is within the current validation scope.
+
+        Args:
+            file_path: Path to check.
+
+        Returns:
+            True if in scope, else False.
+        """
+        if self._scope_paths is None:
+            return True
+
+        resolved = file_path.resolve()
+        for scope in self._scope_paths:
+            if scope.is_file() and resolved == scope:
+                return True
+            if scope.is_dir():
+                try:
+                    resolved.relative_to(scope)
+                    return True
+                except ValueError:
+                    pass
+        return False
     
     def _validate_file_organization(self) -> List[str]:
         """
-        🛡️ Validate Sacred File Organization Rule compliance.
-        
-        Returns list of file organization violations.
+        Validate file organization rule compliance.
+
+        Returns:
+            List[str]: Human-readable violations.
         """
         violations = []
         
@@ -264,8 +339,8 @@ class HilbertConsistencyValidator:
                 # Check each file organization pattern
                 for category, pattern_info in self.file_organization_patterns.items():
                     if re.match(pattern_info["pattern"], file):
-                        required_location = pattern_info["required_location"]
-                        current_location = str(relative_path.parent) + "/"
+                        required_location = str(pattern_info["required_location"]).replace("\\", "/")
+                        current_location = relative_path.parent.as_posix() + "/"
                         
                         # Check if file is in correct location
                         if not current_location.startswith(required_location):
@@ -274,21 +349,28 @@ class HilbertConsistencyValidator:
                                 continue
                                 
                             violations.append(
-                                f"{relative_path} should be in {required_location} "
+                                f"{relative_path.as_posix()} should be in {required_location} "
                                 f"(currently in {current_location})"
                             )
                         break  # Only check first matching pattern
         
         return violations
     
-    def _cleanup_temporary_files(self) -> Dict[str, any]:
+    def _cleanup_temporary_files(self, perform_delete: bool = False) -> Dict[str, any]:
         """
-        🧹 Automatically clean up temporary and demo files.
-        
-        Returns cleanup results with deleted files and summary.
+        Scan for (and optionally delete) temporary/demo files.
+
+        Args:
+            perform_delete (bool): If True, delete matched files. This is destructive and must
+                only be enabled intentionally by the caller.
+
+        Returns:
+            Dict[str, Any]: Results including match count, delete count, and per-pattern summary.
         """
         cleanup_results = {
+            "matched_count": 0,
             "deleted_count": 0,
+            "matched_files": [],
             "deleted_files": [],
             "summary": {},
             "skipped_files": []
@@ -302,6 +384,10 @@ class HilbertConsistencyValidator:
             for file in files:
                 file_path = Path(root) / file
                 relative_path = file_path.relative_to(self.project_root)
+
+                # Respect validation scope when present (avoid scanning unrelated areas)
+                if self._scope_paths is not None and not self._is_in_scope(file_path):
+                    continue
                 
                 # Check each cleanup pattern
                 for pattern_name, pattern_info in self.cleanup_patterns.items():
@@ -312,8 +398,9 @@ class HilbertConsistencyValidator:
                     if re.match(pattern_info["pattern"], file):
                         # Check location restrictions if specified
                         if "locations" in pattern_info:
-                            current_location = str(relative_path.parent)
-                            if current_location in pattern_info["locations"] or current_location == ".":
+                            current_location = relative_path.parent.as_posix()
+                            allowed_locations = [str(loc).replace("\\", "/") for loc in pattern_info["locations"]]
+                            if current_location in allowed_locations or current_location == ".":
                                 should_delete = True
                                 reason = f"Temporary file in {current_location}"
                         else:
@@ -331,14 +418,18 @@ class HilbertConsistencyValidator:
                     
                     # Skip certain protected files
                     if should_delete and self._is_protected_file(relative_path):
-                        cleanup_results["skipped_files"].append(str(relative_path))
+                        cleanup_results["skipped_files"].append(relative_path.as_posix())
                         should_delete = False
                     
-                    # Delete the file
                     if should_delete:
+                        cleanup_results["matched_files"].append(relative_path.as_posix())
+                        cleanup_results["matched_count"] += 1
+
+                    # Delete the file (only if explicitly enabled)
+                    if should_delete and perform_delete:
                         try:
                             file_path.unlink()
-                            cleanup_results["deleted_files"].append(str(relative_path))
+                            cleanup_results["deleted_files"].append(relative_path.as_posix())
                             cleanup_results["deleted_count"] += 1
                             
                             # Track by pattern
@@ -349,7 +440,7 @@ class HilbertConsistencyValidator:
                             break  # Only delete once per file
                             
                         except OSError as e:
-                            print(f"⚠️ Could not delete {relative_path}: {e}")
+                            print(f"[WARN] Could not delete {relative_path.as_posix()}: {e}")
         
         return cleanup_results
     
@@ -372,7 +463,7 @@ class HilbertConsistencyValidator:
     def _is_acceptable_file_location(self, file_path: Path, required_location: str) -> bool:
         """Check if file location is acceptable even if not optimal."""
         filename = file_path.name
-        current_str = str(file_path)
+        current_str = file_path.as_posix()
         
         # README files can be in root or module directories
         if filename == 'README.md':
@@ -565,50 +656,86 @@ class HilbertConsistencyValidator:
 
 def main():
     """
-    🚀 MAIN EXECUTION: Beautiful validation for systematic excellence.
+    Main entrypoint for Hilbert consistency validation.
     """
-    print("🌟 Building Beautiful and Useful Validation System")
-    print("🧮 Purpose: Mathematical beauty through Hilbert consistency")
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Hilbert consistency validation")
+    parser.add_argument(
+        "--cleanup-temp-files",
+        action="store_true",
+        help="Delete matched temporary/demo files (destructive; opt-in).",
+    )
+    parser.add_argument(
+        "--validate-file-organization",
+        action="store_true",
+        help="Run file organization validation (may report legacy layout issues).",
+    )
+    parser.add_argument(
+        "--scope",
+        nargs="+",
+        default=None,
+        help="Limit validation to these paths (files or directories).",
+    )
+    parser.add_argument(
+        "--write-report",
+        action="store_true",
+        help="Write a markdown report to --report-path.",
+    )
+    parser.add_argument(
+        "--report-path",
+        default="docs/agile/validation/hilbert_consistency_report.md",
+        help="Path for the markdown report when --write-report is set.",
+    )
+    parser.add_argument(
+        "--write-config",
+        action="store_true",
+        help="Write automation config JSON to --config-path.",
+    )
+    parser.add_argument(
+        "--config-path",
+        default="scripts/validation_config.json",
+        help="Path for automation config JSON when --write-config is set.",
+    )
+    args = parser.parse_args()
+
+    print("[INFO] Hilbert consistency validation")
     print("=" * 60)
-    
-    # Initialize beautiful validator
+
     validator = HilbertConsistencyValidator()
-    
-    # Execute comprehensive validation
-    validation_summary = validator.validate_project_consistency()
-    
-    # Generate beautiful report
-    report = validator.generate_beautiful_report()
-    
-    # Save report
-    report_dir = Path("docs/agile/validation")
-    report_dir.mkdir(parents=True, exist_ok=True)
-    report_path = report_dir / "hilbert_consistency_report.md"
-    report_path.write_text(report, encoding='utf-8')
-    
-    # Create automation config
-    config = validator.create_automation_config()
-    config_path = Path("scripts/validation_config.json")
-    config_path.write_text(json.dumps(config, indent=2), encoding='utf-8')
-    
-    # Beautiful summary
-    print(f"\n🌟 VALIDATION COMPLETE!")
-    print(f"📊 Consistency Score: {validation_summary['overall_consistency_score']:.1f}%")
-    print(f"📋 Files Checked: {validation_summary['total_files_checked']}")
-    print(f"🚨 Violations: {validation_summary['violations_found']}")
-    print(f"📄 Report: {report_path}")
-    print(f"⚙️ Config: {config_path}")
-    
-    # Philosophy in action
-    if validation_summary['violations_found'] == 0:
-        print(f"\n💎 PERFECT HILBERT CONSISTENCY ACHIEVED!")
-        print(f"🧮 Mathematical beauty through systematic excellence!")
-    else:
-        print(f"\n🔧 BEAUTY OPPORTUNITIES IDENTIFIED!")
-        print(f"🌟 Each fix brings us closer to mathematical perfection!")
-    
-    return validator
+    validation_summary = validator.validate_project_consistency(
+        cleanup_temp_files=args.cleanup_temp_files,
+        validate_file_organization=args.validate_file_organization,
+        scope_paths=[Path(p) for p in args.scope] if args.scope else None,
+    )
+
+    report_path = None
+    if args.write_report:
+        report = validator.generate_beautiful_report()
+        report_path = Path(args.report_path)
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(report, encoding="utf-8")
+
+    config_path = None
+    if args.write_config:
+        config = validator.create_automation_config()
+        config_path = Path(args.config_path)
+        config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
+
+    print("\n[INFO] Validation complete")
+    print(f"[INFO] Consistency score: {validation_summary['overall_consistency_score']:.1f}%")
+    print(f"[INFO] Files checked: {validation_summary['total_files_checked']}")
+    print(f"[INFO] Violations: {validation_summary['violations_found']}")
+    if report_path is not None:
+        print(f"[INFO] Report: {report_path}")
+    if config_path is not None:
+        print(f"[INFO] Config: {config_path}")
+
+    if validation_summary["violations_found"] > 0:
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
