@@ -24,7 +24,7 @@ jobs:
       run: |
         echo "🌟 Building Beautiful and Useful Systems"
         echo "🧮 Purpose: Mathematical beauty through systematic consistency"
-        python scripts/hilbert_consistency_validator.py
+        python scripts/hilbert_consistency_validator.py --scope docs/agile --write-report --report-path docs/agile/validation/hilbert_consistency_report.md
         
     - name: 📊 Check Consistency Score
       run: |
