@@ -3,7 +3,6 @@
 **A pedagogical toolkit for building AI agent systems with practical software development techniques.**
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Research%20Foundation-orange?style=flat-square)
 
 ---
@@ -187,12 +186,6 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 - **SQLite** for data persistence
 - **Pytest** for testing framework
 - **Google Gemini** for LLM capabilities
-
----
-
-## License
-
-MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
