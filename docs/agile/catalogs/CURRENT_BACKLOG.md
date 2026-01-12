@@ -11,7 +11,7 @@
 
 2. **MCP server suite runbook and canonical configuration**
    - **User Story**: US-MCP-002
-   - **Outcome**: Local FastMCP servers are easy to run; client connectivity is easy to validate
+   - **Outcome**: Development MCP server suite is easy to run; client connectivity is easy to validate
 
 3. **Coordinator + specialist subagent composition**
    - **User Story**: US-DEEPAGENTS-002

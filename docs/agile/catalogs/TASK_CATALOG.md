@@ -12,12 +12,14 @@ This catalog provides detailed visibility into all tasks across user stories, in
 
 ## Active Sprint Tasks (Sprint 8)
 
-### US-MCP-002: FastMCP Tool Server Suite + Client Configuration (8 Points)
+### US-MCP-002: Development MCP Tool Server Suite + Client Configuration (8 Points)
 | Task ID | Task Description | Estimate | Status | Owner | Notes |
 |---------|------------------|----------|--------|-------|-------|
-| T-MCP-002-01 | Define canonical local MCP server ports/endpoints and runbook | 2h | To Do | AI Team | Document ports 8000-8003 |
-| T-MCP-002-02 | Add client connectivity check (tool discovery + one tool call per server) | 3h | To Do | AI Team | Keep minimal and reliable |
-| T-MCP-002-03 | Document failure modes (missing env vars, server down, wrong port) | 1h | To Do | AI Team | Focus on actionable errors |
+| T-MCP-002-01 | Define canonical development MCP server suite (ports/endpoints) + runbook | 2h | To Do | AI Team | dev_repo/dev_search/dev_tests/github/dev_docs |
+| T-MCP-002-02 | Add client connectivity check (tool discovery + one safe tool call per server) | 3h | To Do | AI Team | Keep minimal and reliable |
+| T-MCP-002-03 | Document failure modes + safety policy (read-only default; write/exec gated by HITL) | 2h | To Do | AI Team | Align with project safety rules |
+| T-MCP-002-04 | Define allowlist for dev_tests/github (what commands are permitted without approval) | 2h | To Do | AI Team | Default to read-only; keep strict |
+| T-MCP-002-05 | Add research + RAG servers (dev_research/dev_knowledge) and document network policy | 3h | To Do | AI Team | Web + vector DB retrieval via MCP |
 
 ### US-DEEPAGENTS-001: DeepAgents Baseline Agent with MCP Tools + Memory (13 Points)
 | Task ID | Task Description | Estimate | Status | Owner | Notes |
@@ -29,7 +31,7 @@ This catalog provides detailed visibility into all tasks across user stories, in
 ### US-DEEPAGENTS-002: Specialized Subagents + Coordinator Routing (8 Points)
 | Task ID | Task Description | Estimate | Status | Owner | Notes |
 |---------|------------------|----------|--------|-------|-------|
-| T-DA-002-01 | Create 2-3 specialist subagents with MCP tools | 3h | To Do | AI Team | finance/news/weather |
+| T-DA-002-01 | Create 2-3 specialist subagents with MCP tools | 3h | To Do | AI Team | repo/search/tests/git/docs + research |
 | T-DA-002-02 | Create coordinator with delegation tools and synthesis | 3h | To Do | AI Team | Must clearly attribute specialists |
 
 ### US-DEEPAGENTS-003: HITL + Safety for Sensitive Operations (5 Points)

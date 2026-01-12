@@ -20,7 +20,7 @@
 
 | ID | Title | Points | Priority | Status |
 |----|-------|--------|----------|--------|
-| **US-MCP-002** | FastMCP Tool Server Suite + Client Configuration | 8 | High | Not started |
+| **US-MCP-002** | Development MCP Tool Server Suite + Client Configuration | 8 | High | Not started |
 | **US-DEEPAGENTS-001** | DeepAgents Baseline Agent with MCP Tools + Memory | 13 | Critical | Not started |
 | **US-DEEPAGENTS-002** | Specialized Subagents + Coordinator Routing | 8 | High | Not started |
 | **US-DEEPAGENTS-003** | HITL + Safety for Sensitive Operations | 5 | High | Not started |

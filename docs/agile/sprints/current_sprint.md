@@ -31,12 +31,12 @@ Build a reliable foundation for **DeepAgents-based agents** that use **MCP tools
 
 ### In Progress (Week 1)
 
-#### US-MCP-002: FastMCP Tool Server Suite + Client Configuration (8 points)
+#### US-MCP-002: Development MCP Tool Server Suite + Client Configuration (8 points)
 **Priority**: High  
 **Status**: Not started
 
 **Scope**:
-- Standardize how we run the local FastMCP servers (weather/finance/news/calculator)
+- Define and standardize a **development MCP server suite** (repo inspection, search, tests, git, docs)
 - Provide a single place for MCP server endpoints/ports
 - Add a quick connectivity check and example client usage
 
@@ -134,7 +134,7 @@ For complete sprint information, see:
 - Standard deep agent creation, memory via checkpointer, optional persistent memory patterns
 
 ### 2. MCP tools as the core integration surface
-- Local FastMCP servers (weather/finance/news/calculator)
+- Development MCP server suite (repo/search/tests/git/docs) for agent building
 - Configurable remote MCP servers (optional)
 
 ### 3. Optional multi-agent delegation
